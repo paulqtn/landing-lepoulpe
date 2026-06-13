@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check, Star } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
-import { AcquisitionLevers } from "@/components/AcquisitionLevers";
 import { HeroDiagnostic } from "@/components/HeroDiagnostic";
+import { ResultsShowcase } from "@/components/ResultsShowcase";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Container } from "@/components/ui/Container";
 import { Counter } from "@/components/ui/Counter";
@@ -169,8 +169,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* =================== ACQUISITION LEVERS =================== */}
-        <AcquisitionLevers />
+        {/* =================== RESULTS SHOWCASE =================== */}
+        <ResultsShowcase />
 
         {/* ============================ METHOD ============================ */}
         <section className="border-b border-neutral-200 py-20 sm:py-28">
