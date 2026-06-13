@@ -14,7 +14,7 @@ export function LandingHero({
   generator: Landing["generator"];
 }) {
   return (
-    <section id="top" className="relative overflow-hidden pt-24 sm:pt-28">
+    <section id="top" className="relative overflow-hidden pt-12 sm:pt-16">
       {/* decorative background */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute left-[-8%] top-[-6%] h-96 w-96 rounded-full bg-poulpe-200/45 blur-3xl" />

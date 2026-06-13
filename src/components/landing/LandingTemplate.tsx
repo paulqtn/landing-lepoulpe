@@ -3,12 +3,12 @@ import { LandingFaq } from "@/components/landing/LandingFaq";
 import { LandingFinalCta } from "@/components/landing/LandingFinalCta";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingGuarantee } from "@/components/landing/LandingGuarantee";
-import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LandingProcess } from "@/components/landing/LandingProcess";
 import { LandingProof } from "@/components/landing/LandingProof";
 import { LandingResults } from "@/components/landing/LandingResults";
 import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
+import { SiteHeader } from "@/components/SiteHeader";
 import type { Landing } from "@/lib/landings";
 
 /**
@@ -18,7 +18,7 @@ import type { Landing } from "@/lib/landings";
 export function LandingTemplate({ landing }: { landing: Landing }) {
   return (
     <>
-      <LandingHeader ctaLabel={landing.nav.ctaLabel} />
+      <SiteHeader ctaHref="#generateur" />
       <main>
         <LandingHero
           hero={landing.hero}

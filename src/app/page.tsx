@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Sparkles, Star } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
-import { Logo } from "@/components/Logo";
+import { SiteHeader } from "@/components/SiteHeader";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -21,26 +21,11 @@ const order: LandingCategory[] = ["seo", "sea"];
 export default function Home() {
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/70 bg-canvas/80 backdrop-blur-md">
-        <Container className="flex h-16 items-center justify-between sm:h-[4.5rem]">
-          <Link href="/" aria-label="Le Poulpe — accueil">
-            <Logo />
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-5">
-            <Link
-              href="/agence"
-              className="hidden text-sm font-medium text-slate-600 transition hover:text-poulpe-600 sm:block"
-            >
-              L’agence
-            </Link>
-            <ButtonLink href="/seo/audit-seo-gratuit">Audit gratuit</ButtonLink>
-          </div>
-        </Container>
-      </header>
+      <SiteHeader />
 
-      <main className="pt-28 sm:pt-36">
+      <main>
         {/* hero */}
-        <section className="relative overflow-hidden pb-10">
+        <section className="relative overflow-hidden pb-10 pt-12 sm:pt-16">
           <div className="pointer-events-none absolute inset-0 -z-10">
             <div className="absolute left-1/2 top-[-12%] h-80 w-[44rem] -translate-x-1/2 rounded-full bg-poulpe-200/45 blur-3xl" />
             <div className="absolute inset-0 bg-dotgrid-light [mask-image:radial-gradient(ellipse_60%_55%_at_50%_0%,#000_40%,transparent_100%)]" />
