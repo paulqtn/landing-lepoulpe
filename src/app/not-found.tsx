@@ -22,7 +22,7 @@ export default function NotFound() {
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/landings"
+            href="/"
             className="inline-flex items-center gap-2 rounded-full bg-poulpe-500 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-poulpe-500/30 transition-all hover:-translate-y-0.5 hover:bg-poulpe-600"
           >
             Voir nos landing pages
