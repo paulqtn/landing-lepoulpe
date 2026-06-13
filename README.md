@@ -23,6 +23,9 @@ npm run start    # serveur de production
 ## Structure
 
 ```
+public/
+├── images/             # images du site → servies sur /images/...
+└── README.md           # conventions d'usage des fichiers statiques
 src/
 ├── app/
 │   ├── layout.tsx      # <html>, polices, métadonnées SEO
