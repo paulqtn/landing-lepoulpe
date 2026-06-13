@@ -83,18 +83,22 @@ export default function Home() {
       <main className="bg-white text-neutral-900">
         {/* ============================ HERO ============================ */}
         <section className="border-b border-neutral-200">
-          <Container>
-            <div className="flex items-center justify-between border-b border-neutral-200 py-4 font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-500">
-              <span className="hidden sm:inline">Le Poulpe — Accélérateur</span>
-              <span className="flex items-center gap-1.5">
-                <span>Acquisition</span>
-                <span className="text-poulpe-500">·</span>
-                <span>Conversion</span>
-                <span className="text-poulpe-500">·</span>
-                <span>Résultats</span>
-              </span>
-            </div>
+          <div className="border-b border-neutral-200">
+            <Container>
+              <div className="flex items-center justify-between py-4 font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-500">
+                <span className="hidden sm:inline">Le Poulpe — Accélérateur</span>
+                <span className="flex items-center gap-1.5">
+                  <span>Acquisition</span>
+                  <span className="text-poulpe-500">·</span>
+                  <span>Conversion</span>
+                  <span className="text-poulpe-500">·</span>
+                  <span>Résultats</span>
+                </span>
+              </div>
+            </Container>
+          </div>
 
+          <Container>
             <div className="grid gap-10 py-14 lg:grid-cols-12 lg:gap-10 lg:py-20">
               <div className="lg:col-span-6">
                 <h1 className="font-grotesk text-[2.4rem] font-bold leading-[1.0] tracking-tight text-neutral-900 sm:text-5xl lg:text-[3.4rem]">
