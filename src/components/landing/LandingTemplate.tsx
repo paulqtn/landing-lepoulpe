@@ -26,10 +26,15 @@ export function LandingTemplate({ landing }: { landing: Landing }) {
           generator={landing.generator}
         />
         <LandingProof proof={landing.proof} />
+        {landing.guaranteeFeatured && (
+          <LandingGuarantee guarantee={landing.guarantee} />
+        )}
         <LandingResults results={landing.results} />
         <LandingBenefits benefits={landing.benefits} />
         <LandingProcess process={landing.process} />
-        <LandingGuarantee guarantee={landing.guarantee} />
+        {!landing.guaranteeFeatured && (
+          <LandingGuarantee guarantee={landing.guarantee} />
+        )}
         <LandingTestimonials testimonials={landing.testimonials} />
         <LandingFaq faq={landing.faq} />
         <LandingFinalCta finalCta={landing.finalCta} ctaLabel={landing.nav.ctaLabel} />

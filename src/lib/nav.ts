@@ -34,6 +34,12 @@ export const mainNav: NavEntry[] = [
         href: "/seo/audit-seo-gratuit",
         icon: "search",
       },
+      {
+        title: "Stratégie SEO",
+        desc: "Résultats garantis par contrat",
+        href: "/seo/strategie-seo",
+        icon: "badge-check",
+      },
     ],
   },
   {

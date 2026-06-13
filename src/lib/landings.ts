@@ -11,6 +11,8 @@ export type Landing = {
   slug: string;
   category: LandingCategory;
   categoryLabel: string;
+  /** Render the guarantee section high on the page (just after proof). */
+  guaranteeFeatured?: boolean;
   nav: { ctaLabel: string };
   meta: { title: string; description: string };
   hero: {
@@ -1268,11 +1270,206 @@ const conseilStrategique: Landing = {
 };
 
 /* ================================================================== */
+/*  7. SEO — Stratégie SEO (résultats garantis par contrat)            */
+/* ================================================================== */
+
+const strategieSeo: Landing = {
+  slug: "strategie-seo",
+  category: "seo",
+  categoryLabel: "SEO",
+  guaranteeFeatured: true,
+  nav: { ctaLabel: "Stratégie SEO" },
+  meta: {
+    title: "Stratégie SEO — des résultats garantis par contrat",
+    description:
+      "Une stratégie SEO avec engagement de résultat : objectifs de positionnement sur vos mots-clés cibles inscrits au contrat, et clause de sortie dès 1 an si non atteints.",
+  },
+  hero: {
+    badge: "Résultats garantis par contrat",
+    titleLead: "Une stratégie SEO",
+    titleAccent: "avec résultats garantis",
+    titleRest: ".",
+    subtitle:
+      "On s’engage noir sur blanc sur des objectifs de positionnement sur vos mots-clés cibles. Si on ne les atteint pas, une clause de sortie vous libère dès 1 an — au lieu des 3 ans habituels du marché.",
+    bullets: [
+      "Des objectifs de positionnement définis avec vous",
+      "Un engagement écrit sur vos mots-clés cibles",
+      "Une clause de sortie dès 1 an si on n’y arrive pas",
+    ],
+    ctaPrimary: "Construire ma stratégie SEO",
+    ctaSecondary: "Voir nos résultats",
+  },
+  proof: {
+    rating: "4,9/5",
+    ratingLabel: "120+ avis vérifiés",
+    clients: "+250 entreprises accompagnées",
+    logosLabel: "Ils ont sécurisé leur visibilité avec Le Poulpe",
+    logos: ["Maremma", "Atelier B.", "Nuvola", "Kodial", "Brûlerie M.", "Vela"],
+    stats: [
+      { value: "+182%", label: "de trafic organique moyen" },
+      { value: "Top 3", label: "sur les mots-clés cibles" },
+      { value: "1 an", label: "clause de sortie (vs 3 ans)" },
+      { value: "100%", label: "d’objectifs inscrits au contrat" },
+    ],
+  },
+  results: {
+    eyebrow: "Résultats concrets",
+    title: "Des positions tenues, pas seulement promises",
+    intro: "Des objectifs contractualisés, et atteints.",
+    cases: [
+      {
+        client: "Studio Maremma",
+        sector: "E-commerce déco",
+        metric: "+182%",
+        metricLabel: "de trafic organique",
+        detail:
+          "Objectifs de positionnement atteints sur 24 mots-clés cibles, contractualisés dès le départ.",
+        duration: "en 8 mois",
+      },
+      {
+        client: "Atelier B.",
+        sector: "Artisanat · B2B",
+        metric: "Top 3",
+        metricLabel: "sur 18 mots-clés cibles",
+        detail:
+          "Une stratégie de contenu et de netlinking qui a tenu ses engagements, mot-clé par mot-clé.",
+        duration: "en 6 mois",
+      },
+      {
+        client: "Nuvola",
+        sector: "SaaS",
+        metric: "×3,4",
+        metricLabel: "de leads organiques",
+        detail:
+          "Le SEO est devenu leur 1er canal — avec des objectifs de volume sécurisés au contrat.",
+        duration: "en 9 mois",
+      },
+    ],
+  },
+  benefits: {
+    eyebrow: "Ce qui est inclus",
+    title: "Une stratégie SEO complète et pilotée",
+    intro: "Tout ce qu’il faut pour atteindre — et tenir — vos objectifs.",
+    items: [
+      { icon: "search", title: "Audit & mots-clés cibles", desc: "On identifie les requêtes rentables et on fixe les objectifs avec vous." },
+      { icon: "line-chart", title: "Stratégie de contenu", desc: "Un plan éditorial pensé pour ranker sur vos mots-clés prioritaires." },
+      { icon: "layers", title: "Netlinking & autorité", desc: "On renforce la crédibilité de votre domaine aux yeux de Google." },
+      { icon: "gauge", title: "SEO technique", desc: "Vitesse, indexation, structure : on lève les freins au classement." },
+      { icon: "trending-up", title: "Suivi des positions", desc: "Vos positions sur les mots-clés cibles, suivies en continu." },
+      { icon: "badge-check", title: "Objectifs contractuels", desc: "Des engagements écrits, mesurables, avec clause de sortie." },
+    ],
+  },
+  guarantee: {
+    badge: "Engagement de résultat",
+    title: "On s’engage par contrat. Sinon, vous sortez.",
+    text: "On définit ensemble des objectifs de volume et de positionnement sur vos mots-clés cibles, inscrits noir sur blanc dans le contrat. Si on ne les atteint pas, une clause de rétractation vous permet de sortir dès 1 an — au lieu des 3 ans habituels du marché. Notre rémunération dépend de nos résultats : on a tout intérêt à les tenir.",
+    points: [
+      "Objectifs de positionnement contractualisés",
+      "Sur vos mots-clés cibles, définis ensemble",
+      "Clause de sortie dès 1 an si non atteints",
+      "Aucun engagement caché de 3 ans",
+    ],
+  },
+  process: {
+    eyebrow: "Comment ça marche",
+    title: "Votre stratégie SEO en 4 étapes",
+    steps: [
+      { title: "Audit & mots-clés", desc: "On analyse votre marché et on sélectionne vos mots-clés cibles." },
+      { title: "Objectifs au contrat", desc: "On fixe ensemble des objectifs mesurables, avec clause de sortie." },
+      { title: "Exécution", desc: "Contenu, technique et netlinking déployés pour ranker." },
+      { title: "Suivi des positions", desc: "On pilote, on reporte et on tient le cap sur vos objectifs." },
+    ],
+  },
+  testimonials: [
+    { quote: "Un engagement de résultat écrit, c’est ce qui nous a décidés. Et les objectifs ont été tenus.", author: "Camille Renaud", role: "Fondatrice, Studio Maremma" },
+    { quote: "Enfin une agence qui met ses résultats au contrat. Zéro langue de bois, des positions gagnées.", author: "Thomas Bernard", role: "Gérant, Atelier B." },
+    { quote: "La clause de sortie à 1 an a levé tous nos doutes. On est restés, vu les résultats.", author: "Sofia Marchetti", role: "CMO, Nuvola" },
+  ],
+  faq: [
+    { q: "Comment fonctionne la garantie de résultat ?", a: "On définit avec vous des objectifs de positionnement et de volume sur des mots-clés cibles, inscrits au contrat. Ils sont mesurables et suivis en continu." },
+    { q: "Que se passe-t-il si les objectifs ne sont pas atteints ?", a: "Une clause de rétractation vous permet de sortir du contrat dès 1 an, au lieu des 3 ans habituels du marché. Vous n’êtes pas prisonnier d’un engagement long." },
+    { q: "Qui choisit les mots-clés cibles ?", a: "On les définit ensemble, à partir d’un audit de votre marché et de leur potentiel business. Vous validez avant tout engagement." },
+    { q: "Le SEO n’est-il pas trop incertain pour être garanti ?", a: "C’est justement pour ça qu’on contractualise des objectifs réalistes, fondés sur l’audit — et qu’on assume une clause de sortie si on se trompe." },
+    { q: "Combien de temps avant les premiers résultats ?", a: "Les premiers mouvements arrivent généralement sous 2 à 4 mois ; les objectifs contractuels sont calibrés sur 6 à 12 mois selon la concurrence." },
+  ],
+  generator: {
+    eyebrow: "Stratégie SEO · 1 min",
+    panelBadge: "Objectifs garantis",
+    panelTitle: "Votre stratégie SEO",
+    recapTitle: "Récapitulatif",
+    estimateLabel: "Potentiel estimé",
+    estimateHint: "Répondez pour estimer votre potentiel de trafic.",
+    estimate: "seo",
+    steps: [
+      {
+        kind: "input",
+        id: "site",
+        question: "Quel site voulez-vous faire ranker ?",
+        help: "On évalue votre visibilité actuelle.",
+        recapLabel: "Site",
+        inputType: "text",
+        prefix: "https://",
+        placeholder: "monsite.fr",
+      },
+      {
+        kind: "single",
+        id: "objectif",
+        question: "Votre objectif principal ?",
+        recapLabel: "Objectif",
+        columns: 2,
+        options: [
+          { value: "trafic", label: "Plus de trafic", desc: "Visibilité Google", icon: "trending-up" },
+          { value: "leads", label: "Plus de leads", desc: "Générer des contacts", icon: "target" },
+          { value: "ventes", label: "Plus de ventes", desc: "E-commerce", icon: "euro" },
+          { value: "local", label: "Visibilité locale", desc: "Près de chez moi", icon: "map-pin" },
+        ],
+      },
+      {
+        kind: "single",
+        id: "trafic",
+        question: "Votre trafic mensuel actuel ?",
+        help: "Une estimation suffit.",
+        recapLabel: "Trafic actuel",
+        columns: 2,
+        options: [
+          { value: "lt1k", label: "Moins de 1 000 visiteurs", weight: 500 },
+          { value: "1k5k", label: "1 000 à 5 000", weight: 3000 },
+          { value: "5k20k", label: "5 000 à 20 000", weight: 12000 },
+          { value: "gt20k", label: "Plus de 20 000", weight: 30000 },
+        ],
+      },
+    ],
+    guarantees: ["Objectifs au contrat", "Clause de sortie à 1 an", "Réponse sous 24h"],
+    leadStep: {
+      question: "Où envoyer votre stratégie SEO ?",
+      help: "Un expert vous rappelle sous 24h pour définir vos objectifs.",
+      recapLabel: "Contact",
+      submitLabel: "Recevoir ma stratégie SEO",
+      consent,
+    },
+    successTitle: "Demande bien reçue !",
+    successText:
+      "On prépare votre stratégie SEO et un expert vous rappelle sous 24h pour définir vos objectifs et la garantie.",
+    successBullets: [
+      "Sélection de vos mots-clés cibles",
+      "Objectifs de résultat proposés",
+      "Échange avec un expert SEO",
+    ],
+  },
+  finalCta: {
+    title: "Et si votre SEO venait avec une garantie ?",
+    subtitle:
+      "Construisons votre stratégie SEO avec des objectifs au contrat — et une clause de sortie dès 1 an.",
+  },
+};
+
+/* ================================================================== */
 /*  Registry                                                           */
 /* ================================================================== */
 
 export const landings: Landing[] = [
   auditSeoGratuit,
+  strategieSeo,
   auditGoogleAds,
   metaAds,
   tiktokAds,
