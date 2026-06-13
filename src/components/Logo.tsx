@@ -41,8 +41,13 @@ export function Logo({
         <OctopusMark className="h-6 w-6" />
       </span>
       {showWordmark && (
-        <span className="font-display text-lg font-extrabold tracking-tight text-ink">
-          {site.name}
+        <span className="flex flex-col leading-none">
+          <span className="font-display text-lg font-extrabold tracking-tight text-ink">
+            {site.name}
+          </span>
+          <span className="mt-1 font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-poulpe-600">
+            Accélérateur
+          </span>
         </span>
       )}
     </span>

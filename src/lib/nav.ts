@@ -94,6 +94,6 @@ export const mainNav: NavEntry[] = [
 /** Réassurance affichée dans le bandeau utilitaire. */
 export const topBarPerks = [
   "Audit marketing offert",
-  "Conseil sans engagement",
-  "Réponse sous 24h",
+  "Engagement de résultat",
+  "Expertise concrète",
 ];

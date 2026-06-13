@@ -57,8 +57,12 @@ export function SiteHeader({
         <Container className="flex h-9 items-center justify-between text-xs">
           <a
             href={phoneHref}
-            className="flex items-center gap-2 font-semibold text-white transition hover:text-poulpe-300"
+            className="flex items-center gap-2.5 font-semibold text-white transition hover:text-poulpe-300"
           >
+            <span className="relative flex h-2 w-2" aria-hidden>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+            </span>
             <Phone className="h-3.5 w-3.5 text-poulpe-400" />
             {site.phone}
           </a>

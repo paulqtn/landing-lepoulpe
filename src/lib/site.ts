@@ -13,7 +13,7 @@ export const site = {
     "Le Poulpe est une agence web 360° : sites vitrines, landing pages qui convertissent, SEO, publicité en ligne et réseaux sociaux. Une équipe, une stratégie, des résultats.",
   url: "https://www.agencelepoulpe.fr",
   email: "contact@agencelepoulpe.fr",
-  phone: "+33 1 23 45 67 89",
+  phone: "06 27 22 17 87",
   location: "France",
 } as const;
 
