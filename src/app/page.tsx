@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check, Star } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
+import { AcquisitionLevers } from "@/components/AcquisitionLevers";
 import { HeroDiagnostic } from "@/components/HeroDiagnostic";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Container } from "@/components/ui/Container";
@@ -38,13 +39,6 @@ const expertises = [
   { n: "02", label: "Publicité — Google, Meta, TikTok", href: "/ads/audit-google-ads" },
   { n: "03", label: "Stratégie & conseil", href: "/strategie/conseil-strategique" },
   { n: "04", label: "Site + croissance, tout inclus", href: "/offre" },
-];
-
-const heroStats: StatItem[] = [
-  { prefix: "+", value: 250, label: "entreprises accélérées" },
-  { prefix: "×", value: 2.8, decimals: 1, label: "de CA en moyenne" },
-  { prefix: "+", value: 120, suffix: " %", label: "de leads en plus" },
-  { value: 24, suffix: " h", label: "pour un premier retour" },
 ];
 
 const resultStats: StatItem[] = [
@@ -168,26 +162,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ============================ STATS ============================ */}
-        <section className="border-b border-neutral-200">
-          <Container>
-            <dl className="grid grid-cols-2 md:grid-cols-4">
-              {heroStats.map((s, i) => (
-                <div
-                  key={s.label}
-                  className={`py-10 ${i > 0 ? "md:border-l md:border-neutral-200 md:pl-8" : ""}`}
-                >
-                  <dt className="font-grotesk text-5xl font-bold tracking-tight text-neutral-900 sm:text-6xl">
-                    <Stat s={s} />
-                  </dt>
-                  <dd className="mt-3 font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-500">
-                    {s.label}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </Container>
-        </section>
+        {/* =================== ACQUISITION LEVERS =================== */}
+        <AcquisitionLevers />
 
         {/* ============================ METHOD ============================ */}
         <section className="border-b border-neutral-200 py-20 sm:py-28">
