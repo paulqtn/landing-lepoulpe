@@ -249,7 +249,7 @@ export function HeroDiagnostic() {
         <div className="mt-6 flex shrink-0 items-center justify-between gap-3 border-t border-white/10 pt-4">
           <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
             <ShieldCheck className="h-3.5 w-3.5 text-green-500" />
-            100% gratuit · 2 min
+            100% gratuit · 30 secondes
           </span>
           <a
             href={`tel:${site.phone.replace(/\s/g, "")}`}
