@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, JetBrains_Mono, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -16,12 +16,11 @@ const display = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-// Editorial display serif + mono (homepage art direction)
-const serif = Fraunces({
+// Swiss display grotesk + mono (homepage art direction)
+const grotesk = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-  variable: "--font-fraunces",
+  weight: ["500", "700"],
+  variable: "--font-space",
   display: "swap",
 });
 
@@ -75,7 +74,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${inter.variable} ${display.variable} ${serif.variable} ${mono.variable}`}
+      className={`${inter.variable} ${display.variable} ${grotesk.variable} ${mono.variable}`}
     >
       <body className="font-sans">{children}</body>
     </html>
