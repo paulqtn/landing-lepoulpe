@@ -143,6 +143,7 @@ export function LeadGenerator({
           </div>
 
           {/* estimate box */}
+          {config.estimate !== "none" && (
           <div className="relative mt-auto rounded-2xl border border-white/10 bg-white/[0.04] p-5">
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
@@ -176,9 +177,14 @@ export function LeadGenerator({
               </div>
             )}
           </div>
+          )}
 
           {/* guarantees */}
-          <ul className="relative space-y-2">
+          <ul
+            className={`relative space-y-2 ${
+              config.estimate === "none" ? "mt-auto" : ""
+            }`}
+          >
             {config.guarantees.map((g) => (
               <li key={g} className="flex items-center gap-2 text-sm text-slate-300">
                 <Check className="h-4 w-4 shrink-0 text-poulpe-400" />

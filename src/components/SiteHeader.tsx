@@ -278,14 +278,19 @@ function MegaPanel({
   ctaHref: string;
   onNavigate: () => void;
 }) {
+  const wide = entry.leaves.length > 2;
   return (
-    <div className="w-[36rem] rounded-2xl border border-slate-200 bg-white p-3 shadow-elevated ring-1 ring-slate-900/5">
-      <div className="grid grid-cols-[1.4fr_1fr] gap-3">
+    <div
+      className={`${
+        wide ? "w-[42rem]" : "w-[34rem]"
+      } rounded-2xl border border-slate-200 bg-white p-3 shadow-elevated ring-1 ring-slate-900/5`}
+    >
+      <div className="grid grid-cols-[1.5fr_1fr] gap-3">
         <div>
           <p className="px-3 pb-2 pt-1 text-[11px] font-bold uppercase tracking-widest text-slate-400">
             {entry.summary}
           </p>
-          <div className="space-y-1">
+          <div className={wide ? "grid grid-cols-2 gap-1" : "space-y-1"}>
             {entry.leaves.map((leaf) => (
               <Link
                 key={leaf.href}

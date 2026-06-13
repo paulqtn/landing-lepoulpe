@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-const order: LandingCategory[] = ["seo", "sea"];
+const order: LandingCategory[] = ["seo", "ads", "strategie"];
 
 export default function Home() {
   return (
