@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check, Star } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
-import { HeroLeadCard } from "@/components/HeroLeadCard";
+import { HeroSimulator } from "@/components/HeroSimulator";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Container } from "@/components/ui/Container";
 import { Counter } from "@/components/ui/Counter";
@@ -141,7 +141,7 @@ export default function Home() {
               </div>
 
               <div className="lg:col-span-5 lg:col-start-8">
-                <HeroLeadCard />
+                <HeroSimulator />
               </div>
             </div>
 
