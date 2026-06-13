@@ -7,16 +7,27 @@ import { ArrowRight } from "lucide-react";
 const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
 const round5 = (n: number) => Math.max(5, Math.round(n / 5) * 5);
 
+/** Sector-aware cost-per-lead ranges (€) — keeps the estimate credible. */
+const sectors = [
+  { label: "E-commerce", cplLow: 8, cplHigh: 20 },
+  { label: "Services B2B", cplLow: 30, cplHigh: 80 },
+  { label: "Local / Artisan", cplLow: 15, cplHigh: 40 },
+  { label: "SaaS / Tech", cplLow: 40, cplHigh: 100 },
+  { label: "Immobilier", cplLow: 25, cplHigh: 60 },
+  { label: "Autre", cplLow: 20, cplHigh: 50 },
+];
+
 /**
- * Interactive acquisition simulator: a budget slider that estimates the
- * monthly leads in real time, then routes to the offer. More useful & engaging
- * than a plain form.
+ * Interactive acquisition simulator: pick a sector + a monthly budget and get a
+ * live estimate of monthly leads, then route to the offer.
  */
 export function HeroSimulator() {
+  const [idx, setIdx] = useState(0);
   const [budget, setBudget] = useState(2000);
 
-  const low = round5(budget / 35);
-  const high = round5(budget / 22);
+  const sector = sectors[idx];
+  const low = round5(budget / sector.cplHigh);
+  const high = round5(budget / sector.cplLow);
 
   return (
     <div className="border border-neutral-900 bg-white">
@@ -30,7 +41,28 @@ export function HeroSimulator() {
       </div>
 
       <div className="p-5 sm:p-6">
-        <div className="flex items-baseline justify-between">
+        <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-neutral-500">
+          Votre secteur
+        </span>
+        <div className="mt-2.5 grid grid-cols-2 gap-2">
+          {sectors.map((s, i) => (
+            <button
+              key={s.label}
+              type="button"
+              onClick={() => setIdx(i)}
+              aria-pressed={i === idx}
+              className={`rounded-md border px-3 py-2 text-xs font-medium transition-colors ${
+                i === idx
+                  ? "border-neutral-900 bg-neutral-900 text-white"
+                  : "border-neutral-300 text-neutral-700 hover:border-neutral-900"
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-6 flex items-baseline justify-between">
           <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-neutral-500">
             Budget marketing / mois
           </span>
@@ -38,7 +70,6 @@ export function HeroSimulator() {
             {fmt(budget)} €
           </span>
         </div>
-
         <input
           type="range"
           min={500}
@@ -64,7 +95,8 @@ export function HeroSimulator() {
             {fmt(high)}
           </p>
           <p className="mt-1.5 text-xs text-neutral-500">
-            Estimation selon votre marché et votre coût par lead.
+            Fourchette selon votre secteur. Précisée avec vos mots-clés cibles
+            lors de l’audit.
           </p>
         </div>
 
@@ -72,7 +104,7 @@ export function HeroSimulator() {
           href="/offre"
           className="group mt-5 flex w-full items-center justify-center gap-2 rounded-md bg-neutral-900 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-poulpe-500"
         >
-          Recevoir mon plan détaillé
+          Affiner avec un expert
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </Link>
         <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-400">
