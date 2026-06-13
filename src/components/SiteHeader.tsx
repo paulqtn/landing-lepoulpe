@@ -54,17 +54,21 @@ export function SiteHeader({
     <>
       {/* ---- top utility bar (bandeau) ---- */}
       <div className="bg-ink text-slate-300">
-        <Container className="flex h-9 items-center justify-between text-xs">
+        <Container className="flex h-11 items-center justify-between text-xs">
           <a
             href={phoneHref}
-            className="flex items-center gap-2.5 font-semibold text-white transition hover:text-poulpe-300"
+            className="group -ml-1.5 flex items-center gap-2.5 rounded-full py-1 pl-1.5 pr-3 transition-colors hover:bg-white/5"
           >
-            <span className="relative flex h-2 w-2" aria-hidden>
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-green-500 text-white shadow-sm ring-1 ring-green-400/40 transition-all duration-300 group-hover:scale-105 group-hover:ring-4 group-hover:ring-green-500/25">
+              <Phone className="h-3.5 w-3.5" />
+            </span>
+            <span className="font-semibold tracking-wider text-green-100 transition-colors group-hover:text-white">
+              {site.phone}
+            </span>
+            <span className="relative ml-0.5 flex h-2 w-2" aria-hidden>
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
-            <Phone className="h-3.5 w-3.5 text-poulpe-400" />
-            {site.phone}
           </a>
           <ul className="hidden items-center gap-5 sm:flex">
             {topBarPerks.map((p) => (
