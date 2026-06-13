@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check, Star } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Container } from "@/components/ui/Container";
@@ -26,7 +26,11 @@ type StatItem = {
   label: string;
 };
 
-const heroGuarantees = ["Payé aux résultats", "Objectifs au contrat", "Sortie possible à 1 an"];
+const advantages = [
+  "Contrat avec engagement",
+  "Payé aux résultats",
+  "Stratégie 100% sur-mesure",
+];
 
 const expertises = [
   { n: "01", label: "Référencement (SEO)", href: "/seo/strategie-seo" },
@@ -90,20 +94,21 @@ export default function Home() {
               </span>
             </div>
 
-            <div className="grid gap-y-12 py-14 lg:grid-cols-12 lg:gap-10 lg:py-20">
-              {/* message */}
-              <div className="lg:col-span-7">
-                <h1 className="font-grotesk text-[2rem] font-bold leading-[1.06] tracking-tight text-neutral-900 sm:text-[2.6rem] lg:text-[3rem]">
-                  Accompagnement stratégique &amp; opérationnel pour{" "}
-                  <span className="text-poulpe-500">acquérir plus de clients</span> et{" "}
-                  <span className="text-poulpe-500">augmenter votre taux de conversion</span>.
+            <div className="grid gap-y-10 py-14 lg:grid-cols-12 lg:gap-8 lg:py-20">
+              <div className="lg:col-span-8">
+                <h1 className="font-grotesk text-[2.6rem] font-bold leading-[0.98] tracking-tight text-neutral-900 sm:text-6xl lg:text-[4.6rem]">
+                  Plus de clients,
+                  <br />
+                  une <span className="text-poulpe-500">meilleure conversion</span>.
                 </h1>
-                <p className="mt-6 max-w-xl text-lg leading-relaxed text-neutral-600">
-                  Une équipe qui pilote votre acquisition de A à Z — et s’engage
-                  sur des résultats mesurables.
-                </p>
+              </div>
 
-                <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <div className="flex flex-col justify-end lg:col-span-4">
+                <p className="max-w-sm text-lg leading-relaxed text-neutral-600">
+                  Accompagnement stratégique et opérationnel pour acquérir plus de
+                  clients et augmenter votre taux de conversion.
+                </p>
+                <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-4">
                   <Link
                     href="/offre"
                     className="group inline-flex items-center gap-3 rounded-md bg-neutral-900 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-poulpe-500"
@@ -118,48 +123,19 @@ export default function Home() {
                     Voir les résultats
                   </a>
                 </div>
-
-                <div className="mt-8 flex items-center gap-3">
-                  <div className="flex">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-poulpe-500 text-poulpe-500" />
-                    ))}
-                  </div>
-                  <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-neutral-500">
-                    4,9/5 · +250 entreprises accélérées
-                  </p>
-                </div>
               </div>
+            </div>
 
-              {/* engagements panel */}
-              <div className="lg:col-span-4 lg:col-start-9">
-                <div className="border border-neutral-900">
-                  <div className="flex items-center justify-between border-b border-neutral-900 px-5 py-3">
-                    <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-900">
-                      Nos engagements
-                    </span>
-                    <Marker />
-                  </div>
-                  <ul className="px-5">
-                    {heroGuarantees.map((g, i) => (
-                      <li
-                        key={g}
-                        className={`flex items-center gap-3 py-4 ${i > 0 ? "border-t border-neutral-200" : ""}`}
-                      >
-                        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-neutral-900 text-white">
-                          <Check className="h-3.5 w-3.5" />
-                        </span>
-                        <span className="text-sm font-medium text-neutral-900">{g}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="border-t border-neutral-900 px-5 py-3.5">
-                    <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-neutral-500">
-                      Réponse sous 24h · sans engagement
-                    </p>
-                  </div>
+            <div className="grid grid-cols-1 divide-y divide-neutral-200 border-t border-neutral-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+              {advantages.map((a) => (
+                <div
+                  key={a}
+                  className="flex items-center gap-3 py-5 sm:px-6 sm:first:pl-0 sm:last:pr-0"
+                >
+                  <Check className="h-5 w-5 shrink-0 text-poulpe-500" />
+                  <span className="text-sm font-semibold text-neutral-900">{a}</span>
                 </div>
-              </div>
+              ))}
             </div>
           </Container>
         </section>
