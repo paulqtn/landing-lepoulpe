@@ -11,87 +11,89 @@ type Step =
   | { id: string; type: "site"; question: string };
 
 const steps: Step[] = [
-  {
-    id: "besoin",
-    type: "single",
-    question: "Votre besoin principal ?",
-    options: [
-      { value: "leads", label: "Générer plus de leads" },
-      { value: "cpa", label: "Baisser mon coût d’acquisition" },
-      { value: "ventes", label: "Augmenter mes ventes" },
-      { value: "lancer", label: "Lancer mon acquisition" },
-    ],
-  },
   { id: "site", type: "site", question: "Votre site web actuel ?" },
   {
-    id: "canal",
+    id: "google",
     type: "single",
-    question: "Vous pensez à quel levier ?",
+    question: "Vous trouve-t-on sur Google ?",
     options: [
-      { value: "seo", label: "Référencement (SEO)" },
-      { value: "google", label: "Google Ads" },
-      { value: "social", label: "Meta / TikTok Ads" },
-      { value: "unsure", label: "Je ne sais pas encore" },
+      { value: "well", label: "Oui, plutôt bien" },
+      { value: "some", label: "Un peu" },
+      { value: "none", label: "Pas vraiment" },
+      { value: "unknown", label: "Je ne sais pas" },
     ],
   },
   {
-    id: "budget",
+    id: "ads",
     type: "single",
-    question: "Votre budget mensuel ?",
+    question: "Faites-vous déjà de la publicité ?",
     options: [
-      { value: "s", label: "Moins de 1 000 €" },
-      { value: "m", label: "1 000 – 3 000 €" },
-      { value: "l", label: "3 000 – 8 000 €" },
-      { value: "xl", label: "Plus de 8 000 €" },
+      { value: "google", label: "Oui, Google Ads" },
+      { value: "social", label: "Oui, Meta / réseaux" },
+      { value: "expensive", label: "Oui, mais ça coûte cher" },
+      { value: "none", label: "Non, jamais" },
+    ],
+  },
+  {
+    id: "frein",
+    type: "single",
+    question: "Votre principal frein aujourd’hui ?",
+    options: [
+      { value: "visibility", label: "Pas assez de visibilité" },
+      { value: "conversion", label: "Du trafic, mais peu de conversions" },
+      { value: "cost", label: "Des leads trop chers" },
+      { value: "presence", label: "Pas assez de présence en ligne" },
     ],
   },
 ];
 
 function recommend(answers: Answers) {
-  if (answers.site === "none") {
+  // No site (or no real online presence) → build the foundation first.
+  if (answers.site === "none" || answers.frein === "presence") {
     return {
       title: "Accompagnement tout inclus",
       reason:
-        "On crée votre site et on pilote toute votre acquisition — payé aux résultats.",
+        "On pose d’abord un site qui convertit, puis on déploie toute votre acquisition — payé aux résultats.",
       href: "/offre",
       cta: "l’offre tout inclus",
     };
   }
-  const big = answers.budget === "l" || answers.budget === "xl";
-  switch (answers.canal) {
-    case "seo":
-      return {
-        title: "Stratégie SEO",
-        reason:
-          "Une visibilité durable sur Google et des leads de moins en moins chers dans le temps.",
-        href: "/seo/strategie-seo",
-        cta: "la stratégie SEO",
-      };
-    case "google":
-      return {
-        title: "Google Ads",
-        reason:
-          "Des leads rapides, pilotés au coût par lead, dès le lancement des campagnes.",
-        href: "/ads/audit-google-ads",
-        cta: "Google Ads",
-      };
-    case "social":
-      return {
-        title: "Publicité Meta & TikTok",
-        reason:
-          "Capter une audience qualifiée à coût maîtrisé, avec des créas qui convertissent.",
-        href: "/ads/meta-ads",
-        cta: "la publicité sociale",
-      };
-    default:
-      return {
-        title: big ? "Accompagnement tout inclus" : "Audit stratégique gratuit",
-        reason:
-          "On définit la meilleure stratégie d’acquisition pour vos objectifs et votre budget.",
-        href: "/offre",
-        cta: big ? "l’offre tout inclus" : "l’audit gratuit",
-      };
+  // Lead cost is the pain → audit the right ad channel to lower the CPL.
+  if (answers.frein === "cost" || answers.ads === "expensive") {
+    return answers.ads === "social"
+      ? {
+          title: "Publicité Meta & TikTok",
+          reason:
+            "Des leads souvent bien moins chers, avec des créas qui convertissent.",
+          href: "/ads/meta-ads",
+          cta: "la publicité sociale",
+        }
+      : {
+          title: "Audit Google Ads",
+          reason:
+            "On audite vos campagnes pour faire baisser votre coût par lead.",
+          href: "/ads/audit-google-ads",
+          cta: "l’audit Google Ads",
+        };
   }
+  // Traffic but few conversions → optimise offer, pages & funnels.
+  if (answers.frein === "conversion") {
+    return {
+      title: "Optimisation & accompagnement",
+      reason:
+        "Vous avez du trafic : on optimise votre offre, vos pages et vos tunnels pour convertir davantage.",
+      href: "/offre",
+      cta: "l’accompagnement",
+    };
+  }
+  // Visibility is the issue → durable organic growth.
+  return {
+    title: "Stratégie SEO",
+    reason:
+      "Construisons une visibilité durable sur Google — avec des objectifs au contrat.",
+    href: "/seo/strategie-seo",
+    cta: "la stratégie SEO",
+  };
 }
 
 export function HeroDiagnostic() {
