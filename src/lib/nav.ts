@@ -26,13 +26,13 @@ export const mainNav: NavEntry[] = [
     kind: "mega",
     label: "SEO",
     summary: "Référencement naturel — visibilité durable sur Google",
-    icon: "search",
+    icon: "target",
     leaves: [
       {
         title: "Audit SEO gratuit",
         desc: "Analysez votre visibilité sur Google",
         href: "/seo/audit-seo-gratuit",
-        icon: "search",
+        icon: "target",
       },
       {
         title: "Stratégie SEO",
