@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check, Star } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
+import { HeroLeadCard } from "@/components/HeroLeadCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Container } from "@/components/ui/Container";
 import { Counter } from "@/components/ui/Counter";
@@ -94,20 +95,35 @@ export default function Home() {
               </span>
             </div>
 
-            <div className="grid gap-y-10 py-14 lg:grid-cols-12 lg:gap-8 lg:py-20">
-              <div className="lg:col-span-8">
-                <h1 className="font-grotesk text-[2.6rem] font-bold leading-[0.98] tracking-tight text-neutral-900 sm:text-6xl lg:text-[4.6rem]">
+            <div className="grid gap-10 py-14 lg:grid-cols-12 lg:gap-10 lg:py-20">
+              <div className="lg:col-span-6">
+                <h1 className="font-grotesk text-[2.4rem] font-bold leading-[1.0] tracking-tight text-neutral-900 sm:text-5xl lg:text-[3.4rem]">
                   Nous boostons votre{" "}
                   <span className="text-poulpe-500">acquisition client</span>.
                 </h1>
-              </div>
-
-              <div className="flex flex-col justify-end lg:col-span-4">
-                <p className="max-w-sm text-lg leading-relaxed text-neutral-600">
+                <p className="mt-6 max-w-md text-lg leading-relaxed text-neutral-600">
                   Accompagnement stratégique et opérationnel pour acquérir plus de
                   clients et augmenter votre taux de conversion.
                 </p>
-                <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-4">
+
+                <div className="mt-6 flex items-center gap-3">
+                  <div className="flex">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-[18px] w-[18px] fill-poulpe-500 text-poulpe-500"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-sm text-neutral-600">
+                    <span className="font-bold text-neutral-900">5/5</span>
+                    <span className="ml-1.5 font-mono text-[10px] uppercase tracking-[0.15em] text-neutral-500">
+                      sur Google
+                    </span>
+                  </p>
+                </div>
+
+                <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
                   <Link
                     href="/offre"
                     className="group inline-flex items-center gap-3 rounded-md bg-neutral-900 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-poulpe-500"
@@ -122,23 +138,10 @@ export default function Home() {
                     Voir les résultats
                   </a>
                 </div>
+              </div>
 
-                <div className="mt-8 flex items-center gap-3 border-t border-neutral-200 pt-6">
-                  <div className="flex">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-[18px] w-[18px] fill-poulpe-500 text-poulpe-500"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-sm text-neutral-600">
-                    <span className="font-bold text-neutral-900">5,0/5</span>
-                    <span className="ml-1.5 font-mono text-[10px] uppercase tracking-[0.15em] text-neutral-500">
-                      sur Google
-                    </span>
-                  </p>
-                </div>
+              <div className="lg:col-span-5 lg:col-start-8">
+                <HeroLeadCard />
               </div>
             </div>
 
