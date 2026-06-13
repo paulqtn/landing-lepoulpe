@@ -88,7 +88,11 @@ export function SiteHeader({
                   key={entry.label}
                   href={entry.href}
                   onClick={() => setOpen(null)}
-                  className="rounded-lg px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:text-poulpe-600"
+                  className={
+                    entry.highlight
+                      ? "rounded-full bg-poulpe-50 px-3.5 py-2 text-sm font-bold text-poulpe-700 ring-1 ring-poulpe-100 transition hover:bg-poulpe-100"
+                      : "rounded-lg px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:text-poulpe-600"
+                  }
                 >
                   {entry.label}
                 </Link>
@@ -182,7 +186,9 @@ export function SiteHeader({
                     key={entry.label}
                     href={entry.href}
                     onClick={() => setMobileOpen(false)}
-                    className="block border-b border-slate-100 px-3 py-4 text-base font-semibold text-ink"
+                    className={`block border-b border-slate-100 px-3 py-4 text-base font-semibold ${
+                      entry.highlight ? "text-poulpe-700" : "text-ink"
+                    }`}
                   >
                     {entry.label}
                   </Link>

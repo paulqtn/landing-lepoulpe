@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Star } from "lucide-react";
+import { ArrowRight, Check, Sparkles, Star } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ButtonLink } from "@/components/ui/Button";
@@ -33,24 +33,25 @@ export default function Home() {
           <Container className="text-center">
             <span className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-poulpe-700 shadow-sm ring-1 ring-poulpe-100">
               <Sparkles className="h-3.5 w-3.5 text-poulpe-500" />
-              Agence d’acquisition · SEO & SEA
+              Offre tout inclus · payée aux résultats
             </span>
             <h1 className="mx-auto mt-5 max-w-3xl text-balance text-4xl font-extrabold leading-[1.08] text-ink sm:text-5xl lg:text-6xl">
-              Des pages pensées pour <span className="text-gradient">convertir</span>.
+              On construit, on gère et on{" "}
+              <span className="text-gradient">propulse votre business</span>.
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-pretty text-lg text-slate-600">
-              Le Poulpe crée des landing pages — une par intention de recherche —
-              qui captent des leads qualifiés. Vous choisissez votre objectif, on
-              vous rappelle sous 24h.
+              Site, SEO, publicité et stratégie réunis dans une seule offre tout
+              inclus — en location, payée à vos résultats. Vous gérez votre métier,
+              on s’occupe de votre croissance.
             </p>
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <ButtonLink href="/seo/audit-seo-gratuit" size="lg">
-                Recevoir un audit gratuit
+              <ButtonLink href="/offre" size="lg">
+                Découvrir l’offre
                 <ArrowRight className="h-5 w-5" />
               </ButtonLink>
-              <ButtonLink href="/agence" variant="secondary" size="lg">
-                Découvrir l’agence
+              <ButtonLink href="/seo/audit-seo-gratuit" variant="secondary" size="lg">
+                Audit gratuit
               </ButtonLink>
             </div>
 
@@ -66,6 +67,61 @@ export default function Home() {
             </div>
           </Container>
         </section>
+
+        {/* featured offer */}
+        <section className="py-10">
+          <Container>
+            <Reveal>
+              <div className="relative overflow-hidden rounded-4xl bg-gradient-to-br from-ink via-ink-2 to-ink p-8 shadow-panel sm:p-10">
+                <div className="pointer-events-none absolute inset-0 bg-dotgrid-dark opacity-40" />
+                <div className="pointer-events-none absolute -right-12 -top-12 h-56 w-56 rounded-full bg-poulpe-500/25 blur-3xl" />
+                <div className="relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+                  <div className="max-w-2xl">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-poulpe-300">
+                      <Sparkles className="h-3 w-3" /> Offre principale
+                    </span>
+                    <h2 className="mt-4 text-2xl font-extrabold text-white sm:text-[1.75rem]">
+                      Votre site + toute votre croissance, en location tout inclus.
+                    </h2>
+                    <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
+                      {["Sans frais de création", "Tout inclus", "Payé aux résultats"].map(
+                        (b) => (
+                          <li
+                            key={b}
+                            className="flex items-center gap-2 text-sm font-medium text-slate-200"
+                          >
+                            <Check className="h-4 w-4 text-poulpe-400" /> {b}
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                  <Link
+                    href="/offre"
+                    className="group inline-flex shrink-0 items-center gap-2 rounded-full bg-poulpe-500 px-7 py-4 text-base font-bold text-white shadow-glow transition-all hover:-translate-y-0.5 hover:bg-poulpe-600"
+                  >
+                    Découvrir l’offre
+                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
+              </div>
+            </Reveal>
+          </Container>
+        </section>
+
+        {/* à la carte */}
+        <Container className="pt-8 text-center">
+          <span className="text-xs font-bold uppercase tracking-widest text-poulpe-700">
+            À la carte
+          </span>
+          <h2 className="mt-2 text-2xl font-extrabold text-ink sm:text-3xl">
+            Besoin d’une expertise précise ?
+          </h2>
+          <p className="mx-auto mt-2 max-w-xl text-slate-600">
+            Chaque expertise est aussi disponible séparément. Choisissez votre
+            objectif.
+          </p>
+        </Container>
 
         {/* categories */}
         {order.map((cat) => {

@@ -11,7 +11,7 @@ export type NavLeaf = {
 };
 
 export type NavEntry =
-  | { kind: "link"; label: string; href: string }
+  | { kind: "link"; label: string; href: string; highlight?: boolean }
   | {
       kind: "mega";
       label: string;
@@ -21,6 +21,7 @@ export type NavEntry =
     };
 
 export const mainNav: NavEntry[] = [
+  { kind: "link", label: "Offre tout inclus", href: "/offre", highlight: true },
   {
     kind: "mega",
     label: "SEO",

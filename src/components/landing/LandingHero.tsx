@@ -8,10 +8,12 @@ export function LandingHero({
   hero,
   proof,
   generator,
+  secondaryHref = "#resultats",
 }: {
   hero: Landing["hero"];
   proof: Landing["proof"];
   generator: Landing["generator"];
+  secondaryHref?: string;
 }) {
   return (
     <section id="top" className="relative overflow-hidden pt-12 sm:pt-16">
@@ -57,7 +59,7 @@ export function LandingHero({
               <ArrowRight className="h-5 w-5" />
             </ButtonLink>
             {hero.ctaSecondary && (
-              <ButtonLink href="#resultats" variant="secondary" size="lg">
+              <ButtonLink href={secondaryHref} variant="secondary" size="lg">
                 {hero.ctaSecondary}
               </ButtonLink>
             )}
