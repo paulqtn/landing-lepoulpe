@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
-/* ------------------------------------------------------------------ */
-/*  Design tokens — built around the brand orange RGB(252, 96, 36)     */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  DESIGN SYSTEM — Le Poulpe                                          */
+/*  Identité construite autour de l'orange RGB(252, 96, 36) / #FC6024  */
+/* ================================================================== */
 @theme {
-  /* Brand palette (le Poulpe orange) */
+  /* --- Brand palette (orange "poulpe") --- */
   --color-poulpe-50: #fff4ef;
   --color-poulpe-100: #ffe6db;
   --color-poulpe-200: #ffcab3;
@@ -17,84 +18,132 @@
   --color-poulpe-900: #7e2a13;
   --color-poulpe-950: #441106;
 
-  /* Neutral ink for dark surfaces / text */
-  --color-ink: #0c0f14;
-  --color-ink-soft: #161b22;
+  /* Warm accent used in gradients / glows */
+  --color-flame: #ff8a3d;
 
-  /* Fonts (wired to next/font CSS variables in layout.tsx) */
+  /* --- Ink (dark premium surfaces) --- */
+  --color-ink: #0b0d12;
+  --color-ink-2: #11141c;
+  --color-ink-3: #181c26;
+
+  /* Warm off-white canvas */
+  --color-canvas: #faf9f7;
+
+  /* --- Fonts (wired to next/font in layout.tsx) --- */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  /* Custom animations */
+  /* --- Radii --- */
+  --radius-4xl: 2rem;
+  --radius-5xl: 2.5rem;
+
+  /* --- Premium shadows --- */
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.04), 0 6px 16px -6px rgb(16 24 40 / 0.08);
+  --shadow-elevated: 0 18px 40px -12px rgb(16 24 40 / 0.18), 0 6px 14px -6px rgb(16 24 40 / 0.10);
+  --shadow-floating: 0 30px 70px -22px rgb(16 24 40 / 0.28), 0 10px 24px -12px rgb(16 24 40 / 0.14);
+  --shadow-glow: 0 24px 64px -20px rgb(252 96 36 / 0.5);
+  --shadow-panel: 0 40px 90px -28px rgb(8 10 16 / 0.6);
+
+  /* --- Animations --- */
   --animate-float: float 6s ease-in-out infinite;
   --animate-marquee: marquee 32s linear infinite;
   --animate-fade-up: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-scale-in: scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-shimmer: shimmer 2.2s linear infinite;
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12px); }
 }
-
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
-
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
 
-/* ------------------------------------------------------------------ */
-/*  Base                                                               */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  Base                                                              */
+/* ================================================================== */
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 5rem;
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
   }
-
   body {
-    @apply bg-white text-slate-700 antialiased;
+    @apply bg-canvas text-slate-700 antialiased;
     font-family: var(--font-sans);
     text-rendering: optimizeLegibility;
   }
-
   ::selection {
     background-color: var(--color-poulpe-500);
     color: #fff;
   }
-
   h1, h2, h3, h4 {
     font-family: var(--font-display);
     @apply text-ink tracking-tight;
   }
 }
 
-/* ------------------------------------------------------------------ */
-/*  Utilities                                                          */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  Utilities                                                         */
+/* ================================================================== */
 @utility text-gradient {
-  background: linear-gradient(90deg, var(--color-poulpe-500), var(--color-poulpe-700));
+  background: linear-gradient(100deg, var(--color-poulpe-500), var(--color-poulpe-700));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-
 @utility text-balance {
   text-wrap: balance;
+}
+@utility text-pretty {
+  text-wrap: pretty;
+}
+
+/* Subtle dotted grids for hero / dark panels */
+.bg-dotgrid-light {
+  background-image: radial-gradient(circle at 1px 1px, rgb(15 23 42 / 0.06) 1px, transparent 0);
+  background-size: 26px 26px;
+}
+.bg-dotgrid-dark {
+  background-image: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.07) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Animated skeleton line (used inside the dashboard mockups) */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgb(255 255 255 / 0.04) 25%,
+    rgb(255 255 255 / 0.12) 37%,
+    rgb(255 255 255 / 0.04) 63%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
 }
 
 /* Scroll-reveal helper used by <Reveal /> */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
-
 .reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
@@ -103,5 +152,5 @@
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .animate-float, .animate-marquee, .animate-fade-up { animation: none !important; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
 }
