@@ -32,6 +32,10 @@ const advantages = [
   "Contrat avec engagement",
   "Payé aux résultats",
   "Stratégie 100% sur-mesure",
+  "Accompagnement 360°",
+  "Plan d’action clair",
+  "Résultats mesurables",
+  "Un interlocuteur unique",
 ];
 
 const expertises = [
@@ -146,19 +150,22 @@ export default function Home() {
           </Container>
 
           <div className="border-t border-neutral-200">
-            <Container>
-              <div className="grid grid-cols-1 divide-y divide-neutral-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-                {advantages.map((a) => (
-                  <div
-                    key={a}
-                    className="flex items-center gap-3 py-5 sm:px-6 sm:first:pl-0 sm:last:pr-0"
-                  >
-                    <Check className="h-5 w-5 shrink-0 text-poulpe-500" />
-                    <span className="text-sm font-semibold text-neutral-900">{a}</span>
-                  </div>
+            <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_5%,#000_95%,transparent)]">
+              <div className="flex w-max animate-marquee items-center py-5">
+                {[...advantages, ...advantages].map((a, i) => (
+                  <span key={`${a}-${i}`} className="flex items-center whitespace-nowrap">
+                    <Check className="h-4 w-4 shrink-0 text-poulpe-500" />
+                    <span className="ml-2.5 text-sm font-semibold text-neutral-900">
+                      {a}
+                    </span>
+                    <span
+                      className="mx-7 h-1 w-1 rounded-full bg-neutral-300"
+                      aria-hidden
+                    />
+                  </span>
                 ))}
               </div>
-            </Container>
+            </div>
           </div>
         </section>
 
