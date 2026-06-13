@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, Star } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Container } from "@/components/ui/Container";
@@ -97,9 +97,8 @@ export default function Home() {
             <div className="grid gap-y-10 py-14 lg:grid-cols-12 lg:gap-8 lg:py-20">
               <div className="lg:col-span-8">
                 <h1 className="font-grotesk text-[2.6rem] font-bold leading-[0.98] tracking-tight text-neutral-900 sm:text-6xl lg:text-[4.6rem]">
-                  Plus de clients,
-                  <br />
-                  une <span className="text-poulpe-500">meilleure conversion</span>.
+                  Nous boostons votre{" "}
+                  <span className="text-poulpe-500">acquisition client</span>.
                 </h1>
               </div>
 
@@ -122,6 +121,23 @@ export default function Home() {
                   >
                     Voir les résultats
                   </a>
+                </div>
+
+                <div className="mt-8 flex items-center gap-3 border-t border-neutral-200 pt-6">
+                  <div className="flex">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-[18px] w-[18px] fill-poulpe-500 text-poulpe-500"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-sm text-neutral-600">
+                    <span className="font-bold text-neutral-900">5,0/5</span>
+                    <span className="ml-1.5 font-mono text-[10px] uppercase tracking-[0.15em] text-neutral-500">
+                      sur Google
+                    </span>
+                  </p>
                 </div>
               </div>
             </div>
