@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Fraunces, Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -13,6 +13,22 @@ const display = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["600", "700", "800"],
   variable: "--font-display",
+  display: "swap",
+});
+
+// Editorial display serif + mono (homepage art direction)
+const serif = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-jbmono",
   display: "swap",
 });
 
@@ -57,7 +73,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${inter.variable} ${display.variable}`}>
+    <html
+      lang="fr"
+      className={`${inter.variable} ${display.variable} ${serif.variable} ${mono.variable}`}
+    >
       <body className="font-sans">{children}</body>
     </html>
   );

@@ -29,9 +29,27 @@
   /* Warm off-white canvas */
   --color-canvas: #faf9f7;
 
+  /* Editorial warm palette (homepage art direction) */
+  --color-paper: #f6f1e7;
+  --color-sand: #ece3d3;
+  --color-espresso: #211a14;
+  --color-clay-50: #faf1ea;
+  --color-clay-100: #f3ddcf;
+  --color-clay-200: #e6bda3;
+  --color-clay-300: #d59670;
+  --color-clay-400: #c87248;
+  --color-clay-500: #bd5a2e;
+  --color-clay-600: #a24a22;
+  --color-clay-700: #82391b;
+  --color-clay-800: #67301b;
+  --color-clay-900: #552a19;
+  --color-clay-950: #2f1409;
+
   /* --- Fonts (wired to next/font in layout.tsx) --- */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-jbmono), ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* --- Radii --- */
   --radius-4xl: 2rem;
