@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/*  Design tokens — built around the brand orange RGB(252, 96, 36)     */
+/* ------------------------------------------------------------------ */
+@theme {
+  /* Brand palette (le Poulpe orange) */
+  --color-poulpe-50: #fff4ef;
+  --color-poulpe-100: #ffe6db;
+  --color-poulpe-200: #ffcab3;
+  --color-poulpe-300: #ffa581;
+  --color-poulpe-400: #fd7b4a;
+  --color-poulpe-500: #fc6024; /* ← base brand color */
+  --color-poulpe-600: #ed490f;
+  --color-poulpe-700: #c5380d;
+  --color-poulpe-800: #9c2f12;
+  --color-poulpe-900: #7e2a13;
+  --color-poulpe-950: #441106;
+
+  /* Neutral ink for dark surfaces / text */
+  --color-ink: #0c0f14;
+  --color-ink-soft: #161b22;
+
+  /* Fonts (wired to next/font CSS variables in layout.tsx) */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Custom animations */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-marquee: marquee 32s linear infinite;
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Base                                                               */
+/* ------------------------------------------------------------------ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    @apply bg-white text-slate-700 antialiased;
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-poulpe-500);
+    color: #fff;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    @apply text-ink tracking-tight;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Utilities                                                          */
+/* ------------------------------------------------------------------ */
+@utility text-gradient {
+  background: linear-gradient(90deg, var(--color-poulpe-500), var(--color-poulpe-700));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+/* Scroll-reveal helper used by <Reveal /> */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .animate-float, .animate-marquee, .animate-fade-up { animation: none !important; }
+}
