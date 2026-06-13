@@ -79,9 +79,15 @@ export default function Home() {
         {/* ============================ HERO ============================ */}
         <section className="border-b border-neutral-200">
           <Container>
-            <div className="flex items-center justify-between border-b border-neutral-200 py-4 font-mono text-[11px] uppercase tracking-[0.18em] text-neutral-500">
-              <span>Le Poulpe — Accélérateur</span>
-              <span className="hidden sm:inline">Acquisition · Conversion · Résultats</span>
+            <div className="flex items-center justify-between border-b border-neutral-200 py-4 font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-500">
+              <span className="hidden sm:inline">Le Poulpe — Accélérateur</span>
+              <span className="flex items-center gap-1.5">
+                <span>Acquisition</span>
+                <span className="text-poulpe-500">·</span>
+                <span>Conversion</span>
+                <span className="text-poulpe-500">·</span>
+                <span>Résultats</span>
+              </span>
             </div>
 
             <div className="grid gap-y-10 py-14 lg:grid-cols-12 lg:gap-8 lg:py-20">
