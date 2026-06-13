@@ -145,18 +145,23 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 divide-y divide-neutral-200 border-t border-neutral-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-              {advantages.map((a) => (
-                <div
-                  key={a}
-                  className="flex items-center gap-3 py-5 sm:px-6 sm:first:pl-0 sm:last:pr-0"
-                >
-                  <Check className="h-5 w-5 shrink-0 text-poulpe-500" />
-                  <span className="text-sm font-semibold text-neutral-900">{a}</span>
-                </div>
-              ))}
-            </div>
           </Container>
+
+          <div className="border-t border-neutral-200">
+            <Container>
+              <div className="grid grid-cols-1 divide-y divide-neutral-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+                {advantages.map((a) => (
+                  <div
+                    key={a}
+                    className="flex items-center gap-3 py-5 sm:px-6 sm:first:pl-0 sm:last:pr-0"
+                  >
+                    <Check className="h-5 w-5 shrink-0 text-poulpe-500" />
+                    <span className="text-sm font-semibold text-neutral-900">{a}</span>
+                  </div>
+                ))}
+              </div>
+            </Container>
+          </div>
         </section>
 
         {/* ============================ STATS ============================ */}
