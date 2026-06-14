@@ -98,14 +98,14 @@ const cases: Case[] = [
   {
     client: "MGK Menuiserie",
     href: "https://www.le-garde-corps-verre.fr/",
-    sector: "Garde-corps verre",
+    sector: "garde-corps en verre",
     stats: [
       { before: "50 €", after: "18 €", label: "par lead" },
       { before: "3", after: "20", label: "leads / jour" },
     ],
     detail:
       "Stratégie Ads dédiée au garde-corps en verre : des leads bien moins chers et bien plus nombreux, à budget maîtrisé.",
-    actions: ["Stratégie Ads", "Google Ads", "Meta Ads", "Tracking & CPL"],
+    actions: ["SEA", "Meta Ads", "Création landing pages", "Tracking & CPL"],
   },
   {
     sector: "Artisan local",
@@ -228,7 +228,7 @@ export function ResultsShowcase() {
                       </a>
                     )}
                     <div
-                      className={`font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-500 ${
+                      className={`font-mono text-[11px] text-neutral-500 ${
                         c.client ? "mt-0.5" : ""
                       }`}
                     >
@@ -242,38 +242,40 @@ export function ResultsShowcase() {
                   )}
                 </div>
 
-                {c.stats ? (
-                  <div className="mt-6 grid grid-cols-2 gap-4">
-                    {c.stats.map((s, i) => (
-                      <div
-                        key={s.label}
-                        className={i > 0 ? "border-l border-neutral-200 pl-4" : ""}
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-grotesk text-sm font-medium text-neutral-400 line-through">
-                            {s.before}
-                          </span>
-                          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-poulpe-500" />
-                          <span className="font-grotesk text-3xl font-bold leading-none tracking-tight text-neutral-900 sm:text-4xl">
-                            {s.after}
-                          </span>
+                <div className="mt-6 min-h-[5.5rem]">
+                  {c.stats ? (
+                    <div className="grid grid-cols-2 gap-4">
+                      {c.stats.map((s, i) => (
+                        <div
+                          key={s.label}
+                          className={i > 0 ? "border-l border-neutral-200 pl-4" : ""}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-grotesk text-sm font-medium text-neutral-400 line-through">
+                              {s.before}
+                            </span>
+                            <ArrowRight className="h-3.5 w-3.5 shrink-0 text-poulpe-500" />
+                            <span className="font-grotesk text-3xl font-bold leading-none tracking-tight text-neutral-900 sm:text-4xl">
+                              {s.after}
+                            </span>
+                          </div>
+                          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                            {s.label}
+                          </div>
                         </div>
-                        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
-                          {s.label}
-                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="font-grotesk text-[3.25rem] font-bold leading-none tracking-tight text-neutral-900">
+                        {c.metric}
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <>
-                    <div className="mt-6 font-grotesk text-[3.25rem] font-bold leading-none tracking-tight text-neutral-900">
-                      {c.metric}
-                    </div>
-                    <div className="mt-2 text-sm font-semibold text-neutral-900">
-                      {c.metricLabel}
-                    </div>
-                  </>
-                )}
+                      <div className="mt-2 text-sm font-semibold text-neutral-900">
+                        {c.metricLabel}
+                      </div>
+                    </>
+                  )}
+                </div>
 
                 <p className="mt-4 flex-1 text-sm leading-relaxed text-neutral-600">
                   {c.detail}
