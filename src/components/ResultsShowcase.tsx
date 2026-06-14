@@ -5,7 +5,7 @@ import { Reveal } from "@/components/ui/Reveal";
 const principle = [
   {
     title: "Objectifs chiffrés",
-    desc: "On fixe ensemble des cibles précises : leads, chiffre d’affaires, positions.",
+    desc: "On fixe ensemble des cibles précises : leads, positions, coût par acquisition.",
   },
   {
     title: "Engagement au contrat",
@@ -17,46 +17,55 @@ const principle = [
   },
 ];
 
-type Kpi = {
-  label: string;
-  note?: string;
-  trend: string;
-  down: boolean;
-  points: number[];
-};
+type Kpi = { label: string; lever: string };
 
-const kpis: Kpi[] = [
-  { label: "Trafic organique", trend: "Hausse", down: false, points: [20, 34, 30, 52, 68, 90] },
-  { label: "Taux de conversion", trend: "Hausse", down: false, points: [28, 42, 40, 58, 72, 88] },
-  { label: "Coût d’acquisition client", trend: "Baisse", down: true, points: [90, 80, 84, 60, 46, 26] },
-  { label: "Coût par lead", trend: "Baisse", down: true, points: [86, 74, 78, 54, 42, 28] },
-  { label: "Coût par vente", note: "e-commerce", trend: "Baisse", down: true, points: [92, 82, 72, 58, 44, 30] },
+const kpisUp: Kpi[] = [
+  { label: "Trafic organique", lever: "SEO & contenu" },
+  { label: "Taux de conversion", lever: "CRO & landing pages" },
 ];
 
-function Spark({ points }: { points: number[] }) {
-  const W = 112;
-  const H = 40;
-  const pad = 4;
-  const n = points.length;
-  const coords = points.map((p, i) => {
-    const x = (i / (n - 1)) * (W - pad * 2) + pad;
-    const y = H - pad - (p / 100) * (H - pad * 2);
-    return [x, y] as const;
-  });
-  const line = coords.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
-  const [lx, ly] = coords[n - 1];
+const kpisDown: Kpi[] = [
+  { label: "Coût d’acquisition client", lever: "campagnes optimisées" },
+  { label: "Coût par lead", lever: "ciblage & tracking" },
+  { label: "Coût par vente", lever: "tunnels & ROAS · e-com" },
+];
+
+function KpiGroup({
+  title,
+  dir,
+  items,
+}: {
+  title: string;
+  dir: "up" | "down";
+  items: Kpi[];
+}) {
+  const Icon = dir === "up" ? ArrowUpRight : ArrowDownRight;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-10 w-28 shrink-0" aria-hidden>
-      <polyline
-        points={line}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx={lx} cy={ly} r="2.5" fill="currentColor" />
-    </svg>
+    <div>
+      <div className="flex items-center gap-2">
+        <span className="grid h-6 w-6 place-items-center rounded-md bg-poulpe-500/15 text-poulpe-400">
+          <Icon className="h-3.5 w-3.5" />
+        </span>
+        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/60">
+          {title}
+        </span>
+      </div>
+      <ul className="mt-3 border-t border-white/10">
+        {items.map((k) => (
+          <li
+            key={k.label}
+            className="group flex flex-col gap-0.5 border-b border-white/10 py-3 transition-colors hover:bg-white/[0.03] sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+          >
+            <span className="font-grotesk text-sm font-bold text-white transition-colors group-hover:text-poulpe-300">
+              {k.label}
+            </span>
+            <span className="shrink-0 font-mono text-[10px] uppercase tracking-wide text-white/40 sm:text-right">
+              {k.lever}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -104,12 +113,12 @@ export function ResultsShowcase() {
             </h2>
           </div>
           <p className="text-neutral-600 lg:col-span-4 lg:col-start-9 lg:self-end">
-            Des cibles chiffrées — leads, chiffre d’affaires, positions —
+            Des cibles chiffrées — trafic, conversion, coût par acquisition —
             inscrites au contrat. Pas du SEO ou des ads « pour faire ».
           </p>
         </div>
 
-        {/* engagement infographic — dark panel: principle + KPI trends */}
+        {/* engagement infographic — dark panel: principle + KPI board */}
         <Reveal className="mt-12">
           <div className="relative overflow-hidden bg-ink text-white">
             <div className="pointer-events-none absolute inset-0 bg-dotgrid-dark opacity-25" />
@@ -138,42 +147,22 @@ export function ResultsShowcase() {
                 </ul>
               </div>
 
-              {/* KPI trends */}
+              {/* KPI board */}
               <div className="flex flex-col p-6 sm:p-10">
                 <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/50">
                   Les KPI sur lesquels on s’engage
                 </span>
                 <p className="mt-2 max-w-sm text-sm text-white/55">
-                  On fait monter ce qui compte, baisser ce qui coûte.
+                  On fait monter ce qui compte, baisser ce qui coûte. Chaque KPI,
+                  son levier.
                 </p>
 
-                <div className="mt-5 divide-y divide-white/10">
-                  {kpis.map((k) => (
-                    <div key={k.label} className="flex items-center gap-3 py-3.5 sm:gap-4">
-                      <span className="flex-1 font-grotesk text-sm font-bold text-white">
-                        {k.label}
-                        {k.note && (
-                          <span className="ml-2 text-[10px] font-normal uppercase tracking-wide text-white/30">
-                            {k.note}
-                          </span>
-                        )}
-                      </span>
-                      <span className="text-poulpe-400">
-                        <Spark points={k.points} />
-                      </span>
-                      <span className="flex w-6 shrink-0 items-center justify-end gap-1 font-mono text-[11px] uppercase tracking-wide text-poulpe-300 sm:w-[5.5rem]">
-                        {k.down ? (
-                          <ArrowDownRight className="h-3.5 w-3.5" />
-                        ) : (
-                          <ArrowUpRight className="h-3.5 w-3.5" />
-                        )}
-                        <span className="hidden sm:inline">{k.trend}</span>
-                      </span>
-                    </div>
-                  ))}
+                <div className="mt-7 space-y-7">
+                  <KpiGroup title="On fait grimper" dir="up" items={kpisUp} />
+                  <KpiGroup title="On fait fondre" dir="down" items={kpisDown} />
                 </div>
 
-                <p className="mt-6 border-t border-white/10 pt-4 text-xs leading-relaxed text-white/45">
+                <p className="mt-7 border-t border-white/10 pt-4 text-xs leading-relaxed text-white/45">
                   Ces KPI tirent votre chiffre d’affaires et votre marge. Mais
                   comme ils dépendent aussi de vous (offre, vente, qualité), on
                   s’engage sur les KPI — pas sur le CA.
