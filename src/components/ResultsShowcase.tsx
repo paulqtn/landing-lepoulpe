@@ -76,8 +76,9 @@ type Case = {
   href?: string;
   sector: string;
   duration?: string;
-  metric: string;
-  metricLabel: string;
+  metric?: string;
+  metricLabel?: string;
+  stats?: { before: string; after: string; label: string }[];
   detail: string;
   actions: string[];
 };
@@ -98,10 +99,12 @@ const cases: Case[] = [
     client: "MGK Menuiserie",
     href: "https://www.le-garde-corps-verre.fr/",
     sector: "Garde-corps verre",
-    metric: "18 €",
-    metricLabel: "par lead · avant 50 €",
+    stats: [
+      { before: "50 €", after: "18 €", label: "par lead" },
+      { before: "3", after: "20", label: "leads / jour" },
+    ],
     detail:
-      "Pilotage de la stratégie Ads sur le garde-corps en verre : le coût par lead chute de 50 € à 18 €, et le volume passe de 3 à 15-20 leads par jour.",
+      "Stratégie Ads dédiée au garde-corps en verre : des leads bien moins chers et bien plus nombreux, à budget maîtrisé.",
     actions: ["Stratégie Ads", "Google Ads", "Meta Ads", "Tracking & CPL"],
   },
   {
@@ -239,12 +242,35 @@ export function ResultsShowcase() {
                   )}
                 </div>
 
-                <div className="mt-6 font-grotesk text-[3.25rem] font-bold leading-none tracking-tight text-neutral-900">
-                  {c.metric}
-                </div>
-                <div className="mt-2 text-sm font-semibold text-neutral-900">
-                  {c.metricLabel}
-                </div>
+                {c.stats ? (
+                  <div className="mt-6 space-y-4">
+                    {c.stats.map((s) => (
+                      <div key={s.label}>
+                        <div className="flex items-baseline gap-2">
+                          <span className="font-grotesk text-base font-medium text-neutral-400 line-through">
+                            {s.before}
+                          </span>
+                          <ArrowRight className="h-4 w-4 shrink-0 text-poulpe-500" />
+                          <span className="font-grotesk text-4xl font-bold leading-none tracking-tight text-neutral-900">
+                            {s.after}
+                          </span>
+                        </div>
+                        <div className="mt-1.5 text-sm font-semibold text-neutral-900">
+                          {s.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    <div className="mt-6 font-grotesk text-[3.25rem] font-bold leading-none tracking-tight text-neutral-900">
+                      {c.metric}
+                    </div>
+                    <div className="mt-2 text-sm font-semibold text-neutral-900">
+                      {c.metricLabel}
+                    </div>
+                  </>
+                )}
 
                 <p className="mt-4 flex-1 text-sm leading-relaxed text-neutral-600">
                   {c.detail}
