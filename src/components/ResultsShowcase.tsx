@@ -1,4 +1,4 @@
-import { FileCheck, Target, Trophy } from "lucide-react";
+import { FileCheck, ShieldCheck, Target } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 
@@ -14,9 +14,9 @@ const commitment = [
     desc: "Ces objectifs sont inscrits noir sur blanc dans votre contrat.",
   },
   {
-    icon: Trophy,
-    title: "Atteints — ou vous sortez",
-    desc: "On les atteint. Sinon, une clause vous libère dès 1 an.",
+    icon: ShieldCheck,
+    title: "Atteints, ou vous êtes libre",
+    desc: "Objectifs non tenus ? Vous pouvez rompre le contrat, sans pénalité. Vous êtes gagnant, quoi qu’il arrive.",
   },
 ];
 
@@ -69,28 +69,44 @@ export function ResultsShowcase() {
           </p>
         </div>
 
-        {/* commitment infographic */}
-        <Reveal className="mt-12 border border-neutral-200 bg-neutral-50 px-6 py-12 sm:px-10">
-          <div className="relative grid gap-10 md:grid-cols-3">
-            <div className="absolute left-[16%] right-[16%] top-8 hidden h-px bg-gradient-to-r from-poulpe-200 via-poulpe-400 to-poulpe-200 md:block" />
-            {commitment.map((c, i) => (
-              <div key={c.title} className="relative text-center">
-                <div className="relative mx-auto w-fit">
-                  <span className="grid h-16 w-16 place-items-center rounded-2xl bg-neutral-900 text-white shadow-sm">
-                    <c.icon className="h-7 w-7" />
-                  </span>
-                  <span className="absolute -right-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full bg-poulpe-500 text-[11px] font-bold text-white">
-                    {i + 1}
-                  </span>
-                </div>
-                <h3 className="mt-5 font-grotesk text-lg font-bold text-neutral-900">
-                  {c.title}
-                </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">
-                  {c.desc}
-                </p>
-              </div>
-            ))}
+        {/* commitment infographic — dark premium panel */}
+        <Reveal className="mt-12">
+          <div className="relative overflow-hidden bg-ink text-white">
+            <div className="pointer-events-none absolute inset-0 bg-dotgrid-dark opacity-30" />
+            <div className="relative grid sm:grid-cols-3">
+              {commitment.map((c, i) => {
+                const last = i === commitment.length - 1;
+                return (
+                  <div
+                    key={c.title}
+                    className={`p-8 sm:p-9 ${
+                      i > 0 ? "border-t border-white/10 sm:border-l sm:border-t-0" : ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`grid h-11 w-11 place-items-center rounded-xl ${
+                          last
+                            ? "bg-poulpe-500 text-white"
+                            : "bg-white/5 text-poulpe-400 ring-1 ring-white/15"
+                        }`}
+                      >
+                        <c.icon className="h-5 w-5" />
+                      </span>
+                      <span className="font-mono text-xs text-white/30">
+                        0{i + 1}
+                      </span>
+                    </div>
+                    <h3 className="mt-5 font-grotesk text-lg font-bold text-white">
+                      {c.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-white/60">
+                      {c.desc}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </Reveal>
 
@@ -101,7 +117,9 @@ export function ResultsShowcase() {
         <div className="mt-5 grid gap-5 md:grid-cols-3">
           {cases.map((c, i) => (
             <Reveal key={c.metricLabel} delay={i * 80}>
-              <article className="flex h-full flex-col border border-neutral-200 p-7">
+              <article className="group relative flex h-full flex-col overflow-hidden border border-neutral-200 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-900">
+                <span className="absolute inset-x-0 top-0 h-0.5 -translate-y-full bg-poulpe-500 transition-transform duration-300 group-hover:translate-y-0" />
+
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-500">
                     {c.sector}
@@ -111,13 +129,11 @@ export function ResultsShowcase() {
                   </span>
                 </div>
 
-                <div className="mt-6">
-                  <div className="font-grotesk text-5xl font-bold tracking-tight text-neutral-900">
-                    {c.metric}
-                  </div>
-                  <div className="mt-1 text-sm font-semibold text-neutral-900">
-                    {c.metricLabel}
-                  </div>
+                <div className="mt-6 font-grotesk text-[3.25rem] font-bold leading-none tracking-tight text-neutral-900">
+                  {c.metric}
+                </div>
+                <div className="mt-2 text-sm font-semibold text-neutral-900">
+                  {c.metricLabel}
                 </div>
 
                 <p className="mt-4 flex-1 text-sm leading-relaxed text-neutral-600">
