@@ -71,15 +71,28 @@ function KpiGroup({
   );
 }
 
-const cases = [
+type Case = {
+  client?: string;
+  href?: string;
+  sector: string;
+  duration: string;
+  metric: string;
+  metricLabel: string;
+  detail: string;
+  actions: string[];
+};
+
+const cases: Case[] = [
   {
-    sector: "E-commerce",
-    duration: "6 mois",
-    metric: "×3,4",
-    metricLabel: "de ventes en ligne",
+    client: "Côté Climat",
+    href: "https://cote-climat.fr",
+    sector: "Climatisation",
+    duration: "12 mois",
+    metric: "460 k€",
+    metricLabel: "de CA la 1ʳᵉ année",
     detail:
-      "Refonte de la boutique et acquisition multicanale : un chiffre d’affaires multiplié, sans dépendre d’un seul levier.",
-    actions: ["Refonte du site", "SEO", "Google Ads", "Meta Ads"],
+      "Accompagnement complet de l’acquisition web : de 0 à 460 k€ de chiffre d’affaires sur les 12 premiers mois d’activité.",
+    actions: ["Branding", "Création de site", "Landing pages", "Meta Ads", "SEA", "Stratégie SEO"],
   },
   {
     sector: "Services B2B",
@@ -197,10 +210,27 @@ export function ResultsShowcase() {
               <article className="group relative flex h-full flex-col overflow-hidden border border-neutral-200 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-900">
                 <span className="absolute inset-x-0 top-0 h-0.5 -translate-y-full bg-poulpe-500 transition-transform duration-300 group-hover:translate-y-0" />
 
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-500">
-                    {c.sector}
-                  </span>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    {c.client && (
+                      <a
+                        href={c.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group/link inline-flex items-center gap-1 font-grotesk text-base font-bold text-neutral-900 transition-colors hover:text-poulpe-600"
+                      >
+                        {c.client}
+                        <ArrowUpRight className="h-3.5 w-3.5 text-neutral-400 transition group-hover/link:text-poulpe-600" />
+                      </a>
+                    )}
+                    <div
+                      className={`font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-500 ${
+                        c.client ? "mt-0.5" : ""
+                      }`}
+                    >
+                      {c.sector}
+                    </div>
+                  </div>
                   <span className="font-mono text-[11px] text-neutral-400">
                     {c.duration}
                   </span>
