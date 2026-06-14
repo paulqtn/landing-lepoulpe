@@ -17,10 +17,20 @@ const principle = [
   },
 ];
 
-const kpis = [
-  { label: "Chiffre d’affaires", trend: "Hausse", down: false, points: [22, 30, 28, 48, 64, 92] },
-  { label: "Taux de conversion", trend: "Hausse", down: false, points: [30, 45, 42, 60, 74, 90] },
-  { label: "Coût d’acquisition", trend: "Baisse", down: true, points: [88, 78, 82, 58, 44, 24] },
+type Kpi = {
+  label: string;
+  note?: string;
+  trend: string;
+  down: boolean;
+  points: number[];
+};
+
+const kpis: Kpi[] = [
+  { label: "Trafic organique", trend: "Hausse", down: false, points: [20, 34, 30, 52, 68, 90] },
+  { label: "Taux de conversion", trend: "Hausse", down: false, points: [28, 42, 40, 58, 72, 88] },
+  { label: "Coût d’acquisition client", trend: "Baisse", down: true, points: [90, 80, 84, 60, 46, 26] },
+  { label: "Coût par lead", trend: "Baisse", down: true, points: [86, 74, 78, 54, 42, 28] },
+  { label: "Coût par vente", note: "e-commerce", trend: "Baisse", down: true, points: [92, 82, 72, 58, 44, 30] },
 ];
 
 function Spark({ points }: { points: number[] }) {
@@ -129,34 +139,45 @@ export function ResultsShowcase() {
               </div>
 
               {/* KPI trends */}
-              <div className="p-6 sm:p-10">
+              <div className="flex flex-col p-6 sm:p-10">
                 <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/50">
-                  Les KPI qu’on optimise
+                  Les KPI sur lesquels on s’engage
                 </span>
                 <p className="mt-2 max-w-sm text-sm text-white/55">
                   On fait monter ce qui compte, baisser ce qui coûte.
                 </p>
 
-                <div className="mt-6 divide-y divide-white/10">
+                <div className="mt-5 divide-y divide-white/10">
                   {kpis.map((k) => (
-                    <div key={k.label} className="flex items-center gap-4 py-4">
-                      <span className="flex-1 font-grotesk text-sm font-bold text-white sm:text-base">
+                    <div key={k.label} className="flex items-center gap-3 py-3.5 sm:gap-4">
+                      <span className="flex-1 font-grotesk text-sm font-bold text-white">
                         {k.label}
+                        {k.note && (
+                          <span className="ml-2 text-[10px] font-normal uppercase tracking-wide text-white/30">
+                            {k.note}
+                          </span>
+                        )}
                       </span>
                       <span className="text-poulpe-400">
                         <Spark points={k.points} />
                       </span>
-                      <span className="flex w-[5.5rem] shrink-0 items-center justify-end gap-1 font-mono text-[11px] uppercase tracking-wide text-poulpe-300">
+                      <span className="flex w-6 shrink-0 items-center justify-end gap-1 font-mono text-[11px] uppercase tracking-wide text-poulpe-300 sm:w-[5.5rem]">
                         {k.down ? (
                           <ArrowDownRight className="h-3.5 w-3.5" />
                         ) : (
                           <ArrowUpRight className="h-3.5 w-3.5" />
                         )}
-                        {k.trend}
+                        <span className="hidden sm:inline">{k.trend}</span>
                       </span>
                     </div>
                   ))}
                 </div>
+
+                <p className="mt-6 border-t border-white/10 pt-4 text-xs leading-relaxed text-white/45">
+                  Ces KPI tirent votre chiffre d’affaires et votre marge. Mais
+                  comme ils dépendent aussi de vous (offre, vente, qualité), on
+                  s’engage sur les KPI — pas sur le CA.
+                </p>
               </div>
             </div>
           </div>
