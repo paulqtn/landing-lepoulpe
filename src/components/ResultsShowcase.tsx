@@ -1,4 +1,5 @@
-import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import Link from "next/link";
+import { ArrowDownRight, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 
@@ -125,7 +126,7 @@ export function ResultsShowcase() {
             <div className="pointer-events-none absolute inset-0 bg-dotgrid-dark opacity-25" />
             <div className="relative grid lg:grid-cols-[0.85fr_1.15fr]">
               {/* principle */}
-              <div className="border-b border-white/10 p-6 sm:p-10 lg:border-b-0 lg:border-r">
+              <div className="flex flex-col border-b border-white/10 p-6 sm:p-10 lg:border-b-0 lg:border-r">
                 <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-poulpe-400">
                   Le principe
                 </span>
@@ -146,6 +147,19 @@ export function ResultsShowcase() {
                     </li>
                   ))}
                 </ul>
+
+                <div className="mt-auto pt-8">
+                  <Link
+                    href="/offre"
+                    className="group inline-flex items-center gap-2 rounded-md bg-white px-6 py-3.5 text-sm font-semibold text-neutral-900 transition-colors hover:bg-poulpe-500 hover:text-white"
+                  >
+                    Discutons de vos objectifs
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                  <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+                    Audit gratuit · sans engagement
+                  </p>
+                </div>
               </div>
 
               {/* KPI board */}
