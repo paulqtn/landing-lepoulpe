@@ -243,19 +243,22 @@ export function ResultsShowcase() {
                 </div>
 
                 {c.stats ? (
-                  <div className="mt-6 space-y-4">
-                    {c.stats.map((s) => (
-                      <div key={s.label}>
-                        <div className="flex items-baseline gap-2">
-                          <span className="font-grotesk text-base font-medium text-neutral-400 line-through">
+                  <div className="mt-6 grid grid-cols-2 gap-4">
+                    {c.stats.map((s, i) => (
+                      <div
+                        key={s.label}
+                        className={i > 0 ? "border-l border-neutral-200 pl-4" : ""}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-grotesk text-sm font-medium text-neutral-400 line-through">
                             {s.before}
                           </span>
-                          <ArrowRight className="h-4 w-4 shrink-0 text-poulpe-500" />
-                          <span className="font-grotesk text-4xl font-bold leading-none tracking-tight text-neutral-900">
+                          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-poulpe-500" />
+                          <span className="font-grotesk text-3xl font-bold leading-none tracking-tight text-neutral-900 sm:text-4xl">
                             {s.after}
                           </span>
                         </div>
-                        <div className="mt-1.5 text-sm font-semibold text-neutral-900">
+                        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
                           {s.label}
                         </div>
                       </div>
