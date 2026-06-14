@@ -1,3 +1,4 @@
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 
@@ -16,10 +17,38 @@ const principle = [
   },
 ];
 
-// Illustrative trajectory — bars that cross the contractual objective line.
-const OBJECTIVE = 56;
-const bars = [16, 28, 42, 62, 82, 100];
-const months = ["M1", "M2", "M3", "M4", "M5", "M6"];
+const kpis = [
+  { label: "Chiffre d’affaires", trend: "Hausse", down: false, points: [22, 30, 28, 48, 64, 92] },
+  { label: "Taux de conversion", trend: "Hausse", down: false, points: [30, 45, 42, 60, 74, 90] },
+  { label: "Coût d’acquisition", trend: "Baisse", down: true, points: [88, 78, 82, 58, 44, 24] },
+];
+
+function Spark({ points }: { points: number[] }) {
+  const W = 112;
+  const H = 40;
+  const pad = 4;
+  const n = points.length;
+  const coords = points.map((p, i) => {
+    const x = (i / (n - 1)) * (W - pad * 2) + pad;
+    const y = H - pad - (p / 100) * (H - pad * 2);
+    return [x, y] as const;
+  });
+  const line = coords.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+  const [lx, ly] = coords[n - 1];
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="h-10 w-28 shrink-0" aria-hidden>
+      <polyline
+        points={line}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx={lx} cy={ly} r="2.5" fill="currentColor" />
+    </svg>
+  );
+}
 
 const cases = [
   {
@@ -70,13 +99,13 @@ export function ResultsShowcase() {
           </p>
         </div>
 
-        {/* engagement infographic — dark panel: principle + trajectory chart */}
+        {/* engagement infographic — dark panel: principle + KPI trends */}
         <Reveal className="mt-12">
           <div className="relative overflow-hidden bg-ink text-white">
             <div className="pointer-events-none absolute inset-0 bg-dotgrid-dark opacity-25" />
             <div className="relative grid lg:grid-cols-[0.85fr_1.15fr]">
               {/* principle */}
-              <div className="border-b border-white/10 p-8 sm:p-10 lg:border-b-0 lg:border-r">
+              <div className="border-b border-white/10 p-6 sm:p-10 lg:border-b-0 lg:border-r">
                 <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-poulpe-400">
                   Le principe
                 </span>
@@ -99,49 +128,33 @@ export function ResultsShowcase() {
                 </ul>
               </div>
 
-              {/* trajectory chart */}
-              <div className="p-8 sm:p-10">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/50">
-                    Exemple de trajectoire
-                  </span>
-                  <span className="rounded-full bg-poulpe-500/15 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-poulpe-300">
-                    Objectif dépassé
-                  </span>
-                </div>
+              {/* KPI trends */}
+              <div className="p-6 sm:p-10">
+                <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/50">
+                  Les KPI qu’on optimise
+                </span>
+                <p className="mt-2 max-w-sm text-sm text-white/55">
+                  On fait monter ce qui compte, baisser ce qui coûte.
+                </p>
 
-                <div className="relative mt-10 h-48">
-                  {/* bars */}
-                  <div className="absolute inset-0 flex items-end gap-2 sm:gap-3">
-                    {bars.map((h, i) => (
-                      <div
-                        key={i}
-                        className={`flex-1 rounded-t ${h >= OBJECTIVE ? "bg-poulpe-500" : "bg-white/15"}`}
-                        style={{ height: `${h}%` }}
-                      />
-                    ))}
-                  </div>
-                  {/* objective line */}
-                  <div
-                    className="absolute inset-x-0 z-20"
-                    style={{ bottom: `${OBJECTIVE}%` }}
-                  >
-                    <div className="border-t border-dashed border-white/40" />
-                    <span className="absolute -top-2.5 right-0 bg-ink pl-2 font-mono text-[10px] uppercase tracking-wide text-white/55">
-                      Objectif
-                    </span>
-                  </div>
-                </div>
-
-                {/* x axis */}
-                <div className="mt-3 flex gap-2 sm:gap-3">
-                  {months.map((m) => (
-                    <span
-                      key={m}
-                      className="flex-1 text-center font-mono text-[10px] text-white/35"
-                    >
-                      {m}
-                    </span>
+                <div className="mt-6 divide-y divide-white/10">
+                  {kpis.map((k) => (
+                    <div key={k.label} className="flex items-center gap-4 py-4">
+                      <span className="flex-1 font-grotesk text-sm font-bold text-white sm:text-base">
+                        {k.label}
+                      </span>
+                      <span className="text-poulpe-400">
+                        <Spark points={k.points} />
+                      </span>
+                      <span className="flex w-[5.5rem] shrink-0 items-center justify-end gap-1 font-mono text-[11px] uppercase tracking-wide text-poulpe-300">
+                        {k.down ? (
+                          <ArrowDownRight className="h-3.5 w-3.5" />
+                        ) : (
+                          <ArrowUpRight className="h-3.5 w-3.5" />
+                        )}
+                        {k.trend}
+                      </span>
+                    </div>
                   ))}
                 </div>
               </div>
