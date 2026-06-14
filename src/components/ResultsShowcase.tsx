@@ -1,24 +1,25 @@
-import { FileCheck, ShieldCheck, Target } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 
-const commitment = [
+const principle = [
   {
-    icon: Target,
     title: "Objectifs chiffrés",
-    desc: "On définit ensemble des cibles précises : leads, chiffre d’affaires, positions.",
+    desc: "On fixe ensemble des cibles précises : leads, chiffre d’affaires, positions.",
   },
   {
-    icon: FileCheck,
     title: "Engagement au contrat",
     desc: "Ces objectifs sont inscrits noir sur blanc dans votre contrat.",
   },
   {
-    icon: ShieldCheck,
     title: "Atteints, ou vous êtes libre",
-    desc: "Objectifs non tenus ? Vous pouvez rompre le contrat, sans pénalité. Vous êtes gagnant, quoi qu’il arrive.",
+    desc: "Non tenus ? Vous pouvez rompre le contrat, sans pénalité.",
   },
 ];
+
+// Illustrative trajectory — bars that cross the contractual objective line.
+const OBJECTIVE = 56;
+const bars = [16, 28, 42, 62, 82, 100];
+const months = ["M1", "M2", "M3", "M4", "M5", "M6"];
 
 const cases = [
   {
@@ -69,43 +70,81 @@ export function ResultsShowcase() {
           </p>
         </div>
 
-        {/* commitment infographic — dark premium panel */}
+        {/* engagement infographic — dark panel: principle + trajectory chart */}
         <Reveal className="mt-12">
           <div className="relative overflow-hidden bg-ink text-white">
-            <div className="pointer-events-none absolute inset-0 bg-dotgrid-dark opacity-30" />
-            <div className="relative grid sm:grid-cols-3">
-              {commitment.map((c, i) => {
-                const last = i === commitment.length - 1;
-                return (
-                  <div
-                    key={c.title}
-                    className={`p-8 sm:p-9 ${
-                      i > 0 ? "border-t border-white/10 sm:border-l sm:border-t-0" : ""
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span
-                        className={`grid h-11 w-11 place-items-center rounded-xl ${
-                          last
-                            ? "bg-poulpe-500 text-white"
-                            : "bg-white/5 text-poulpe-400 ring-1 ring-white/15"
-                        }`}
-                      >
-                        <c.icon className="h-5 w-5" />
-                      </span>
-                      <span className="font-mono text-xs text-white/30">
+            <div className="pointer-events-none absolute inset-0 bg-dotgrid-dark opacity-25" />
+            <div className="relative grid lg:grid-cols-[0.85fr_1.15fr]">
+              {/* principle */}
+              <div className="border-b border-white/10 p-8 sm:p-10 lg:border-b-0 lg:border-r">
+                <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-poulpe-400">
+                  Le principe
+                </span>
+                <ul className="mt-6 space-y-6">
+                  {principle.map((p, i) => (
+                    <li key={p.title} className="flex gap-4">
+                      <span className="font-grotesk text-lg font-bold leading-none text-poulpe-400">
                         0{i + 1}
                       </span>
-                    </div>
-                    <h3 className="mt-5 font-grotesk text-lg font-bold text-white">
-                      {c.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-white/60">
-                      {c.desc}
-                    </p>
+                      <div>
+                        <h3 className="font-grotesk text-base font-bold text-white">
+                          {p.title}
+                        </h3>
+                        <p className="mt-1 text-sm leading-relaxed text-white/55">
+                          {p.desc}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* trajectory chart */}
+              <div className="p-8 sm:p-10">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/50">
+                    Exemple de trajectoire
+                  </span>
+                  <span className="rounded-full bg-poulpe-500/15 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-poulpe-300">
+                    Objectif dépassé
+                  </span>
+                </div>
+
+                <div className="relative mt-10 h-48">
+                  {/* bars */}
+                  <div className="absolute inset-0 flex items-end gap-2 sm:gap-3">
+                    {bars.map((h, i) => (
+                      <div
+                        key={i}
+                        className={`flex-1 rounded-t ${h >= OBJECTIVE ? "bg-poulpe-500" : "bg-white/15"}`}
+                        style={{ height: `${h}%` }}
+                      />
+                    ))}
                   </div>
-                );
-              })}
+                  {/* objective line */}
+                  <div
+                    className="absolute inset-x-0 z-20"
+                    style={{ bottom: `${OBJECTIVE}%` }}
+                  >
+                    <div className="border-t border-dashed border-white/40" />
+                    <span className="absolute -top-2.5 right-0 bg-ink pl-2 font-mono text-[10px] uppercase tracking-wide text-white/55">
+                      Objectif
+                    </span>
+                  </div>
+                </div>
+
+                {/* x axis */}
+                <div className="mt-3 flex gap-2 sm:gap-3">
+                  {months.map((m) => (
+                    <span
+                      key={m}
+                      className="flex-1 text-center font-mono text-[10px] text-white/35"
+                    >
+                      {m}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </Reveal>
