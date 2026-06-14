@@ -22,6 +22,7 @@ type Kpi = { label: string; lever: string };
 const kpisUp: Kpi[] = [
   { label: "Trafic organique", lever: "SEO & contenu" },
   { label: "Taux de conversion", lever: "CRO & landing pages" },
+  { label: "Ventes & nouveaux clients", lever: "acquisition + conversion" },
 ];
 
 const kpisDown: Kpi[] = [
@@ -163,9 +164,9 @@ export function ResultsShowcase() {
                 </div>
 
                 <p className="mt-7 border-t border-white/10 pt-4 text-xs leading-relaxed text-white/45">
-                  Ces KPI tirent votre chiffre d’affaires et votre marge. Mais
-                  comme ils dépendent aussi de vous (offre, vente, qualité), on
-                  s’engage sur les KPI — pas sur le CA.
+                  Ces KPI alimentent directement votre chiffre d’affaires et
+                  votre marge. On s’engage à les faire performer, à vos côtés —
+                  en vrai partenaire de croissance, pas un simple prestataire.
                 </p>
               </div>
             </div>
