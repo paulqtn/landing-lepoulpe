@@ -75,7 +75,7 @@ type Case = {
   client?: string;
   href?: string;
   sector: string;
-  duration: string;
+  duration?: string;
   metric: string;
   metricLabel: string;
   detail: string;
@@ -95,13 +95,14 @@ const cases: Case[] = [
     actions: ["Branding", "Création de site", "Landing pages", "Meta Ads", "SEA", "Stratégie SEO"],
   },
   {
-    sector: "Services B2B",
-    duration: "5 mois",
-    metric: "+212%",
-    metricLabel: "de demandes de devis",
+    client: "MGK Menuiserie",
+    href: "https://www.le-garde-corps-verre.fr/",
+    sector: "Garde-corps verre",
+    metric: "18 €",
+    metricLabel: "par lead · avant 50 €",
     detail:
-      "Contenu stratégique et campagnes ciblées pour un flux régulier de leads qualifiés.",
-    actions: ["SEO", "Landing pages", "Google Ads", "Tunnel de conversion"],
+      "Pilotage de la stratégie Ads sur le garde-corps en verre : le coût par lead chute de 50 € à 18 €, et le volume passe de 3 à 15-20 leads par jour.",
+    actions: ["Stratégie Ads", "Google Ads", "Meta Ads", "Tracking & CPL"],
   },
   {
     sector: "Artisan local",
@@ -231,9 +232,11 @@ export function ResultsShowcase() {
                       {c.sector}
                     </div>
                   </div>
-                  <span className="font-mono text-[11px] text-neutral-400">
-                    {c.duration}
-                  </span>
+                  {c.duration && (
+                    <span className="font-mono text-[11px] text-neutral-400">
+                      {c.duration}
+                    </span>
+                  )}
                 </div>
 
                 <div className="mt-6 font-grotesk text-[3.25rem] font-bold leading-none tracking-tight text-neutral-900">
