@@ -1,9 +1,7 @@
-/* Généré par la flotte de rédaction (workflow gc-content) — ne pas éditer à la main. */
+/* Version temporaire autonome — le contenu rédigé par la flotte (combos-verre/aluminium/inox)
+   arrive au prochain push ; en attendant, les pages combo utilisent le contenu composé du catalogue. */
 
 import type { Feature, QA } from "../catalog";
-import { combosVerre } from "./combos-verre";
-import { combosAluminium } from "./combos-aluminium";
-import { combosInox } from "./combos-inox";
 
 export type ComboContent = {
   title: string;
@@ -15,8 +13,4 @@ export type ComboContent = {
   faq: QA[];
 };
 
-export const comboContent: Record<string, ComboContent> = {
-  ...combosVerre,
-  ...combosAluminium,
-  ...combosInox,
-};
+export const comboContent: Record<string, ComboContent> = {};
