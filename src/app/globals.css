@@ -1,120 +1,59 @@
 @import "tailwindcss";
 
 /* ================================================================== */
-/*  DESIGN SYSTEM — Le Poulpe                                          */
-/*  Identité construite autour de l'orange RGB(252, 96, 36) / #FC6024  */
+/*  DESIGN SYSTEM — Garde-Corps Pro                                    */
+/*  Direction "direct usine" : vert profond, mist, stickers ambre      */
 /* ================================================================== */
 @theme {
-  /* --- Brand palette (orange "poulpe") --- */
-  --color-poulpe-50: #fff4ef;
-  --color-poulpe-100: #ffe6db;
-  --color-poulpe-200: #ffcab3;
-  --color-poulpe-300: #ffa581;
-  --color-poulpe-400: #fd7b4a;
-  --color-poulpe-500: #fc6024; /* ← base brand color */
-  --color-poulpe-600: #ed490f;
-  --color-poulpe-700: #c5380d;
-  --color-poulpe-800: #9c2f12;
-  --color-poulpe-900: #7e2a13;
-  --color-poulpe-950: #441106;
+  /* --- Pine green (brand) --- */
+  --color-pine-50: #eef7f1;
+  --color-pine-100: #d8ecdf;
+  --color-pine-200: #b4d9c3;
+  --color-pine-300: #86c0a1;
+  --color-pine-400: #55a37b;
+  --color-pine-500: #2f8a5d;
+  --color-pine-600: #1f6f49;  /* boutons */
+  --color-pine-700: #175a3b;
+  --color-pine-800: #114630;
+  --color-pine-900: #0c3626;  /* panneaux sombres */
+  --color-pine-950: #062017;  /* bandeau haut / fond nuit */
 
-  /* Warm accent used in gradients / glows */
-  --color-flame: #ff8a3d;
+  /* --- Accent sticker (ambre) --- */
+  --color-amber-500: #f6a723;
+  --color-amber-600: #dd8f0e;
 
-  /* --- Ink (dark premium surfaces) --- */
-  --color-ink: #0b0d12;
-  --color-ink-2: #11141c;
-  --color-ink-3: #181c26;
+  /* --- Neutrals --- */
+  --color-mist: #f4f6f5;      /* fond de sections */
+  --color-inkgreen: #0d1f17;  /* texte fort */
 
-  /* Warm off-white canvas */
-  --color-canvas: #faf9f7;
-
-  /* Editorial warm palette (homepage art direction) */
-  --color-paper: #f6f1e7;
-  --color-sand: #ece3d3;
-  --color-espresso: #211a14;
-  --color-clay-50: #faf1ea;
-  --color-clay-100: #f3ddcf;
-  --color-clay-200: #e6bda3;
-  --color-clay-300: #d59670;
-  --color-clay-400: #c87248;
-  --color-clay-500: #bd5a2e;
-  --color-clay-600: #a24a22;
-  --color-clay-700: #82391b;
-  --color-clay-800: #67301b;
-  --color-clay-900: #552a19;
-  --color-clay-950: #2f1409;
-
-  /* --- Fonts (wired to next/font in layout.tsx) --- */
+  /* --- Fonts --- */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-grotesk: var(--font-space), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jbmono), ui-monospace, "SFMono-Regular", Menlo, monospace;
 
-  /* --- Radii --- */
-  --radius-4xl: 2rem;
-  --radius-5xl: 2.5rem;
-
-  /* --- Premium shadows --- */
-  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.04), 0 6px 16px -6px rgb(16 24 40 / 0.08);
-  --shadow-elevated: 0 18px 40px -12px rgb(16 24 40 / 0.18), 0 6px 14px -6px rgb(16 24 40 / 0.10);
-  --shadow-floating: 0 30px 70px -22px rgb(16 24 40 / 0.28), 0 10px 24px -12px rgb(16 24 40 / 0.14);
-  --shadow-glow: 0 24px 64px -20px rgb(252 96 36 / 0.5);
-  --shadow-panel: 0 40px 90px -28px rgb(8 10 16 / 0.6);
+  /* --- Shadows --- */
+  --shadow-card: 0 1px 2px rgb(13 31 23 / 0.05), 0 8px 20px -8px rgb(13 31 23 / 0.10);
+  --shadow-elevated: 0 20px 44px -14px rgb(13 31 23 / 0.20), 0 6px 14px -6px rgb(13 31 23 / 0.10);
+  --shadow-panel: 0 36px 80px -24px rgb(6 32 23 / 0.55);
 
   /* --- Animations --- */
-  --animate-float: float 6s ease-in-out infinite;
-  --animate-marquee: marquee 32s linear infinite;
-  --animate-fade-up: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-  --animate-scale-in: scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-  --animate-shimmer: shimmer 2.2s linear infinite;
-  --animate-aurora: aurora 18s ease-in-out infinite;
-  --animate-gradient-x: gradient-x 6s ease infinite;
-  --animate-shine: shine 5s linear infinite;
-  --animate-float-slow: float 9s ease-in-out infinite;
-  --animate-pulse-glow: pulse-glow 3.2s ease-in-out infinite;
-  --animate-spin-slow: spin-slow 26s linear infinite;
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-scale-in: scale-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-wiggle: wiggle 0.5s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.2s linear infinite;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-}
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes scale-in {
-  from { opacity: 0; transform: scale(0.96); }
+  from { opacity: 0; transform: scale(0.97); }
   to { opacity: 1; transform: scale(1); }
-}
-@keyframes shimmer {
-  from { background-position: -200% 0; }
-  to { background-position: 200% 0; }
-}
-@keyframes aurora {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  33% { transform: translate3d(4%, -3%, 0) scale(1.08); }
-  66% { transform: translate3d(-3%, 4%, 0) scale(0.94); }
-}
-@keyframes gradient-x {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-@keyframes shine {
-  to { background-position: 200% center; }
-}
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.45; transform: scale(1); }
-  50% { opacity: 0.9; transform: scale(1.06); }
-}
-@keyframes spin-slow {
-  to { transform: rotate(360deg); }
 }
 @keyframes wiggle {
   0%, 100% { transform: rotate(0deg); }
@@ -122,111 +61,52 @@
   50% { transform: rotate(9deg); }
   75% { transform: rotate(-6deg); }
 }
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
 
-/* ================================================================== */
-/*  Base                                                              */
 /* ================================================================== */
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 5.5rem;
-    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
   }
   body {
-    @apply bg-canvas text-slate-700 antialiased;
+    @apply bg-white text-neutral-700 antialiased;
     font-family: var(--font-sans);
     text-rendering: optimizeLegibility;
   }
   ::selection {
-    background-color: var(--color-poulpe-500);
+    background-color: var(--color-pine-600);
     color: #fff;
   }
   h1, h2, h3, h4 {
-    font-family: var(--font-display);
-    @apply text-ink tracking-tight;
+    @apply text-inkgreen tracking-tight;
   }
 }
 
-/* ================================================================== */
-/*  Utilities                                                         */
-/* ================================================================== */
-@utility text-gradient {
-  background: linear-gradient(100deg, var(--color-poulpe-500), var(--color-poulpe-700));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-@utility text-balance {
-  text-wrap: balance;
-}
-@utility text-pretty {
-  text-wrap: pretty;
+/* Grille fine sur panneaux verts (comme la référence) */
+.bg-pinegrid {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
 }
 
-/* Subtle dotted grids for hero / dark panels */
-.bg-dotgrid-light {
-  background-image: radial-gradient(circle at 1px 1px, rgb(15 23 42 / 0.06) 1px, transparent 0);
-  background-size: 26px 26px;
-}
-.bg-dotgrid-dark {
-  background-image: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.07) 1px, transparent 0);
-  background-size: 24px 24px;
-}
-
-/* Animated gradient text (premium headline accent) */
-.text-shine {
-  background: linear-gradient(
-    100deg,
-    var(--color-poulpe-700),
-    var(--color-flame),
-    var(--color-poulpe-500),
-    var(--color-flame),
-    var(--color-poulpe-700)
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: var(--animate-shine);
-}
-
-/* Subtle film grain for depth */
-.bg-noise {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* Glassmorphism surface */
-.glass {
-  background: rgb(255 255 255 / 0.7);
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-}
-
-/* Animated skeleton line (used inside the dashboard mockups) */
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    rgb(255 255 255 / 0.04) 25%,
-    rgb(255 255 255 / 0.12) 37%,
-    rgb(255 255 255 / 0.04) 63%
-  );
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.05) 25%, rgb(255 255 255 / 0.14) 37%, rgb(255 255 255 / 0.05) 63%);
   background-size: 200% 100%;
   animation: var(--animate-shimmer);
 }
 
-/* Scroll-reveal helper used by <Reveal /> */
+/* Scroll reveal */
 .reveal {
   opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
