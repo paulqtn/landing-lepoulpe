@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   Check,
   ClipboardList,
+  Clock,
   Phone,
   Ruler,
   ShieldCheck,
@@ -12,10 +13,12 @@ import {
   Truck,
   Zap,
 } from "lucide-react";
+import { GoogleG, MaterialScene, UsageGlyph } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { materials, usages } from "@/lib/catalog";
 import { guides } from "@/lib/guides";
+import { priceRanges } from "@/lib/pricing";
 import { products } from "@/lib/products";
 import { phoneHref, site } from "@/lib/site";
 
@@ -33,124 +36,185 @@ const steps = [
   { n: "04", title: "Pose ou livraison", desc: "Posé par notre réseau, ou livré chez vous prêt à poser, partout en France." },
 ];
 
+const perks = [
+  { icon: ClipboardList, label: "Devis détaillé", sub: "envoyé sous 24h" },
+  { icon: Ruler, label: "Sur-mesure", sub: "au millimètre près" },
+  { icon: ShieldCheck, label: "Conforme", sub: "norme NF P01-012" },
+  { icon: Truck, label: "Livraison", sub: "partout en France" },
+];
+
 export default function Home() {
   return (
     <main>
       {/* ============================ HERO ============================ */}
       <section className="relative overflow-hidden bg-mist">
-        <Container className="grid items-center gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
+        {/* fond en couches */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -left-32 -top-40 h-[30rem] w-[30rem] rounded-full bg-pine-100/70 blur-3xl" />
+          <div className="absolute -right-24 top-24 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl" />
+          <div className="absolute inset-0 bg-lightgrid [mask-image:radial-gradient(ellipse_75%_65%_at_45%_20%,#000_35%,transparent_80%)]" />
+        </div>
+
+        <Container className="relative grid items-center gap-14 py-16 lg:grid-cols-[1.02fr_0.98fr] lg:py-24">
           {/* copy */}
           <div className="animate-fade-up">
             <p className="flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">
-              <span className="h-px w-10 bg-neutral-300" />
+              <span className="h-px w-10 bg-pine-600" />
               Spécialiste garde-corps
             </p>
-            <h1 className="mt-5 text-balance text-[2.6rem] font-extrabold leading-[1.02] tracking-tight text-inkgreen sm:text-6xl">
-              Garde-corps <em className="not-italic text-pine-600">en direct usine</em>.
+            <h1 className="mt-5 text-balance text-[2.7rem] font-extrabold leading-[1.0] tracking-tight text-inkgreen sm:text-6xl">
+              Garde-corps
+              <br />
+              <em className="italic text-pine-600">en direct usine.</em>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-neutral-600">
-              Verre, aluminium ou inox — <strong className="text-inkgreen">sur-mesure au millimètre ou en kit</strong>,
+              Verre, aluminium ou inox — <strong className="font-semibold text-inkgreen">sur-mesure au millimètre ou en kit</strong>,
               pour piscine, escalier, balcon et terrasse. Conformes NF P01-012, à prix d’usine.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/devis"
-                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-pine-700 py-4 pl-7 pr-6 text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-pine-600"
+                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-pine-700 py-4 pl-7 pr-6 text-base font-bold text-white shadow-lg shadow-pine-900/25 transition-all hover:-translate-y-0.5 hover:bg-pine-600 hover:shadow-xl hover:shadow-pine-900/30"
               >
-                <Check className="h-5 w-5" />
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-white/15">
+                  <Check className="h-4 w-4" />
+                </span>
                 Estimer un tarif
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <a
                 href={phoneHref}
-                className="group inline-flex items-center justify-center gap-3 rounded-full bg-white py-3 pl-3.5 pr-6 shadow-card transition-all hover:-translate-y-0.5"
+                className="group inline-flex items-center justify-center gap-3 rounded-full border border-neutral-200/80 bg-white py-2.5 pl-3 pr-6 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-elevated"
               >
-                <span className="relative grid h-9 w-9 place-items-center rounded-full bg-pine-50 text-pine-700">
+                <span className="relative grid h-10 w-10 place-items-center rounded-full bg-pine-700 text-white">
                   <Phone className="h-4 w-4 group-hover:animate-wiggle" />
-                  <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500" />
+                  <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
                 </span>
                 <span className="text-left leading-tight">
-                  <span className="block font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-neutral-500">
-                    Conseiller dispo
+                  <span className="block font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-green-700">
+                    Conseiller disponible
                   </span>
-                  <span className="block text-sm font-bold text-inkgreen">{site.phone}</span>
+                  <span className="block text-sm font-bold tracking-wide text-inkgreen">{site.phone}</span>
                 </span>
               </a>
             </div>
 
-            <div className="mt-8 inline-flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-card">
-              <span className="text-sm font-bold text-inkgreen">Avis Google</span>
-              <span className="flex">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-amber-500 text-amber-500" />
-                ))}
-              </span>
-              <span className="text-sm text-neutral-500">
-                <strong className="text-inkgreen">5/5</strong> · clients vérifiés
+            {/* carte avis Google */}
+            <div className="mt-9 inline-flex items-center gap-4 rounded-2xl border border-neutral-200/70 bg-white py-3 pl-4 pr-5 shadow-card">
+              <GoogleG className="h-8 w-8" />
+              <span className="h-9 w-px bg-neutral-100" />
+              <span>
+                <span className="flex items-center gap-2">
+                  <span className="text-base font-extrabold tabular-nums text-inkgreen">5,0</span>
+                  <span className="flex gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className="h-[15px] w-[15px] fill-amber-500 text-amber-500" />
+                    ))}
+                  </span>
+                </span>
+                <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
+                  Avis Google · clients vérifiés
+                </span>
               </span>
             </div>
           </div>
 
-          {/* carte devis flottante */}
+          {/* carte devis flottante, empilée */}
           <div className="relative mx-auto w-full max-w-md animate-fade-up [animation-delay:150ms]">
-            <span className="absolute -top-4 right-6 z-10 inline-flex rotate-[3deg] items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-pine-950 shadow-md">
+            {/* carte fantôme derrière */}
+            <div className="absolute inset-x-4 -bottom-3 top-6 -rotate-2 rounded-3xl bg-pine-800/10" />
+            <div className="absolute inset-x-8 -bottom-6 top-12 -rotate-3 rounded-3xl bg-pine-800/5" />
+
+            <span className="absolute -top-4 right-6 z-20 inline-flex rotate-[3deg] animate-float items-center gap-1.5 rounded-xl bg-amber-500 px-3.5 py-2 font-mono text-[11px] font-bold uppercase tracking-wide text-pine-950 shadow-lg shadow-amber-600/30">
               <Zap className="h-3.5 w-3.5" />
               24 h chrono
             </span>
-            <div className="rounded-3xl bg-white p-6 shadow-elevated ring-1 ring-neutral-900/5 sm:p-7">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-400">Votre devis</p>
-                  <p className="mt-0.5 font-mono text-sm font-bold text-inkgreen">DEV-2026-00184</p>
-                </div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-pine-50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wide text-pine-700">
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                  Validé
+
+            <div className="relative z-10 overflow-hidden rounded-3xl bg-white shadow-elevated ring-1 ring-neutral-900/5">
+              {/* aperçu produit */}
+              <div className="group relative h-28 border-b border-neutral-100">
+                <MaterialScene material="verre" className="h-full" />
+                <span className="absolute bottom-3 left-4 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-pine-800 shadow-sm backdrop-blur">
+                  Verre autoportant · 6 ml
                 </span>
               </div>
-              <div className="mt-5 space-y-4 border-t border-neutral-100 pt-5">
-                {[
-                  { l: "Garde-corps verre autoportant", s: "6 ml · trempé-feuilleté 55.2", p: "1 890 €" },
-                  { l: "Profilé alu en pince + visserie", s: "Pose sur dalle béton", p: "420 €" },
-                  { l: "Pose & mise en conformité", s: "Équipe certifiée", p: "640 €" },
-                ].map((r) => (
-                  <div key={r.l} className="flex items-baseline justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-semibold text-inkgreen">{r.l}</p>
-                      <p className="text-xs text-neutral-400">{r.s}</p>
-                    </div>
-                    <p className="text-sm font-bold tabular-nums text-inkgreen">{r.p}</p>
+
+              <div className="p-6 sm:p-7">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-400">Votre devis</p>
+                    <p className="mt-0.5 font-mono text-sm font-bold text-inkgreen">DEV-2026-00184</p>
                   </div>
-                ))}
-              </div>
-              <div className="mt-5 flex items-center justify-between rounded-2xl bg-pine-50 px-4 py-3.5">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-pine-700">Total TTC</span>
-                <span className="text-2xl font-extrabold tabular-nums text-pine-700">2 950 €</span>
-              </div>
-              <div className="mt-4 flex items-center justify-between text-xs text-neutral-400">
-                <span className="flex items-center gap-1.5">
-                  <Check className="h-3.5 w-3.5 text-green-500" />
-                  Valable 30 jours
-                </span>
-                <span className="font-mono">exemple de devis</span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-pine-50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wide text-pine-700 ring-1 ring-pine-100">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute h-full w-full animate-ping rounded-full bg-green-500 opacity-70" />
+                      <span className="relative h-1.5 w-1.5 rounded-full bg-green-500" />
+                    </span>
+                    Validé
+                  </span>
+                </div>
+
+                <div className="mt-5 space-y-3.5 border-t border-dashed border-neutral-200 pt-5">
+                  {[
+                    { l: "Garde-corps verre autoportant", s: "Trempé-feuilleté 55.2 · H 1,10 m", p: "1 890 €" },
+                    { l: "Profilé alu en pince + visserie", s: "Pose sur dalle béton", p: "420 €" },
+                    { l: "Pose & mise en conformité", s: "Équipe certifiée", p: "640 €" },
+                  ].map((r) => (
+                    <div key={r.l} className="flex items-baseline justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-semibold text-inkgreen">{r.l}</p>
+                        <p className="mt-0.5 text-xs text-neutral-400">{r.s}</p>
+                      </div>
+                      <p className="text-sm font-bold tabular-nums text-inkgreen">{r.p}</p>
+                    </div>
+                  ))}
+                  <div className="flex items-baseline justify-between text-xs text-neutral-400">
+                    <span>TVA 10 % (rénovation)</span>
+                    <span className="tabular-nums">+ 295 €</span>
+                  </div>
+                </div>
+
+                <div className="mt-5 flex items-center justify-between rounded-2xl bg-pine-900 px-5 py-4">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-pine-200">Total TTC</span>
+                  <span className="text-2xl font-extrabold tabular-nums text-white">3 245 €</span>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between text-xs text-neutral-400">
+                  <span className="flex items-center gap-1.5">
+                    <Check className="h-3.5 w-3.5 text-green-500" />
+                    Valable 30 jours
+                  </span>
+                  <span className="font-mono">exemple de devis</span>
+                </div>
               </div>
             </div>
+
+            {/* chip flottante */}
+            <span className="absolute -left-3 bottom-8 z-20 inline-flex -rotate-2 items-center gap-2 rounded-xl border border-neutral-100 bg-white py-2 pl-2.5 pr-3.5 shadow-elevated">
+              <span className="grid h-7 w-7 place-items-center rounded-lg bg-pine-50 text-pine-700">
+                <Clock className="h-4 w-4" />
+              </span>
+              <span className="text-left leading-tight">
+                <span className="block text-xs font-bold text-inkgreen">Réponse &lt; 24h</span>
+                <span className="block font-mono text-[9px] uppercase tracking-[0.12em] text-neutral-400">gratuit · sans engagement</span>
+              </span>
+            </span>
           </div>
         </Container>
 
         {/* bandeau réassurance */}
-        <div className="border-t border-neutral-200 bg-white">
-          <Container className="grid grid-cols-2 gap-x-6 gap-y-4 py-5 sm:grid-cols-4">
-            {[
-              { icon: ClipboardList, label: "Devis détaillé en 24h" },
-              { icon: Ruler, label: "Sur-mesure au millimètre" },
-              { icon: ShieldCheck, label: "Conforme NF P01-012" },
-              { icon: Truck, label: "Livraison partout en France" },
-            ].map((p) => (
-              <span key={p.label} className="flex items-center gap-2.5 text-sm font-semibold text-inkgreen">
-                <p.icon className="h-5 w-5 shrink-0 text-pine-600" />
-                {p.label}
+        <div className="relative border-t border-neutral-200 bg-white">
+          <Container className="grid grid-cols-2 gap-x-6 gap-y-5 py-6 lg:grid-cols-4">
+            {perks.map((p) => (
+              <span key={p.label} className="flex items-center gap-3">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-pine-50 text-pine-700 ring-1 ring-pine-100/60">
+                  <p.icon className="h-5 w-5" />
+                </span>
+                <span className="leading-tight">
+                  <span className="block text-sm font-bold text-inkgreen">{p.label}</span>
+                  <span className="block text-xs text-neutral-500">{p.sub}</span>
+                </span>
               </span>
             ))}
           </Container>
@@ -167,38 +231,57 @@ export default function Home() {
                 Trois matériaux, un même niveau d’exigence.
               </h2>
             </div>
-            <Link href="/produits" className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-pine-700">
-              Voir tous les kits
+            <Link href="/garde-corps" className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-pine-700">
+              Tout le catalogue
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
 
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
             {materials.map((m, i) => (
               <Reveal key={m.slug} delay={i * 80}>
                 <Link
                   href={`/garde-corps/${m.slug}`}
-                  className="group flex h-full flex-col rounded-3xl border border-neutral-200 bg-white p-7 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-pine-300 hover:shadow-elevated"
+                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-pine-300 hover:shadow-elevated"
                 >
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-                    0{i + 1}
-                  </span>
-                  <h3 className="mt-3 text-2xl font-extrabold text-inkgreen transition-colors group-hover:text-pine-700">
-                    {m.title}
-                  </h3>
-                  <p className="mt-2.5 flex-1 text-sm leading-relaxed text-neutral-600">{m.intro}</p>
-                  <ul className="mt-5 space-y-2">
-                    {m.benefits.slice(0, 3).map((b) => (
-                      <li key={b.title} className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-                        <Check className="h-4 w-4 shrink-0 text-pine-600" />
-                        {b.title}
-                      </li>
-                    ))}
-                  </ul>
-                  <span className="mt-6 inline-flex items-center gap-1.5 border-t border-neutral-100 pt-5 text-sm font-bold text-pine-700">
-                    Découvrir
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </span>
+                  <div className="relative h-44 border-b border-neutral-100">
+                    <MaterialScene material={m.material!} className="h-full" />
+                    <span className="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500 shadow-sm backdrop-blur">
+                      0{i + 1}
+                    </span>
+                    <span className="absolute bottom-3 right-4 rounded-full bg-pine-900/85 px-3 py-1.5 text-xs font-bold text-white shadow-sm backdrop-blur">
+                      dès {priceRanges[m.material!].kit[0]} €<span className="font-medium text-pine-200">/ml</span>
+                    </span>
+                  </div>
+
+                  <div className="flex flex-1 flex-col p-6">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-xl font-extrabold text-inkgreen transition-colors group-hover:text-pine-700">
+                        {m.title}
+                      </h3>
+                      <span className="flex gap-1.5">
+                        {["Kit", "Sur-mesure"].map((t) => (
+                          <span key={t} className="rounded-full bg-mist px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-neutral-500">
+                            {t}
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+                    <ul className="mt-4 flex-1 space-y-2.5">
+                      {m.benefits.slice(0, 3).map((b) => (
+                        <li key={b.title} className="flex items-center gap-2.5 text-sm font-medium text-neutral-700">
+                          <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-pine-50 text-pine-700">
+                            <Check className="h-3 w-3" />
+                          </span>
+                          {b.title}
+                        </li>
+                      ))}
+                    </ul>
+                    <span className="mt-5 inline-flex items-center gap-1.5 border-t border-neutral-100 pt-4 text-sm font-bold text-pine-700">
+                      Découvrir le {m.name.toLowerCase()}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </div>
                 </Link>
               </Reveal>
             ))}
@@ -209,24 +292,35 @@ export default function Home() {
       {/* ========================== USAGES =========================== */}
       <section className="border-y border-neutral-200 bg-mist py-20 sm:py-28">
         <Container>
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Par usage</p>
-          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-            Un garde-corps pour chaque configuration.
-          </h2>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Par usage</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+                Un garde-corps pour chaque configuration.
+              </h2>
+            </div>
+            <p className="max-w-xs text-sm leading-relaxed text-neutral-500">
+              Chaque situation a ses règles et ses bonnes solutions — on les détaille page par page.
+            </p>
+          </div>
+
           <div className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
             {usages.map((u, i) => (
               <Reveal key={u.slug} delay={i * 50}>
                 <Link
                   href={`/garde-corps/${u.slug}`}
-                  className="group flex h-full flex-col justify-between rounded-2xl border border-neutral-200 bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-pine-300 hover:shadow-card"
+                  className="group flex h-full flex-col rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-pine-300 hover:shadow-elevated"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-base font-extrabold text-inkgreen transition-colors group-hover:text-pine-700">
-                      {u.name}
-                    </h3>
-                    <ArrowUpRight className="h-4 w-4 shrink-0 text-neutral-300 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-pine-600" />
+                  <div className="flex items-start justify-between">
+                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-pine-50 text-pine-700 ring-1 ring-pine-100/60 transition-colors duration-300 group-hover:bg-pine-700 group-hover:text-white">
+                      <UsageGlyph usage={u.slug} className="h-6 w-6" />
+                    </span>
+                    <ArrowUpRight className="h-4 w-4 text-neutral-300 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-pine-600" />
                   </div>
-                  <p className="mt-2 text-xs leading-relaxed text-neutral-500">{u.benefits[0].desc}</p>
+                  <h3 className="mt-4 text-base font-extrabold text-inkgreen transition-colors group-hover:text-pine-700">
+                    {u.name}
+                  </h3>
+                  <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">{u.benefits[0].desc}</p>
                 </Link>
               </Reveal>
             ))}
@@ -255,29 +349,35 @@ export default function Home() {
               <Reveal key={p.slug} delay={i * 60}>
                 <Link
                   href={`/produits/${p.slug}`}
-                  className="group flex h-full flex-col rounded-2xl border border-neutral-200 bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-pine-300 hover:shadow-card"
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-pine-300 hover:shadow-elevated"
                 >
-                  {p.badge ? (
-                    <span className="w-fit rounded-full bg-amber-500 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wide text-pine-950">
-                      {p.badge}
-                    </span>
-                  ) : (
-                    <span className="w-fit rounded-full bg-mist px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wide text-neutral-500">
+                  <div className="relative h-24 border-b border-neutral-100">
+                    <MaterialScene material={p.material} className="h-full" />
+                    {p.badge && (
+                      <span className="absolute left-3 top-3 rounded-full bg-amber-500 px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wide text-pine-950 shadow-sm">
+                        {p.badge}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col p-5">
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-neutral-400">
                       {p.material}
                     </span>
-                  )}
-                  <h3 className="mt-3 text-lg font-extrabold text-inkgreen transition-colors group-hover:text-pine-700">
-                    {p.name}
-                  </h3>
-                  <p className="mt-1.5 flex-1 text-xs leading-relaxed text-neutral-500">{p.specs[0]} · {p.specs[1]}</p>
-                  <div className="mt-4 flex items-baseline justify-between border-t border-neutral-100 pt-4">
-                    <span className="text-xl font-extrabold text-pine-700">
-                      dès {p.priceFrom} €<span className="text-xs font-semibold text-neutral-400">/ml</span>
-                    </span>
-                    <span className="flex items-center gap-1 text-xs font-bold text-pine-700">
-                      Voir
-                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                    </span>
+                    <h3 className="mt-1 text-lg font-extrabold leading-snug text-inkgreen transition-colors group-hover:text-pine-700">
+                      {p.name}
+                    </h3>
+                    <p className="mt-1.5 flex-1 text-xs leading-relaxed text-neutral-500">
+                      {p.specs[0]} · {p.specs[1]}
+                    </p>
+                    <div className="mt-4 flex items-baseline justify-between border-t border-neutral-100 pt-3.5">
+                      <span className="text-lg font-extrabold text-pine-700">
+                        dès {p.priceFrom} €<span className="text-xs font-semibold text-neutral-400">/ml</span>
+                      </span>
+                      <span className="flex items-center gap-1 text-xs font-bold text-pine-700">
+                        Voir
+                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
                   </div>
                 </Link>
               </Reveal>
@@ -293,12 +393,16 @@ export default function Home() {
           <h2 className="mt-2 max-w-xl text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
             De l’estimation à la pose, en 4 étapes.
           </h2>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+          <div className="relative mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="absolute left-[12%] right-[12%] top-11 hidden border-t-2 border-dashed border-pine-200 lg:block" />
             {steps.map((s, i) => (
               <Reveal key={s.n} delay={i * 70}>
-                <div className="h-full rounded-2xl border border-neutral-200 bg-white p-6">
-                  <span className="font-mono text-sm font-bold text-pine-600">{s.n}</span>
-                  <h3 className="mt-3 text-lg font-extrabold text-inkgreen">{s.title}</h3>
+                <div className="relative h-full rounded-2xl border border-neutral-200/80 bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-elevated">
+                  <span className="relative z-10 grid h-11 w-11 place-items-center rounded-xl bg-pine-700 font-mono text-sm font-bold text-white shadow-md shadow-pine-900/20">
+                    {s.n}
+                  </span>
+                  <h3 className="mt-4 text-lg font-extrabold text-inkgreen">{s.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-neutral-600">{s.desc}</p>
                 </div>
               </Reveal>
@@ -327,10 +431,16 @@ export default function Home() {
               <Reveal key={g.slug} delay={i * 70}>
                 <Link
                   href={`/guides/${g.slug}`}
-                  className="group flex h-full flex-col rounded-2xl border border-neutral-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-pine-300 hover:shadow-card"
+                  className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-pine-300 hover:shadow-elevated"
                 >
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-400">Guide</span>
-                  <h3 className="mt-2.5 flex-1 text-lg font-extrabold leading-snug text-inkgreen transition-colors group-hover:text-pine-700">
+                  <span className="absolute inset-x-0 top-0 h-1 -translate-y-full bg-pine-600 transition-transform duration-300 group-hover:translate-y-0" />
+                  <span className="flex items-center justify-between">
+                    <span className="rounded-full bg-pine-50 px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-pine-700">
+                      Guide expert
+                    </span>
+                    <span className="font-mono text-xs text-neutral-300">0{i + 1}</span>
+                  </span>
+                  <h3 className="mt-3 flex-1 text-lg font-extrabold leading-snug text-inkgreen transition-colors group-hover:text-pine-700">
                     {g.title}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-neutral-500">{g.excerpt}</p>
@@ -349,25 +459,28 @@ export default function Home() {
       <section className="pb-20 sm:pb-28">
         <Container>
           <Reveal>
-            <div className="relative overflow-hidden rounded-[2rem] bg-pine-900 px-6 py-16 text-white sm:px-12 sm:py-20">
+            <div className="relative overflow-hidden rounded-[2rem] bg-pine-900 px-6 py-16 text-white shadow-panel sm:px-12 sm:py-20">
               <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
-              <div className="relative grid items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+              <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-pine-500/20 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-32 right-10 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl" />
+
+              <div className="relative grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
                 <div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-pine-200">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-pine-200 ring-1 ring-white/10">
                     <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                     Dernière étape
                   </span>
-                  <h2 className="mt-5 text-balance text-3xl font-extrabold leading-[1.05] sm:text-5xl">
+                  <h2 className="mt-5 text-balance text-3xl font-extrabold leading-[1.03] sm:text-5xl">
                     Votre devis personnalisé,
                     <br />
-                    <span className="text-pine-200">en 24 h chrono.</span>
+                    <em className="italic text-pine-200">en 24 h chrono.</em>
                   </h2>
-                  <p className="mt-5 max-w-lg text-pine-100/75">
+                  <p className="mt-5 max-w-lg leading-relaxed text-pine-100/75">
                     Configurez votre projet en ligne en 1 minute. Notre équipe vous
                     renvoie un devis détaillé, sans engagement.
                   </p>
-                  <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-                    {["Devis sous 24h", "Sans engagement", "Livraison France"].map((b) => (
+                  <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2.5">
+                    {["Devis sous 24h", "Garantie conformité", "Livraison France"].map((b) => (
                       <li key={b} className="flex items-center gap-2 text-sm font-semibold text-pine-100">
                         <span className="grid h-5 w-5 place-items-center rounded-full bg-green-500/20 text-green-400">
                           <Check className="h-3 w-3" />
@@ -376,10 +489,10 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                     <Link
                       href="/devis"
-                      className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-white py-4 pl-7 pr-6 text-base font-bold text-pine-800 transition-all hover:-translate-y-0.5"
+                      className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-white py-4 pl-7 pr-6 text-base font-bold text-pine-800 shadow-xl shadow-black/20 transition-all hover:-translate-y-0.5"
                     >
                       <ClipboardList className="h-5 w-5" />
                       Estimer mon projet en 1 min
@@ -395,28 +508,38 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* mini-devis décoratif */}
+                {/* mini-devis empilé */}
                 <div className="relative hidden lg:block">
-                  <div className="rotate-2 rounded-2xl bg-white p-6 shadow-panel">
-                    <div className="flex items-center justify-between">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-400">Votre devis</p>
-                      <span className="rounded-full bg-pine-50 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-pine-700">Validé</span>
+                  <div className="absolute inset-x-6 -bottom-4 top-8 rotate-3 rounded-2xl bg-white/10" />
+                  <div className="relative rotate-2 overflow-hidden rounded-2xl bg-white shadow-panel">
+                    <div className="group relative h-20 border-b border-neutral-100">
+                      <MaterialScene material="inox" className="h-full" />
                     </div>
-                    <div className="mt-4 space-y-3">
-                      <div className="flex justify-between text-sm">
-                        <span className="font-semibold text-inkgreen">Garde-corps inox 316</span>
-                        <span className="font-bold text-inkgreen">1 240 €</span>
+                    <div className="p-6">
+                      <div className="flex items-center justify-between">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-400">Votre devis</p>
+                        <span className="rounded-full bg-pine-50 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-pine-700">Validé</span>
                       </div>
-                      <div className="flex justify-between text-xs text-neutral-400">
-                        <span>5 ml · barres Ø 12 mm</span>
-                        <span>TVA 10 %</span>
+                      <div className="mt-4 space-y-2.5">
+                        <div className="flex justify-between text-sm">
+                          <span className="font-semibold text-inkgreen">Garde-corps inox 316</span>
+                          <span className="font-bold tabular-nums text-inkgreen">1 240 €</span>
+                        </div>
+                        <div className="flex justify-between text-xs text-neutral-400">
+                          <span>5 ml · barres Ø 12 mm</span>
+                          <span>TVA 10 %</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="mt-4 flex items-center justify-between rounded-xl bg-pine-50 px-4 py-3">
-                      <span className="font-mono text-[10px] font-bold uppercase tracking-wide text-pine-700">Total TTC</span>
-                      <span className="text-xl font-extrabold text-pine-700">1 364 €</span>
+                      <div className="mt-4 flex items-center justify-between rounded-xl bg-pine-900 px-4 py-3">
+                        <span className="font-mono text-[10px] font-bold uppercase tracking-wide text-pine-200">Total TTC</span>
+                        <span className="text-xl font-extrabold tabular-nums text-white">1 364 €</span>
+                      </div>
                     </div>
                   </div>
+                  <span className="absolute -left-4 bottom-6 z-10 inline-flex -rotate-3 items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wide text-pine-950 shadow-lg">
+                    <Zap className="h-3 w-3" />
+                    Devis immédiat
+                  </span>
                 </div>
               </div>
             </div>
