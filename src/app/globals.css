@@ -70,6 +70,10 @@
   from { background-position: -200% 0; }
   to { background-position: 200% 0; }
 }
+@keyframes progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
 
 /* ================================================================== */
 @layer base {
