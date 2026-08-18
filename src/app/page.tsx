@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -13,6 +12,7 @@ import {
   Truck,
   Zap,
 } from "lucide-react";
+import { HeroGallery, type HeroSlide } from "@/components/HeroGallery";
 import { GoogleG, MaterialScene, UsageGlyph } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -22,11 +22,39 @@ import { priceRanges } from "@/lib/pricing";
 import { products } from "@/lib/products";
 import { phoneHref, site } from "@/lib/site";
 
-/** Visuel principal du hero (photo de réalisation). */
-const hero = {
-  src: "/garde-corps-terrasse-scaled-3.jpg",
-  alt: "Garde-corps à lisses horizontales sur une terrasse avec vue panoramique",
-};
+/** Réalisations mises en avant dans le hero (défilement en fondu). */
+const heroSlides: HeroSlide[] = [
+  {
+    src: "/garde-corps-terrasse-scaled-3.jpg",
+    alt: "Garde-corps à lisses horizontales sur une terrasse avec vue panoramique",
+    material: "Aluminium · lisses horizontales",
+    place: "Terrasse panoramique",
+  },
+  {
+    src: "/Miroiterie-Degivry_Toulon-Var_Garde-corps-verre-Piscine.jpeg",
+    alt: "Garde-corps en verre sans montants autour d’une piscine à débordement face à la mer",
+    material: "Verre · sans montants",
+    place: "Piscine à débordement",
+  },
+  {
+    src: "/1713357460128.jpg",
+    alt: "Garde-corps en verre sur pinces inox le long d’une terrasse bois de piscine",
+    material: "Verre · pinces inox",
+    place: "Plage de piscine",
+  },
+  {
+    src: "/garde-corps-exterieur-terrasse-cables-acier-et-verre.jpg",
+    alt: "Garde-corps de balcon en aluminium noir avec remplissage verre et câbles inox",
+    material: "Mixte · verre & câbles",
+    place: "Balcon contemporain",
+  },
+  {
+    src: "/garde-corps-aluminium-barreaude-yana-kostum.jpg",
+    alt: "Garde-corps en aluminium à barreaudage vertical sur une terrasse en bois",
+    material: "Aluminium · barreaudage",
+    place: "Terrasse bois",
+  },
+];
 
 export const metadata: Metadata = {
   title: `Garde-corps en verre, alu & inox en direct usine | ${site.name}`,
@@ -126,18 +154,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* visuel produit */}
+          {/* nos réalisations */}
           <div className="animate-fade-up [animation-delay:150ms]">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl shadow-elevated ring-1 ring-neutral-900/5">
-              <Image
-                src={hero.src}
-                alt={hero.alt}
-                fill
-                priority
-                sizes="(min-width: 1024px) 46rem, 100vw"
-                className="object-cover"
-              />
-            </div>
+            <HeroGallery slides={heroSlides} />
           </div>
         </Container>
 
