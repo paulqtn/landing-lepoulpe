@@ -54,7 +54,7 @@ export function HeroGallery({
       {/* liseré décoratif */}
       <div className="pointer-events-none absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-pine-200/50 via-transparent to-amber-500/10" />
 
-      <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] bg-pine-950 shadow-panel ring-1 ring-pine-950/10 lg:aspect-[6/5]">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] bg-pine-950 shadow-panel ring-1 ring-pine-950/10 lg:aspect-[8/7]">
         {slides.map((s, i) => (
           <Image
             key={s.src}
