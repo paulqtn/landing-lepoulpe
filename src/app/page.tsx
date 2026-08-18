@@ -110,7 +110,7 @@ export default function Home() {
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/devis"
-                className="group inline-flex h-16 items-center justify-center gap-3 rounded-full bg-pine-700 px-8 text-base font-bold text-white shadow-xl shadow-pine-900/25 transition-all hover:-translate-y-0.5 hover:bg-pine-600 hover:shadow-2xl hover:shadow-pine-900/30"
+                className="group inline-flex h-16 items-center justify-center gap-3 whitespace-nowrap rounded-full bg-pine-700 px-8 text-base font-bold text-white shadow-xl shadow-pine-900/25 transition-all hover:-translate-y-0.5 hover:bg-pine-600 hover:shadow-2xl hover:shadow-pine-900/30"
               >
                 <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/15">
                   <Check className="h-4 w-4" />
@@ -120,7 +120,7 @@ export default function Home() {
               </Link>
               <a
                 href={phoneHref}
-                className="group inline-flex h-16 items-center justify-center gap-3 rounded-full border-2 border-pine-700/15 bg-white pl-3 pr-6 transition-all hover:-translate-y-0.5 hover:border-pine-700/30"
+                className="group inline-flex h-16 items-center justify-center gap-3 whitespace-nowrap rounded-full border-2 border-pine-700/15 bg-white pl-3 pr-6 transition-all hover:-translate-y-0.5 hover:border-pine-700/30"
               >
                 <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-pine-700 text-white">
                   <Phone className="h-4 w-4 group-hover:animate-wiggle" />
