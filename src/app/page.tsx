@@ -5,7 +5,6 @@ import {
   ArrowUpRight,
   Check,
   ClipboardList,
-  Clock,
   Phone,
   Ruler,
   ShieldCheck,
@@ -13,11 +12,13 @@ import {
   Truck,
   Zap,
 } from "lucide-react";
+import { HeroShowcase, type ShowcaseItem } from "@/components/HeroShowcase";
 import { GoogleG, MaterialScene, UsageGlyph } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { materials, usages } from "@/lib/catalog";
 import { guides } from "@/lib/guides";
+import { heroImageSrc } from "@/lib/hero-images";
 import { priceRanges } from "@/lib/pricing";
 import { products } from "@/lib/products";
 import { phoneHref, site } from "@/lib/site";
@@ -44,6 +45,18 @@ const perks = [
 ];
 
 export default function Home() {
+  // Vitrine du hero : les photos sont détectées au build dans
+  // public/images/hero/ (placeholder stylé tant qu'elles n'y sont pas).
+  const showcaseItems: ShowcaseItem[] = materials.map((m) => ({
+    material: m.material!,
+    label: m.name,
+    title: m.title,
+    priceFrom: priceRanges[m.material!].kit[0],
+    href: `/garde-corps/${m.slug}`,
+    src: heroImageSrc(m.material!),
+    alt: `${m.title} — réalisation ${site.name}`,
+  }));
+
   return (
     <main>
       {/* ============================ HERO ============================ */}
@@ -120,87 +133,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* carte devis flottante, empilée */}
-          <div className="relative mx-auto w-full max-w-md animate-fade-up [animation-delay:150ms]">
-            {/* carte fantôme derrière */}
-            <div className="absolute inset-x-4 -bottom-3 top-6 -rotate-2 rounded-3xl bg-pine-800/10" />
-            <div className="absolute inset-x-8 -bottom-6 top-12 -rotate-3 rounded-3xl bg-pine-800/5" />
-
-            <span className="absolute -top-4 right-6 z-20 inline-flex rotate-[3deg] animate-float items-center gap-1.5 rounded-xl bg-amber-500 px-3.5 py-2 font-mono text-[11px] font-bold uppercase tracking-wide text-pine-950 shadow-lg shadow-amber-600/30">
-              <Zap className="h-3.5 w-3.5" />
-              24 h chrono
-            </span>
-
-            <div className="relative z-10 overflow-hidden rounded-3xl bg-white shadow-elevated ring-1 ring-neutral-900/5">
-              {/* aperçu produit */}
-              <div className="group relative h-28 border-b border-neutral-100">
-                <MaterialScene material="verre" className="h-full" />
-                <span className="absolute bottom-3 left-4 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-pine-800 shadow-sm backdrop-blur">
-                  Verre autoportant · 6 ml
-                </span>
-              </div>
-
-              <div className="p-6 sm:p-7">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-400">Votre devis</p>
-                    <p className="mt-0.5 font-mono text-sm font-bold text-inkgreen">DEV-2026-00184</p>
-                  </div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-pine-50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wide text-pine-700 ring-1 ring-pine-100">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="absolute h-full w-full animate-ping rounded-full bg-green-500 opacity-70" />
-                      <span className="relative h-1.5 w-1.5 rounded-full bg-green-500" />
-                    </span>
-                    Validé
-                  </span>
-                </div>
-
-                <div className="mt-5 space-y-3.5 border-t border-dashed border-neutral-200 pt-5">
-                  {[
-                    { l: "Garde-corps verre autoportant", s: "Trempé-feuilleté 55.2 · H 1,10 m", p: "1 890 €" },
-                    { l: "Profilé alu en pince + visserie", s: "Pose sur dalle béton", p: "420 €" },
-                    { l: "Pose & mise en conformité", s: "Équipe certifiée", p: "640 €" },
-                  ].map((r) => (
-                    <div key={r.l} className="flex items-baseline justify-between gap-4">
-                      <div>
-                        <p className="text-sm font-semibold text-inkgreen">{r.l}</p>
-                        <p className="mt-0.5 text-xs text-neutral-400">{r.s}</p>
-                      </div>
-                      <p className="text-sm font-bold tabular-nums text-inkgreen">{r.p}</p>
-                    </div>
-                  ))}
-                  <div className="flex items-baseline justify-between text-xs text-neutral-400">
-                    <span>TVA 10 % (rénovation)</span>
-                    <span className="tabular-nums">+ 295 €</span>
-                  </div>
-                </div>
-
-                <div className="mt-5 flex items-center justify-between rounded-2xl bg-pine-900 px-5 py-4">
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-pine-200">Total TTC</span>
-                  <span className="text-2xl font-extrabold tabular-nums text-white">3 245 €</span>
-                </div>
-
-                <div className="mt-4 flex items-center justify-between text-xs text-neutral-400">
-                  <span className="flex items-center gap-1.5">
-                    <Check className="h-3.5 w-3.5 text-green-500" />
-                    Valable 30 jours
-                  </span>
-                  <span className="font-mono">exemple de devis</span>
-                </div>
-              </div>
-            </div>
-
-            {/* chip flottante */}
-            <span className="absolute -left-3 bottom-8 z-20 inline-flex -rotate-2 items-center gap-2 rounded-xl border border-neutral-100 bg-white py-2 pl-2.5 pr-3.5 shadow-elevated">
-              <span className="grid h-7 w-7 place-items-center rounded-lg bg-pine-50 text-pine-700">
-                <Clock className="h-4 w-4" />
-              </span>
-              <span className="text-left leading-tight">
-                <span className="block text-xs font-bold text-inkgreen">Réponse &lt; 24h</span>
-                <span className="block font-mono text-[9px] uppercase tracking-[0.12em] text-neutral-400">gratuit · sans engagement</span>
-              </span>
-            </span>
-          </div>
+          {/* vitrine produit (photos verre / alu / inox) */}
+          <HeroShowcase items={showcaseItems} />
         </Container>
 
         {/* bandeau réassurance */}
