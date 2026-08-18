@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -12,16 +13,20 @@ import {
   Truck,
   Zap,
 } from "lucide-react";
-import { HeroShowcase, type ShowcaseItem } from "@/components/HeroShowcase";
 import { GoogleG, MaterialScene, UsageGlyph } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { materials, usages } from "@/lib/catalog";
 import { guides } from "@/lib/guides";
-import { heroImageSrc } from "@/lib/hero-images";
 import { priceRanges } from "@/lib/pricing";
 import { products } from "@/lib/products";
 import { phoneHref, site } from "@/lib/site";
+
+/** Visuel principal du hero (photo de réalisation). */
+const hero = {
+  src: "/garde-corps-terrasse-scaled-3.jpg",
+  alt: "Garde-corps à lisses horizontales sur une terrasse avec vue panoramique",
+};
 
 export const metadata: Metadata = {
   title: `Garde-corps en verre, alu & inox en direct usine | ${site.name}`,
@@ -45,18 +50,6 @@ const perks = [
 ];
 
 export default function Home() {
-  // Vitrine du hero : les photos sont détectées au build dans
-  // public/images/hero/ (placeholder stylé tant qu'elles n'y sont pas).
-  const showcaseItems: ShowcaseItem[] = materials.map((m) => ({
-    material: m.material!,
-    label: m.name,
-    title: m.title,
-    priceFrom: priceRanges[m.material!].kit[0],
-    href: `/garde-corps/${m.slug}`,
-    src: heroImageSrc(m.material!),
-    alt: `${m.title} — réalisation ${site.name}`,
-  }));
-
   return (
     <main>
       {/* ============================ HERO ============================ */}
@@ -133,8 +126,19 @@ export default function Home() {
             </div>
           </div>
 
-          {/* vitrine produit (photos verre / alu / inox) */}
-          <HeroShowcase items={showcaseItems} />
+          {/* visuel produit */}
+          <div className="animate-fade-up [animation-delay:150ms]">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl shadow-elevated ring-1 ring-neutral-900/5">
+              <Image
+                src={hero.src}
+                alt={hero.alt}
+                fill
+                priority
+                sizes="(min-width: 1024px) 46rem, 100vw"
+                className="object-cover"
+              />
+            </div>
+          </div>
         </Container>
 
         {/* bandeau réassurance */}
