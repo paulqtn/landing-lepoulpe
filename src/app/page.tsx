@@ -103,7 +103,7 @@ export default function Home() {
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-neutral-600">
               Verre, aluminium ou inox — <strong className="font-semibold text-inkgreen">sur-mesure au millimètre ou en kit</strong>,
-              pour piscine, escalier, balcon et terrasse. Conformes NF P01-012, à prix d’usine.
+              à des prix ultra compétitifs, en direct d’usine.
             </p>
 
             {/* CTA — élément dominant du hero */}
