@@ -89,7 +89,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-lightgrid [mask-image:radial-gradient(ellipse_75%_65%_at_45%_20%,#000_35%,transparent_80%)]" />
         </div>
 
-        <Container className="relative grid items-center gap-14 py-16 lg:grid-cols-[1.02fr_0.98fr] lg:py-24">
+        <Container className="relative grid items-center gap-14 py-16 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12 lg:py-24">
           {/* copy */}
           <div className="animate-fade-up">
             <p className="flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">
@@ -106,10 +106,11 @@ export default function Home() {
               pour piscine, escalier, balcon et terrasse. Conformes NF P01-012, à prix d’usine.
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            {/* CTA — élément dominant du hero */}
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-stretch">
               <Link
                 href="/devis"
-                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-pine-700 py-4 pl-7 pr-6 text-base font-bold text-white shadow-lg shadow-pine-900/25 transition-all hover:-translate-y-0.5 hover:bg-pine-600 hover:shadow-xl hover:shadow-pine-900/30"
+                className="group inline-flex items-center justify-center gap-3 rounded-full bg-pine-700 px-8 py-[1.15rem] text-[1.05rem] font-bold text-white shadow-xl shadow-pine-900/30 transition-all hover:-translate-y-0.5 hover:bg-pine-600 hover:shadow-2xl hover:shadow-pine-900/35"
               >
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-white/15">
                   <Check className="h-4 w-4" />
@@ -119,9 +120,9 @@ export default function Home() {
               </Link>
               <a
                 href={phoneHref}
-                className="group inline-flex items-center justify-center gap-3 rounded-full border border-neutral-200/80 bg-white py-2.5 pl-3 pr-6 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-elevated"
+                className="group inline-flex items-center justify-center gap-3 rounded-full border-2 border-pine-700/15 bg-white py-2.5 pl-3 pr-6 transition-all hover:-translate-y-0.5 hover:border-pine-700/30"
               >
-                <span className="relative grid h-10 w-10 place-items-center rounded-full bg-pine-700 text-white">
+                <span className="relative grid h-11 w-11 place-items-center rounded-full bg-pine-700 text-white">
                   <Phone className="h-4 w-4 group-hover:animate-wiggle" />
                   <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
                 </span>
@@ -129,26 +130,35 @@ export default function Home() {
                   <span className="block font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-green-700">
                     Conseiller disponible
                   </span>
-                  <span className="block text-sm font-bold tracking-wide text-inkgreen">{site.phone}</span>
+                  <span className="block text-[0.95rem] font-bold tracking-wide text-inkgreen">
+                    {site.phone}
+                  </span>
                 </span>
               </a>
             </div>
 
-            {/* carte avis Google */}
-            <div className="mt-9 inline-flex items-center gap-4 rounded-2xl border border-neutral-200/70 bg-white py-3 pl-4 pr-5 shadow-card">
-              <GoogleG className="h-8 w-8" />
-              <span className="h-9 w-px bg-neutral-100" />
-              <span>
-                <span className="flex items-center gap-2">
-                  <span className="text-base font-extrabold tabular-nums text-inkgreen">5,0</span>
+            {/* ligne de confiance — visible mais secondaire */}
+            <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-neutral-200/80 pt-6">
+              <span className="flex items-center gap-2.5">
+                <GoogleG className="h-5 w-5 shrink-0" />
+                <span className="flex items-center gap-1.5">
                   <span className="flex gap-0.5">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="h-[15px] w-[15px] fill-amber-500 text-amber-500" />
+                      <Star key={i} className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                     ))}
                   </span>
+                  <span className="text-sm font-bold tabular-nums text-inkgreen">5,0</span>
                 </span>
-                <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
-                  Avis Google · clients vérifiés
+                <span className="text-sm text-neutral-500">sur Google</span>
+              </span>
+
+              <span className="hidden h-5 w-px bg-neutral-200 sm:block" />
+
+              <span className="flex items-center gap-2.5">
+                <ShieldCheck className="h-5 w-5 shrink-0 text-pine-600" />
+                <span className="text-sm text-neutral-600">
+                  <strong className="font-bold text-inkgreen">Conformes NF P01-012</strong> —
+                  certifiées à la fabrication
                 </span>
               </span>
             </div>
