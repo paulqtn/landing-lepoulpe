@@ -6,12 +6,11 @@ import {
   Check,
   ClipboardList,
   Phone,
-  Ruler,
   ShieldCheck,
   Star,
-  Truck,
   Zap,
 } from "lucide-react";
+import { AdvantagesBar } from "@/components/AdvantagesBar";
 import { HeroGallery, type HeroSlide } from "@/components/HeroGallery";
 import { GoogleG, MaterialScene, UsageGlyph } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
@@ -70,11 +69,16 @@ const steps = [
   { n: "04", title: "Pose ou livraison", desc: "Posé par notre réseau, ou livré chez vous prêt à poser, partout en France." },
 ];
 
-const perks = [
-  { icon: ClipboardList, label: "Devis détaillé", sub: "envoyé sous 24h" },
-  { icon: Ruler, label: "Sur-mesure", sub: "au millimètre près" },
-  { icon: ShieldCheck, label: "Conforme", sub: "norme NF P01-012" },
-  { icon: Truck, label: "Livraison", sub: "partout en France" },
+/** Avantages du bandeau défilant — volontairement distincts des arguments du hero. */
+const advantages = [
+  "Fabrication française",
+  "Zéro intermédiaire",
+  "Verre feuilleté sécurisé",
+  "Inox 316 qualité marine",
+  "Aluminium thermolaqué, toutes teintes RAL",
+  "Kits pré-percés, prêts à poser",
+  "Découpe au degré près pour vos escaliers",
+  "Conseil technique par nos experts",
 ];
 
 export default function Home() {
@@ -169,24 +173,10 @@ export default function Home() {
             <HeroGallery slides={heroSlides} />
           </div>
         </Container>
-
-        {/* bandeau réassurance */}
-        <div className="relative border-t border-neutral-200 bg-white">
-          <Container className="grid grid-cols-2 gap-x-6 gap-y-5 py-6 lg:grid-cols-4">
-            {perks.map((p) => (
-              <span key={p.label} className="flex items-center gap-3">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-pine-50 text-pine-700 ring-1 ring-pine-100/60">
-                  <p.icon className="h-5 w-5" />
-                </span>
-                <span className="leading-tight">
-                  <span className="block text-sm font-bold text-inkgreen">{p.label}</span>
-                  <span className="block text-xs text-neutral-500">{p.sub}</span>
-                </span>
-              </span>
-            ))}
-          </Container>
-        </div>
       </section>
+
+      {/* ================== BANDEAU AVANTAGES ================== */}
+      <AdvantagesBar items={advantages} />
 
       {/* ========================= MATÉRIAUX ========================= */}
       <section className="py-20 sm:py-28">
