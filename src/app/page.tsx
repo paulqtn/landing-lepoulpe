@@ -85,11 +85,13 @@ export default function Home() {
   return (
     <main>
       {/* ============================ HERO ============================ */}
-      <section className="relative overflow-hidden bg-mist">
+      <section className="relative overflow-hidden bg-gradient-to-b from-white via-mist to-pine-50/50">
         {/* fond en couches */}
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -left-32 -top-40 h-[30rem] w-[30rem] rounded-full bg-pine-100/70 blur-3xl" />
-          <div className="absolute -right-24 top-24 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl" />
+          {/* halo ambré derrière le visuel : chaleur et profondeur */}
+          <div className="absolute -right-20 -top-24 h-[34rem] w-[34rem] rounded-full bg-amber-500/[0.18] blur-[110px]" />
+          <div className="absolute -left-32 top-10 h-[30rem] w-[30rem] rounded-full bg-pine-200/50 blur-[100px]" />
+          <div className="absolute bottom-[-6rem] left-1/3 h-72 w-[28rem] rounded-full bg-amber-500/[0.07] blur-[90px]" />
           <div className="absolute inset-0 bg-lightgrid [mask-image:radial-gradient(ellipse_75%_65%_at_45%_20%,#000_35%,transparent_80%)]" />
         </div>
 
@@ -97,7 +99,7 @@ export default function Home() {
           {/* copy */}
           <div className="animate-fade-up">
             <p className="flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">
-              <span className="h-px w-10 bg-pine-600" />
+              <span className="h-[3px] w-10 rounded-full bg-amber-500" />
               Spécialiste garde-corps
             </p>
             <h1 className="mt-5 text-balance text-[2.7rem] font-extrabold leading-[1.0] tracking-tight text-inkgreen sm:text-6xl">
