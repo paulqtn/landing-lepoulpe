@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -6,6 +7,7 @@ import {
   Check,
   ClipboardList,
   Phone,
+  Scale,
   ShieldCheck,
   Star,
   Zap,
@@ -15,9 +17,9 @@ import { HeroGallery, type HeroSlide } from "@/components/HeroGallery";
 import { GoogleG, MaterialScene, UsageGlyph } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
-import { materials, usages } from "@/lib/catalog";
+import { usages } from "@/lib/catalog";
 import { guides } from "@/lib/guides";
-import { priceRanges } from "@/lib/pricing";
+import { priceRanges, type MaterialSlug } from "@/lib/pricing";
 import { products } from "@/lib/products";
 import { phoneHref, site } from "@/lib/site";
 
@@ -67,6 +69,67 @@ const steps = [
   { n: "02", title: "Devis détaillé en 24h", desc: "Un conseiller affine et vous envoie un devis poste par poste, gratuit et sans engagement." },
   { n: "03", title: "Fabrication d’usine", desc: "Sur-mesure au millimètre ou kit expédié : contrôle qualité avant chaque départ." },
   { n: "04", title: "Pose ou livraison", desc: "Posé par notre réseau, ou livré chez vous prêt à poser, partout en France." },
+];
+
+/**
+ * Cards du bloc matériaux : photo réelle, positionnement en une phrase,
+ * points forts différenciants et usages types — pour comparer d'un coup d'œil.
+ * Les prix viennent de `priceRanges` (source unique, aussi utilisée au devis).
+ */
+const materialCards: {
+  slug: MaterialSlug;
+  name: string;
+  tagline: string;
+  photo: string;
+  alt: string;
+  badge?: string;
+  points: [string, string][];
+  idealFor: string[];
+  cta: string;
+}[] = [
+  {
+    slug: "verre",
+    name: "Verre",
+    tagline: "La vue, sans obstacle",
+    photo: "/verre.jpeg",
+    alt: "Garde-corps en verre sur pinces inox le long d’une terrasse face à la mer",
+    points: [
+      ["Transparence totale", "la vue et la lumière, intactes"],
+      ["Feuilleté sécurisé", "en cas de choc, les éclats restent en place"],
+      ["Fixations discrètes", "sans montants, sur pinces ou profilé alu"],
+    ],
+    idealFor: ["Piscine", "Terrasse avec vue", "Intérieur design"],
+    cta: "Découvrir le verre",
+  },
+  {
+    slug: "aluminium",
+    name: "Aluminium",
+    tagline: "Le meilleur rapport qualité/prix",
+    photo: "/alu.webp",
+    alt: "Garde-corps aluminium anthracite, lisses et tôle perforée, sur une terrasse",
+    badge: "Le plus demandé",
+    points: [
+      ["Zéro entretien", "thermolaqué à vie, ni rouille ni peinture"],
+      ["Toutes teintes RAL", "anthracite, noir, blanc ou sur-mesure"],
+      ["Léger et rigide", "le plus simple à poser soi-même"],
+    ],
+    idealFor: ["Balcon", "Terrasse", "Budget maîtrisé"],
+    cta: "Découvrir l’aluminium",
+  },
+  {
+    slug: "inox",
+    name: "Inox",
+    tagline: "L’endurance absolue",
+    photo: "/inox.jpeg",
+    alt: "Garde-corps inox à barres horizontales sur un balcon en béton",
+    points: [
+      ["Inusable", "ne rouille pas, ne se déforme pas"],
+      ["Nuance 316 marine", "résiste au chlore et aux embruns"],
+      ["Trois remplissages", "câbles tendus, barres ou verre"],
+    ],
+    idealFor: ["Piscine", "Bord de mer", "Escalier"],
+    cta: "Découvrir l’inox",
+  },
 ];
 
 /** Avantages du bandeau défilant — volontairement distincts des arguments du hero. */
@@ -184,10 +247,15 @@ export default function Home() {
         <Container>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Nos garde-corps</p>
+              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Choisir son matériau</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                Trois matériaux, un même niveau d’exigence.
+                Verre, aluminium ou inox&nbsp;?
               </h2>
+              <p className="mt-3 max-w-xl leading-relaxed text-neutral-500">
+                Trois styles, trois budgets — chacun disponible en{" "}
+                <strong className="font-semibold text-inkgreen">kit prêt à poser</strong> ou en{" "}
+                <strong className="font-semibold text-inkgreen">sur-mesure au millimètre</strong>.
+              </p>
             </div>
             <Link href="/garde-corps" className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-pine-700">
               Tout le catalogue
@@ -195,55 +263,127 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {materials.map((m, i) => (
-              <Reveal key={m.slug} delay={i * 80}>
-                <Link
-                  href={`/garde-corps/${m.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-pine-300 hover:shadow-elevated"
-                >
-                  <div className="relative h-44 border-b border-neutral-100">
-                    <MaterialScene material={m.material!} className="h-full" />
-                    <span className="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500 shadow-sm backdrop-blur">
-                      0{i + 1}
-                    </span>
-                    <span className="absolute bottom-3 right-4 rounded-full bg-pine-900/85 px-3 py-1.5 text-xs font-bold text-white shadow-sm backdrop-blur">
-                      dès {priceRanges[m.material!].kit[0]} €<span className="font-medium text-pine-200">/ml</span>
-                    </span>
-                  </div>
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {materialCards.map((m, i) => {
+              const price = priceRanges[m.slug];
+              return (
+                <Reveal key={m.slug} delay={i * 80}>
+                  <Link
+                    href={`/garde-corps/${m.slug}`}
+                    className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-pine-300 hover:shadow-elevated"
+                  >
+                    {/* photo + identité */}
+                    <div className="relative h-60 overflow-hidden sm:h-64">
+                      <Image
+                        src={m.photo}
+                        alt={m.alt}
+                        fill
+                        sizes="(min-width: 1024px) 24rem, 100vw"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                      />
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-pine-950/90 via-pine-950/35 to-transparent" />
+                      <span className="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500 shadow-sm backdrop-blur">
+                        0{i + 1}
+                      </span>
+                      {m.badge && (
+                        <span className="absolute right-4 top-4 rounded-full bg-amber-500 px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-pine-950 shadow-lg">
+                          {m.badge}
+                        </span>
+                      )}
+                      <div className="absolute inset-x-5 bottom-4">
+                        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-100/90">
+                          {m.tagline}
+                        </p>
+                        <h3 className="mt-1 text-[1.7rem] font-extrabold leading-none text-white">{m.name}</h3>
+                      </div>
+                    </div>
 
-                  <div className="flex flex-1 flex-col p-6">
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-xl font-extrabold text-inkgreen transition-colors group-hover:text-pine-700">
-                        {m.title}
-                      </h3>
-                      <span className="flex gap-1.5">
-                        {["Kit", "Sur-mesure"].map((t) => (
-                          <span key={t} className="rounded-full bg-mist px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-neutral-500">
+                    {/* prix — mêmes repères sur les 3 cards pour comparer */}
+                    <div className="flex items-center justify-between gap-4 border-b border-neutral-100 bg-mist/50 px-6 py-4">
+                      <p>
+                        <span className="flex items-baseline gap-1.5">
+                          <span className="text-xs font-semibold text-neutral-400">dès</span>
+                          <span className="text-[1.75rem] font-extrabold tabular-nums tracking-tight text-inkgreen">
+                            {price.kit[0]}&nbsp;€
+                          </span>
+                          <span className="text-sm font-bold text-neutral-400">/ml</span>
+                        </span>
+                        <span className="block text-[11px] font-medium text-neutral-500">en kit, fourniture seule</span>
+                      </p>
+                      <p className="text-right">
+                        <span className="block text-base font-extrabold tabular-nums text-neutral-600">
+                          {price.pose[0]} – {price.pose[1]}&nbsp;€
+                          <span className="text-xs font-semibold text-neutral-400">/ml</span>
+                        </span>
+                        <span className="block text-[11px] font-medium text-neutral-500">avec pose incluse</span>
+                      </p>
+                    </div>
+
+                    {/* points forts propres au matériau */}
+                    <ul className="flex-1 space-y-3 px-6 py-5">
+                      {m.points.map(([b, d]) => (
+                        <li key={b} className="flex items-start gap-2.5 text-sm leading-snug">
+                          <span className="mt-px grid h-5 w-5 shrink-0 place-items-center rounded-full bg-pine-50 text-pine-700 ring-1 ring-pine-100/70">
+                            <Check className="h-3 w-3" strokeWidth={3} />
+                          </span>
+                          <span className="text-neutral-500">
+                            <strong className="font-bold text-inkgreen">{b}</strong> — {d}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* usages types */}
+                    <div className="px-6 pb-5">
+                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+                        Idéal pour
+                      </p>
+                      <span className="mt-2 flex flex-wrap gap-1.5">
+                        {m.idealFor.map((t) => (
+                          <span
+                            key={t}
+                            className="rounded-full bg-mist px-2.5 py-1 text-[11px] font-semibold text-neutral-600 ring-1 ring-neutral-200/80"
+                          >
                             {t}
                           </span>
                         ))}
                       </span>
                     </div>
-                    <ul className="mt-4 flex-1 space-y-2.5">
-                      {m.benefits.slice(0, 3).map((b) => (
-                        <li key={b.title} className="flex items-center gap-2.5 text-sm font-medium text-neutral-700">
-                          <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-pine-50 text-pine-700">
-                            <Check className="h-3 w-3" />
-                          </span>
-                          {b.title}
-                        </li>
-                      ))}
-                    </ul>
-                    <span className="mt-5 inline-flex items-center gap-1.5 border-t border-neutral-100 pt-4 text-sm font-bold text-pine-700">
-                      Découvrir le {m.name.toLowerCase()}
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </span>
-                  </div>
-                </Link>
-              </Reveal>
-            ))}
+
+                    {/* CTA */}
+                    <div className="mt-auto flex items-center justify-between border-t border-neutral-100 px-6 py-4">
+                      <span className="text-sm font-bold text-pine-700">{m.cta}</span>
+                      <span className="grid h-9 w-9 place-items-center rounded-full bg-pine-50 text-pine-700 transition-colors duration-300 group-hover:bg-pine-700 group-hover:text-white">
+                        <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
+                  </Link>
+                </Reveal>
+              );
+            })}
           </div>
+
+          {/* aide au choix */}
+          <Reveal delay={240}>
+            <div className="mt-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-neutral-200/80 bg-mist/60 px-6 py-5 sm:flex-row sm:items-center">
+              <p className="flex items-center gap-3.5 text-sm leading-snug text-neutral-600">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-pine-700 shadow-card ring-1 ring-neutral-200/60">
+                  <Scale className="h-5 w-5" />
+                </span>
+                <span>
+                  <strong className="font-bold text-inkgreen">Vous hésitez encore&nbsp;?</strong> Notre comparatif
+                  passe les trois matériaux en revue&nbsp;: prix, entretien, durabilité, esthétique.
+                </span>
+              </p>
+              <Link
+                href="/guides/quel-materiau-garde-corps"
+                className="group inline-flex shrink-0 items-center gap-2 rounded-full bg-pine-700 px-5 py-3 text-sm font-bold text-white shadow-md shadow-pine-900/15 transition-all hover:-translate-y-0.5 hover:bg-pine-600"
+              >
+                Lire le comparatif
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          </Reveal>
         </Container>
       </section>
 
