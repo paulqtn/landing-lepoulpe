@@ -71,7 +71,6 @@ const steps = [
 
 /** Avantages du bandeau défilant — volontairement distincts des arguments du hero. */
 const advantages = [
-  "Fabrication française",
   "Zéro intermédiaire",
   "Verre feuilleté sécurisé",
   "Inox 316 qualité marine",
