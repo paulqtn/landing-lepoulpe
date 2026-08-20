@@ -251,12 +251,16 @@ export function SiteHeader() {
           <div className="flex items-center gap-2">
             <Link
               href="/devis"
-              className="group inline-flex items-center gap-2 rounded-full bg-pine-700 py-2.5 pl-4 pr-3 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-pine-600 sm:pl-5 sm:pr-4"
+              className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-amber-500 py-2 pl-4 pr-2 text-sm font-bold text-pine-950 shadow-md shadow-amber-500/30 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 hover:shadow-lg hover:shadow-amber-500/40 sm:pl-5"
             >
+              {/* reflet qui balaie le bouton au survol */}
+              <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full" />
               <ClipboardList className="h-4 w-4" />
               <span className="hidden sm:inline">Estimer un tarif en direct</span>
               <span className="sm:hidden">Devis 1 min</span>
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-pine-950 text-amber-500 transition-transform duration-300 group-hover:translate-x-0.5">
+                <ArrowRight className="h-3.5 w-3.5" />
+              </span>
             </Link>
             <button
               type="button"
@@ -332,10 +336,11 @@ export function SiteHeader() {
               <Link
                 href="/devis"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-full bg-pine-700 px-5 py-3.5 text-sm font-bold text-white"
+                className="flex items-center justify-center gap-2 rounded-full bg-amber-500 px-5 py-3.5 text-sm font-bold text-pine-950 shadow-md shadow-amber-500/30 ring-1 ring-inset ring-white/40"
               >
                 <ClipboardList className="h-4 w-4" />
                 Estimer mon projet en 1 min
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
