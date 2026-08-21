@@ -93,7 +93,7 @@ const materialCards: {
     tagline: "La vue, sans obstacle",
     photo: "/verre.jpeg",
     alt: "Garde-corps en verre sur pinces inox le long d’une terrasse face à la mer",
-    badge: "Top produit",
+    badge: "Le plus demandé",
     points: [
       ["Transparence totale", "la vue et la lumière, intactes"],
       ["Feuilleté sécurisé", "en cas de choc, les éclats restent en place"],
@@ -122,6 +122,7 @@ const materialCards: {
     tagline: "L’endurance absolue",
     photo: "/inox.jpeg",
     alt: "Garde-corps inox à barres horizontales sur un balcon en béton",
+    badge: "Kit prix discount",
     points: [
       ["Inusable", "ne rouille pas, ne se déforme pas"],
       ["Nuance 316 marine", "résiste au chlore et aux embruns"],
@@ -284,11 +285,6 @@ export default function Home() {
                       <span className="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500 shadow-sm backdrop-blur">
                         0{i + 1}
                       </span>
-                      {m.badge && (
-                        <span className="absolute right-4 top-4 rounded-full bg-amber-500 px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-pine-950 shadow-lg">
-                          {m.badge}
-                        </span>
-                      )}
                       <div className="absolute inset-x-5 bottom-4">
                         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-100/90">
                           {m.tagline}
@@ -298,7 +294,7 @@ export default function Home() {
                     </div>
 
                     {/* prix — mêmes repères sur les 3 cards pour comparer */}
-                    <div className="flex items-center justify-between gap-4 border-b border-neutral-100 bg-mist/50 px-6 py-4">
+                    <div className="flex min-h-[6.25rem] items-center justify-between gap-4 border-b border-neutral-100 bg-mist/50 px-6 py-4">
                       <p>
                         <span className="flex items-baseline gap-1.5">
                           <span className="text-xs font-semibold text-neutral-400">dès</span>
@@ -307,9 +303,11 @@ export default function Home() {
                           </span>
                           <span className="text-sm font-bold text-neutral-400">/ml</span>
                         </span>
-                        <span className="mt-1.5 flex w-fit items-center rounded-full bg-amber-500 px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-pine-950 shadow-sm">
-                          Kit prix discount
-                        </span>
+                        {m.badge && (
+                          <span className="mt-1.5 flex w-fit items-center rounded-full bg-amber-500 px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-pine-950 shadow-sm">
+                            {m.badge}
+                          </span>
+                        )}
                       </p>
                       <p className="text-right">
                         <span className="block text-base font-extrabold tabular-nums text-neutral-600">
