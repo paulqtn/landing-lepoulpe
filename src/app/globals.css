@@ -44,6 +44,12 @@
   --animate-shimmer: shimmer 2.2s linear infinite;
 }
 
+/* Tailwind v4 réserve par défaut les styles hover: aux appareils à pointeur
+   (@media (hover: hover)) : au tap sur mobile, plus aucun retour visuel.
+   On restaure le comportement classique — hover actif partout où :hover
+   se déclenche, souris comme tactile. */
+@custom-variant hover (&:hover);
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
