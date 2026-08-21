@@ -93,6 +93,7 @@ const materialCards: {
     tagline: "La vue, sans obstacle",
     photo: "/verre.jpeg",
     alt: "Garde-corps en verre sur pinces inox le long d’une terrasse face à la mer",
+    badge: "Top produit",
     points: [
       ["Transparence totale", "la vue et la lumière, intactes"],
       ["Feuilleté sécurisé", "en cas de choc, les éclats restent en place"],
@@ -107,7 +108,6 @@ const materialCards: {
     tagline: "Le meilleur rapport qualité/prix",
     photo: "/alu.webp",
     alt: "Garde-corps aluminium anthracite, lisses et tôle perforée, sur une terrasse",
-    badge: "Le plus demandé",
     points: [
       ["Zéro entretien", "thermolaqué à vie, ni rouille ni peinture"],
       ["Toutes teintes RAL", "anthracite, noir, blanc ou sur-mesure"],
@@ -307,7 +307,9 @@ export default function Home() {
                           </span>
                           <span className="text-sm font-bold text-neutral-400">/ml</span>
                         </span>
-                        <span className="block text-[11px] font-medium text-neutral-500">en kit, fourniture seule</span>
+                        <span className="mt-1.5 flex w-fit items-center rounded-full bg-amber-500 px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-pine-950 shadow-sm">
+                          Kit prix discount
+                        </span>
                       </p>
                       <p className="text-right">
                         <span className="block text-base font-extrabold tabular-nums text-neutral-600">
