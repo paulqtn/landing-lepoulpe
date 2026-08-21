@@ -252,9 +252,8 @@ export default function Home() {
                 Verre, aluminium ou inox&nbsp;?
               </h2>
               <p className="mt-3 max-w-xl leading-relaxed text-neutral-500">
-                Trois styles, trois budgets — chacun disponible en{" "}
-                <strong className="font-semibold text-inkgreen">kit prêt à poser</strong> ou en{" "}
-                <strong className="font-semibold text-inkgreen">sur-mesure au millimètre</strong>.
+                <strong className="font-semibold text-inkgreen">À chaque projet son matériau</strong> —
+                comparez les prix et les points forts, et trouvez le vôtre en un coup d’œil.
               </p>
             </div>
             <Link href="/garde-corps" className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-pine-700">
