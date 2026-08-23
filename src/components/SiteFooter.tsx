@@ -87,7 +87,7 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-pine-100/50 sm:flex-row">
           <p>© {new Date().getFullYear()} {site.legalName}. Tous droits réservés.</p>
-          <p className="font-mono uppercase tracking-[0.15em]">Conforme NF P01-012 · Fabrication française</p>
+          <p className="font-mono uppercase tracking-[0.15em]">Conforme NF P01-012 · Direct usine</p>
         </div>
       </div>
     </footer>

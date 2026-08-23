@@ -6,20 +6,24 @@ import {
   ArrowUpRight,
   Check,
   ClipboardList,
+  HandCoins,
   Phone,
+  Ruler,
   Scale,
   ShieldCheck,
   Star,
+  Truck,
+  Warehouse,
   Zap,
 } from "lucide-react";
 import { AdvantagesBar } from "@/components/AdvantagesBar";
+import { FaqAccordion } from "@/components/FaqAccordion";
 import { HeroGallery, type HeroSlide } from "@/components/HeroGallery";
 import { GoogleG, MaterialScene, UsageGlyph } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
-import { usages } from "@/lib/catalog";
+import { materials, usages } from "@/lib/catalog";
 import { guides } from "@/lib/guides";
-import { priceRanges, type MaterialSlug } from "@/lib/pricing";
 import { products } from "@/lib/products";
 import { phoneHref, site } from "@/lib/site";
 
@@ -58,9 +62,9 @@ const heroSlides: HeroSlide[] = [
 ];
 
 export const metadata: Metadata = {
-  title: `Garde-corps en verre, alu & inox en direct usine | ${site.name}`,
+  title: `Garde-corps en verre sur-mesure & en kit, direct usine | ${site.name}`,
   description:
-    "Garde-corps en verre, aluminium et inox — sur-mesure au millimètre ou en kit, en direct usine. Piscine, escalier, balcon, terrasse. Devis détaillé en 24h.",
+    "Garde-corps en verre à prix direct usine : tout verre sans poteaux, sur pinces ou verre-aluminium. Sur-mesure au millimètre ou en kit, conforme NF P01-012. Devis en 24h.",
   alternates: { canonical: "/" },
 };
 
@@ -68,79 +72,94 @@ const steps = [
   { n: "01", title: "Configurez en 1 min", desc: "Projet, matériau, dimensions : le configurateur estime votre budget immédiatement." },
   { n: "02", title: "Devis détaillé en 24h", desc: "Un conseiller affine et vous envoie un devis poste par poste, gratuit et sans engagement." },
   { n: "03", title: "Fabrication d’usine", desc: "Sur-mesure au millimètre ou kit expédié : contrôle qualité avant chaque départ." },
-  { n: "04", title: "Pose ou livraison", desc: "Posé par notre réseau, ou livré chez vous prêt à poser, partout en France." },
+  { n: "04", title: "Pose ou livraison", desc: "Posé par notre réseau, ou livré prêt à poser sous 10 jours, partout en France." },
 ];
 
 /**
- * Cards du bloc matériaux : photo réelle, positionnement en une phrase,
- * points forts différenciants et usages types — pour comparer d'un coup d'œil.
- * Les prix viennent de `priceRanges` (source unique, aussi utilisée au devis).
+ * Cards des trois systèmes de garde-corps en verre : photo réelle,
+ * positionnement, prix comparables et points forts propres à la fixation.
  */
-const materialCards: {
-  slug: MaterialSlug;
+const systemCards: {
   name: string;
   tagline: string;
   photo: string;
   alt: string;
   badge?: string;
+  kitFrom: number;
+  poseRange: [number, number];
   points: [string, string][];
   idealFor: string[];
-  cta: string;
 }[] = [
   {
-    slug: "verre",
-    name: "Verre",
-    tagline: "La vue, sans obstacle",
-    photo: "/verre.jpeg",
-    alt: "Garde-corps en verre sur pinces inox le long d’une terrasse face à la mer",
+    name: "Tout verre, sans poteaux",
+    tagline: "Le plus épuré",
+    photo: "/verre-sur-rail.jpg",
+    alt: "Garde-corps tout verre sur profilé aluminium au sol, terrasse bois avec retour d’angle",
     badge: "Le plus demandé",
+    kitFrom: 320,
+    poseRange: [500, 800],
     points: [
-      ["Transparence totale", "la vue et la lumière, intactes"],
-      ["Feuilleté sécurisé", "en cas de choc, les éclats restent en place"],
-      ["Fixations discrètes", "sans montants, sur pinces ou profilé alu"],
+      ["Aucun montant vertical", "une ligne de verre continue, rien d’autre"],
+      ["Profilé alu au sol", "encastré ou en applique, angles et retours suivis"],
+      ["Trempé-feuilleté", "66.2 à 88.4 selon hauteur et portée"],
     ],
-    idealFor: ["Piscine", "Terrasse avec vue", "Intérieur design"],
-    cta: "Découvrir le verre",
+    idealFor: ["Piscine", "Terrasse avec vue", "Balcon design"],
   },
   {
-    slug: "aluminium",
-    name: "Aluminium",
-    tagline: "Le meilleur rapport qualité/prix",
-    photo: "/alu.webp",
-    alt: "Garde-corps aluminium anthracite, lisses et tôle perforée, sur une terrasse",
+    name: "Verre sur pinces",
+    tagline: "Le classique discret",
+    photo: "/pinces-au-sol.jpg",
+    alt: "Panneaux de verre sur pinces inox au sol autour d’une piscine",
+    kitFrom: 250,
+    poseRange: [450, 650],
     points: [
-      ["Zéro entretien", "thermolaqué à vie, ni rouille ni peinture"],
-      ["Toutes teintes RAL", "anthracite, noir, blanc ou sur-mesure"],
-      ["Léger et rigide", "le plus simple à poser soi-même"],
+      ["Pinces inox 316", "au sol, sur muret ou en fixation latérale"],
+      ["Feuilleté 44.2 / 55.2", "en cas de choc, les éclats restent en place"],
+      ["Pose accessible", "kits pré-percés, réglage fin à l’alignement"],
     ],
-    idealFor: ["Balcon", "Terrasse", "Budget maîtrisé"],
-    cta: "Découvrir l’aluminium",
+    idealFor: ["Muret", "Piscine", "Escalier"],
   },
   {
-    slug: "inox",
-    name: "Inox",
-    tagline: "L’endurance absolue",
-    photo: "/inox.jpeg",
-    alt: "Garde-corps inox à barres horizontales sur un balcon en béton",
+    name: "Verre & aluminium",
+    tagline: "Le meilleur €/ml",
+    photo: "/miroiterie_avignonnaise_garde-corps_verre-52.jpg.webp",
+    alt: "Garde-corps de balcon à structure aluminium noire et remplissage verre",
     badge: "Kit prix discount",
+    kitFrom: 200,
+    poseRange: [380, 600],
     points: [
-      ["Inusable", "ne rouille pas, ne se déforme pas"],
-      ["Nuance 316 marine", "résiste au chlore et aux embruns"],
-      ["Trois remplissages", "câbles tendus, barres ou verre"],
+      ["Structure alu thermolaquée", "toutes teintes RAL, assortie à vos menuiseries"],
+      ["Verre feuilleté 8,76 mm", "maintenu par pinces ou en feuillure"],
+      ["La vue, à petit prix", "les poteaux autorisent un vitrage plus fin"],
     ],
-    idealFor: ["Piscine", "Bord de mer", "Escalier"],
-    cta: "Découvrir l’inox",
+    idealFor: ["Balcon", "Terrasse", "Grands linéaires"],
   },
+];
+
+/** Mécanismes du prix discount — le « pourquoi c'est moins cher » du direct usine. */
+const discountReasons: { icon: typeof HandCoins; title: string; desc: string }[] = [
+  { icon: HandCoins, title: "Zéro intermédiaire", desc: "Du façonnage à votre chantier : aucune marge de grossiste ni de revendeur." },
+  { icon: Warehouse, title: "Stocks & direct usine", desc: "Dimensions courantes en stock, sur-mesure lancé dès la commande." },
+  { icon: Ruler, title: "Découpe incluse", desc: "Longueurs, hauteurs, angles et retours au millimètre — sans supplément caché." },
+  { icon: Truck, title: "Livraison rapide", desc: "Expédition partout en France métropolitaine, sous 10 jours depuis nos stocks." },
+];
+
+/** Points du bloc sur-mesure — la découpe d'usine, argument clé du site. */
+const surMesurePoints: [string, string][] = [
+  ["Longueurs & hauteurs au millimètre", "chaque travée façonnée à la cote exacte"],
+  ["Angles au degré près", "escaliers et pentes suivis parfaitement"],
+  ["Retours & découpes spéciales", "angles rentrants, biseaux, décalages"],
+  ["Alignement soigné", "travées calepinées pour une ligne continue"],
 ];
 
 /** Avantages du bandeau défilant — volontairement distincts des arguments du hero. */
 const advantages = [
   "Zéro intermédiaire",
   "Verre feuilleté sécurisé",
-  "Inox 316 qualité marine",
-  "Aluminium thermolaqué, toutes teintes RAL",
+  "Livré partout en France en 10 jours",
+  "Découpe sur mesure : longueurs, hauteurs, angles",
+  "Pinces & visserie inox 316",
   "Kits pré-percés, prêts à poser",
-  "Découpe au degré près pour vos escaliers",
   "Conseil technique par nos experts",
 ];
 
@@ -246,18 +265,18 @@ export default function Home() {
       {/* ================== BANDEAU AVANTAGES ================== */}
       <AdvantagesBar items={advantages} />
 
-      {/* ========================= MATÉRIAUX ========================= */}
+      {/* ==================== SYSTÈMES (gamme verre) ==================== */}
       <section className="py-20 sm:py-28">
         <Container>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Choisir son matériau</p>
+              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">La gamme verre</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                Verre, aluminium ou inox&nbsp;?
+                Trois systèmes, un même verre sécurisé.
               </h2>
               <p className="mt-3 max-w-xl leading-relaxed text-neutral-500">
-                <strong className="font-semibold text-inkgreen">À chaque projet son matériau</strong> —
-                comparez les prix et les points forts, et trouvez le vôtre en un coup d’œil.
+                <strong className="font-semibold text-inkgreen">À chaque projet son système de fixation</strong> —
+                comparez les prix et les points forts, et choisissez en un coup d’œil.
               </p>
             </div>
             <Link href="/garde-corps" className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-pine-700">
@@ -267,102 +286,99 @@ export default function Home() {
           </div>
 
           <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {materialCards.map((m, i) => {
-              const price = priceRanges[m.slug];
-              return (
-                <Reveal key={m.slug} delay={i * 80}>
-                  <Link
-                    href={`/garde-corps/${m.slug}`}
-                    className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-pine-300 hover:shadow-elevated"
-                  >
-                    {/* photo + identité */}
-                    <div className="relative h-60 overflow-hidden sm:h-64">
-                      <Image
-                        src={m.photo}
-                        alt={m.alt}
-                        fill
-                        sizes="(min-width: 1024px) 24rem, 100vw"
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
-                      />
-                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-pine-950/90 via-pine-950/35 to-transparent" />
-                      <span className="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500 shadow-sm backdrop-blur">
-                        0{i + 1}
+            {systemCards.map((m, i) => (
+              <Reveal key={m.name} delay={i * 80}>
+                <Link
+                  href="/devis"
+                  className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-pine-300 hover:shadow-elevated"
+                >
+                  {/* photo + identité */}
+                  <div className="relative h-60 overflow-hidden sm:h-64">
+                    <Image
+                      src={m.photo}
+                      alt={m.alt}
+                      fill
+                      sizes="(min-width: 1024px) 24rem, 100vw"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                    />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-pine-950/90 via-pine-950/35 to-transparent" />
+                    <span className="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500 shadow-sm backdrop-blur">
+                      0{i + 1}
+                    </span>
+                    <div className="absolute inset-x-5 bottom-4">
+                      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-100/90">
+                        {m.tagline}
+                      </p>
+                      <h3 className="mt-1 text-2xl font-extrabold leading-none text-white">{m.name}</h3>
+                    </div>
+                  </div>
+
+                  {/* prix — mêmes repères sur les 3 cards pour comparer */}
+                  <div className="flex min-h-[6.25rem] items-center justify-between gap-4 border-b border-neutral-100 bg-mist/50 px-6 py-4">
+                    <p>
+                      <span className="flex items-baseline gap-1.5">
+                        <span className="text-xs font-semibold text-neutral-400">dès</span>
+                        <span className="text-[1.75rem] font-extrabold tabular-nums tracking-tight text-inkgreen">
+                          {m.kitFrom}&nbsp;€
+                        </span>
+                        <span className="text-sm font-bold text-neutral-400">/ml</span>
                       </span>
-                      <div className="absolute inset-x-5 bottom-4">
-                        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-100/90">
-                          {m.tagline}
-                        </p>
-                        <h3 className="mt-1 text-[1.7rem] font-extrabold leading-none text-white">{m.name}</h3>
-                      </div>
-                    </div>
-
-                    {/* prix — mêmes repères sur les 3 cards pour comparer */}
-                    <div className="flex min-h-[6.25rem] items-center justify-between gap-4 border-b border-neutral-100 bg-mist/50 px-6 py-4">
-                      <p>
-                        <span className="flex items-baseline gap-1.5">
-                          <span className="text-xs font-semibold text-neutral-400">dès</span>
-                          <span className="text-[1.75rem] font-extrabold tabular-nums tracking-tight text-inkgreen">
-                            {price.kit[0]}&nbsp;€
-                          </span>
-                          <span className="text-sm font-bold text-neutral-400">/ml</span>
+                      {m.badge && (
+                        <span className="mt-1.5 flex w-fit items-center rounded-full bg-amber-500 px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-pine-950 shadow-sm">
+                          {m.badge}
                         </span>
-                        {m.badge && (
-                          <span className="mt-1.5 flex w-fit items-center rounded-full bg-amber-500 px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-pine-950 shadow-sm">
-                            {m.badge}
-                          </span>
-                        )}
-                      </p>
-                      <p className="text-right">
-                        <span className="block text-base font-extrabold tabular-nums text-neutral-600">
-                          {price.pose[0]} – {price.pose[1]}&nbsp;€
-                          <span className="text-xs font-semibold text-neutral-400">/ml</span>
-                        </span>
-                        <span className="block text-[11px] font-medium text-neutral-500">avec pose incluse</span>
-                      </p>
-                    </div>
+                      )}
+                    </p>
+                    <p className="text-right">
+                      <span className="block text-base font-extrabold tabular-nums text-neutral-600">
+                        {m.poseRange[0]} – {m.poseRange[1]}&nbsp;€
+                        <span className="text-xs font-semibold text-neutral-400">/ml</span>
+                      </span>
+                      <span className="block text-[11px] font-medium text-neutral-500">avec pose incluse</span>
+                    </p>
+                  </div>
 
-                    {/* points forts propres au matériau */}
-                    <ul className="flex-1 space-y-3 px-6 py-5">
-                      {m.points.map(([b, d]) => (
-                        <li key={b} className="flex items-start gap-2.5 text-sm leading-snug">
-                          <span className="mt-px grid h-5 w-5 shrink-0 place-items-center rounded-full bg-pine-50 text-pine-700 ring-1 ring-pine-100/70">
-                            <Check className="h-3 w-3" strokeWidth={3} />
-                          </span>
-                          <span className="text-neutral-500">
-                            <strong className="font-bold text-inkgreen">{b}</strong> — {d}
-                          </span>
-                        </li>
+                  {/* points forts propres au système */}
+                  <ul className="flex-1 space-y-3 px-6 py-5">
+                    {m.points.map(([b, d]) => (
+                      <li key={b} className="flex items-start gap-2.5 text-sm leading-snug">
+                        <span className="mt-px grid h-5 w-5 shrink-0 place-items-center rounded-full bg-pine-50 text-pine-700 ring-1 ring-pine-100/70">
+                          <Check className="h-3 w-3" strokeWidth={3} />
+                        </span>
+                        <span className="text-neutral-500">
+                          <strong className="font-bold text-inkgreen">{b}</strong> — {d}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* usages types */}
+                  <div className="px-6 pb-5">
+                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+                      Idéal pour
+                    </p>
+                    <span className="mt-2 flex flex-wrap gap-1.5">
+                      {m.idealFor.map((t) => (
+                        <span
+                          key={t}
+                          className="rounded-full bg-mist px-2.5 py-1 text-[11px] font-semibold text-neutral-600 ring-1 ring-neutral-200/80"
+                        >
+                          {t}
+                        </span>
                       ))}
-                    </ul>
+                    </span>
+                  </div>
 
-                    {/* usages types */}
-                    <div className="px-6 pb-5">
-                      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-                        Idéal pour
-                      </p>
-                      <span className="mt-2 flex flex-wrap gap-1.5">
-                        {m.idealFor.map((t) => (
-                          <span
-                            key={t}
-                            className="rounded-full bg-mist px-2.5 py-1 text-[11px] font-semibold text-neutral-600 ring-1 ring-neutral-200/80"
-                          >
-                            {t}
-                          </span>
-                        ))}
-                      </span>
-                    </div>
-
-                    {/* CTA */}
-                    <div className="mt-auto flex items-center justify-between border-t border-neutral-100 px-6 py-4">
-                      <span className="text-sm font-bold text-pine-700">{m.cta}</span>
-                      <span className="grid h-9 w-9 place-items-center rounded-full bg-pine-50 text-pine-700 transition-colors duration-300 group-hover:bg-pine-700 group-hover:text-white">
-                        <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
-                      </span>
-                    </div>
-                  </Link>
-                </Reveal>
-              );
-            })}
+                  {/* CTA */}
+                  <div className="mt-auto flex items-center justify-between border-t border-neutral-100 px-6 py-4">
+                    <span className="text-sm font-bold text-pine-700">Estimer ce système</span>
+                    <span className="grid h-9 w-9 place-items-center rounded-full bg-pine-50 text-pine-700 transition-colors duration-300 group-hover:bg-pine-700 group-hover:text-white">
+                      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+                    </span>
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
           </div>
 
           {/* aide au choix */}
@@ -373,15 +389,15 @@ export default function Home() {
                   <Scale className="h-5 w-5" />
                 </span>
                 <span>
-                  <strong className="font-bold text-inkgreen">Vous hésitez encore&nbsp;?</strong> Notre comparatif
-                  passe les trois matériaux en revue&nbsp;: prix, entretien, durabilité, esthétique.
+                  <strong className="font-bold text-inkgreen">Quel verre choisir&nbsp;?</strong> Feuilleté, trempé,
+                  44.2 ou 55.2 — notre guide décortique épaisseurs, normes et usages.
                 </span>
               </p>
               <Link
-                href="/guides/quel-materiau-garde-corps"
+                href="/guides/quel-verre-garde-corps"
                 className="group inline-flex shrink-0 items-center gap-2 rounded-full bg-pine-700 px-5 py-3 text-sm font-bold text-white shadow-md shadow-pine-900/15 transition-all hover:-translate-y-0.5 hover:bg-pine-600"
               >
-                Lire le comparatif
+                Lire le guide du verre
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
@@ -389,6 +405,94 @@ export default function Home() {
         </Container>
       </section>
 
+      {/* ==================== PRIX DISCOUNT (direct usine) ==================== */}
+      <section className="pb-20 sm:pb-28">
+        <Container>
+          <Reveal>
+            <div className="relative overflow-hidden rounded-[2rem] bg-pine-900 px-6 py-14 text-white shadow-panel sm:px-12 sm:py-16">
+              <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
+              <div className="pointer-events-none absolute -right-28 -top-28 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-pine-500/20 blur-3xl" />
+
+              <div className="relative grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+                <div>
+                  <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-amber-500">Direct usine</p>
+                  <h2 className="mt-2 text-balance text-3xl font-extrabold leading-[1.05] text-white sm:text-4xl">
+                    Le prix discount, sans rogner sur le verre.
+                  </h2>
+                  <p className="mt-4 max-w-lg leading-relaxed text-pine-100/75">
+                    Le même verre feuilleté certifié, sans les marges d’intermédiaires :
+                    voilà tout le secret. Fabrication et stocks en direct, découpe incluse.
+                  </p>
+
+                  <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                    {discountReasons.map((r) => (
+                      <div key={r.title} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5">
+                        <span className="grid h-9 w-9 place-items-center rounded-lg bg-amber-500/15 text-amber-500">
+                          <r.icon className="h-5 w-5" />
+                        </span>
+                        <h3 className="mt-3 text-sm font-extrabold text-white">{r.title}</h3>
+                        <p className="mt-1 text-xs leading-relaxed text-pine-100/70">{r.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* circuit court vs circuit classique */}
+                <div className="rounded-2xl border border-white/10 bg-black/25 p-6 sm:p-7">
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-300">
+                    Circuit classique
+                  </p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    {["Usine", "Grossiste", "Revendeur", "Vous"].map((step, i) => (
+                      <span key={step} className="flex items-center gap-2">
+                        <span className="rounded-full border border-white/15 bg-white/[0.05] px-3 py-1.5 text-xs font-semibold text-pine-100/70">
+                          {step}
+                        </span>
+                        {i < 3 && <ArrowRight className="h-3.5 w-3.5 text-pine-100/40" />}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="mt-2.5 text-xs text-pine-100/50">3 marges empilées avant votre devis.</p>
+
+                  <div className="my-6 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500">
+                    Chez nous
+                  </p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-amber-500 px-3.5 py-1.5 text-xs font-bold text-pine-950 shadow-md shadow-amber-500/20">
+                      Usine
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-amber-500" />
+                    <span className="rounded-full bg-amber-500 px-3.5 py-1.5 text-xs font-bold text-pine-950 shadow-md shadow-amber-500/20">
+                      Vous
+                    </span>
+                  </div>
+                  <p className="mt-2.5 text-xs text-pine-100/70">Un seul prix : celui de la fabrication.</p>
+
+                  <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                    <Link
+                      href="/devis"
+                      className="group inline-flex items-center justify-center gap-2 rounded-full bg-white py-3.5 pl-6 pr-5 text-sm font-bold text-pine-800 shadow-xl shadow-black/20 transition-all hover:-translate-y-0.5"
+                    >
+                      Estimer mon garde-corps
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                    <a
+                      href={phoneHref}
+                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white/10 px-6 py-3.5 text-sm font-bold text-white ring-1 ring-white/20 transition-all hover:bg-white/15"
+                    >
+                      <Phone className="h-4 w-4" />
+                      {site.phone}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </Container>
+      </section>
       {/* ========================== USAGES =========================== */}
       <section className="border-y border-neutral-200 bg-mist py-20 sm:py-28">
         <Container>
@@ -396,7 +500,7 @@ export default function Home() {
             <div>
               <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Par usage</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                Un garde-corps pour chaque configuration.
+                Un garde-corps en verre pour chaque configuration.
               </h2>
             </div>
             <p className="max-w-xs text-sm leading-relaxed text-neutral-500">
@@ -428,14 +532,84 @@ export default function Home() {
         </Container>
       </section>
 
-      {/* ====================== PRODUITS PHARES ====================== */}
+      {/* ======================= SUR-MESURE USINE ======================= */}
       <section className="py-20 sm:py-28">
+        <Container className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
+          <div>
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Atelier de découpe</p>
+            <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+              Le sur-mesure au millimètre, vraiment.
+            </h2>
+            <p className="mt-4 max-w-lg leading-relaxed text-neutral-600">
+              Chaque panneau est façonné à vos cotes en usine : envoyez vos mesures,
+              le verre arrive prêt à poser, aligné d’un bout à l’autre.
+            </p>
+
+            <ul className="mt-7 space-y-4">
+              {surMesurePoints.map(([b, d]) => (
+                <li key={b} className="flex items-start gap-3">
+                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-pine-700 text-white shadow-sm">
+                    <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                  </span>
+                  <span className="text-[0.95rem] leading-snug text-neutral-500">
+                    <strong className="font-bold text-inkgreen">{b}</strong> — {d}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8 flex flex-col items-start gap-4 rounded-2xl border border-neutral-200/80 bg-mist/60 p-5 sm:flex-row sm:items-center">
+              <p className="flex-1 text-sm leading-relaxed text-neutral-600">
+                <strong className="font-bold text-inkgreen">Un doute sur la prise de cotes&nbsp;?</strong>{" "}
+                Nos conseillers vérifient chaque dimension avec vous avant de lancer la fabrication.
+              </p>
+              <a
+                href={phoneHref}
+                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-inkgreen shadow-card transition-all hover:-translate-y-0.5"
+              >
+                <Phone className="h-4 w-4 text-pine-600" />
+                {site.phone}
+              </a>
+            </div>
+          </div>
+
+          {/* photo annotée : les cotes prises en charge */}
+          <Reveal delay={120}>
+            <div className="relative">
+              <div className="pointer-events-none absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-pine-200/50 via-transparent to-amber-500/10" />
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10">
+                <Image
+                  src="/rail-encastre.jpg"
+                  alt="Garde-corps tout verre sur rail encastré, terrasse face à la mer"
+                  fill
+                  sizes="(min-width: 1024px) 40rem, 100vw"
+                  className="object-cover"
+                />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-pine-950/70 to-transparent" />
+                {/* cotes flottantes */}
+                <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-inkgreen shadow-sm backdrop-blur">
+                  H · 1 000 mm
+                </span>
+                <span className="absolute right-4 top-1/3 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-inkgreen shadow-sm backdrop-blur">
+                  ∠ au degré près
+                </span>
+                <span className="absolute bottom-4 left-4 rounded-full bg-amber-500 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-pine-950 shadow-md">
+                  L · au millimètre
+                </span>
+              </div>
+            </div>
+          </Reveal>
+        </Container>
+      </section>
+
+      {/* ====================== PRODUITS PHARES ====================== */}
+      <section className="border-t border-neutral-200 bg-mist py-20 sm:py-28">
         <Container>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Kits en direct usine</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                Les kits les plus demandés.
+                Les kits verre les plus demandés.
               </h2>
             </div>
             <Link href="/produits" className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-pine-700">
@@ -445,7 +619,7 @@ export default function Home() {
           </div>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {products.slice(0, 4).map((p, i) => (
+            {products.filter((p) => p.material === "verre").slice(0, 4).map((p, i) => (
               <Reveal key={p.slug} delay={i * 60}>
                 <Link
                   href={`/produits/${p.slug}`}
@@ -487,7 +661,7 @@ export default function Home() {
       </section>
 
       {/* ========================== ÉTAPES =========================== */}
-      <section className="border-y border-neutral-200 bg-mist py-20 sm:py-28">
+      <section className="py-20 sm:py-28">
         <Container>
           <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Comment ça marche</p>
           <h2 className="mt-2 max-w-xl text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
@@ -512,7 +686,7 @@ export default function Home() {
       </section>
 
       {/* ========================== GUIDES =========================== */}
-      <section className="py-20 sm:py-28">
+      <section className="border-y border-neutral-200 bg-mist py-20 sm:py-28">
         <Container>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -555,6 +729,61 @@ export default function Home() {
         </Container>
       </section>
 
+      {/* =========================== FAQ ============================ */}
+      <section className="py-20 sm:py-28">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: materials[0].faq.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            }),
+          }}
+        />
+        <Container className="grid gap-12 lg:grid-cols-[1fr_0.42fr]">
+          <div>
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Questions fréquentes</p>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+              Le garde-corps en verre, en 4 réponses.
+            </h2>
+            <div className="mt-8">
+              <FaqAccordion faq={materials[0].faq} />
+            </div>
+          </div>
+
+          <div className="lg:pt-24">
+            <div className="rounded-2xl border border-neutral-200/80 bg-mist/60 p-6">
+              <p className="text-base font-extrabold text-inkgreen">Une question plus précise&nbsp;?</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">
+                Normes, épaisseur de verre, fixation sur votre support : un conseiller
+                vous répond directement.
+              </p>
+              <div className="mt-5 space-y-2.5">
+                <a
+                  href={phoneHref}
+                  className="flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-inkgreen shadow-card transition-all hover:-translate-y-0.5"
+                >
+                  <Phone className="h-4 w-4 text-pine-600" />
+                  {site.phone}
+                </a>
+                <Link
+                  href="/guides"
+                  className="flex items-center justify-center gap-2 rounded-full border border-pine-700/15 bg-transparent px-5 py-3 text-sm font-bold text-pine-700 transition-all hover:border-pine-700/30"
+                >
+                  Parcourir tous les guides
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
       {/* ========================= CTA FINAL ========================= */}
       <section className="pb-20 sm:pb-28">
         <Container>
@@ -570,7 +799,7 @@ export default function Home() {
                     <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                     Dernière étape
                   </span>
-                  <h2 className="mt-5 text-balance text-3xl font-extrabold leading-[1.03] sm:text-5xl">
+                  <h2 className="mt-5 text-balance text-3xl font-extrabold leading-[1.03] text-white sm:text-5xl">
                     Votre devis personnalisé,
                     <br />
                     <em className="italic text-pine-200">en 24 h chrono.</em>
@@ -592,17 +821,17 @@ export default function Home() {
                   <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                     <Link
                       href="/devis"
-                      className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-white py-4 pl-7 pr-6 text-base font-bold text-pine-800 shadow-xl shadow-black/20 transition-all hover:-translate-y-0.5"
+                      className="group inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-white py-4 pl-7 pr-6 text-base font-bold text-pine-800 shadow-xl shadow-black/20 transition-all hover:-translate-y-0.5"
                     >
-                      <ClipboardList className="h-5 w-5" />
+                      <ClipboardList className="h-5 w-5 shrink-0" />
                       Estimer mon projet en 1 min
-                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+                      <ArrowRight className="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-0.5" />
                     </Link>
                     <a
                       href={phoneHref}
-                      className="inline-flex items-center justify-center gap-2.5 rounded-full bg-white/10 px-7 py-4 text-base font-bold text-white ring-1 ring-white/20 transition-all hover:bg-white/15"
+                      className="inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-white/10 px-7 py-4 text-base font-bold text-white ring-1 ring-white/20 transition-all hover:bg-white/15"
                     >
-                      <Phone className="h-5 w-5" />
+                      <Phone className="h-5 w-5 shrink-0" />
                       ou {site.phone}
                     </a>
                   </div>
@@ -613,7 +842,7 @@ export default function Home() {
                   <div className="absolute inset-x-6 -bottom-4 top-8 rotate-3 rounded-2xl bg-white/10" />
                   <div className="relative rotate-2 overflow-hidden rounded-2xl bg-white shadow-panel">
                     <div className="group relative h-20 border-b border-neutral-100">
-                      <MaterialScene material="inox" className="h-full" />
+                      <MaterialScene material="verre" className="h-full" />
                     </div>
                     <div className="p-6">
                       <div className="flex items-center justify-between">
@@ -622,17 +851,17 @@ export default function Home() {
                       </div>
                       <div className="mt-4 space-y-2.5">
                         <div className="flex justify-between text-sm">
-                          <span className="font-semibold text-inkgreen">Garde-corps inox 316</span>
-                          <span className="font-bold tabular-nums text-inkgreen">1 240 €</span>
+                          <span className="font-semibold text-inkgreen">Garde-corps tout verre</span>
+                          <span className="font-bold tabular-nums text-inkgreen">1 950 €</span>
                         </div>
                         <div className="flex justify-between text-xs text-neutral-400">
-                          <span>5 ml · barres Ø 12 mm</span>
+                          <span>5 ml · verre feuilleté 66.2</span>
                           <span>TVA 10 %</span>
                         </div>
                       </div>
                       <div className="mt-4 flex items-center justify-between rounded-xl bg-pine-900 px-4 py-3">
                         <span className="font-mono text-[10px] font-bold uppercase tracking-wide text-pine-200">Total TTC</span>
-                        <span className="text-xl font-extrabold tabular-nums text-white">1 364 €</span>
+                        <span className="text-xl font-extrabold tabular-nums text-white">2 145 €</span>
                       </div>
                     </div>
                   </div>
