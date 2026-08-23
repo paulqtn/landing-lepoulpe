@@ -23,19 +23,19 @@ import { priceRanges, type MaterialSlug } from "@/lib/pricing";
 import { products } from "@/lib/products";
 import { phoneHref, site } from "@/lib/site";
 
-/** Réalisations mises en avant dans le hero (défilement en fondu). */
+/** Réalisations mises en avant dans le hero (défilement en fondu) — 100 % verre. */
 const heroSlides: HeroSlide[] = [
-  {
-    src: "/garde-corps-terrasse-scaled-3.jpg",
-    alt: "Garde-corps à lisses horizontales sur une terrasse avec vue panoramique",
-    material: "Aluminium · lisses horizontales",
-    place: "Terrasse panoramique",
-  },
   {
     src: "/Miroiterie-Degivry_Toulon-Var_Garde-corps-verre-Piscine.jpeg",
     alt: "Garde-corps en verre sans montants autour d’une piscine à débordement face à la mer",
     material: "Verre · sans montants",
     place: "Piscine à débordement",
+  },
+  {
+    src: "/verre.jpeg",
+    alt: "Garde-corps en verre sur pinces inox le long d’une promenade face à la mer",
+    material: "Verre · pinces inox",
+    place: "Front de mer",
   },
   {
     src: "/1713357460128.jpg",
@@ -44,16 +44,16 @@ const heroSlides: HeroSlide[] = [
     place: "Plage de piscine",
   },
   {
-    src: "/garde-corps-exterieur-terrasse-cables-acier-et-verre.jpg",
-    alt: "Garde-corps de balcon en aluminium noir avec remplissage verre et câbles inox",
-    material: "Mixte · verre & câbles",
-    place: "Balcon contemporain",
+    src: "/module-verre-invisible-sur-mesure-ht-1m15.jpg",
+    alt: "Garde-corps en verre autoportant sur pinces autour d’un bassin",
+    material: "Verre · autoportant",
+    place: "Barrière de bassin",
   },
   {
-    src: "/garde-corps-aluminium-barreaude-yana-kostum.jpg",
-    alt: "Garde-corps en aluminium à barreaudage vertical sur une terrasse en bois",
-    material: "Aluminium · barreaudage",
-    place: "Terrasse bois",
+    src: "/garde-corps-exterieur-terrasse-cables-acier-et-verre.jpg",
+    alt: "Garde-corps en verre sur structure aluminium noire, balcon contemporain",
+    material: "Verre & aluminium",
+    place: "Balcon contemporain",
   },
 ];
 
@@ -168,11 +168,14 @@ export default function Home() {
             <h1 className="mt-5 text-balance text-[2.7rem] font-extrabold leading-[1.0] tracking-tight text-inkgreen sm:text-6xl">
               Garde-corps
               <br />
-              <em className="italic text-pine-600">en direct usine.</em>
+              <em className="italic text-pine-600">en verre.</em>
+              <span className="ml-3 inline-flex -rotate-2 items-center whitespace-nowrap rounded-lg bg-amber-500 px-3 py-1.5 align-middle font-mono text-[11px] font-bold not-italic uppercase tracking-[0.14em] text-pine-950 shadow-md sm:ml-4 sm:-translate-y-1 sm:text-xs">
+                Direct usine
+              </span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-neutral-600">
-              Verre, aluminium ou inox — <strong className="font-semibold text-inkgreen">sur-mesure au millimètre ou en kit</strong>,
-              à des prix ultra compétitifs, en direct d’usine.
+              <strong className="font-semibold text-inkgreen">Sur-mesure au millimètre ou en kit</strong>,
+              à des prix ultra compétitifs.
             </p>
 
             {/* CTA — élément dominant du hero */}
