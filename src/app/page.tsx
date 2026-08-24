@@ -19,6 +19,7 @@ import {
 import { AdvantagesBar } from "@/components/AdvantagesBar";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { HeroGallery, type HeroSlide } from "@/components/HeroGallery";
+import { LiveEstimator } from "@/components/LiveEstimator";
 import { GoogleG, MaterialScene, UsageGlyph } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -265,12 +266,31 @@ export default function Home() {
       {/* ================== BANDEAU AVANTAGES ================== */}
       <AdvantagesBar items={advantages} />
 
+      {/* ================== CONFIGURATEUR EXPRESS ================== */}
+      <section className="border-b border-neutral-200 bg-mist py-16 sm:py-20">
+        <Container>
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Devis express</p>
+            <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+              Un seul produit&nbsp;: le vôtre. Configurez-le en direct.
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl leading-relaxed text-neutral-500">
+              Système, longueur, hauteur, formule — le budget s’affiche instantanément,
+              le devis détaillé arrive sous 24h.
+            </p>
+          </div>
+          <div className="mx-auto mt-10 max-w-5xl">
+            <LiveEstimator />
+          </div>
+        </Container>
+      </section>
+
       {/* ==================== SYSTÈMES (gamme verre) ==================== */}
       <section className="py-20 sm:py-28">
         <Container>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">La gamme verre</p>
+              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Comparer les systèmes</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
                 Trois systèmes, un même verre sécurisé.
               </h2>

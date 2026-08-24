@@ -10,7 +10,42 @@ export const metadata: Metadata = {
   alternates: { canonical: "/devis" },
 };
 
-export default function DevisPage() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+/** Transforme les paramètres du configurateur express en pré-remplissage du tunnel. */
+function defaultsFrom(sp: Record<string, string | string[] | undefined>) {
+  const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+  const defaults: {
+    materiau?: "verre";
+    lineaire?: string;
+    hauteur?: string;
+    formule?: "kit" | "pose";
+  } = {};
+
+  const sys = one(sp.sys);
+  if (sys === "sans-poteaux" || sys === "pinces" || sys === "verre-alu") {
+    defaults.materiau = "verre";
+  }
+
+  const len = Number(one(sp.len));
+  if (Number.isFinite(len) && len > 0) {
+    defaults.lineaire = len < 3 ? "lt3" : len <= 6 ? "3-6" : len <= 12 ? "6-12" : "gt12";
+  }
+
+  const h = one(sp.h);
+  if (h === "100" || h === "110") defaults.hauteur = h;
+
+  const pose = one(sp.pose);
+  if (pose === "kit" || pose === "pose") defaults.formule = pose;
+
+  return defaults;
+}
+
+export default async function DevisPage({ searchParams }: { searchParams: SearchParams }) {
+  const defaults = defaultsFrom(await searchParams);
+  const prefilled = Object.keys(defaults).length > 0;
+
   return (
     <main className="bg-mist">
       <Container className="py-14 sm:py-20">
@@ -22,12 +57,13 @@ export default function DevisPage() {
             Votre garde-corps, estimé en 1 minute.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-neutral-600">
-            Décrivez votre projet : l’estimation s’affiche immédiatement, et le
-            devis détaillé arrive sous 24h. Gratuit, sans engagement.
+            {prefilled
+              ? "Votre configuration est déjà reportée — il ne reste que l’essentiel : votre projet et où envoyer le devis."
+              : "Décrivez votre projet : l’estimation s’affiche immédiatement, et le devis détaillé arrive sous 24h. Gratuit, sans engagement."}
           </p>
         </div>
         <div className="mx-auto mt-12 max-w-5xl">
-          <Configurator />
+          <Configurator defaults={defaults} />
         </div>
       </Container>
     </main>
