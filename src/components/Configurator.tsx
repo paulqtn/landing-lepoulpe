@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, Check, HelpCircle, Loader2, Lock, Pencil, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, HardHat, HelpCircle, Loader2, Lock, Package, Pencil, Zap } from "lucide-react";
+import { UsageGlyph } from "@/components/Illustrations";
 import { usages } from "@/lib/catalog";
 import type { Pose } from "@/lib/pricing";
 import { guarantees } from "@/lib/site";
@@ -35,23 +36,61 @@ const systemRanges: Record<SystemeKey, Record<Pose, [number, number]>> = {
 };
 
 const lineaires = [
-  { value: "lt3", label: "Moins de 3 m", meters: 2 },
-  { value: "3-6", label: "3 à 6 m", meters: 4.5 },
-  { value: "6-12", label: "6 à 12 m", meters: 9 },
-  { value: "gt12", label: "Plus de 12 m", meters: 15 },
+  { value: "lt3", label: "0 à 3 m", meters: 2, panels: 2 },
+  { value: "3-6", label: "3 à 6 m", meters: 4.5, panels: 4 },
+  { value: "6-12", label: "6 à 12 m", meters: 9, panels: 6 },
+  { value: "gt12", label: "Plus de 12 m", meters: 15, panels: 9 },
 ];
 
 const hauteurs = [
-  { value: "90", label: "0,90 m", desc: "rampant escalier" },
-  { value: "100", label: "1,00 m", desc: "norme standard" },
-  { value: "110", label: "1,10 m", desc: "confort / piscine" },
+  { value: "90", label: "0,90 m", desc: "rampant escalier", glyph: 15 },
+  { value: "100", label: "1,00 m", desc: "norme standard", glyph: 20 },
+  { value: "110", label: "1,10 m", desc: "confort / piscine", glyph: 25 },
 ];
 
-const formules: { value: Pose | "unsure"; label: string; desc: string }[] = [
-  { value: "kit", label: "Kit à poser moi-même", desc: "Livré prêt à poser, notice incluse" },
-  { value: "pose", label: "Avec pose incluse", desc: "Par notre réseau de poseurs" },
-  { value: "unsure", label: "Je ne sais pas encore", desc: "On compare les deux au devis" },
+const formules: { value: Pose | "unsure"; label: string; desc: string; icon: typeof Package }[] = [
+  { value: "kit", label: "Kit à poser", desc: "Livré pré-percé, notice et visserie incluses", icon: Package },
+  { value: "pose", label: "Avec pose incluse", desc: "Par notre réseau de poseurs partenaires", icon: HardHat },
+  { value: "unsure", label: "Je ne sais pas encore", desc: "On compare les deux formules au devis", icon: HelpCircle },
 ];
+
+/** Travée de garde-corps vue de face : n panneaux de verre sur profil bas. */
+function PanelsGlyph({ panels, className }: { panels: number; className?: string }) {
+  const w = 72;
+  const gap = 2.5;
+  const pw = (w - gap * (panels - 1)) / panels;
+  return (
+    <svg viewBox="0 0 72 34" className={className} aria-hidden>
+      {Array.from({ length: panels }).map((_, i) => (
+        <rect
+          key={i}
+          x={i * (pw + gap)}
+          y={4}
+          width={pw}
+          height={24}
+          rx={1.5}
+          className="fill-pine-100/70 stroke-pine-400"
+          strokeWidth="1"
+        />
+      ))}
+      <rect x={0} y={30} width={w} height={3.5} rx={1.75} className="fill-pine-700" />
+    </svg>
+  );
+}
+
+/** Panneau vu de côté avec flèche de hauteur — plus haut = plus protecteur. */
+function HeightGlyph({ h, className }: { h: number; className?: string }) {
+  const top = 30 - h;
+  return (
+    <svg viewBox="0 0 44 34" className={className} aria-hidden>
+      <rect x={7} y={top} width={20} height={h} rx={1.5} className="fill-pine-100/70 stroke-pine-400" strokeWidth="1" />
+      <rect x={4} y={30} width={26} height={3.5} rx={1.75} className="fill-pine-700" />
+      <line x1={37} y1={top} x2={37} y2={30} className="stroke-pine-600" strokeWidth="1.5" />
+      <line x1={34} y1={top} x2={40} y2={top} className="stroke-pine-600" strokeWidth="1.5" />
+      <line x1={34} y1={30} x2={40} y2={30} className="stroke-pine-600" strokeWidth="1.5" />
+    </svg>
+  );
+}
 
 type State = {
   lieu?: string;
@@ -259,7 +298,25 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
               </div>
             ) : step === 0 ? (
               <StepShell title="Votre projet ?" help="Où le garde-corps sera-t-il installé ?">
-                <OptionGrid options={lieux} selected={state.lieu} onSelect={(v) => { setState((s) => ({ ...s, lieu: v })); setStep(1); }} />
+                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                  {lieux.map((l) => {
+                    const on = state.lieu === l.value;
+                    return (
+                      <button
+                        key={l.value}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => { setState((s) => ({ ...s, lieu: l.value })); setStep(1); }}
+                        className={`flex flex-col items-center gap-2.5 rounded-xl border px-3 py-4 transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                      >
+                        <span className={`grid h-12 w-12 place-items-center rounded-xl transition-colors ${on ? "bg-pine-700 text-white" : "bg-pine-50 text-pine-700"}`}>
+                          <UsageGlyph usage={l.value} className="h-7 w-7" />
+                        </span>
+                        <span className="text-sm font-bold text-inkgreen">{l.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </StepShell>
             ) : step === 1 ? (
               <StepShell title="Quel système ?" help="Trois façons de tenir le même verre feuilleté — chacune son style et son budget.">
@@ -300,8 +357,22 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
             ) : step === 2 ? (
               <StepShell title="Quelles dimensions ?" help="Une estimation suffit, on affine ensuite.">
                 <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-500">Linéaire à équiper</p>
-                <div className="mt-2.5">
-                  <OptionGrid options={lineaires} selected={state.lineaire} onSelect={(v) => setState((s) => ({ ...s, lineaire: v }))} />
+                <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                  {lineaires.map((l) => {
+                    const on = state.lineaire === l.value;
+                    return (
+                      <button
+                        key={l.value}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => setState((s) => ({ ...s, lineaire: l.value }))}
+                        className={`flex flex-col items-center gap-2 rounded-xl border px-3 py-3.5 transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                      >
+                        <PanelsGlyph panels={l.panels} className="h-9 w-full" />
+                        <span className="text-sm font-bold text-inkgreen">{l.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
                 <p className="mt-5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-500">Hauteur souhaitée</p>
                 <div className="mt-2.5 grid grid-cols-3 gap-2.5">
@@ -313,10 +384,13 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
                         type="button"
                         aria-pressed={on}
                         onClick={() => setState((s) => ({ ...s, hauteur: h.value }))}
-                        className={`rounded-xl border px-3 py-3 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:border-pine-300"}`}
+                        className={`flex flex-col items-center gap-2 rounded-xl border px-3 py-3.5 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
                       >
-                        <span className="block text-sm font-bold text-inkgreen">{h.label}</span>
-                        <span className="block text-[11px] text-neutral-500">{h.desc}</span>
+                        <HeightGlyph h={h.glyph} className="h-9 w-11" />
+                        <span>
+                          <span className="block text-sm font-bold text-inkgreen">{h.label}</span>
+                          <span className="block text-[11px] text-neutral-500">{h.desc}</span>
+                        </span>
                       </button>
                     );
                   })}
@@ -324,12 +398,28 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
               </StepShell>
             ) : step === 3 ? (
               <StepShell title="Kit ou pose incluse ?" help="Les deux formules figurent au devis si vous hésitez.">
-                <OptionGrid
-                  options={formules}
-                  selected={state.formule}
-                  columns={1}
-                  onSelect={(v) => { setState((s) => ({ ...s, formule: v as State["formule"] })); setStep(4); }}
-                />
+                <div className="grid gap-2.5 sm:grid-cols-3">
+                  {formules.map((f) => {
+                    const on = state.formule === f.value;
+                    return (
+                      <button
+                        key={f.value}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => { setState((s) => ({ ...s, formule: f.value as State["formule"] })); setStep(4); }}
+                        className={`flex flex-col items-center gap-3 rounded-xl border px-4 py-5 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                      >
+                        <span className={`grid h-12 w-12 place-items-center rounded-xl transition-colors ${on ? "bg-pine-700 text-white" : "bg-pine-50 text-pine-700"}`}>
+                          <f.icon className="h-6 w-6" />
+                        </span>
+                        <span>
+                          <span className="block text-sm font-bold text-inkgreen">{f.label}</span>
+                          <span className="mt-1 block text-xs leading-snug text-neutral-500">{f.desc}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </StepShell>
             ) : (
               <StepShell title="Où envoyer votre devis ?" help="Devis détaillé par email sous 24h + rappel d’un conseiller.">
@@ -414,38 +504,6 @@ function StepShell({ title, help, children }: { title: string; help?: string; ch
       <h3 className="text-2xl font-extrabold text-inkgreen">{title}</h3>
       {help && <p className="mt-1.5 text-neutral-500">{help}</p>}
       <div className="mt-5">{children}</div>
-    </div>
-  );
-}
-
-function OptionGrid({
-  options,
-  selected,
-  onSelect,
-  columns = 2,
-}: {
-  options: { value: string; label: string; desc?: string }[];
-  selected?: string;
-  onSelect: (v: string) => void;
-  columns?: 1 | 2;
-}) {
-  return (
-    <div className={`grid gap-2.5 ${columns === 2 ? "sm:grid-cols-2" : "grid-cols-1"}`}>
-      {options.map((o) => {
-        const on = selected === o.value;
-        return (
-          <button
-            key={o.value}
-            type="button"
-            aria-pressed={on}
-            onClick={() => onSelect(o.value)}
-            className={`rounded-xl border px-4 py-3.5 text-left transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
-          >
-            <span className="block text-sm font-bold text-inkgreen">{o.label}</span>
-            {o.desc && <span className="mt-0.5 block text-xs text-neutral-500">{o.desc}</span>}
-          </button>
-        );
-      })}
     </div>
   );
 }
