@@ -12,12 +12,12 @@ export const metadata: Metadata = {
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-/** Transforme les paramètres du configurateur express en pré-remplissage du tunnel. */
+/** Transforme les paramètres d'entrée (cards systèmes, liens profonds) en pré-remplissage. */
 function defaultsFrom(sp: Record<string, string | string[] | undefined>) {
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
   const defaults: {
-    materiau?: "verre";
+    systeme?: "sans-poteaux" | "pinces" | "verre-alu";
     lineaire?: string;
     hauteur?: string;
     formule?: "kit" | "pose";
@@ -25,7 +25,7 @@ function defaultsFrom(sp: Record<string, string | string[] | undefined>) {
 
   const sys = one(sp.sys);
   if (sys === "sans-poteaux" || sys === "pinces" || sys === "verre-alu") {
-    defaults.materiau = "verre";
+    defaults.systeme = sys;
   }
 
   const len = Number(one(sp.len));

@@ -18,8 +18,8 @@ import {
 } from "lucide-react";
 import { AdvantagesBar } from "@/components/AdvantagesBar";
 import { FaqAccordion } from "@/components/FaqAccordion";
+import { Configurator } from "@/components/Configurator";
 import { HeroGallery, type HeroSlide } from "@/components/HeroGallery";
-import { LiveEstimator } from "@/components/LiveEstimator";
 import { GoogleG, MaterialScene, UsageGlyph } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -81,6 +81,7 @@ const steps = [
  * positionnement, prix comparables et points forts propres à la fixation.
  */
 const systemCards: {
+  sysKey: string;
   name: string;
   tagline: string;
   photo: string;
@@ -92,6 +93,7 @@ const systemCards: {
   idealFor: string[];
 }[] = [
   {
+    sysKey: "sans-poteaux",
     name: "Tout verre, sans poteaux",
     tagline: "Le plus épuré",
     photo: "/verre-sur-rail.jpg",
@@ -107,6 +109,7 @@ const systemCards: {
     idealFor: ["Piscine", "Terrasse avec vue", "Balcon design"],
   },
   {
+    sysKey: "pinces",
     name: "Verre sur pinces",
     tagline: "Le classique discret",
     photo: "/pinces-au-sol.jpg",
@@ -121,6 +124,7 @@ const systemCards: {
     idealFor: ["Muret", "Piscine", "Escalier"],
   },
   {
+    sysKey: "verre-alu",
     name: "Verre & aluminium",
     tagline: "Le meilleur €/ml",
     photo: "/miroiterie_avignonnaise_garde-corps_verre-52.jpg.webp",
@@ -272,15 +276,15 @@ export default function Home() {
           <div className="mx-auto max-w-2xl text-center">
             <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Devis express</p>
             <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-              Un seul produit&nbsp;: le vôtre. Configurez-le en direct.
+              Un seul produit&nbsp;: le vôtre. Configurez-le étape par étape.
             </h2>
             <p className="mx-auto mt-3 max-w-xl leading-relaxed text-neutral-500">
-              Système, longueur, hauteur, formule — le budget s’affiche instantanément,
+              Une question à la fois — votre projet, le système, les dimensions — et
               le devis détaillé arrive sous 24h.
             </p>
           </div>
           <div className="mx-auto mt-10 max-w-5xl">
-            <LiveEstimator />
+            <Configurator />
           </div>
         </Container>
       </section>
@@ -309,7 +313,7 @@ export default function Home() {
             {systemCards.map((m, i) => (
               <Reveal key={m.name} delay={i * 80}>
                 <Link
-                  href="/devis"
+                  href={`/devis?sys=${m.sysKey}`}
                   className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-pine-300 hover:shadow-elevated"
                 >
                   {/* photo + identité */}

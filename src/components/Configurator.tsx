@@ -1,13 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Check, Loader2, Lock, Pencil, Zap } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, ArrowRight, Check, HelpCircle, Loader2, Lock, Pencil, Zap } from "lucide-react";
 import { usages } from "@/lib/catalog";
-import { priceRanges, type MaterialSlug, type Pose } from "@/lib/pricing";
+import type { Pose } from "@/lib/pricing";
 import { guarantees } from "@/lib/site";
 
 /* ================================================================== */
-/*  Configurateur de devis — 5 étapes, récap vert + estimation live    */
+/*  Configurateur de devis — un seul produit, le garde-corps en verre, */
+/*  configuré étape par étape : lieu, système, dimensions, formule.    */
+/*  Récap vert + estimation discrète, utilisé sur l'accueil et /devis. */
 /* ================================================================== */
 
 const fmt = new Intl.NumberFormat("fr-FR");
@@ -15,12 +18,21 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const lieux = usages.map((u) => ({ value: u.slug, label: u.name }));
 
-const materiaux: { value: MaterialSlug | "conseil"; label: string; desc: string }[] = [
-  { value: "verre", label: "Verre", desc: "Vue dégagée, feuilleté sécurisé" },
-  { value: "aluminium", label: "Aluminium", desc: "Zéro entretien, meilleur prix" },
-  { value: "inox", label: "Inox", desc: "Durable, esprit architectural" },
-  { value: "conseil", label: "À me conseiller", desc: "Un expert vous oriente" },
+export type SystemeKey = "sans-poteaux" | "pinces" | "verre-alu";
+
+const systemes: { value: SystemeKey | "conseil"; label: string; desc: string; photo?: string }[] = [
+  { value: "sans-poteaux", label: "Tout verre, sans poteaux", desc: "Profilé alu au sol — le plus épuré", photo: "/verre-sur-rail.jpg" },
+  { value: "pinces", label: "Verre sur pinces", desc: "Au sol ou sur muret — le classique", photo: "/pinces-au-sol.jpg" },
+  { value: "verre-alu", label: "Verre & aluminium", desc: "Poteaux toutes teintes RAL — le meilleur €/ml", photo: "/miroiterie_avignonnaise_garde-corps_verre-52.jpg.webp" },
+  { value: "conseil", label: "À me conseiller", desc: "Un expert vous oriente selon votre projet" },
 ];
+
+/** Fourchettes €/ml par système de fixation (fourniture / posé). */
+const systemRanges: Record<SystemeKey, Record<Pose, [number, number]>> = {
+  "sans-poteaux": { kit: [320, 450], pose: [500, 800] },
+  pinces: { kit: [250, 380], pose: [450, 650] },
+  "verre-alu": { kit: [200, 320], pose: [380, 600] },
+};
 
 const lineaires = [
   { value: "lt3", label: "Moins de 3 m", meters: 2 },
@@ -43,18 +55,18 @@ const formules: { value: Pose | "unsure"; label: string; desc: string }[] = [
 
 type State = {
   lieu?: string;
-  materiau?: MaterialSlug | "conseil";
+  systeme?: SystemeKey | "conseil";
   lineaire?: string;
   hauteur?: string;
   formule?: Pose | "unsure";
 };
 
-const STEPS = ["Votre projet", "Matériau", "Dimensions", "Formule", "Coordonnées"] as const;
+const STEPS = ["Votre projet", "Système", "Dimensions", "Formule", "Coordonnées"] as const;
 
 function estimateRange(s: State): { low: string; high: string; withPose: boolean } | null {
-  if (!s.materiau || s.materiau === "conseil" || !s.lineaire) return null;
+  if (!s.systeme || s.systeme === "conseil" || !s.lineaire) return null;
   const meters = lineaires.find((l) => l.value === s.lineaire)?.meters ?? 0;
-  const r = priceRanges[s.materiau];
+  const r = systemRanges[s.systeme];
   const pose: Pose | null = s.formule === "kit" || s.formule === "pose" ? s.formule : null;
   const low = (pose ? r[pose][0] : r.kit[0]) * meters;
   const high = (pose ? r[pose][1] : r.pose[1]) * meters;
@@ -80,7 +92,7 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
 
   const canContinue =
     step === 0 ? !!state.lieu
-    : step === 1 ? !!state.materiau
+    : step === 1 ? !!state.systeme
     : step === 2 ? !!state.lineaire && !!state.hauteur
     : step === 3 ? !!state.formule
     : !Object.values(leadErrors).some(Boolean);
@@ -119,7 +131,7 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
 
   const recapRows = [
     { label: "Projet", value: state.lieu ? `Garde-corps ${lieux.find((l) => l.value === state.lieu)?.label.toLowerCase()}` : null, go: 0 },
-    { label: "Matériau", value: state.materiau ? materiaux.find((m) => m.value === state.materiau)?.label : null, go: 1 },
+    { label: "Système", value: state.systeme ? systemes.find((m) => m.value === state.systeme)?.label : null, go: 1 },
     {
       label: "Dimensions",
       value: state.lineaire && state.hauteur
@@ -186,8 +198,8 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-pine-300">Estimation indicative</p>
               {est ? (
                 <>
-                  <p className="mt-2 text-3xl font-extrabold tabular-nums tracking-tight text-white">
-                    {est.low} – {est.high} <span className="text-xl">€</span>
+                  <p className="mt-2 text-xl font-extrabold tabular-nums tracking-tight text-white">
+                    {est.low} – {est.high} €
                   </p>
                   <p className="mt-1 text-xs text-pine-100/60">
                     {est.withPose ? "Fourniture + pose" : "Fourniture seule"} · à affiner avec un conseiller
@@ -195,7 +207,7 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
                 </>
               ) : (
                 <>
-                  <p className="mt-2 text-sm text-pine-100/60">Choisissez un matériau et un linéaire pour estimer votre budget.</p>
+                  <p className="mt-2 text-sm text-pine-100/60">Choisissez un système et un linéaire pour estimer votre budget.</p>
                   <div className="mt-3 space-y-2">
                     <div className="shimmer h-2.5 w-3/4 rounded-full" />
                     <div className="shimmer h-2.5 w-1/2 rounded-full" />
@@ -250,12 +262,40 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
                 <OptionGrid options={lieux} selected={state.lieu} onSelect={(v) => { setState((s) => ({ ...s, lieu: v })); setStep(1); }} />
               </StepShell>
             ) : step === 1 ? (
-              <StepShell title="Quel matériau ?" help="Chaque matériau a son style et son budget.">
-                <OptionGrid
-                  options={materiaux}
-                  selected={state.materiau}
-                  onSelect={(v) => { setState((s) => ({ ...s, materiau: v as State["materiau"] })); setStep(2); }}
-                />
+              <StepShell title="Quel système ?" help="Trois façons de tenir le même verre feuilleté — chacune son style et son budget.">
+                <div className="grid gap-2.5 sm:grid-cols-2">
+                  {systemes.map((o) => {
+                    const on = state.systeme === o.value;
+                    return (
+                      <button
+                        key={o.value}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => { setState((s) => ({ ...s, systeme: o.value })); setStep(2); }}
+                        className={`overflow-hidden rounded-xl border text-left transition ${on ? "border-pine-600 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                      >
+                        <span className="relative block h-20">
+                          {o.photo ? (
+                            <Image src={o.photo} alt="" fill sizes="16rem" className="object-cover" />
+                          ) : (
+                            <span className="grid h-full place-items-center bg-mist">
+                              <HelpCircle className="h-7 w-7 text-pine-600" />
+                            </span>
+                          )}
+                          {on && (
+                            <span className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-pine-600 text-white shadow-md">
+                              <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                            </span>
+                          )}
+                        </span>
+                        <span className="block px-3.5 py-2.5">
+                          <span className={`block text-sm font-bold ${on ? "text-pine-700" : "text-inkgreen"}`}>{o.label}</span>
+                          <span className="mt-0.5 block text-xs leading-snug text-neutral-500">{o.desc}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </StepShell>
             ) : step === 2 ? (
               <StepShell title="Quelles dimensions ?" help="Une estimation suffit, on affine ensuite.">
