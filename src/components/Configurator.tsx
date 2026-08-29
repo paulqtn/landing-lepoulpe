@@ -19,20 +19,20 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const lieux = usages.map((u) => ({ value: u.slug, label: u.name }));
 
-export type SystemeKey = "sans-poteaux" | "pinces" | "verre-alu";
+export type SystemeKey = "rail" | "pinces" | "spider";
 
 const systemes: { value: SystemeKey | "conseil"; label: string; desc: string; photo?: string }[] = [
-  { value: "sans-poteaux", label: "Tout verre, sans poteaux", desc: "Profilé alu au sol — le plus épuré", photo: "/verre-sur-rail.jpg" },
+  { value: "rail", label: "Verre sur rail", desc: "Rail alu au sol, sans poteaux — le plus épuré", photo: "/verre-sur-rail.jpg" },
   { value: "pinces", label: "Verre sur pinces", desc: "Au sol ou sur muret — le classique", photo: "/pinces-au-sol.jpg" },
-  { value: "verre-alu", label: "Verre & aluminium", desc: "Poteaux toutes teintes RAL — le meilleur €/ml", photo: "/miroiterie_avignonnaise_garde-corps_verre-52.jpg.webp" },
+  { value: "spider", label: "Verre avec spider", desc: "Rotules traversantes — l'esprit architectural", photo: "/garde-corps-verre-fenetre-2.jpg" },
   { value: "conseil", label: "À me conseiller", desc: "Un expert vous oriente selon votre projet" },
 ];
 
 /** Fourchettes €/ml par système de fixation (fourniture / posé). */
 const systemRanges: Record<SystemeKey, Record<Pose, [number, number]>> = {
-  "sans-poteaux": { kit: [320, 450], pose: [500, 800] },
+  rail: { kit: [320, 450], pose: [500, 800] },
   pinces: { kit: [250, 380], pose: [450, 650] },
-  "verre-alu": { kit: [200, 320], pose: [380, 600] },
+  spider: { kit: [300, 430], pose: [480, 750] },
 };
 
 const lineaires = [

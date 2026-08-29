@@ -81,6 +81,7 @@ const steps = [
  * positionnement, prix comparables et points forts propres à la fixation.
  */
 const systemCards: {
+  slug: string;
   sysKey: string;
   name: string;
   tagline: string;
@@ -93,51 +94,54 @@ const systemCards: {
   idealFor: string[];
 }[] = [
   {
-    sysKey: "sans-poteaux",
-    name: "Tout verre, sans poteaux",
-    tagline: "Le plus épuré",
+    slug: "garde-corps-verre-sur-rail",
+    sysKey: "rail",
+    name: "Verre sur rail",
+    tagline: "Le plus \u00e9pur\u00e9",
     photo: "/verre-sur-rail.jpg",
-    alt: "Garde-corps tout verre sur profilé aluminium au sol, terrasse bois avec retour d’angle",
-    badge: "Le plus demandé",
+    alt: "Garde-corps en verre sur rail aluminium au sol, terrasse bois avec retour d\u2019angle",
+    badge: "Le plus demand\u00e9",
     kitFrom: 320,
     poseRange: [500, 800],
     points: [
-      ["Aucun montant vertical", "une ligne de verre continue, rien d’autre"],
-      ["Profilé alu au sol", "encastré ou en applique, angles et retours suivis"],
-      ["Trempé-feuilleté", "66.2 à 88.4 selon hauteur et portée"],
+      ["Aucun montant vertical", "une ligne de verre continue, rien d\u2019autre"],
+      ["Rail alu au sol", "encastr\u00e9 ou en applique, angles et retours suivis"],
+      ["Tremp\u00e9-feuillet\u00e9", "66.2 \u00e0 88.4 selon hauteur et port\u00e9e"],
     ],
     idealFor: ["Piscine", "Terrasse avec vue", "Balcon design"],
   },
   {
+    slug: "garde-corps-verre-sur-pinces",
     sysKey: "pinces",
     name: "Verre sur pinces",
     tagline: "Le classique discret",
     photo: "/pinces-au-sol.jpg",
-    alt: "Panneaux de verre sur pinces inox au sol autour d’une piscine",
+    alt: "Panneaux de verre sur pinces inox au sol autour d\u2019une piscine",
+    badge: "Kit prix discount",
     kitFrom: 250,
     poseRange: [450, 650],
     points: [
-      ["Pinces inox 316", "au sol, sur muret ou en fixation latérale"],
-      ["Feuilleté 44.2 / 55.2", "en cas de choc, les éclats restent en place"],
-      ["Pose accessible", "kits pré-percés, réglage fin à l’alignement"],
+      ["Pinces inox 316", "au sol, sur muret ou en fixation lat\u00e9rale"],
+      ["Feuillet\u00e9 44.2 / 55.2", "en cas de choc, les \u00e9clats restent en place"],
+      ["Pose accessible", "kits pr\u00e9-perc\u00e9s, r\u00e9glage fin \u00e0 l\u2019alignement"],
     ],
     idealFor: ["Muret", "Piscine", "Escalier"],
   },
   {
-    sysKey: "verre-alu",
-    name: "Verre & aluminium",
-    tagline: "Le meilleur €/ml",
-    photo: "/miroiterie_avignonnaise_garde-corps_verre-52.jpg.webp",
-    alt: "Garde-corps de balcon à structure aluminium noire et remplissage verre",
-    badge: "Kit prix discount",
-    kitFrom: 200,
-    poseRange: [380, 600],
+    slug: "garde-corps-verre-avec-spider",
+    sysKey: "spider",
+    name: "Verre avec spider",
+    tagline: "L\u2019esprit architectural",
+    photo: "/garde-corps-verre-fenetre-2.jpg",
+    alt: "Garde-corps en verre fix\u00e9 par points en applique de fa\u00e7ade, fen\u00eatre d\u2019angle",
+    kitFrom: 300,
+    poseRange: [480, 750],
     points: [
-      ["Structure alu thermolaquée", "toutes teintes RAL, assortie à vos menuiseries"],
-      ["Verre feuilleté 8,76 mm", "maintenu par pinces ou en feuillure"],
-      ["La vue, à petit prix", "les poteaux autorisent un vitrage plus fin"],
+      ["Rotules inox traversantes", "le verre semble suspendu devant la dalle"],
+      ["Pose lat\u00e9rale", "en nez de dalle ou fa\u00e7ade \u2014 100 % de surface conserv\u00e9e"],
+      ["Tremp\u00e9-feuillet\u00e9 perc\u00e9", "per\u00e7ages et fa\u00e7onnage r\u00e9alis\u00e9s en usine"],
     ],
-    idealFor: ["Balcon", "Terrasse", "Grands linéaires"],
+    idealFor: ["Balcon", "Fa\u00e7ade", "Nez de dalle"],
   },
 ];
 
@@ -313,7 +317,7 @@ export default function Home() {
             {systemCards.map((m, i) => (
               <Reveal key={m.name} delay={i * 80}>
                 <Link
-                  href={`/devis?sys=${m.sysKey}`}
+                  href={`/produits/${m.slug}`}
                   className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-pine-300 hover:shadow-elevated"
                 >
                   {/* photo + identité */}
@@ -395,7 +399,7 @@ export default function Home() {
 
                   {/* CTA */}
                   <div className="mt-auto flex items-center justify-between border-t border-neutral-100 px-6 py-4">
-                    <span className="text-sm font-bold text-pine-700">Estimer ce système</span>
+                    <span className="text-sm font-bold text-pine-700">Voir la fiche produit</span>
                     <span className="grid h-9 w-9 place-items-center rounded-full bg-pine-50 text-pine-700 transition-colors duration-300 group-hover:bg-pine-700 group-hover:text-white">
                       <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
                     </span>

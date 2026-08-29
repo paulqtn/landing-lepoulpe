@@ -17,14 +17,14 @@ function defaultsFrom(sp: Record<string, string | string[] | undefined>) {
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
   const defaults: {
-    systeme?: "sans-poteaux" | "pinces" | "verre-alu";
+    systeme?: "rail" | "pinces" | "spider";
     lineaire?: string;
     hauteur?: string;
     formule?: "kit" | "pose";
   } = {};
 
   const sys = one(sp.sys);
-  if (sys === "sans-poteaux" || sys === "pinces" || sys === "verre-alu") {
+  if (sys === "rail" || sys === "pinces" || sys === "spider") {
     defaults.systeme = sys;
   }
 
