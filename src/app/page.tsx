@@ -89,7 +89,6 @@ const systemCards: {
   alt: string;
   badge?: string;
   kitFrom: number;
-  poseRange: [number, number];
   points: [string, string][];
   idealFor: string[];
 }[] = [
@@ -97,16 +96,14 @@ const systemCards: {
     slug: "garde-corps-verre-sur-rail",
     sysKey: "rail",
     name: "Verre sur rail",
-    tagline: "Le plus \u00e9pur\u00e9",
+    tagline: "Le plus épuré",
     photo: "/verre-sur-rail.jpg",
-    alt: "Garde-corps en verre sur rail aluminium au sol, terrasse bois avec retour d\u2019angle",
-    badge: "Le plus demand\u00e9",
+    alt: "Garde-corps en verre sur rail aluminium au sol, terrasse bois avec retour d’angle",
+    badge: "Le plus demandé",
     kitFrom: 320,
-    poseRange: [500, 800],
     points: [
-      ["Aucun montant vertical", "une ligne de verre continue, rien d\u2019autre"],
-      ["Rail alu au sol", "encastr\u00e9 ou en applique, angles et retours suivis"],
-      ["Tremp\u00e9-feuillet\u00e9", "66.2 \u00e0 88.4 selon hauteur et port\u00e9e"],
+      ["Aucun montant vertical", "une ligne de verre continue, rien d’autre"],
+      ["Pose facile", "le rail se fixe au sol ou en applique, le verre s’encastre et se règle"],
     ],
     idealFor: ["Piscine", "Terrasse avec vue", "Balcon design"],
   },
@@ -116,14 +113,12 @@ const systemCards: {
     name: "Verre sur pinces",
     tagline: "Le classique discret",
     photo: "/pinces-au-sol.jpg",
-    alt: "Panneaux de verre sur pinces inox au sol autour d\u2019une piscine",
+    alt: "Panneaux de verre sur pinces inox au sol autour d’une piscine",
     badge: "Kit prix discount",
     kitFrom: 250,
-    poseRange: [450, 650],
     points: [
-      ["Pinces inox 316", "au sol, sur muret ou en fixation lat\u00e9rale"],
-      ["Feuillet\u00e9 44.2 / 55.2", "en cas de choc, les \u00e9clats restent en place"],
-      ["Pose accessible", "kits pr\u00e9-perc\u00e9s, r\u00e9glage fin \u00e0 l\u2019alignement"],
+      ["Pinces inox 316", "au sol, sur muret ou en fixation latérale"],
+      ["Pose accessible", "kits pré-percés, réglage fin à l’alignement"],
     ],
     idealFor: ["Muret", "Piscine", "Escalier"],
   },
@@ -131,17 +126,15 @@ const systemCards: {
     slug: "garde-corps-verre-avec-spider",
     sysKey: "spider",
     name: "Verre avec spider",
-    tagline: "L\u2019esprit architectural",
+    tagline: "L’esprit architectural",
     photo: "/garde-corps-verre-fenetre-2.jpg",
-    alt: "Garde-corps en verre fix\u00e9 par points en applique de fa\u00e7ade, fen\u00eatre d\u2019angle",
+    alt: "Garde-corps en verre fixé par points en applique de façade, fenêtre d’angle",
     kitFrom: 300,
-    poseRange: [480, 750],
     points: [
       ["Rotules inox traversantes", "le verre semble suspendu devant la dalle"],
-      ["Pose lat\u00e9rale", "en nez de dalle ou fa\u00e7ade \u2014 100 % de surface conserv\u00e9e"],
-      ["Tremp\u00e9-feuillet\u00e9 perc\u00e9", "per\u00e7ages et fa\u00e7onnage r\u00e9alis\u00e9s en usine"],
+      ["Pose latérale", "en nez de dalle ou façade — 100 % de surface conservée"],
     ],
-    idealFor: ["Balcon", "Fa\u00e7ade", "Nez de dalle"],
+    idealFor: ["Balcon", "Façade", "Nez de dalle"],
   },
 ];
 
@@ -341,29 +334,20 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* prix — mêmes repères sur les 3 cards pour comparer */}
-                  <div className="flex min-h-[6.25rem] items-center justify-between gap-4 border-b border-neutral-100 bg-mist/50 px-6 py-4">
-                    <p>
-                      <span className="flex items-baseline gap-1.5">
-                        <span className="text-xs font-semibold text-neutral-400">dès</span>
-                        <span className="text-[1.75rem] font-extrabold tabular-nums tracking-tight text-inkgreen">
-                          {m.kitFrom}&nbsp;€
-                        </span>
-                        <span className="text-sm font-bold text-neutral-400">/ml</span>
+                  {/* prix — un seul repère, lisible d’un coup d’œil */}
+                  <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-neutral-100 bg-mist/50 px-6 py-4">
+                    <p className="flex items-baseline gap-1.5">
+                      <span className="text-sm font-semibold text-neutral-400">dès</span>
+                      <span className="text-3xl font-extrabold tabular-nums tracking-tight text-inkgreen">
+                        {m.kitFrom} €
                       </span>
-                      {m.badge && (
-                        <span className="mt-1.5 flex w-fit items-center rounded-full bg-amber-500 px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-pine-950 shadow-sm">
-                          {m.badge}
-                        </span>
-                      )}
+                      <span className="text-sm font-bold text-neutral-400">/ml</span>
                     </p>
-                    <p className="text-right">
-                      <span className="block text-base font-extrabold tabular-nums text-neutral-600">
-                        {m.poseRange[0]} – {m.poseRange[1]}&nbsp;€
-                        <span className="text-xs font-semibold text-neutral-400">/ml</span>
+                    {m.badge && (
+                      <span className="flex shrink-0 items-center rounded-full bg-amber-500 px-3.5 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-pine-950 shadow-sm">
+                        {m.badge}
                       </span>
-                      <span className="block text-[11px] font-medium text-neutral-500">avec pose incluse</span>
-                    </p>
+                    )}
                   </div>
 
                   {/* points forts propres au système */}
