@@ -289,21 +289,16 @@ export default function Home() {
       {/* ==================== SYSTÈMES (gamme verre) ==================== */}
       <section className="py-20 sm:py-28">
         <Container>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Comparer les systèmes</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                Trois systèmes, un même verre sécurisé.
-              </h2>
-              <p className="mt-3 max-w-xl leading-relaxed text-neutral-500">
-                <strong className="font-semibold text-inkgreen">À chaque projet son système de fixation</strong> —
-                comparez les prix et les points forts, et choisissez en un coup d’œil.
-              </p>
-            </div>
-            <Link href="/garde-corps" className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-pine-700">
-              Tout le catalogue
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
+          <div className="max-w-2xl">
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Nos garde-corps en verre</p>
+            <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+              Rail, pinces ou spider — lequel est fait pour vous&nbsp;?
+            </h2>
+            <p className="mt-3 leading-relaxed text-neutral-500">
+              <strong className="font-semibold text-inkgreen">Le même verre sécurisé, trois façons de le fixer.</strong>{" "}
+              Repérez votre support — sol, muret ou nez de dalle —, comparez les prix,
+              et nos conseillers valident la fixation avec vous au devis.
+            </p>
           </div>
 
           <div className="mt-10 grid gap-6 lg:grid-cols-3">
