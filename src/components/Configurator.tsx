@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, Check, HelpCircle, Loader2, Lock, Minus, Pencil, Plus, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, HelpCircle, Loader2, Lock, Minus, Phone, Plus, Zap } from "lucide-react";
 import { UsageGlyph } from "@/components/Illustrations";
 import { usages } from "@/lib/catalog";
-import { guarantees } from "@/lib/site";
+import { guarantees, phoneHref, site } from "@/lib/site";
 
 /* ================================================================== */
-/*  Configurateur client — un seul produit, le garde-corps en verre,   */
-/*  configuré étape par étape. Le PRIX EXACT est calculé en direct     */
-/*  par le moteur interne, côté serveur (/api/estimation) : le client  */
-/*  ne voit que son prix fourniture TTC.                               */
+/*  Configurateur client — une seule colonne, une question à la fois.  */
+/*  Le tarif exact (moteur interne, côté serveur) est révélé À LA FIN, */
+/*  après les coordonnées : CTA « Voir mon tarif ».                    */
 /* ================================================================== */
 
 const fmt = new Intl.NumberFormat("fr-FR");
@@ -95,8 +94,6 @@ export type ConfiguratorDefaults = {
   hauteur?: string;
 };
 
-const STEPS = ["Votre projet", "Système", "Longueurs", "Hauteur", "Teinte", "Coordonnées"] as const;
-
 const fmtM = (n: number) => n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefaults }) {
@@ -109,47 +106,10 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
   const [lead, setLead] = useState({ name: "", email: "", phone: "", cp: "", consent: false });
   const [showErr, setShowErr] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
-
-  const [est, setEst] = useState<Estimation | null>(null);
-  const [estLoading, setEstLoading] = useState(false);
-  const estSeq = useRef(0);
+  const [result, setResult] = useState<Estimation | null>(null);
 
   const cotesNum = state.cotes.map((c) => parseFloat(c.replace(",", "."))).filter((n) => Number.isFinite(n) && n > 0);
   const totalMl = cotesNum.reduce((a, b) => a + b, 0);
-
-  /* ---------- estimation live (moteur serveur, sortie assainie) ---------- */
-  useEffect(() => {
-    if (!state.systeme || state.systeme === "conseil" || cotesNum.length === 0 || !state.hauteur) {
-      setEst(null);
-      return;
-    }
-    const seq = ++estSeq.current;
-    setEstLoading(true);
-    const t = setTimeout(async () => {
-      try {
-        const res = await fetch("/api/estimation", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            usage: state.lieu,
-            systeme: state.systeme,
-            cotes: cotesNum,
-            hauteur: Number(state.hauteur),
-            teinte: state.teinte ?? "clair",
-            cp: lead.cp,
-          }),
-        });
-        if (seq !== estSeq.current) return;
-        setEst(res.ok ? await res.json() : null);
-      } catch {
-        if (seq === estSeq.current) setEst(null);
-      } finally {
-        if (seq === estSeq.current) setEstLoading(false);
-      }
-    }, 350);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.lieu, state.systeme, state.cotes.join("|"), state.hauteur, state.teinte, lead.cp]);
 
   const leadErrors = {
     name: lead.name.trim().length < 2,
@@ -203,6 +163,30 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
       return;
     }
     setStatus("loading");
+
+    // 1. Tarif exact calculé côté serveur (sauf parcours « à me conseiller »).
+    let estimation: Estimation | null = null;
+    if (state.systeme && state.systeme !== "conseil" && cotesNum.length > 0 && state.hauteur) {
+      try {
+        const res = await fetch("/api/estimation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            usage: state.lieu,
+            systeme: state.systeme,
+            cotes: cotesNum,
+            hauteur: Number(state.hauteur),
+            teinte: state.teinte ?? "clair",
+            cp: lead.cp,
+          }),
+        });
+        if (res.ok) estimation = await res.json();
+      } catch {
+        /* le tarif détaillé partira par email */
+      }
+    }
+
+    // 2. Envoi du lead (avec le tarif montré au client).
     try {
       await fetch("/api/lead", {
         method: "POST",
@@ -218,154 +202,91 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
             hauteur: state.hauteur,
             teinte: state.teinte,
             codePostal: lead.cp,
-            estimationTTC: est?.ttc ?? null,
+            estimationTTC: estimation?.ttc ?? null,
           },
           source: "configurateur-devis",
         }),
       });
     } catch {
-      /* on confirme quand même côté UX */
+      /* on affiche quand même le tarif */
     }
+
+    setResult(estimation);
     setStatus("done");
   }
 
-  const recapRows = [
-    { label: "Projet", value: state.lieu ? `Garde-corps ${lieux.find((l) => l.value === state.lieu)?.label.toLowerCase()}` : null, go: 0 },
-    { label: "Système", value: state.systeme ? systemes.find((m) => m.value === state.systeme)?.label : null, go: 1 },
-    {
-      label: "Longueurs",
-      value: step > 2 && cotesNum.length > 0
-        ? `${fmt.format(Math.round(totalMl * 100) / 100)} ml · ${cotesNum.length} côté${cotesNum.length > 1 ? "s" : ""}`
-        : null,
-      go: 2,
-    },
-    { label: "Hauteur", value: state.hauteur ? hauteurs.find((h) => h.value === state.hauteur)?.label : null, go: 3 },
-    { label: "Teinte", value: state.teinte ? teintes.find((t) => t.value === state.teinte)?.label : null, go: 4 },
-  ];
-
   const progress = status === "done" ? 100 : ((step + 1) / 6) * 100;
-  const showPrice = est && state.systeme !== "conseil";
 
   return (
-    <div className="relative">
+    <div className="relative mx-auto max-w-2xl">
       {/* sticker */}
       <span className="absolute -top-4 left-4 z-10 inline-flex rotate-[-3deg] items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-pine-950 shadow-md sm:-left-3">
         <Zap className="h-3.5 w-3.5" />
-        Prix réel en direct
+        Tarif immédiat
       </span>
 
-      <div className="grid overflow-hidden rounded-3xl shadow-panel lg:grid-cols-[0.9fr_1.1fr]">
-        {/* -------- récap + prix (gauche) -------- */}
-        <div className="relative order-2 flex flex-col bg-pine-900 p-6 text-white sm:p-8 lg:order-1">
-          <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
-          <div className="relative">
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-pine-300">Votre projet</p>
-            <h3 className="mt-1 text-2xl font-extrabold text-white">Récapitulatif</h3>
-          </div>
-
-          <div className="relative mt-5 space-y-2.5">
-            {recapRows.every((r) => !r.value) && (
-              <p className="rounded-2xl border border-dashed border-white/20 px-4 py-5 text-sm text-pine-100/60">
-                Vos choix s’affichent ici au fur et à mesure.
-              </p>
-            )}
-            {recapRows.map((r) =>
-              r.value ? (
-                <div key={r.label} className="flex animate-scale-in items-center gap-3 rounded-2xl bg-white/[0.07] px-4 py-3">
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green-500 text-white">
-                    <Check className="h-4 w-4" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-mono text-[9px] uppercase tracking-[0.18em] text-pine-300">{r.label}</span>
-                    <span className="block truncate text-sm font-semibold text-white">{r.value}</span>
-                  </span>
-                  {status !== "done" && (
-                    <button
-                      type="button"
-                      onClick={() => setStep(r.go)}
-                      className="inline-flex items-center gap-1 text-xs text-pine-200/70 transition hover:text-white"
-                    >
-                      <Pencil className="h-3 w-3" />
-                      modifier
-                    </button>
-                  )}
-                </div>
-              ) : null,
-            )}
-          </div>
-
-          {/* prix fourniture calculé en direct */}
-          <div className="relative mt-auto pt-6">
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-pine-300">
-                Votre prix fourniture
-              </p>
-              {showPrice ? (
-                <>
-                  <p key={est.ttc} className="mt-2 animate-scale-in text-3xl font-extrabold tabular-nums tracking-tight text-white">
-                    {fmt.format(est.ttc)} € <span className="text-base font-bold text-pine-200">TTC</span>
-                  </p>
-                  <p className="mt-1 text-xs text-pine-100/60">
-                    soit {fmt.format(est.ttcMl)} €/ml · {est.nbVerres} panneaux de verre {est.verre} ·
-                    livraison incluse{est.enlevementPossible ? " (enlèvement possible)" : ""} · pose non comprise
-                  </p>
-                </>
-              ) : state.systeme === "conseil" ? (
-                <p className="mt-2 text-sm text-pine-100/60">
-                  Un expert vous oriente et chiffre votre projet au devis — sous 24h.
-                </p>
-              ) : estLoading ? (
-                <div className="mt-3 space-y-2">
-                  <div className="shimmer h-2.5 w-3/4 rounded-full" />
-                  <div className="shimmer h-2.5 w-1/2 rounded-full" />
-                </div>
-              ) : (
-                <p className="mt-2 text-sm text-pine-100/60">
-                  Choisissez un système, vos longueurs et la hauteur : le prix exact s’affiche ici.
-                </p>
-              )}
-            </div>
-            <ul className="mt-5 space-y-2">
-              {guarantees.map((g) => (
-                <li key={g} className="flex items-center gap-2 text-sm text-pine-100/80">
-                  <Check className="h-4 w-4 shrink-0 text-green-400" />
-                  {g}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* -------- étapes (droite) -------- */}
-        <div className="order-1 flex min-h-[30rem] flex-col bg-white p-6 sm:p-9 lg:order-2">
-          <div className="flex items-center justify-between gap-3">
-            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Devis gratuit · 1 min</p>
-            {status !== "done" && (
-              <p className="font-mono text-xs tabular-nums text-neutral-400">Étape {step + 1}/6</p>
-            )}
-          </div>
-          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
-            <div className="h-full rounded-full bg-pine-600 transition-all duration-500" style={{ width: `${progress}%` }} />
-          </div>
+      <div className="overflow-hidden rounded-3xl bg-white shadow-panel ring-1 ring-pine-950/10">
+        <div className="flex min-h-[28rem] flex-col p-6 sm:p-9">
+          {status !== "done" && (
+            <>
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Tarif gratuit · 1 min</p>
+                <p className="font-mono text-xs tabular-nums text-neutral-400">Étape {step + 1}/6</p>
+              </div>
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
+                <div className="h-full rounded-full bg-pine-600 transition-all duration-500" style={{ width: `${progress}%` }} />
+              </div>
+            </>
+          )}
 
           <div key={status === "done" ? "done" : step} className="flex flex-1 animate-fade-up flex-col pt-7">
             {status === "done" ? (
-              <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
-                <span className="grid h-16 w-16 place-items-center rounded-2xl bg-pine-600 text-white">
-                  <Check className="h-9 w-9" />
-                </span>
-                <h3 className="mt-6 text-2xl font-extrabold text-inkgreen">Demande bien reçue !</h3>
-                <p className="mt-2 max-w-sm text-neutral-600">
-                  Votre devis détaillé arrive sous 24h par email. Un conseiller vous appelle pour valider chaque cote.
-                </p>
+              <div className="flex flex-1 flex-col items-center py-2 text-center">
+                {result ? (
+                  <>
+                    <div className="relative w-full overflow-hidden rounded-2xl bg-pine-900 px-6 py-8 text-white shadow-panel">
+                      <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
+                      <div className="relative">
+                        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-pine-300">
+                          Votre tarif fourniture
+                        </p>
+                        <p className="mt-3 text-5xl font-extrabold tabular-nums tracking-tight text-white">
+                          {fmt.format(result.ttc)} € <span className="text-xl font-bold text-pine-200">TTC</span>
+                        </p>
+                        <p className="mt-2.5 text-sm text-pine-100/70">
+                          soit {fmt.format(result.ttcMl)} €/ml · {result.nbVerres} panneaux de verre sur-mesure ·
+                          livraison incluse · pose non comprise
+                        </p>
+                      </div>
+                    </div>
+                    <h3 className="mt-7 text-xl font-extrabold text-inkgreen">Votre devis détaillé arrive par email</h3>
+                    <p className="mt-1.5 max-w-sm text-sm text-neutral-600">
+                      Un conseiller vous appelle pour valider chaque cote avant fabrication — le tarif est confirmé au devis.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <span className="grid h-16 w-16 place-items-center rounded-2xl bg-pine-600 text-white">
+                      <Check className="h-9 w-9" />
+                    </span>
+                    <h3 className="mt-6 text-2xl font-extrabold text-inkgreen">Demande bien reçue !</h3>
+                    <p className="mt-2 max-w-sm text-neutral-600">
+                      Un expert vous rappelle pour définir la meilleure solution — et votre devis chiffré arrive sous 24h.
+                    </p>
+                  </>
+                )}
                 <ul className="mt-6 w-full max-w-sm space-y-2 text-left">
-                  {["Devis détaillé poste par poste", "Cotes vérifiées avec un expert", "Sans engagement"].map((b) => (
+                  {["Devis détaillé poste par poste sous 24h", "Cotes vérifiées avec un expert", "Gratuit et sans engagement"].map((b) => (
                     <li key={b} className="flex items-center gap-3 rounded-xl bg-pine-50 px-4 py-3 text-sm font-semibold text-inkgreen">
                       <Check className="h-4 w-4 shrink-0 text-pine-600" />
                       {b}
                     </li>
                   ))}
                 </ul>
+                <a href={phoneHref} className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-pine-700 transition hover:text-pine-600">
+                  <Phone className="h-4 w-4" />
+                  Une question ? {site.phone}
+                </a>
               </div>
             ) : step === 0 ? (
               <StepShell title="Votre projet ?" help="Où le garde-corps sera-t-il installé ?">
@@ -430,7 +351,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                 {/* nombre de côtés */}
                 <div className="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-mist/50 px-4 py-3.5">
                   <div className="flex items-center gap-3.5">
-                    <ShapeGlyph n={cotesNum.length || state.cotes.length} className="h-10 w-10 shrink-0" />
+                    <ShapeGlyph n={state.cotes.length} className="h-10 w-10 shrink-0" />
                     <div>
                       <p className="text-sm font-bold text-inkgreen">
                         {state.cotes.length} côté{state.cotes.length > 1 ? "s" : ""}
@@ -568,7 +489,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                 </div>
               </StepShell>
             ) : (
-              <StepShell title="Où envoyer votre devis ?" help="Devis détaillé par email sous 24h + rappel d’un conseiller pour valider chaque cote.">
+              <StepShell title="Dernière étape : votre tarif est prêt !" help="Dites-nous où l'envoyer — il s'affiche aussi juste après, à l'écran.">
                 <div className="space-y-3">
                   <Field label="Nom complet" value={lead.name} onChange={(v) => setLead((l) => ({ ...l, name: v }))} placeholder="Jean Dupont" autoComplete="name" error={showErr && leadErrors.name ? "Indiquez votre nom." : undefined} />
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -588,7 +509,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                     </span>
                   </label>
                   {showErr && leadErrors.consent && (
-                    <p className="text-xs font-semibold text-red-600">Merci d’accepter pour recevoir votre devis.</p>
+                    <p className="text-xs font-semibold text-red-600">Merci d’accepter pour voir votre tarif.</p>
                   )}
                 </div>
               </StepShell>
@@ -608,16 +529,17 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                 <button
                   type="button"
                   onClick={next}
-                  disabled={status === "loading" || (!canContinue && step < 4)}
-                  className="group inline-flex items-center gap-2 rounded-full bg-pine-700 px-7 py-3.5 text-sm font-bold text-white transition-all hover:bg-pine-600 disabled:cursor-not-allowed disabled:opacity-40"
+                  disabled={status === "loading" || (!canContinue && step < 5)}
+                  className={`group inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold transition-all disabled:cursor-not-allowed disabled:opacity-40 ${step === 5 ? "bg-amber-500 text-pine-950 shadow-lg shadow-amber-500/30 hover:-translate-y-0.5 hover:bg-amber-600" : "bg-pine-700 text-white hover:bg-pine-600"}`}
                 >
                   {status === "loading" ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin" /> Envoi…
+                      <Loader2 className="h-4 w-4 animate-spin" /> Calcul en cours…
                     </>
                   ) : step === 5 ? (
                     <>
-                      Recevoir mon devis gratuit
+                      <Zap className="h-4 w-4" />
+                      Voir mon tarif
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                     </>
                   ) : (
@@ -638,6 +560,16 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
           </div>
         </div>
       </div>
+
+      {/* réassurance sous la carte */}
+      <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        {guarantees.map((g) => (
+          <li key={g} className="flex items-center gap-1.5 text-xs font-semibold text-neutral-500">
+            <Check className="h-3.5 w-3.5 shrink-0 text-pine-600" />
+            {g}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

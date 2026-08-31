@@ -277,7 +277,7 @@ export default function Home() {
             </h2>
             <p className="mx-auto mt-3 max-w-xl leading-relaxed text-neutral-500">
               Une question à la fois — votre projet, le système, vos mesures — et
-              <strong className="font-semibold text-inkgreen"> votre prix exact s’affiche en direct</strong>.
+              <strong className="font-semibold text-inkgreen"> votre tarif exact s’affiche à la fin</strong>, en 1 minute.
             </p>
           </div>
           <div className="mx-auto mt-10 max-w-5xl">
