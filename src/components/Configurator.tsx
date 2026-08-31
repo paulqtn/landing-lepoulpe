@@ -42,6 +42,20 @@ const teintes = [
   { value: "fume-2f", label: "Fumé deux faces", desc: "l'effet miroir le plus marqué", swatch: "bg-gradient-to-br from-neutral-500 to-neutral-700 ring-neutral-500" },
 ] as const;
 
+/** Forme du garde-corps selon le nombre de côtés : ligne, L, U, enceinte. */
+function ShapeGlyph({ n, className }: { n: number; className?: string }) {
+  const d =
+    n <= 1 ? "M5 20 H35"
+    : n === 2 ? "M8 6 V32 H35"
+    : n === 3 ? "M8 6 V32 H32 V6"
+    : "M13 6 H8 V32 H32 V6 H27";
+  return (
+    <svg viewBox="0 0 40 38" className={className} aria-hidden>
+      <path d={d} fill="none" className="stroke-pine-700" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /** Panneau vu de côté avec flèche de hauteur — plus haut = plus protecteur. */
 function HeightGlyph({ h, className }: { h: number; className?: string }) {
   const top = 30 - h;
@@ -81,13 +95,15 @@ export type ConfiguratorDefaults = {
   hauteur?: string;
 };
 
-const STEPS = ["Votre projet", "Système", "Dimensions", "Teinte", "Coordonnées"] as const;
+const STEPS = ["Votre projet", "Système", "Longueurs", "Hauteur", "Teinte", "Coordonnées"] as const;
+
+const fmtM = (n: number) => n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefaults }) {
   const [step, setStep] = useState(0);
   const [state, setState] = useState<State>({
     systeme: defaults.systeme,
-    cotes: defaults.cotes?.length ? defaults.cotes.map((c) => String(c).replace(".", ",")) : [""],
+    cotes: defaults.cotes?.length ? defaults.cotes.map((c) => fmtM(c)) : ["3,00"],
     hauteur: defaults.hauteur,
   });
   const [lead, setLead] = useState({ name: "", email: "", phone: "", cp: "", consent: false });
@@ -145,16 +161,40 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
   const canContinue =
     step === 0 ? !!state.lieu
     : step === 1 ? !!state.systeme
-    : step === 2 ? (state.systeme === "conseil" ? true : cotesNum.length > 0) && !!state.hauteur
-    : step === 3 ? !!state.teinte
+    : step === 2 ? cotesNum.length > 0
+    : step === 3 ? !!state.hauteur
+    : step === 4 ? !!state.teinte
     : !Object.values(leadErrors).some(Boolean);
 
   function next() {
-    if (step < 4) {
+    if (step < 5) {
       if (canContinue) setStep((s) => s + 1);
       return;
     }
     void submit();
+  }
+
+  /** Ajuste un côté de ±0,50 m (minimum 0,50 m). */
+  function bump(i: number, delta: number) {
+    setState((s) => ({
+      ...s,
+      cotes: s.cotes.map((c, j) => {
+        if (j !== i) return c;
+        const cur = parseFloat(c.replace(",", "."));
+        const base = Number.isFinite(cur) && cur > 0 ? cur : 0.5;
+        return fmtM(Math.max(0.5, Math.round((base + delta) * 2) / 2));
+      }),
+    }));
+  }
+
+  /** Change le nombre de côtés (1 à 6), en conservant les valeurs saisies. */
+  function setNbCotes(n: number) {
+    const clamped = Math.min(6, Math.max(1, n));
+    setState((s) => {
+      const cotes = [...s.cotes];
+      while (cotes.length < clamped) cotes.push("1,00");
+      return { ...s, cotes: cotes.slice(0, clamped) };
+    });
   }
 
   async function submit() {
@@ -193,16 +233,17 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
     { label: "Projet", value: state.lieu ? `Garde-corps ${lieux.find((l) => l.value === state.lieu)?.label.toLowerCase()}` : null, go: 0 },
     { label: "Système", value: state.systeme ? systemes.find((m) => m.value === state.systeme)?.label : null, go: 1 },
     {
-      label: "Dimensions",
-      value: cotesNum.length > 0 && state.hauteur
-        ? `${fmt.format(Math.round(totalMl * 100) / 100)} ml · H ${hauteurs.find((h) => h.value === state.hauteur)?.label}`
+      label: "Longueurs",
+      value: step > 2 && cotesNum.length > 0
+        ? `${fmt.format(Math.round(totalMl * 100) / 100)} ml · ${cotesNum.length} côté${cotesNum.length > 1 ? "s" : ""}`
         : null,
       go: 2,
     },
-    { label: "Teinte", value: state.teinte ? teintes.find((t) => t.value === state.teinte)?.label : null, go: 3 },
+    { label: "Hauteur", value: state.hauteur ? hauteurs.find((h) => h.value === state.hauteur)?.label : null, go: 3 },
+    { label: "Teinte", value: state.teinte ? teintes.find((t) => t.value === state.teinte)?.label : null, go: 4 },
   ];
 
-  const progress = status === "done" ? 100 : ((step + 1) / 5) * 100;
+  const progress = status === "done" ? 100 : ((step + 1) / 6) * 100;
   const showPrice = est && state.systeme !== "conseil";
 
   return (
@@ -300,7 +341,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
           <div className="flex items-center justify-between gap-3">
             <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Devis gratuit · 1 min</p>
             {status !== "done" && (
-              <p className="font-mono text-xs tabular-nums text-neutral-400">Étape {step + 1}/5</p>
+              <p className="font-mono text-xs tabular-nums text-neutral-400">Étape {step + 1}/6</p>
             )}
           </div>
           <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
@@ -385,47 +426,97 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                 </div>
               </StepShell>
             ) : step === 2 ? (
-              <StepShell title="Vos dimensions ?" help="Mesurez chaque côté à équiper — les angles sont pris en charge automatiquement.">
-                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-500">
-                  Longueur de chaque côté (en mètres)
-                </p>
-                <div className="mt-2.5 space-y-2">
+              <StepShell title="Vos longueurs ?" help="Un côté = une longueur à équiper. Les angles entre côtés sont pris en charge automatiquement.">
+                {/* nombre de côtés */}
+                <div className="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-mist/50 px-4 py-3.5">
+                  <div className="flex items-center gap-3.5">
+                    <ShapeGlyph n={cotesNum.length || state.cotes.length} className="h-10 w-10 shrink-0" />
+                    <div>
+                      <p className="text-sm font-bold text-inkgreen">
+                        {state.cotes.length} côté{state.cotes.length > 1 ? "s" : ""}
+                        {state.cotes.length > 1 && (
+                          <span className="font-semibold text-neutral-500"> · {state.cotes.length - 1} angle{state.cotes.length > 2 ? "s" : ""} géré{state.cotes.length > 2 ? "s" : ""} auto</span>
+                        )}
+                      </p>
+                      <p className="text-[11px] text-neutral-500">
+                        {state.cotes.length === 1 ? "En ligne droite" : state.cotes.length === 2 ? "En L" : state.cotes.length === 3 ? "En U" : "Forme complexe"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setNbCotes(state.cotes.length - 1)}
+                      disabled={state.cotes.length <= 1}
+                      aria-label="Retirer un côté"
+                      className="grid h-10 w-10 place-items-center rounded-full border border-neutral-200 bg-white text-neutral-600 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-30"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNbCotes(state.cotes.length + 1)}
+                      disabled={state.cotes.length >= 6}
+                      aria-label="Ajouter un côté"
+                      className="grid h-10 w-10 place-items-center rounded-full border border-neutral-200 bg-white text-neutral-600 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-30"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* longueur de chaque côté */}
+                <div className="mt-4 space-y-2.5">
                   {state.cotes.map((c, i) => (
-                    <div key={i} className="flex items-center gap-2">
+                    <div key={i} className="flex items-center gap-3 rounded-2xl border border-neutral-200 px-4 py-3">
                       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-pine-50 font-mono text-xs font-bold text-pine-700">
                         {i + 1}
                       </span>
-                      <input
-                        value={c}
-                        onChange={(e) => setState((s) => ({ ...s, cotes: s.cotes.map((x, j) => (j === i ? e.target.value : x)) }))}
-                        inputMode="decimal"
-                        placeholder={i === 0 ? "ex. 8,30" : "ex. 4,00"}
-                        className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-base font-semibold text-inkgreen outline-none transition placeholder:text-neutral-400 focus:border-pine-500 focus:ring-4 focus:ring-pine-500/10"
-                      />
-                      {state.cotes.length > 1 && (
+                      <span className="hidden text-xs font-semibold uppercase tracking-wide text-neutral-400 sm:block">
+                        Côté {i + 1}
+                      </span>
+                      <div className="ml-auto flex items-center gap-2">
                         <button
                           type="button"
-                          onClick={() => setState((s) => ({ ...s, cotes: s.cotes.filter((_, j) => j !== i) }))}
-                          aria-label={`Retirer le côté ${i + 1}`}
-                          className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-neutral-200 text-neutral-500 transition hover:border-red-300 hover:text-red-500"
+                          onClick={() => bump(i, -0.5)}
+                          aria-label={`Réduire le côté ${i + 1} de 50 cm`}
+                          className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-neutral-200 text-neutral-600 transition hover:border-pine-300 hover:text-pine-700"
                         >
                           <Minus className="h-4 w-4" />
                         </button>
-                      )}
+                        <div className="flex items-baseline gap-1 rounded-xl bg-mist px-2 py-1.5">
+                          <input
+                            value={c}
+                            onChange={(e) => setState((s) => ({ ...s, cotes: s.cotes.map((x, j) => (j === i ? e.target.value : x)) }))}
+                            inputMode="decimal"
+                            aria-label={`Longueur du côté ${i + 1} en mètres`}
+                            className="w-[4.5rem] bg-transparent text-center text-xl font-extrabold tabular-nums text-inkgreen outline-none"
+                          />
+                          <span className="text-sm font-bold text-neutral-400">m</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => bump(i, 0.5)}
+                          aria-label={`Augmenter le côté ${i + 1} de 50 cm`}
+                          className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-neutral-200 text-neutral-600 transition hover:border-pine-300 hover:text-pine-700"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setState((s) => ({ ...s, cotes: [...s.cotes, ""] }))}
-                  className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-bold text-pine-700 transition hover:text-pine-600"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  Mon garde-corps tourne — ajouter un côté
-                </button>
 
-                <p className="mt-5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-500">Hauteur souhaitée</p>
-                <div className="mt-2.5 grid grid-cols-3 gap-2.5">
+                <p className="mt-4 flex items-baseline justify-between rounded-xl bg-pine-50 px-4 py-3">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-pine-700">Longueur totale</span>
+                  <span className="text-lg font-extrabold tabular-nums text-pine-700">
+                    {fmt.format(Math.round(totalMl * 100) / 100)} ml
+                  </span>
+                </p>
+              </StepShell>
+            ) : step === 3 ? (
+              <StepShell title="Quelle hauteur ?" help="Mesurée du sol fini au sommet du verre — 1,00 m est la hauteur de la norme.">
+                <div className="grid grid-cols-3 gap-2.5">
                   {hauteurs.map((h) => {
                     const on = state.hauteur === h.value;
                     return (
@@ -433,12 +524,12 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                         key={h.value}
                         type="button"
                         aria-pressed={on}
-                        onClick={() => setState((s) => ({ ...s, hauteur: h.value }))}
-                        className={`flex flex-col items-center gap-2 rounded-xl border px-3 py-3.5 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                        onClick={() => { setState((s) => ({ ...s, hauteur: h.value })); setStep(4); }}
+                        className={`flex flex-col items-center gap-2.5 rounded-xl border px-3 py-5 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
                       >
-                        <HeightGlyph h={h.glyph} className="h-9 w-11" />
+                        <HeightGlyph h={h.glyph} className="h-12 w-14" />
                         <span>
-                          <span className="block text-sm font-bold text-inkgreen">{h.label}</span>
+                          <span className="block text-base font-bold text-inkgreen">{h.label}</span>
                           <span className="block text-[11px] text-neutral-500">{h.desc}</span>
                         </span>
                       </button>
@@ -446,7 +537,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                   })}
                 </div>
               </StepShell>
-            ) : step === 3 ? (
+            ) : step === 4 ? (
               <StepShell title="Quelle teinte de verre ?" help="Le clair est le plus courant — les teintes fumées ajoutent intimité et caractère.">
                 <div className="grid grid-cols-2 gap-2.5">
                   {teintes.map((t) => {
@@ -456,7 +547,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                         key={t.value}
                         type="button"
                         aria-pressed={on}
-                        onClick={() => { setState((s) => ({ ...s, teinte: t.value })); setStep(4); }}
+                        onClick={() => { setState((s) => ({ ...s, teinte: t.value })); setStep(5); }}
                         className={`flex items-center gap-3 rounded-xl border px-3.5 py-3.5 text-left transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
                       >
                         <span className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-lg ring-1 ${t.swatch}`}>
@@ -524,7 +615,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" /> Envoi…
                     </>
-                  ) : step === 4 ? (
+                  ) : step === 5 ? (
                     <>
                       Recevoir mon devis gratuit
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -538,7 +629,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                 </button>
               </div>
             )}
-            {step === 4 && status !== "done" && (
+            {step === 5 && status !== "done" && (
               <p className="mt-3 flex items-center gap-1.5 text-xs text-neutral-400">
                 <Lock className="h-3.5 w-3.5" />
                 Vos informations restent strictement confidentielles.
