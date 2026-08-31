@@ -11,6 +11,8 @@ export type Product = {
   usages: string[];
   /** Prix fourniture "dès X €/ml". */
   priceFrom: number;
+  /** Accroche d'une ligne pour la fiche produit. */
+  tagline?: string;
   desc: string;
   specs: string[];
   badge?: string;

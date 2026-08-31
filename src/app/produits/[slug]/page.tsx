@@ -52,8 +52,8 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
   const systeme = FICHE_SYSTEME[p.slug];
   const media = p.photos?.length ? p.photos : p.photo ? [p.photo] : [];
   const [firstSentence, ...restSentences] = p.desc.split(". ");
-  const oneLiner = `${firstSentence}.`;
-  const descSuite = restSentences.join(". ");
+  const oneLiner = p.tagline ?? `${firstSentence}.`;
+  const descSuite = p.tagline ? p.desc : restSentences.join(". ");
   const materialEntry = getEntry(p.material);
   const others = products.filter((x) => x.material === p.material && x.slug !== p.slug).slice(0, 3);
 
@@ -123,13 +123,8 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
               <div className="mt-5">
                 {systeme ? (
                   <>
-                    <p className="mb-3 flex items-baseline justify-between gap-4">
-                      <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
-                        Configurez, le tarif suit
-                      </span>
-                      <span className="text-sm font-bold text-neutral-400">
-                        dès {p.priceFrom} €<span className="text-xs">/ml</span>
-                      </span>
+                    <p className="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
+                      Configurez, le tarif suit
                     </p>
                     <ProductConfigurator systeme={systeme} />
                   </>

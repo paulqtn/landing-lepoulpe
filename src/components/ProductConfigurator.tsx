@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, Loader2, Lock, Minus, Phone, Plus } from "lucide-react";
+import { ArrowRight, Check, Loader2, Lock, Minus, Phone, Plus, X } from "lucide-react";
 import { phoneHref, site } from "@/lib/site";
 
 /* ================================================================== */
@@ -132,34 +132,21 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
   return (
     <div className="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-card sm:p-6">
       {/* longueurs */}
-      <div className="flex items-center justify-between gap-3">
-        <span className={`${label} mb-0`}>Vos longueurs</span>
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setCotes((cs) => (cs.length > 1 ? cs.slice(0, -1) : cs))}
-            disabled={cotes.length <= 1}
-            aria-label="Retirer un côté"
-            className="grid h-7 w-7 place-items-center rounded-full border border-neutral-200 text-neutral-500 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-30"
-          >
-            <Minus className="h-3.5 w-3.5" />
-          </button>
-          <span className="text-xs font-bold text-neutral-600">{cotes.length} côté{cotes.length > 1 ? "s" : ""}</span>
-          <button
-            type="button"
-            onClick={() => setCotes((cs) => (cs.length < 6 ? [...cs, "1,00"] : cs))}
-            disabled={cotes.length >= 6}
-            aria-label="Ajouter un côté"
-            className="grid h-7 w-7 place-items-center rounded-full border border-neutral-200 text-neutral-500 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-30"
-          >
-            <Plus className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      </div>
+      <span className={`${label} mb-0`}>Vos longueurs</span>
       <div className="mt-2.5 space-y-2">
         {cotes.map((c, i) => (
           <div key={i} className="flex items-center gap-2.5 rounded-xl border border-neutral-200 px-3 py-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400">Côté {i + 1}</span>
+            {cotes.length > 1 && (
+              <button
+                type="button"
+                onClick={() => setCotes((cs) => cs.filter((_, j) => j !== i))}
+                aria-label={`Supprimer le côté ${i + 1}`}
+                className="grid h-6 w-6 place-items-center rounded-full text-neutral-300 transition hover:bg-red-50 hover:text-red-500"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
             <div className="ml-auto flex items-center gap-1.5">
               <button
                 type="button"
@@ -190,6 +177,16 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
             </div>
           </div>
         ))}
+        {cotes.length < 6 && (
+          <button
+            type="button"
+            onClick={() => setCotes((cs) => [...cs, "1,00"])}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-pine-300/70 px-3 py-2.5 text-sm font-bold text-pine-700 transition hover:border-pine-500 hover:bg-pine-50"
+          >
+            <Plus className="h-4 w-4" />
+            Ajouter un côté — mon garde-corps tourne
+          </button>
+        )}
       </div>
 
       {/* hauteur */}

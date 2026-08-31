@@ -252,6 +252,7 @@ export const productsData: Product[] = [
   },
   {
     "slug": "garde-corps-verre-sur-rail",
+    "tagline": "Le tout-verre sans poteaux, encastré dans un rail au sol.",
     "photo": "/verre-sur-rail.jpg",
     "photos": ["/verre-sur-rail.jpg", "/rail-encastre.jpg", "/garde_corps_balcon-nice.jpg"],
     "name": "Garde-corps en verre sur rail",
@@ -271,6 +272,7 @@ export const productsData: Product[] = [
   },
   {
     "slug": "garde-corps-verre-sur-pinces",
+    "tagline": "Des pinces inox discrètes, au sol ou sur muret.",
     "photo": "/pinces-au-sol.jpg",
     "photos": ["/pinces-au-sol.jpg", "/verre.jpeg", "/1713357460128.jpg"],
     "name": "Garde-corps en verre sur pinces",
@@ -290,6 +292,7 @@ export const productsData: Product[] = [
   },
   {
     "slug": "garde-corps-verre-avec-spider",
+    "tagline": "Des rotules traversantes — le verre comme suspendu.",
     "photo": "/garde-corps-verre-fenetre-2.jpg",
     "photos": ["/garde-corps-verre-fenetre-2.jpg", "/gardecorps-1.jpg", "/slajd_barierki_awilux.jpg"],
     "name": "Garde-corps en verre avec spider",
