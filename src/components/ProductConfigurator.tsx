@@ -11,6 +11,7 @@ import { phoneHref, site } from "@/lib/site";
 /* ================================================================== */
 
 const fmt = new Intl.NumberFormat("fr-FR");
+const eur = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const fmtM = (n: number) => n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -19,6 +20,12 @@ const hauteurs = [
   { value: "100", label: "1,00 m", desc: "norme" },
   { value: "110", label: "1,10 m", desc: "confort" },
 ];
+
+const epaisseurs = [
+  { value: "66.4", label: "66.4", desc: "le plus léger" },
+  { value: "88.4", label: "88.4", desc: "le standard" },
+  { value: "1010.4", label: "1010.4", desc: "renforcé" },
+] as const;
 
 const teintes = [
   { value: "clair", label: "Clair", swatch: "bg-gradient-to-br from-sky-50 to-pine-100/60 ring-pine-200" },
@@ -37,6 +44,7 @@ type Estimation = {
 export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | "spider" }) {
   const [cotes, setCotes] = useState<string[]>(["3,00"]);
   const [hauteur, setHauteur] = useState("100");
+  const [epaisseur, setEpaisseur] = useState<(typeof epaisseurs)[number]["value"]>("88.4");
   const [teinte, setTeinte] = useState<(typeof teintes)[number]["value"]>("clair");
 
   const [est, setEst] = useState<Estimation | null>(null);
@@ -64,7 +72,7 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
         const res = await fetch("/api/estimation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ systeme, cotes: cotesNum, hauteur: Number(hauteur), teinte, cp: lead.cp }),
+          body: JSON.stringify({ systeme, cotes: cotesNum, hauteur: Number(hauteur), teinte, verre: epaisseur, cp: lead.cp }),
         });
         if (seq !== seqRef.current) return;
         setEst(res.ok ? await res.json() : null);
@@ -76,7 +84,7 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
     }, 350);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [systeme, cotes.join("|"), hauteur, teinte, lead.cp]);
+  }, [systeme, cotes.join("|"), hauteur, teinte, epaisseur, lead.cp]);
 
   function bump(i: number, delta: number) {
     setCotes((cs) =>
@@ -114,6 +122,7 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
             systeme,
             cotes: cotesNum,
             hauteur,
+            epaisseur,
             teinte,
             codePostal: lead.cp,
             estimationTTC: est?.ttc ?? null,
@@ -127,12 +136,12 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
     setStatus("done");
   }
 
-  const label = "mb-2 block font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-500";
+  const label = "mb-2 inline-block rounded-md bg-amber-500 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-pine-950";
 
   return (
     <div className="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-card sm:p-6">
       {/* longueurs */}
-      <span className={`${label} mb-0`}>Vos longueurs</span>
+      <span className={label}>Vos longueurs</span>
       <div className="mt-2.5 space-y-2">
         {cotes.map((c, i) => (
           <div key={i} className="flex items-center gap-2.5 rounded-xl border border-neutral-200 px-3 py-2">
@@ -211,6 +220,28 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
         </div>
       </div>
 
+      {/* épaisseur */}
+      <div className="mt-5">
+        <span className={label}>Épaisseur du verre</span>
+        <div className="grid grid-cols-3 gap-2">
+          {epaisseurs.map((e) => {
+            const on = epaisseur === e.value;
+            return (
+              <button
+                key={e.value}
+                type="button"
+                aria-pressed={on}
+                onClick={() => setEpaisseur(e.value)}
+                className={`rounded-xl border px-2 py-2.5 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:border-pine-300"}`}
+              >
+                <span className="block font-mono text-sm font-bold text-inkgreen">{e.label}</span>
+                <span className="block text-[10px] text-neutral-500">{e.desc}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* teinte */}
       <div className="mt-5">
         <span className={label}>Teinte du verre</span>
@@ -240,14 +271,14 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
         <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
         <div className="relative flex items-center justify-between gap-4">
           <div>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-300">Votre tarif</p>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500">Votre tarif</p>
             {est ? (
               <>
                 <p key={est.ttc} className="mt-1 animate-scale-in text-3xl font-extrabold tabular-nums tracking-tight text-white">
-                  {fmt.format(est.ttc)} € <span className="text-sm font-bold text-pine-200">TTC</span>
+                  {eur.format(est.ttc)} € <span className="text-sm font-bold text-pine-200">TTC</span>
                 </p>
                 <p className="mt-0.5 text-[11px] text-pine-100/60">
-                  {fmt.format(est.ttcMl)} €/ml · {est.nbVerres} panneaux · livraison incluse · pose non comprise
+                  {eur.format(est.ttcMl)} €/ml · {est.nbVerres} panneaux · livraison incluse · pose non comprise
                 </p>
               </>
             ) : estLoading ? (

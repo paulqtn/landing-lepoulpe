@@ -14,6 +14,8 @@ type Body = {
   cotes?: number[];
   hauteur?: number;
   teinte?: "clair" | "extra-clair" | "fume-1f" | "fume-2f";
+  /** Épaisseur explicite (fiches produit) — sinon règle auto. */
+  verre?: "66.4" | "88.4" | "1010.4";
   cp?: string;
 };
 
@@ -31,9 +33,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Paramètres incomplets." }, { status: 400 });
   }
 
-  // Correspondances automatiques internes.
+  // Correspondances automatiques internes — l'épaisseur explicite prime.
   const piscine = (b.usage ?? "").includes("piscine");
-  const verre = piscine ? ("66.4" as const) : ("88.4" as const);
+  const verre =
+    b.verre && ["66.4", "88.4", "1010.4"].includes(b.verre)
+      ? b.verre
+      : piscine ? ("66.4" as const) : ("88.4" as const);
   const fixation =
     b.systeme === "rail" ? ("GS-19-L" as const)
     : b.systeme === "spider" ? ("GS-02" as const)
