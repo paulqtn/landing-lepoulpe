@@ -16,6 +16,8 @@ export type Product = {
   badge?: string;
   /** Photo réelle (public/) — MaterialScene en repli. */
   photo?: string;
+  /** Galerie : photos et vidéos (.mp4) supplémentaires. */
+  photos?: string[];
 };
 
 export const products: Product[] = productsData;

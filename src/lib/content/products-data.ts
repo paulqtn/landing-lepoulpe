@@ -253,6 +253,7 @@ export const productsData: Product[] = [
   {
     "slug": "garde-corps-verre-sur-rail",
     "photo": "/verre-sur-rail.jpg",
+    "photos": ["/verre-sur-rail.jpg", "/rail-encastre.jpg", "/garde_corps_balcon-nice.jpg"],
     "name": "Garde-corps en verre sur rail",
     "material": "verre",
     "usages": ["terrasse", "piscine", "balcon", "exterieur"],
@@ -271,6 +272,7 @@ export const productsData: Product[] = [
   {
     "slug": "garde-corps-verre-sur-pinces",
     "photo": "/pinces-au-sol.jpg",
+    "photos": ["/pinces-au-sol.jpg", "/verre.jpeg", "/1713357460128.jpg"],
     "name": "Garde-corps en verre sur pinces",
     "material": "verre",
     "usages": ["piscine", "escalier", "terrasse", "interieur"],
@@ -289,6 +291,7 @@ export const productsData: Product[] = [
   {
     "slug": "garde-corps-verre-avec-spider",
     "photo": "/garde-corps-verre-fenetre-2.jpg",
+    "photos": ["/garde-corps-verre-fenetre-2.jpg", "/gardecorps-1.jpg", "/slajd_barierki_awilux.jpg"],
     "name": "Garde-corps en verre avec spider",
     "material": "verre",
     "usages": ["balcon", "terrasse", "fenetre", "exterieur"],

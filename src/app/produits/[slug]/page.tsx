@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Check, ClipboardList, Phone, Ruler, ShieldCheck, Truck, Warehouse } from "lucide-react";
 import { MaterialScene } from "@/components/Illustrations";
 import { ProductConfigurator } from "@/components/ProductConfigurator";
+import { ProductGallery } from "@/components/ProductGallery";
 import { Container } from "@/components/ui/Container";
 import { getEntry } from "@/lib/catalog";
 import { getProduct, products } from "@/lib/products";
@@ -49,6 +50,10 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
   if (!p) notFound();
 
   const systeme = FICHE_SYSTEME[p.slug];
+  const media = p.photos?.length ? p.photos : p.photo ? [p.photo] : [];
+  const [firstSentence, ...restSentences] = p.desc.split(". ");
+  const oneLiner = `${firstSentence}.`;
+  const descSuite = restSentences.join(". ");
   const materialEntry = getEntry(p.material);
   const others = products.filter((x) => x.material === p.material && x.slug !== p.slug).slice(0, 3);
 
@@ -84,25 +89,18 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
           <div className="mt-8 grid items-start gap-10 lg:grid-cols-[1.02fr_0.98fr]">
             {/* ---------- photo sticky + réassurance ---------- */}
             <div className="lg:sticky lg:top-28">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-pine-950 shadow-panel ring-1 ring-pine-950/10">
-                {p.photo ? (
-                  <Image
-                    src={p.photo}
-                    alt={p.name}
-                    fill
-                    priority
-                    sizes="(min-width: 1024px) 40rem, 100vw"
-                    className="object-cover"
-                  />
-                ) : (
+              {media.length > 0 ? (
+                <ProductGallery media={media} alt={p.name} badge={p.badge} />
+              ) : (
+                <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-pine-950 shadow-panel ring-1 ring-pine-950/10">
                   <MaterialScene material={p.material} className="h-full" />
-                )}
-                {p.badge && (
-                  <span className="absolute left-4 top-4 rounded-full bg-amber-500 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wide text-pine-950 shadow-lg">
-                    {p.badge}
-                  </span>
-                )}
-              </div>
+                  {p.badge && (
+                    <span className="absolute left-4 top-4 rounded-full bg-amber-500 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wide text-pine-950 shadow-lg">
+                      {p.badge}
+                    </span>
+                  )}
+                </div>
+              )}
 
               <div className="mt-5 grid grid-cols-2 gap-3">
                 {trustBadges.map((b) => (
@@ -120,18 +118,9 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
             {/* ---------- contenu + configurateur ---------- */}
             <div>
               <h1 className="text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">{p.name}</h1>
-              <p className="mt-3 leading-relaxed text-neutral-600">{p.desc}</p>
+              <p className="mt-2.5 leading-relaxed text-neutral-600">{oneLiner}</p>
 
-              <ul className="mt-5 space-y-2">
-                {p.specs.slice(0, 4).map((s) => (
-                  <li key={s} className="flex items-start gap-2.5 text-sm font-medium text-neutral-700">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-pine-600" />
-                    {s}
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-7">
+              <div className="mt-5">
                 {systeme ? (
                   <>
                     <p className="mb-3 flex items-baseline justify-between gap-4">
@@ -172,8 +161,9 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
                 )}
               </div>
 
-              {/* caractéristiques complètes */}
-              <div className="mt-7 rounded-2xl border border-neutral-200/80 bg-white p-5">
+              {/* description + caractéristiques complètes */}
+              {descSuite && <p className="mt-7 text-sm leading-relaxed text-neutral-600">{descSuite}</p>}
+              <div className="mt-5 rounded-2xl border border-neutral-200/80 bg-white p-5">
                 <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
                   Caractéristiques complètes
                 </p>
