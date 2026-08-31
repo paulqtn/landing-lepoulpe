@@ -5,6 +5,7 @@ import type { Product } from "../products";
 export const productsData: Product[] = [
   {
     "slug": "kit-verre-horizon",
+    "photo": "/rail-encastre.jpg",
     "name": "Kit Verre Horizon",
     "material": "verre",
     "usages": [
@@ -26,6 +27,7 @@ export const productsData: Product[] = [
   },
   {
     "slug": "kit-verre-azur",
+    "photo": "/module-verre-invisible-sur-mesure-ht-1m15.jpg",
     "name": "Kit Verre Azur",
     "material": "verre",
     "usages": [
@@ -46,6 +48,7 @@ export const productsData: Product[] = [
   },
   {
     "slug": "kit-verre-cristal",
+    "photo": "/1713357460128.jpg",
     "name": "Kit Verre Cristal",
     "material": "verre",
     "usages": [
@@ -66,6 +69,7 @@ export const productsData: Product[] = [
   },
   {
     "slug": "kit-verre-clarte",
+    "photo": "/gardecorps-1.jpg",
     "name": "Kit Verre Clarté",
     "material": "verre",
     "usages": [
@@ -248,6 +252,7 @@ export const productsData: Product[] = [
   },
   {
     "slug": "garde-corps-verre-sur-rail",
+    "photo": "/verre-sur-rail.jpg",
     "name": "Garde-corps en verre sur rail",
     "material": "verre",
     "usages": ["terrasse", "piscine", "balcon", "exterieur"],
@@ -265,6 +270,7 @@ export const productsData: Product[] = [
   },
   {
     "slug": "garde-corps-verre-sur-pinces",
+    "photo": "/pinces-au-sol.jpg",
     "name": "Garde-corps en verre sur pinces",
     "material": "verre",
     "usages": ["piscine", "escalier", "terrasse", "interieur"],
@@ -282,6 +288,7 @@ export const productsData: Product[] = [
   },
   {
     "slug": "garde-corps-verre-avec-spider",
+    "photo": "/garde-corps-verre-fenetre-2.jpg",
     "name": "Garde-corps en verre avec spider",
     "material": "verre",
     "usages": ["balcon", "terrasse", "fenetre", "exterieur"],

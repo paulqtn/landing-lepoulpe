@@ -14,6 +14,8 @@ export type Product = {
   desc: string;
   specs: string[];
   badge?: string;
+  /** Photo réelle (public/) — MaterialScene en repli. */
+  photo?: string;
 };
 
 export const products: Product[] = productsData;
