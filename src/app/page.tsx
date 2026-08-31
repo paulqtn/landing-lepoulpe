@@ -276,8 +276,8 @@ export default function Home() {
               Un seul produit&nbsp;: le vôtre. Configurez-le étape par étape.
             </h2>
             <p className="mx-auto mt-3 max-w-xl leading-relaxed text-neutral-500">
-              Une question à la fois — votre projet, le système, les dimensions — et
-              le devis détaillé arrive sous 24h.
+              Une question à la fois — votre projet, le système, vos mesures — et
+              <strong className="font-semibold text-inkgreen"> votre prix exact s’affiche en direct</strong>.
             </p>
           </div>
           <div className="mx-auto mt-10 max-w-5xl">

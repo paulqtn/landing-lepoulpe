@@ -18,9 +18,8 @@ function defaultsFrom(sp: Record<string, string | string[] | undefined>) {
 
   const defaults: {
     systeme?: "rail" | "pinces" | "spider";
-    lineaire?: string;
+    cotes?: number[];
     hauteur?: string;
-    formule?: "kit" | "pose";
   } = {};
 
   const sys = one(sp.sys);
@@ -29,15 +28,12 @@ function defaultsFrom(sp: Record<string, string | string[] | undefined>) {
   }
 
   const len = Number(one(sp.len));
-  if (Number.isFinite(len) && len > 0) {
-    defaults.lineaire = len < 3 ? "lt3" : len <= 6 ? "3-6" : len <= 12 ? "6-12" : "gt12";
+  if (Number.isFinite(len) && len > 0 && len <= 200) {
+    defaults.cotes = [len];
   }
 
   const h = one(sp.h);
-  if (h === "100" || h === "110") defaults.hauteur = h;
-
-  const pose = one(sp.pose);
-  if (pose === "kit" || pose === "pose") defaults.formule = pose;
+  if (h === "90" || h === "100" || h === "110") defaults.hauteur = h;
 
   return defaults;
 }

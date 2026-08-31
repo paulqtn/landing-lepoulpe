@@ -1,17 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, Check, HardHat, HelpCircle, Loader2, Lock, Package, Pencil, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, HelpCircle, Loader2, Lock, Minus, Pencil, Plus, Zap } from "lucide-react";
 import { UsageGlyph } from "@/components/Illustrations";
 import { usages } from "@/lib/catalog";
-import type { Pose } from "@/lib/pricing";
 import { guarantees } from "@/lib/site";
 
 /* ================================================================== */
-/*  Configurateur de devis — un seul produit, le garde-corps en verre, */
-/*  configuré étape par étape : lieu, système, dimensions, formule.    */
-/*  Récap vert + estimation discrète, utilisé sur l'accueil et /devis. */
+/*  Configurateur client — un seul produit, le garde-corps en verre,   */
+/*  configuré étape par étape. Le PRIX EXACT est calculé en direct     */
+/*  par le moteur interne, côté serveur (/api/estimation) : le client  */
+/*  ne voit que son prix fourniture TTC.                               */
 /* ================================================================== */
 
 const fmt = new Intl.NumberFormat("fr-FR");
@@ -28,55 +28,19 @@ const systemes: { value: SystemeKey | "conseil"; label: string; desc: string; ph
   { value: "conseil", label: "À me conseiller", desc: "Un expert vous oriente selon votre projet" },
 ];
 
-/** Fourchettes €/ml par système de fixation (fourniture / posé). */
-const systemRanges: Record<SystemeKey, Record<Pose, [number, number]>> = {
-  rail: { kit: [320, 450], pose: [500, 800] },
-  pinces: { kit: [250, 380], pose: [450, 650] },
-  spider: { kit: [300, 430], pose: [480, 750] },
-};
-
-const lineaires = [
-  { value: "lt3", label: "0 à 3 m", meters: 2, panels: 2 },
-  { value: "3-6", label: "3 à 6 m", meters: 4.5, panels: 4 },
-  { value: "6-12", label: "6 à 12 m", meters: 9, panels: 6 },
-  { value: "gt12", label: "Plus de 12 m", meters: 15, panels: 9 },
-];
-
 const hauteurs = [
   { value: "90", label: "0,90 m", desc: "rampant escalier", glyph: 15 },
   { value: "100", label: "1,00 m", desc: "norme standard", glyph: 20 },
   { value: "110", label: "1,10 m", desc: "confort / piscine", glyph: 25 },
 ];
 
-const formules: { value: Pose | "unsure"; label: string; desc: string; icon: typeof Package }[] = [
-  { value: "kit", label: "Kit à poser", desc: "Livré pré-percé, notice et visserie incluses", icon: Package },
-  { value: "pose", label: "Avec pose incluse", desc: "Par notre réseau de poseurs partenaires", icon: HardHat },
-  { value: "unsure", label: "Je ne sais pas encore", desc: "On compare les deux formules au devis", icon: HelpCircle },
-];
-
-/** Travée de garde-corps vue de face : n panneaux de verre sur profil bas. */
-function PanelsGlyph({ panels, className }: { panels: number; className?: string }) {
-  const w = 72;
-  const gap = 2.5;
-  const pw = (w - gap * (panels - 1)) / panels;
-  return (
-    <svg viewBox="0 0 72 34" className={className} aria-hidden>
-      {Array.from({ length: panels }).map((_, i) => (
-        <rect
-          key={i}
-          x={i * (pw + gap)}
-          y={4}
-          width={pw}
-          height={24}
-          rx={1.5}
-          className="fill-pine-100/70 stroke-pine-400"
-          strokeWidth="1"
-        />
-      ))}
-      <rect x={0} y={30} width={w} height={3.5} rx={1.75} className="fill-pine-700" />
-    </svg>
-  );
-}
+/** Teintes de verre — nuancier simple, sans jargon. */
+const teintes = [
+  { value: "clair", label: "Clair", desc: "le classique lumineux", swatch: "bg-gradient-to-br from-sky-50 to-pine-100/60 ring-pine-200" },
+  { value: "extra-clair", label: "Extra-clair", desc: "sans reflet vert, haut de gamme", swatch: "bg-gradient-to-br from-white to-neutral-100 ring-neutral-200" },
+  { value: "fume-1f", label: "Fumé une face", desc: "intimité côté extérieur", swatch: "bg-gradient-to-br from-neutral-300 to-neutral-400 ring-neutral-400" },
+  { value: "fume-2f", label: "Fumé deux faces", desc: "l'effet miroir le plus marqué", swatch: "bg-gradient-to-br from-neutral-500 to-neutral-700 ring-neutral-500" },
+] as const;
 
 /** Panneau vu de côté avec flèche de hauteur — plus haut = plus protecteur. */
 function HeightGlyph({ h, className }: { h: number; className?: string }) {
@@ -92,35 +56,84 @@ function HeightGlyph({ h, className }: { h: number; className?: string }) {
   );
 }
 
+type Estimation = {
+  ttc: number;
+  ht: number;
+  ttcMl: number;
+  nbVerres: number;
+  hauteurVerre: number;
+  verre: string;
+  longueurTotale: number;
+  enlevementPossible: boolean;
+};
+
 type State = {
   lieu?: string;
   systeme?: SystemeKey | "conseil";
-  lineaire?: string;
+  cotes: string[];
   hauteur?: string;
-  formule?: Pose | "unsure";
+  teinte?: (typeof teintes)[number]["value"];
 };
 
-const STEPS = ["Votre projet", "Système", "Dimensions", "Formule", "Coordonnées"] as const;
+export type ConfiguratorDefaults = {
+  systeme?: SystemeKey;
+  cotes?: number[];
+  hauteur?: string;
+};
 
-function estimateRange(s: State): { low: string; high: string; withPose: boolean } | null {
-  if (!s.systeme || s.systeme === "conseil" || !s.lineaire) return null;
-  const meters = lineaires.find((l) => l.value === s.lineaire)?.meters ?? 0;
-  const r = systemRanges[s.systeme];
-  const pose: Pose | null = s.formule === "kit" || s.formule === "pose" ? s.formule : null;
-  const low = (pose ? r[pose][0] : r.kit[0]) * meters;
-  const high = (pose ? r[pose][1] : r.pose[1]) * meters;
-  const round10 = (n: number) => Math.round(n / 10) * 10;
-  return { low: fmt.format(round10(low)), high: fmt.format(round10(high)), withPose: pose !== "kit" };
-}
+const STEPS = ["Votre projet", "Système", "Dimensions", "Teinte", "Coordonnées"] as const;
 
-export function Configurator({ defaults = {} }: { defaults?: State }) {
+export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefaults }) {
   const [step, setStep] = useState(0);
-  const [state, setState] = useState<State>(defaults);
+  const [state, setState] = useState<State>({
+    systeme: defaults.systeme,
+    cotes: defaults.cotes?.length ? defaults.cotes.map((c) => String(c).replace(".", ",")) : [""],
+    hauteur: defaults.hauteur,
+  });
   const [lead, setLead] = useState({ name: "", email: "", phone: "", cp: "", consent: false });
   const [showErr, setShowErr] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
 
-  const est = estimateRange(state);
+  const [est, setEst] = useState<Estimation | null>(null);
+  const [estLoading, setEstLoading] = useState(false);
+  const estSeq = useRef(0);
+
+  const cotesNum = state.cotes.map((c) => parseFloat(c.replace(",", "."))).filter((n) => Number.isFinite(n) && n > 0);
+  const totalMl = cotesNum.reduce((a, b) => a + b, 0);
+
+  /* ---------- estimation live (moteur serveur, sortie assainie) ---------- */
+  useEffect(() => {
+    if (!state.systeme || state.systeme === "conseil" || cotesNum.length === 0 || !state.hauteur) {
+      setEst(null);
+      return;
+    }
+    const seq = ++estSeq.current;
+    setEstLoading(true);
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/estimation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            usage: state.lieu,
+            systeme: state.systeme,
+            cotes: cotesNum,
+            hauteur: Number(state.hauteur),
+            teinte: state.teinte ?? "clair",
+            cp: lead.cp,
+          }),
+        });
+        if (seq !== estSeq.current) return;
+        setEst(res.ok ? await res.json() : null);
+      } catch {
+        if (seq === estSeq.current) setEst(null);
+      } finally {
+        if (seq === estSeq.current) setEstLoading(false);
+      }
+    }, 350);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.lieu, state.systeme, state.cotes.join("|"), state.hauteur, state.teinte, lead.cp]);
 
   const leadErrors = {
     name: lead.name.trim().length < 2,
@@ -132,8 +145,8 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
   const canContinue =
     step === 0 ? !!state.lieu
     : step === 1 ? !!state.systeme
-    : step === 2 ? !!state.lineaire && !!state.hauteur
-    : step === 3 ? !!state.formule
+    : step === 2 ? (state.systeme === "conseil" ? true : cotesNum.length > 0) && !!state.hauteur
+    : step === 3 ? !!state.teinte
     : !Object.values(leadErrors).some(Boolean);
 
   function next() {
@@ -158,7 +171,15 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
           name: lead.name,
           email: lead.email,
           phone: lead.phone,
-          answers: { ...state, codePostal: lead.cp },
+          answers: {
+            lieu: state.lieu,
+            systeme: state.systeme,
+            cotes: cotesNum,
+            hauteur: state.hauteur,
+            teinte: state.teinte,
+            codePostal: lead.cp,
+            estimationTTC: est?.ttc ?? null,
+          },
           source: "configurateur-devis",
         }),
       });
@@ -173,26 +194,27 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
     { label: "Système", value: state.systeme ? systemes.find((m) => m.value === state.systeme)?.label : null, go: 1 },
     {
       label: "Dimensions",
-      value: state.lineaire && state.hauteur
-        ? `${lineaires.find((l) => l.value === state.lineaire)?.label} · ${hauteurs.find((h) => h.value === state.hauteur)?.label}`
+      value: cotesNum.length > 0 && state.hauteur
+        ? `${fmt.format(Math.round(totalMl * 100) / 100)} ml · H ${hauteurs.find((h) => h.value === state.hauteur)?.label}`
         : null,
       go: 2,
     },
-    { label: "Formule", value: state.formule ? formules.find((f) => f.value === state.formule)?.label : null, go: 3 },
+    { label: "Teinte", value: state.teinte ? teintes.find((t) => t.value === state.teinte)?.label : null, go: 3 },
   ];
 
   const progress = status === "done" ? 100 : ((step + 1) / 5) * 100;
+  const showPrice = est && state.systeme !== "conseil";
 
   return (
     <div className="relative">
       {/* sticker */}
       <span className="absolute -top-4 left-4 z-10 inline-flex rotate-[-3deg] items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-pine-950 shadow-md sm:-left-3">
         <Zap className="h-3.5 w-3.5" />
-        Devis immédiat
+        Prix réel en direct
       </span>
 
       <div className="grid overflow-hidden rounded-3xl shadow-panel lg:grid-cols-[0.9fr_1.1fr]">
-        {/* -------- récap (gauche) -------- */}
+        {/* -------- récap + prix (gauche) -------- */}
         <div className="relative order-2 flex flex-col bg-pine-900 p-6 text-white sm:p-8 lg:order-1">
           <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
           <div className="relative">
@@ -231,27 +253,35 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
             )}
           </div>
 
-          {/* estimation */}
+          {/* prix fourniture calculé en direct */}
           <div className="relative mt-auto pt-6">
             <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-pine-300">Estimation indicative</p>
-              {est ? (
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-pine-300">
+                Votre prix fourniture
+              </p>
+              {showPrice ? (
                 <>
-                  <p className="mt-2 text-xl font-extrabold tabular-nums tracking-tight text-white">
-                    {est.low} – {est.high} €
+                  <p key={est.ttc} className="mt-2 animate-scale-in text-3xl font-extrabold tabular-nums tracking-tight text-white">
+                    {fmt.format(est.ttc)} € <span className="text-base font-bold text-pine-200">TTC</span>
                   </p>
                   <p className="mt-1 text-xs text-pine-100/60">
-                    {est.withPose ? "Fourniture + pose" : "Fourniture seule"} · à affiner avec un conseiller
+                    soit {fmt.format(est.ttcMl)} €/ml · {est.nbVerres} panneaux de verre {est.verre} ·
+                    livraison incluse{est.enlevementPossible ? " (enlèvement possible)" : ""} · pose non comprise
                   </p>
                 </>
+              ) : state.systeme === "conseil" ? (
+                <p className="mt-2 text-sm text-pine-100/60">
+                  Un expert vous oriente et chiffre votre projet au devis — sous 24h.
+                </p>
+              ) : estLoading ? (
+                <div className="mt-3 space-y-2">
+                  <div className="shimmer h-2.5 w-3/4 rounded-full" />
+                  <div className="shimmer h-2.5 w-1/2 rounded-full" />
+                </div>
               ) : (
-                <>
-                  <p className="mt-2 text-sm text-pine-100/60">Choisissez un système et un linéaire pour estimer votre budget.</p>
-                  <div className="mt-3 space-y-2">
-                    <div className="shimmer h-2.5 w-3/4 rounded-full" />
-                    <div className="shimmer h-2.5 w-1/2 rounded-full" />
-                  </div>
-                </>
+                <p className="mt-2 text-sm text-pine-100/60">
+                  Choisissez un système, vos longueurs et la hauteur : le prix exact s’affiche ici.
+                </p>
               )}
             </div>
             <ul className="mt-5 space-y-2">
@@ -285,10 +315,10 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
                 </span>
                 <h3 className="mt-6 text-2xl font-extrabold text-inkgreen">Demande bien reçue !</h3>
                 <p className="mt-2 max-w-sm text-neutral-600">
-                  Votre devis détaillé arrive sous 24h par email. Un conseiller vous appelle pour affiner votre projet.
+                  Votre devis détaillé arrive sous 24h par email. Un conseiller vous appelle pour valider chaque cote.
                 </p>
                 <ul className="mt-6 w-full max-w-sm space-y-2 text-left">
-                  {["Devis détaillé poste par poste", "Conseils d’un expert garde-corps", "Sans engagement"].map((b) => (
+                  {["Devis détaillé poste par poste", "Cotes vérifiées avec un expert", "Sans engagement"].map((b) => (
                     <li key={b} className="flex items-center gap-3 rounded-xl bg-pine-50 px-4 py-3 text-sm font-semibold text-inkgreen">
                       <Check className="h-4 w-4 shrink-0 text-pine-600" />
                       {b}
@@ -355,25 +385,45 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
                 </div>
               </StepShell>
             ) : step === 2 ? (
-              <StepShell title="Quelles dimensions ?" help="Une estimation suffit, on affine ensuite.">
-                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-500">Linéaire à équiper</p>
-                <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                  {lineaires.map((l) => {
-                    const on = state.lineaire === l.value;
-                    return (
-                      <button
-                        key={l.value}
-                        type="button"
-                        aria-pressed={on}
-                        onClick={() => setState((s) => ({ ...s, lineaire: l.value }))}
-                        className={`flex flex-col items-center gap-2 rounded-xl border px-3 py-3.5 transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
-                      >
-                        <PanelsGlyph panels={l.panels} className="h-9 w-full" />
-                        <span className="text-sm font-bold text-inkgreen">{l.label}</span>
-                      </button>
-                    );
-                  })}
+              <StepShell title="Vos dimensions ?" help="Mesurez chaque côté à équiper — les angles sont pris en charge automatiquement.">
+                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-500">
+                  Longueur de chaque côté (en mètres)
+                </p>
+                <div className="mt-2.5 space-y-2">
+                  {state.cotes.map((c, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-pine-50 font-mono text-xs font-bold text-pine-700">
+                        {i + 1}
+                      </span>
+                      <input
+                        value={c}
+                        onChange={(e) => setState((s) => ({ ...s, cotes: s.cotes.map((x, j) => (j === i ? e.target.value : x)) }))}
+                        inputMode="decimal"
+                        placeholder={i === 0 ? "ex. 8,30" : "ex. 4,00"}
+                        className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-base font-semibold text-inkgreen outline-none transition placeholder:text-neutral-400 focus:border-pine-500 focus:ring-4 focus:ring-pine-500/10"
+                      />
+                      {state.cotes.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setState((s) => ({ ...s, cotes: s.cotes.filter((_, j) => j !== i) }))}
+                          aria-label={`Retirer le côté ${i + 1}`}
+                          className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-neutral-200 text-neutral-500 transition hover:border-red-300 hover:text-red-500"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setState((s) => ({ ...s, cotes: [...s.cotes, ""] }))}
+                  className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-bold text-pine-700 transition hover:text-pine-600"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Mon garde-corps tourne — ajouter un côté
+                </button>
+
                 <p className="mt-5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-500">Hauteur souhaitée</p>
                 <div className="mt-2.5 grid grid-cols-3 gap-2.5">
                   {hauteurs.map((h) => {
@@ -397,39 +447,44 @@ export function Configurator({ defaults = {} }: { defaults?: State }) {
                 </div>
               </StepShell>
             ) : step === 3 ? (
-              <StepShell title="Kit ou pose incluse ?" help="Les deux formules figurent au devis si vous hésitez.">
-                <div className="grid gap-2.5 sm:grid-cols-3">
-                  {formules.map((f) => {
-                    const on = state.formule === f.value;
+              <StepShell title="Quelle teinte de verre ?" help="Le clair est le plus courant — les teintes fumées ajoutent intimité et caractère.">
+                <div className="grid grid-cols-2 gap-2.5">
+                  {teintes.map((t) => {
+                    const on = state.teinte === t.value;
                     return (
                       <button
-                        key={f.value}
+                        key={t.value}
                         type="button"
                         aria-pressed={on}
-                        onClick={() => { setState((s) => ({ ...s, formule: f.value as State["formule"] })); setStep(4); }}
-                        className={`flex flex-col items-center gap-3 rounded-xl border px-4 py-5 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                        onClick={() => { setState((s) => ({ ...s, teinte: t.value })); setStep(4); }}
+                        className={`flex items-center gap-3 rounded-xl border px-3.5 py-3.5 text-left transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
                       >
-                        <span className={`grid h-12 w-12 place-items-center rounded-xl transition-colors ${on ? "bg-pine-700 text-white" : "bg-pine-50 text-pine-700"}`}>
-                          <f.icon className="h-6 w-6" />
+                        <span className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-lg ring-1 ${t.swatch}`}>
+                          <span className="absolute -left-1 top-0 h-16 w-2 rotate-12 bg-white/50" />
                         </span>
-                        <span>
-                          <span className="block text-sm font-bold text-inkgreen">{f.label}</span>
-                          <span className="mt-1 block text-xs leading-snug text-neutral-500">{f.desc}</span>
+                        <span className="min-w-0">
+                          <span className={`block text-sm font-bold ${on ? "text-pine-700" : "text-inkgreen"}`}>{t.label}</span>
+                          <span className="mt-0.5 block text-xs leading-snug text-neutral-500">{t.desc}</span>
                         </span>
+                        {on && (
+                          <span className="ml-auto grid h-6 w-6 shrink-0 place-items-center rounded-full bg-pine-600 text-white">
+                            <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                          </span>
+                        )}
                       </button>
                     );
                   })}
                 </div>
               </StepShell>
             ) : (
-              <StepShell title="Où envoyer votre devis ?" help="Devis détaillé par email sous 24h + rappel d’un conseiller.">
+              <StepShell title="Où envoyer votre devis ?" help="Devis détaillé par email sous 24h + rappel d’un conseiller pour valider chaque cote.">
                 <div className="space-y-3">
                   <Field label="Nom complet" value={lead.name} onChange={(v) => setLead((l) => ({ ...l, name: v }))} placeholder="Jean Dupont" autoComplete="name" error={showErr && leadErrors.name ? "Indiquez votre nom." : undefined} />
                   <div className="grid gap-3 sm:grid-cols-2">
                     <Field label="Email" type="email" value={lead.email} onChange={(v) => setLead((l) => ({ ...l, email: v }))} placeholder="jean@email.fr" autoComplete="email" error={showErr && leadErrors.email ? "Email invalide." : undefined} />
                     <Field label="Téléphone" type="tel" value={lead.phone} onChange={(v) => setLead((l) => ({ ...l, phone: v }))} placeholder="06 12 34 56 78" autoComplete="tel" error={showErr && leadErrors.phone ? "Numéro invalide." : undefined} />
                   </div>
-                  <Field label="Code postal du chantier (optionnel)" value={lead.cp} onChange={(v) => setLead((l) => ({ ...l, cp: v }))} placeholder="75001" autoComplete="postal-code" />
+                  <Field label="Code postal du chantier (pour la livraison)" value={lead.cp} onChange={(v) => setLead((l) => ({ ...l, cp: v }))} placeholder="75001" autoComplete="postal-code" />
                   <label className="flex cursor-pointer items-start gap-3 pt-1">
                     <input
                       type="checkbox"
