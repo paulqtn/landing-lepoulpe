@@ -43,9 +43,9 @@ const fixations = [
 
 /** Menu « Épaisseur de verre » — les 3 pages verre feuilleté. */
 const epaisseurs = [
-  { slug: "66-6", label: "66.6", desc: "La base sécurisée — pinces & petites portées" },
+  { slug: "66-4", label: "66.4", desc: "La base sécurisée — pinces & petites portées" },
   { slug: "88-4", label: "88.4", desc: "Le standard du tout-verre sur rail" },
-  { slug: "10-10-4", label: "10.10.4", desc: "Grandes portées & zones exposées" },
+  { slug: "1010-4", label: "1010.4", desc: "Grandes portées & zones exposées" },
 ];
 
 export function SiteHeader() {
