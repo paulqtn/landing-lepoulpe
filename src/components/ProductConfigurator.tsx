@@ -22,9 +22,9 @@ const hauteurs = [
 ];
 
 const epaisseurs = [
-  { value: "66.4", label: "66.4", desc: "le plus léger" },
-  { value: "88.4", label: "88.4", desc: "le standard" },
-  { value: "1010.4", label: "1010.4", desc: "renforcé" },
+  { value: "66.4", label: "66.4", desc: "éco · petites portées", reco: false },
+  { value: "88.4", label: "88.4", desc: "le choix de la norme", reco: true },
+  { value: "1010.4", label: "1010.4", desc: "piscine · vent · 1,10 m", reco: false },
 ] as const;
 
 const teintes = [
@@ -136,7 +136,7 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
     setStatus("done");
   }
 
-  const label = "mb-2 inline-block rounded-md bg-amber-500 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-pine-950";
+  const label = "mb-2 block font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-amber-600";
 
   return (
     <div className="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-card sm:p-6">
@@ -223,7 +223,7 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
       {/* épaisseur */}
       <div className="mt-5">
         <span className={label}>Épaisseur du verre</span>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2 pt-2">
           {epaisseurs.map((e) => {
             const on = epaisseur === e.value;
             return (
@@ -232,10 +232,15 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
                 type="button"
                 aria-pressed={on}
                 onClick={() => setEpaisseur(e.value)}
-                className={`rounded-xl border px-2 py-2.5 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:border-pine-300"}`}
+                className={`relative rounded-xl border px-2 py-2.5 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:border-pine-300"}`}
               >
+                {e.reco && (
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-pine-950 shadow-sm">
+                    Recommandé
+                  </span>
+                )}
                 <span className="block font-mono text-sm font-bold text-inkgreen">{e.label}</span>
-                <span className="block text-[10px] text-neutral-500">{e.desc}</span>
+                <span className="block text-[10px] leading-tight text-neutral-500">{e.desc}</span>
               </button>
             );
           })}
