@@ -263,7 +263,7 @@ export const productsData: Product[] = [
     "desc": "Le tout-verre par excellence : les panneaux s'encastrent dans un rail aluminium fixé au sol ou en applique, sans aucun poteau pour couper la vue. Le rail reprend seul les efforts, le verre trempé-feuilleté fait le reste — angles et retours suivis au millimètre en usine pour un alignement parfait.",
     "specs": [
       "Rail aluminium au sol ou en applique (pose française ou anglaise)",
-      "Verre trempé-feuilleté 66.2 à 88.4 selon hauteur et portée",
+      "Verre trempé-feuilleté 66.4 à 1010.4 selon hauteur et portée",
       "Aucun montant vertical — ligne de verre continue",
       "Hauteur 1,00 m ou 1,10 m — conforme NF P01-012",
       "Angles, retours et pentes suivis en usine",
@@ -283,7 +283,7 @@ export const productsData: Product[] = [
     "desc": "Les pinces à verre inox maintiennent chaque panneau au sol, sur muret ou en fixation latérale : un système simple, discret et réglable — le plus accessible de la gamme, idéal en kit à poser soi-même. Visserie 316 de série pour les abords de piscine.",
     "specs": [
       "Pinces à verre inox 316 — au sol, sur muret ou en latéral",
-      "Verre feuilleté 44.2 ou 55.2 selon l'entraxe des pinces",
+      "Verre trempé-feuilleté 66.4 ou 88.4 selon l'entraxe des pinces",
       "Kits pré-percés, réglage fin à l'alignement",
       "Hauteur 1,00 m — conforme NF P01-012",
       "Pinces orientables : compatible rampants d'escalier",
@@ -303,7 +303,7 @@ export const productsData: Product[] = [
     "specs": [
       "Rotules « spider » inox 316, fixation traversante",
       "Pose latérale en nez de dalle ou en façade",
-      "Verre trempé-feuilleté percé en usine (66.2 minimum)",
+      "Verre trempé-feuilleté percé en usine (88.4 recommandé)",
       "Hauteur de protection 1,00 m — conforme NF P01-012",
       "100 % de la surface du balcon ou de la terrasse conservée",
       "Calepinage et perçages réalisés au millimètre"

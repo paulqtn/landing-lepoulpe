@@ -140,66 +140,8 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
 
   return (
     <div className="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-card sm:p-6">
-      {/* longueurs */}
-      <span className={label}>Vos longueurs</span>
-      <div className="mt-2.5 space-y-2">
-        {cotes.map((c, i) => (
-          <div key={i} className="flex items-center gap-2.5 rounded-xl border border-neutral-200 px-3 py-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400">Côté {i + 1}</span>
-            {cotes.length > 1 && (
-              <button
-                type="button"
-                onClick={() => setCotes((cs) => cs.filter((_, j) => j !== i))}
-                aria-label={`Supprimer le côté ${i + 1}`}
-                className="grid h-6 w-6 place-items-center rounded-full text-neutral-300 transition hover:bg-red-50 hover:text-red-500"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
-            <div className="ml-auto flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => bump(i, -0.5)}
-                aria-label={`Réduire le côté ${i + 1} de 50 cm`}
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-neutral-200 text-neutral-600 transition hover:border-pine-300 hover:text-pine-700"
-              >
-                <Minus className="h-3.5 w-3.5" />
-              </button>
-              <div className="flex items-baseline gap-1 rounded-lg bg-mist px-1.5 py-1">
-                <input
-                  value={c}
-                  onChange={(e) => setCotes((cs) => cs.map((x, j) => (j === i ? e.target.value : x)))}
-                  inputMode="decimal"
-                  aria-label={`Longueur du côté ${i + 1} en mètres`}
-                  className="w-14 bg-transparent text-center text-base font-extrabold tabular-nums text-inkgreen outline-none"
-                />
-                <span className="text-xs font-bold text-neutral-400">m</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => bump(i, 0.5)}
-                aria-label={`Augmenter le côté ${i + 1} de 50 cm`}
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-neutral-200 text-neutral-600 transition hover:border-pine-300 hover:text-pine-700"
-              >
-                <Plus className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          </div>
-        ))}
-        {cotes.length < 6 && (
-          <button
-            type="button"
-            onClick={() => setCotes((cs) => [...cs, "1,00"])}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-pine-300/70 px-3 py-2.5 text-sm font-bold text-pine-700 transition hover:border-pine-500 hover:bg-pine-50"
-          >
-            <Plus className="h-4 w-4" />
-            Ajouter un côté — mon garde-corps tourne
-          </button>
-        )}
-      </div>
-
       {/* hauteur */}
-      <div className="mt-5">
+      <div>
         <span className={label}>Hauteur</span>
         <div className="grid grid-cols-3 gap-2">
           {hauteurs.map((h) => {
@@ -217,6 +159,66 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
               </button>
             );
           })}
+        </div>
+      </div>
+
+      {/* longueurs */}
+      <div className="mt-5">
+        <span className={label}>Vos longueurs</span>
+        <div className="mt-2.5 space-y-2">
+          {cotes.map((c, i) => (
+            <div key={i} className="flex items-center gap-2.5 rounded-xl border border-neutral-200 px-3 py-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400">Côté {i + 1}</span>
+              {cotes.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setCotes((cs) => cs.filter((_, j) => j !== i))}
+                  aria-label={`Supprimer le côté ${i + 1}`}
+                  className="grid h-6 w-6 place-items-center rounded-full text-neutral-300 transition hover:bg-red-50 hover:text-red-500"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+              <div className="ml-auto flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => bump(i, -0.5)}
+                  aria-label={`Réduire le côté ${i + 1} de 50 cm`}
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-neutral-200 text-neutral-600 transition hover:border-pine-300 hover:text-pine-700"
+                >
+                  <Minus className="h-3.5 w-3.5" />
+                </button>
+                <div className="flex items-baseline gap-1 rounded-lg bg-mist px-1.5 py-1">
+                  <input
+                    value={c}
+                    onChange={(e) => setCotes((cs) => cs.map((x, j) => (j === i ? e.target.value : x)))}
+                    inputMode="decimal"
+                    aria-label={`Longueur du côté ${i + 1} en mètres`}
+                    className="w-14 bg-transparent text-center text-base font-extrabold tabular-nums text-inkgreen outline-none"
+                  />
+                  <span className="text-xs font-bold text-neutral-400">m</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => bump(i, 0.5)}
+                  aria-label={`Augmenter le côté ${i + 1} de 50 cm`}
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-neutral-200 text-neutral-600 transition hover:border-pine-300 hover:text-pine-700"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          ))}
+          {cotes.length < 6 && (
+            <button
+              type="button"
+              onClick={() => setCotes((cs) => [...cs, "1,00"])}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-pine-300/70 px-3 py-2.5 text-sm font-bold text-pine-700 transition hover:border-pine-500 hover:bg-pine-50"
+            >
+              <Plus className="h-4 w-4" />
+              Ajouter un côté — mon garde-corps tourne
+            </button>
+          )}
         </div>
       </div>
 
@@ -324,9 +326,11 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
           </button>
           <a
             href={phoneHref}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-mist px-6 py-3 text-sm font-bold text-inkgreen transition hover:bg-pine-50"
+            className="group flex w-full items-center justify-center gap-2 rounded-full bg-mist px-6 py-3 text-sm font-bold text-inkgreen transition-all hover:-translate-y-0.5 hover:bg-pine-50 hover:shadow-card"
           >
-            <Phone className="h-4 w-4 text-pine-600" />
+            <span className="relative grid h-6 w-6 place-items-center rounded-full bg-pine-700 text-white transition-colors group-hover:bg-green-500">
+              <Phone className="h-3 w-3 group-hover:animate-wiggle" />
+            </span>
             Un conseil ? {site.phone}
           </a>
         </div>
