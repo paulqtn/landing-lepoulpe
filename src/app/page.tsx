@@ -347,20 +347,33 @@ export default function Home() {
       <section className="pb-20 sm:pb-28">
         <Container>
           <Reveal>
-            <div className="relative overflow-hidden rounded-[2rem] bg-pine-900 px-6 py-14 text-white shadow-panel sm:px-12 sm:py-16">
+            <div className="relative overflow-hidden rounded-[2rem] bg-pine-900 px-6 py-10 text-white shadow-panel sm:px-12 sm:py-12">
               <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
               <div className="pointer-events-none absolute -right-28 -top-28 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-pine-500/20 blur-3xl" />
 
               <div className="relative">
-                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-amber-500">Direct usine</p>
-                <h2 className="mt-2 text-balance text-3xl font-extrabold leading-[1.05] text-white sm:text-4xl">
-                  Le prix discount, sans rogner sur le verre.
-                </h2>
-                <p className="mt-4 max-w-2xl leading-relaxed text-pine-100/75">
-                  Le même verre feuilleté certifié, sans les marges d’intermédiaires :
-                  voilà tout le secret. Fabrication et stocks en direct, découpe incluse.
-                </p>
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                  <div>
+                    <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-amber-500">Direct usine</p>
+                    <h2 className="mt-2 text-balance text-3xl font-extrabold leading-[1.05] text-white sm:text-4xl">
+                      Votre garde-corps en verre à prix discount
+                    </h2>
+                    <p className="mt-4 max-w-2xl leading-relaxed text-pine-100/75">
+                      Un circuit court : voilà tout le secret pour vous faire bénéficier du meilleur prix
+                      tout en vous garantissant la meilleure qualité de finition.
+                    </p>
+                  </div>
+                  <Link
+                    href="/devis"
+                    className="group inline-flex shrink-0 items-center gap-2.5 self-start whitespace-nowrap rounded-full bg-amber-500 py-2.5 pl-6 pr-2.5 text-sm font-bold text-pine-950 shadow-lg shadow-amber-500/25 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 lg:mt-2"
+                  >
+                    Estimer mon garde-corps
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-pine-950 text-amber-500 transition-transform duration-300 group-hover:translate-x-0.5">
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  </Link>
+                </div>
 
                 {/* -------- infographie : circuit classique vs chez nous -------- */}
                 <div className="relative mt-10 overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-6 sm:p-9">
@@ -426,34 +439,20 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* mécanismes du prix + CTA */}
-                <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {/* mécanismes du prix */}
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {discountReasons.map((r) => (
-                    <div key={r.title} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5">
-                      <span className="grid h-9 w-9 place-items-center rounded-lg bg-amber-500/15 text-amber-500">
+                    <div
+                      key={r.title}
+                      className="rounded-2xl bg-white p-5 shadow-lg shadow-black/25 transition-transform duration-300 hover:-translate-y-1"
+                    >
+                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-500 text-pine-950 shadow-md shadow-amber-500/30">
                         <r.icon className="h-5 w-5" />
                       </span>
-                      <h3 className="mt-3 text-sm font-extrabold text-white">{r.title}</h3>
-                      <p className="mt-1 text-xs leading-relaxed text-pine-100/70">{r.desc}</p>
+                      <h3 className="mt-3 text-sm font-extrabold text-inkgreen">{r.title}</h3>
+                      <p className="mt-1 text-xs leading-relaxed text-neutral-500">{r.desc}</p>
                     </div>
                   ))}
-                </div>
-
-                <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                  <Link
-                    href="/devis"
-                    className="group inline-flex items-center justify-center gap-2 rounded-full bg-white py-3.5 pl-6 pr-5 text-sm font-bold text-pine-800 shadow-xl shadow-black/20 transition-all hover:-translate-y-0.5"
-                  >
-                    Estimer mon garde-corps
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                  <a
-                    href={phoneHref}
-                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white/10 px-6 py-3.5 text-sm font-bold text-white ring-1 ring-white/20 transition-all hover:bg-white/15"
-                  >
-                    <Phone className="h-4 w-4" />
-                    {site.phone}
-                  </a>
                 </div>
               </div>
             </div>
