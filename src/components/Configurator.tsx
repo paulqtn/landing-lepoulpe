@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, Check, HelpCircle, Loader2, Lock, Minus, Phone, Plus, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Hammer, HardHat, HelpCircle, Loader2, Lock, Minus, Phone, Plus, Zap } from "lucide-react";
 import { UsageGlyph } from "@/components/Illustrations";
 import { usages } from "@/lib/catalog";
 import { guarantees, phoneHref, site } from "@/lib/site";
@@ -27,11 +27,18 @@ const systemes: { value: SystemeKey | "conseil"; label: string; photo?: string; 
   { value: "conseil", label: "À me conseiller" },
 ];
 
+/** Type d'installation — qualifie le projet, la pose n'est jamais chiffrée ici. */
+const installations: { value: "moi-meme" | "installateur"; label: string; badge: string; icon: typeof Hammer }[] = [
+  { value: "moi-meme", label: "J'effectue mon installation moi-même", badge: "Le + économique", icon: Hammer },
+  { value: "installateur", label: "J'ai besoin d'un installateur professionnel", badge: "Professionnels qualifiés", icon: HardHat },
+];
+
 /* Sidebar : les étapes regroupées par thème, façon parcours de devis. */
 const STEP_GROUPS: { title: string; items: { id: StepId; label: string }[] }[] = [
   { title: "Vos besoins", items: [{ id: "lieu", label: "Utilisation" }, { id: "systeme", label: "Fixation" }] },
   { title: "Vos dimensions", items: [{ id: "longueurs", label: "Longueurs" }, { id: "hauteur", label: "Hauteur" }] },
   { title: "Le verre", items: [{ id: "teinte", label: "Teinte" }] },
+  { title: "Installation", items: [{ id: "installation", label: "Installation" }] },
   { title: "Vos coordonnées", items: [{ id: "coordonnees", label: "Coordonnées" }] },
 ];
 
@@ -94,6 +101,7 @@ type State = {
   cotes: string[];
   hauteur?: string;
   teinte?: (typeof teintes)[number]["value"];
+  installation?: (typeof installations)[number]["value"];
 };
 
 export type ConfiguratorDefaults = {
@@ -112,8 +120,8 @@ export type ConfiguratorLock = {
   verre?: "66.4" | "88.4" | "1010.4";
 };
 
-type StepId = "lieu" | "systeme" | "longueurs" | "hauteur" | "teinte" | "coordonnees";
-const ALL_STEPS: StepId[] = ["lieu", "systeme", "longueurs", "hauteur", "teinte", "coordonnees"];
+type StepId = "lieu" | "systeme" | "longueurs" | "hauteur" | "teinte" | "installation" | "coordonnees";
+const ALL_STEPS: StepId[] = ["lieu", "systeme", "longueurs", "hauteur", "teinte", "installation", "coordonnees"];
 
 const fmtM = (n: number) => n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -160,6 +168,7 @@ export function Configurator({
     : stepId === "longueurs" ? cotesNum.length > 0
     : stepId === "hauteur" ? !!state.hauteur
     : stepId === "teinte" ? !!state.teinte
+    : stepId === "installation" ? !!state.installation
     : !Object.values(leadErrors).some(Boolean);
 
   function next() {
@@ -243,6 +252,7 @@ export function Configurator({
             cotes: cotesNum,
             hauteur: state.hauteur,
             teinte: state.teinte,
+            installation: state.installation,
             ...(lock.verre ? { verre: lock.verre } : {}),
             codePostal: lead.cp,
             estimationTTC: estimation?.ttc ?? null,
@@ -604,6 +614,36 @@ export function Configurator({
                             <Check className="h-3.5 w-3.5" strokeWidth={3} />
                           </span>
                         )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </StepShell>
+            ) : stepId === "installation" ? (
+              <StepShell title="Quel type d'installation souhaitez-vous ?">
+                <div className="grid gap-2.5 sm:grid-cols-2">
+                  {installations.map((o) => {
+                    const on = state.installation === o.value;
+                    return (
+                      <button
+                        key={o.value}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => { setState((s) => ({ ...s, installation: o.value })); advance(); }}
+                        className={`relative flex flex-col items-center rounded-xl border px-4 pb-4 pt-6 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                      >
+                        {on && (
+                          <span className="absolute right-2.5 top-2.5 grid h-6 w-6 place-items-center rounded-full bg-pine-600 text-white shadow-md">
+                            <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                          </span>
+                        )}
+                        <span className={`grid h-20 w-20 place-items-center rounded-2xl transition-colors ${on ? "bg-pine-700 text-white" : "bg-pine-50 text-pine-700"}`}>
+                          <o.icon className="h-10 w-10" strokeWidth={1.5} />
+                        </span>
+                        <span className="mt-3 max-w-[16rem] text-sm font-bold leading-snug text-inkgreen">{o.label}</span>
+                        <span className="mt-2.5 rounded-md bg-amber-500 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-pine-950">
+                          {o.badge}
+                        </span>
                       </button>
                     );
                   })}
