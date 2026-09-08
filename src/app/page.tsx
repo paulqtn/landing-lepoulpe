@@ -250,8 +250,8 @@ export default function Home() {
               <span className="flex items-center gap-2.5">
                 <ShieldCheck className="h-5 w-5 shrink-0 text-pine-600" />
                 <span className="text-sm text-neutral-600">
-                  <strong className="font-bold text-inkgreen">Conformes NF P01-012</strong> —
-                  certifiées à la fabrication
+                  <strong className="font-bold text-inkgreen">Conforme NF</strong> —
+                  certifié à la fabrication
                 </span>
               </span>
             </div>
