@@ -195,8 +195,9 @@ export default function Home() {
               </span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-neutral-600">
-              <strong className="font-semibold text-inkgreen">Sur-mesure au millimètre ou en kit</strong>,
-              à des prix ultra compétitifs.
+              Sécuriser et sublimer vos espaces avec nos{" "}
+              <strong className="font-semibold text-inkgreen">garde-corps en verre sur mesure</strong> à
+              prix ultra-compétitifs.
             </p>
 
             {/* CTA — élément dominant du hero */}
