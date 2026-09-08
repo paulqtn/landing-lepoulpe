@@ -6,11 +6,14 @@ import {
   ArrowUpRight,
   Check,
   ClipboardList,
+  Factory,
   HandCoins,
+  Home as HomeIcon,
   Phone,
   Ruler,
   ShieldCheck,
   Star,
+  Store,
   Truck,
   Warehouse,
   Zap,
@@ -349,79 +352,115 @@ export default function Home() {
               <div className="pointer-events-none absolute -right-28 -top-28 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-pine-500/20 blur-3xl" />
 
-              <div className="relative grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-                <div>
-                  <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-amber-500">Direct usine</p>
-                  <h2 className="mt-2 text-balance text-3xl font-extrabold leading-[1.05] text-white sm:text-4xl">
-                    Le prix discount, sans rogner sur le verre.
-                  </h2>
-                  <p className="mt-4 max-w-lg leading-relaxed text-pine-100/75">
-                    Le même verre feuilleté certifié, sans les marges d’intermédiaires :
-                    voilà tout le secret. Fabrication et stocks en direct, découpe incluse.
+              <div className="relative">
+                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-amber-500">Direct usine</p>
+                <h2 className="mt-2 text-balance text-3xl font-extrabold leading-[1.05] text-white sm:text-4xl">
+                  Le prix discount, sans rogner sur le verre.
+                </h2>
+                <p className="mt-4 max-w-2xl leading-relaxed text-pine-100/75">
+                  Le même verre feuilleté certifié, sans les marges d’intermédiaires :
+                  voilà tout le secret. Fabrication et stocks en direct, découpe incluse.
+                </p>
+
+                {/* -------- infographie : circuit classique vs chez nous -------- */}
+                <div className="relative mt-10 overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-6 sm:p-9">
+                  <p className="pointer-events-none absolute right-7 top-7 hidden text-right font-mono text-[9px] font-medium uppercase leading-relaxed tracking-[0.2em] text-pine-100/35 md:block">
+                    Des solutions
+                    <br />
+                    en verre
+                    <br />
+                    pour vos projets
                   </p>
 
-                  <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                    {discountReasons.map((r) => (
-                      <div key={r.title} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5">
-                        <span className="grid h-9 w-9 place-items-center rounded-lg bg-amber-500/15 text-amber-500">
-                          <r.icon className="h-5 w-5" />
-                        </span>
-                        <h3 className="mt-3 text-sm font-extrabold text-white">{r.title}</h3>
-                        <p className="mt-1 text-xs leading-relaxed text-pine-100/70">{r.desc}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* circuit court vs circuit classique */}
-                <div className="rounded-2xl border border-white/10 bg-black/25 p-6 sm:p-7">
-                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-300">
+                  <p className="font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-pine-100/80">
                     Circuit classique
                   </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    {["Usine", "Grossiste", "Revendeur", "Vous"].map((step, i) => (
-                      <span key={step} className="flex items-center gap-2">
-                        <span className="rounded-full border border-white/15 bg-white/[0.05] px-3 py-1.5 text-xs font-semibold text-pine-100/70">
-                          {step}
+                  <div className="mt-4 flex flex-wrap items-center gap-2.5 sm:gap-3">
+                    {(
+                      [
+                        [Factory, "Usine"],
+                        [Warehouse, "Grossiste"],
+                        [Store, "Revendeur"],
+                        [HomeIcon, "Vous"],
+                      ] as const
+                    ).map(([StepIcon, step], i) => (
+                      <span key={step} className="flex items-center gap-2.5 sm:gap-3">
+                        <span className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.07] px-4 py-2.5 backdrop-blur-sm sm:px-5">
+                          <StepIcon className="h-[18px] w-[18px] text-pine-100/80" strokeWidth={1.8} />
+                          <span className="text-sm font-bold text-white sm:text-base">{step}</span>
                         </span>
-                        {i < 3 && <ArrowRight className="h-3.5 w-3.5 text-pine-100/40" />}
+                        {i < 3 && <ArrowRight className="h-4 w-4 shrink-0 text-pine-100/40" />}
                       </span>
                     ))}
                   </div>
-                  <p className="mt-2.5 text-xs text-pine-100/50">3 marges empilées avant votre devis.</p>
+                  <p className="mt-3 text-sm text-pine-100/60">3 marges empilées avant votre devis.</p>
 
-                  <div className="my-6 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                  <div className="my-7 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500">
-                    Chez nous
-                  </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <span className="rounded-full bg-amber-500 px-3.5 py-1.5 text-xs font-bold text-pine-950 shadow-md shadow-amber-500/20">
-                      Usine
-                    </span>
-                    <ArrowRight className="h-4 w-4 text-amber-500" />
-                    <span className="rounded-full bg-amber-500 px-3.5 py-1.5 text-xs font-bold text-pine-950 shadow-md shadow-amber-500/20">
-                      Vous
-                    </span>
+                  <div className="grid items-center gap-8 lg:grid-cols-[1fr_auto]">
+                    <div>
+                      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-amber-500">
+                        Chez nous
+                      </p>
+                      <div className="mt-4 flex flex-wrap items-center gap-3 sm:gap-4">
+                        <span className="inline-flex items-center gap-3 rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-6 py-3.5 shadow-[0_8px_32px_rgba(246,167,35,0.4)] ring-1 ring-inset ring-white/40">
+                          <Factory className="h-5 w-5 text-pine-950" strokeWidth={2} />
+                          <span className="text-base font-extrabold text-pine-950 sm:text-lg">Usine</span>
+                        </span>
+                        <ArrowRight className="h-6 w-6 shrink-0 text-amber-500" strokeWidth={2.5} />
+                        <span className="inline-flex items-center gap-3 rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-6 py-3.5 shadow-[0_8px_32px_rgba(246,167,35,0.4)] ring-1 ring-inset ring-white/40">
+                          <HomeIcon className="h-5 w-5 text-pine-950" strokeWidth={2} />
+                          <span className="text-base font-extrabold text-pine-950 sm:text-lg">Vous</span>
+                        </span>
+                      </div>
+                      <p className="mt-3 text-sm text-pine-100/80">Un seul prix : celui de la fabrication.</p>
+                    </div>
+
+                    {/* note manuscrite */}
+                    <div className="hidden -rotate-2 items-center gap-3 pr-2 lg:flex">
+                      <svg viewBox="0 0 44 30" className="h-8 w-11 shrink-0 text-pine-100/50" fill="none" aria-hidden>
+                        <path d="M40 4 C28 22, 16 26, 5 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                        <path d="M10 15 L4.5 20.8 L12 23.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                      </svg>
+                      <p className="text-lg font-medium italic leading-snug text-pine-100/85">
+                        Plus simple.
+                        <br />
+                        Plus juste.
+                        <br />
+                        Plus proche de vous.
+                      </p>
+                    </div>
                   </div>
-                  <p className="mt-2.5 text-xs text-pine-100/70">Un seul prix : celui de la fabrication.</p>
+                </div>
 
-                  <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                    <Link
-                      href="/devis"
-                      className="group inline-flex items-center justify-center gap-2 rounded-full bg-white py-3.5 pl-6 pr-5 text-sm font-bold text-pine-800 shadow-xl shadow-black/20 transition-all hover:-translate-y-0.5"
-                    >
-                      Estimer mon garde-corps
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                    </Link>
-                    <a
-                      href={phoneHref}
-                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white/10 px-6 py-3.5 text-sm font-bold text-white ring-1 ring-white/20 transition-all hover:bg-white/15"
-                    >
-                      <Phone className="h-4 w-4" />
-                      {site.phone}
-                    </a>
-                  </div>
+                {/* mécanismes du prix + CTA */}
+                <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {discountReasons.map((r) => (
+                    <div key={r.title} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5">
+                      <span className="grid h-9 w-9 place-items-center rounded-lg bg-amber-500/15 text-amber-500">
+                        <r.icon className="h-5 w-5" />
+                      </span>
+                      <h3 className="mt-3 text-sm font-extrabold text-white">{r.title}</h3>
+                      <p className="mt-1 text-xs leading-relaxed text-pine-100/70">{r.desc}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                  <Link
+                    href="/devis"
+                    className="group inline-flex items-center justify-center gap-2 rounded-full bg-white py-3.5 pl-6 pr-5 text-sm font-bold text-pine-800 shadow-xl shadow-black/20 transition-all hover:-translate-y-0.5"
+                  >
+                    Estimer mon garde-corps
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                  <a
+                    href={phoneHref}
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white/10 px-6 py-3.5 text-sm font-bold text-white ring-1 ring-white/20 transition-all hover:bg-white/15"
+                  >
+                    <Phone className="h-4 w-4" />
+                    {site.phone}
+                  </a>
                 </div>
               </div>
             </div>
