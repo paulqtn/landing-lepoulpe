@@ -9,7 +9,6 @@ import {
   HandCoins,
   Phone,
   Ruler,
-  Scale,
   ShieldCheck,
   Star,
   Truck,
@@ -338,28 +337,6 @@ export default function Home() {
               </Reveal>
             ))}
           </div>
-
-          {/* aide au choix */}
-          <Reveal delay={240}>
-            <div className="mt-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-neutral-200/80 bg-mist/60 px-6 py-5 sm:flex-row sm:items-center">
-              <p className="flex items-center gap-3.5 text-sm leading-snug text-neutral-600">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-pine-700 shadow-card ring-1 ring-neutral-200/60">
-                  <Scale className="h-5 w-5" />
-                </span>
-                <span>
-                  <strong className="font-bold text-inkgreen">Quel verre choisir&nbsp;?</strong> Trempé-feuilleté
-                  66.4, 88.4 ou 1010.4 — notre guide décortique épaisseurs, normes et usages.
-                </span>
-              </p>
-              <Link
-                href="/guides/quel-verre-garde-corps"
-                className="group inline-flex shrink-0 items-center gap-2 rounded-full bg-pine-700 px-5 py-3 text-sm font-bold text-white shadow-md shadow-pine-900/15 transition-all hover:-translate-y-0.5 hover:bg-pine-600"
-              >
-                Lire le guide du verre
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </div>
-          </Reveal>
         </Container>
       </section>
 
