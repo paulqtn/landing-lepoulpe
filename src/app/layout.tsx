@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { site } from "@/lib/site";
@@ -8,13 +8,6 @@ import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-  display: "swap",
-});
-
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-jbmono",
   display: "swap",
 });
 
@@ -53,7 +46,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${inter.variable} ${mono.variable}`}>
+    <html lang="fr" className={inter.variable}>
       <body>
         <SiteHeader />
         {children}
