@@ -353,7 +353,7 @@ export default function Home() {
               <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-pine-500/20 blur-3xl" />
 
               <div className="relative">
-                <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                   <div>
                     <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-amber-500">Direct usine</p>
                     <h2 className="mt-2 text-balance text-3xl font-extrabold leading-[1.05] text-white sm:text-4xl">
@@ -366,7 +366,7 @@ export default function Home() {
                   </div>
                   <Link
                     href="/devis"
-                    className="group inline-flex shrink-0 items-center gap-2.5 self-start whitespace-nowrap rounded-full bg-amber-500 py-2.5 pl-6 pr-2.5 text-sm font-bold text-pine-950 shadow-lg shadow-amber-500/25 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 lg:mt-2"
+                    className="group inline-flex shrink-0 items-center gap-2.5 self-start whitespace-nowrap rounded-full bg-amber-500 py-2.5 pl-6 pr-2.5 text-sm font-bold text-pine-950 shadow-lg shadow-amber-500/25 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 lg:mb-1 lg:self-end"
                   >
                     Estimer mon garde-corps
                     <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-pine-950 text-amber-500 transition-transform duration-300 group-hover:translate-x-0.5">
@@ -442,12 +442,15 @@ export default function Home() {
                 {/* mécanismes du prix */}
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {discountReasons.map((r) => (
-                    <div key={r.title} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5">
-                      <span className="grid h-9 w-9 place-items-center rounded-lg bg-amber-500/15 text-amber-500">
+                    <div
+                      key={r.title}
+                      className="rounded-2xl bg-white p-5 shadow-lg shadow-black/25 transition-transform duration-300 hover:-translate-y-1"
+                    >
+                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-500 text-pine-950 shadow-md shadow-amber-500/30">
                         <r.icon className="h-5 w-5" />
                       </span>
-                      <h3 className="mt-3 text-sm font-extrabold text-white">{r.title}</h3>
-                      <p className="mt-1 text-xs leading-relaxed text-pine-100/70">{r.desc}</p>
+                      <h3 className="mt-3 text-sm font-extrabold text-inkgreen">{r.title}</h3>
+                      <p className="mt-1 text-xs leading-relaxed text-neutral-500">{r.desc}</p>
                     </div>
                   ))}
                 </div>
