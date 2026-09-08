@@ -13,6 +13,7 @@ import {
   Truck,
   X,
 } from "lucide-react";
+import { UsageGlyph } from "@/components/Illustrations";
 import { usages } from "@/lib/catalog";
 import { phoneHref, site } from "@/lib/site";
 
@@ -153,9 +154,12 @@ export function SiteHeader() {
                           key={u.slug}
                           href={`/garde-corps/${u.slug}`}
                           onClick={() => setOpen(null)}
-                          className="group/us flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold text-neutral-800 transition hover:bg-amber-500/15 hover:text-pine-950"
+                          className="group/us flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-semibold text-neutral-800 transition hover:bg-amber-500/15 hover:text-pine-950"
                         >
-                          {u.name}
+                          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-pine-50 text-pine-700 transition-colors group-hover/us:bg-amber-500 group-hover/us:text-pine-950">
+                            <UsageGlyph usage={u.slug} className="h-5 w-5" />
+                          </span>
+                          <span className="flex-1">{u.name}</span>
                           <ArrowUpRight className="h-3.5 w-3.5 text-neutral-300 transition group-hover/us:text-amber-600" />
                         </Link>
                       ))}
@@ -299,11 +303,13 @@ export function SiteHeader() {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-5 py-4">
-              {[
-                { id: "usage", label: "Par usage", items: usages.map((u) => ({ href: `/garde-corps/${u.slug}`, label: u.name })) },
-                { id: "fix", label: "Type de fixation", items: fixations.map((f) => ({ href: `/produits/${f.slug}`, label: f.name })) },
-                { id: "verre", label: "Épaisseur de verre", items: epaisseurs.map((e) => ({ href: `/verre/${e.slug}`, label: `Verre feuilleté ${e.label}` })) },
-              ].map((section) => (
+              {(
+                [
+                  { id: "usage", label: "Par usage", items: usages.map((u) => ({ href: `/garde-corps/${u.slug}`, label: u.name, usage: u.slug })) },
+                  { id: "fix", label: "Type de fixation", items: fixations.map((f) => ({ href: `/produits/${f.slug}`, label: f.name })) },
+                  { id: "verre", label: "Épaisseur de verre", items: epaisseurs.map((e) => ({ href: `/verre/${e.slug}`, label: `Verre feuilleté ${e.label}` })) },
+                ] as { id: string; label: string; items: { href: string; label: string; usage?: string }[] }[]
+              ).map((section) => (
                 <div key={section.id} className="border-b border-neutral-100">
                   <button
                     type="button"
@@ -321,8 +327,13 @@ export function SiteHeader() {
                           key={it.href}
                           href={it.href}
                           onClick={() => setMobileOpen(false)}
-                          className="block rounded-lg px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-amber-500/15 hover:text-pine-950"
+                          className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-amber-500/15 hover:text-pine-950"
                         >
+                          {it.usage && (
+                            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-pine-50 text-pine-700">
+                              <UsageGlyph usage={it.usage} className="h-4 w-4" />
+                            </span>
+                          )}
                           {it.label}
                         </Link>
                       ))}
