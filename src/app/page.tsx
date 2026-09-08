@@ -89,8 +89,6 @@ const systemCards: {
   alt: string;
   badge?: string;
   kitFrom: number;
-  points: [string, string][];
-  idealFor: string[];
 }[] = [
   {
     slug: "garde-corps-verre-sur-rail",
@@ -101,11 +99,6 @@ const systemCards: {
     alt: "Garde-corps en verre sur rail aluminium au sol, terrasse bois avec retour d’angle",
     badge: "Le plus demandé",
     kitFrom: 320,
-    points: [
-      ["Aucun montant vertical", "une ligne de verre continue, rien d’autre"],
-      ["Pose facile", "le rail se fixe au sol ou en applique, le verre s’encastre et se règle"],
-    ],
-    idealFor: ["Piscine", "Terrasse avec vue", "Balcon design"],
   },
   {
     slug: "garde-corps-verre-sur-pinces",
@@ -116,11 +109,6 @@ const systemCards: {
     alt: "Panneaux de verre sur pinces inox au sol autour d’une piscine",
     badge: "Kit prix discount",
     kitFrom: 250,
-    points: [
-      ["Pinces inox 316", "au sol, sur muret ou en fixation latérale"],
-      ["Pose accessible", "kits pré-percés, réglage fin à l’alignement"],
-    ],
-    idealFor: ["Muret", "Piscine", "Escalier"],
   },
   {
     slug: "garde-corps-verre-avec-spider",
@@ -130,11 +118,6 @@ const systemCards: {
     photo: "/garde-corps-verre-fenetre-2.jpg",
     alt: "Garde-corps en verre fixé par points en applique de façade, fenêtre d’angle",
     kitFrom: 300,
-    points: [
-      ["Rotules inox traversantes", "le verre semble suspendu devant la dalle"],
-      ["Pose latérale", "en nez de dalle ou façade — 100 % de surface conservée"],
-    ],
-    idealFor: ["Balcon", "Façade", "Nez de dalle"],
   },
 ];
 
@@ -291,14 +274,12 @@ export default function Home() {
       <section className="py-20 sm:py-28">
         <Container>
           <div className="max-w-2xl">
-            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Nos garde-corps en verre</p>
-            <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-              Rail, pinces ou spider — lequel est fait pour vous&nbsp;?
+            <h2 className="text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+              Les différentes fixations de garde-corps en verre
             </h2>
             <p className="mt-3 leading-relaxed text-neutral-500">
-              <strong className="font-semibold text-inkgreen">Le même verre sécurisé, trois façons de le fixer.</strong>{" "}
-              Repérez votre support — sol, muret ou nez de dalle —, comparez les prix,
-              et nos conseillers valident la fixation avec vous au devis.
+              Plusieurs solutions s&rsquo;offrent à vous pour fixer vos garde-corps en verre selon votre
+              projet ou vos préférences esthétiques.
             </p>
           </div>
 
@@ -331,7 +312,7 @@ export default function Home() {
                   </div>
 
                   {/* prix — un seul repère, lisible d’un coup d’œil */}
-                  <div className="flex min-h-[5rem] items-center justify-between gap-4 border-b border-neutral-100 bg-mist/50 px-6 py-4">
+                  <div className="flex min-h-[5rem] items-center justify-between gap-4 bg-mist/50 px-6 py-4">
                     <p className="flex items-baseline gap-1.5">
                       <span className="text-sm font-semibold text-neutral-400">dès</span>
                       <span className="text-3xl font-extrabold tabular-nums tracking-tight text-inkgreen">
@@ -344,37 +325,6 @@ export default function Home() {
                         {m.badge}
                       </span>
                     )}
-                  </div>
-
-                  {/* points forts propres au système */}
-                  <ul className="flex-1 space-y-3 px-6 py-5">
-                    {m.points.map(([b, d]) => (
-                      <li key={b} className="flex items-start gap-2.5 text-sm leading-snug">
-                        <span className="mt-px grid h-5 w-5 shrink-0 place-items-center rounded-full bg-pine-50 text-pine-700 ring-1 ring-pine-100/70">
-                          <Check className="h-3 w-3" strokeWidth={3} />
-                        </span>
-                        <span className="text-neutral-500">
-                          <strong className="font-bold text-inkgreen">{b}</strong> — {d}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* usages types */}
-                  <div className="px-6 pb-5">
-                    <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-                      Idéal pour
-                    </p>
-                    <span className="mt-2 flex flex-wrap gap-1.5">
-                      {m.idealFor.map((t) => (
-                        <span
-                          key={t}
-                          className="rounded-full bg-mist px-2.5 py-1 text-[11px] font-semibold text-neutral-600 ring-1 ring-neutral-200/80"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </span>
                   </div>
 
                   {/* CTA */}
@@ -397,8 +347,8 @@ export default function Home() {
                   <Scale className="h-5 w-5" />
                 </span>
                 <span>
-                  <strong className="font-bold text-inkgreen">Quel verre choisir&nbsp;?</strong> Feuilleté, trempé,
-                  44.2 ou 55.2 — notre guide décortique épaisseurs, normes et usages.
+                  <strong className="font-bold text-inkgreen">Quel verre choisir&nbsp;?</strong> Trempé-feuilleté
+                  66.4, 88.4 ou 1010.4 — notre guide décortique épaisseurs, normes et usages.
                 </span>
               </p>
               <Link
