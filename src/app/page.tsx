@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  ArrowUpRight,
   Check,
   ClipboardList,
   Factory,
@@ -22,10 +21,10 @@ import { AdvantagesBar } from "@/components/AdvantagesBar";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { Configurator } from "@/components/Configurator";
 import { HeroGallery, type HeroSlide } from "@/components/HeroGallery";
-import { GoogleG, MaterialScene, UsageGlyph } from "@/components/Illustrations";
+import { GoogleG, MaterialScene } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
-import { materials, usages } from "@/lib/catalog";
+import { materials } from "@/lib/catalog";
 import { guides } from "@/lib/guides";
 import { products } from "@/lib/products";
 import { phoneHref, site } from "@/lib/site";
@@ -475,45 +474,6 @@ export default function Home() {
           </Reveal>
         </Container>
       </section>
-      {/* ========================== USAGES =========================== */}
-      <section className="border-y border-neutral-200 bg-mist py-20 sm:py-28">
-        <Container>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Par usage</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                Un garde-corps en verre pour chaque configuration.
-              </h2>
-            </div>
-            <p className="max-w-xs text-sm leading-relaxed text-neutral-500">
-              Chaque situation a ses règles et ses bonnes solutions — on les détaille page par page.
-            </p>
-          </div>
-
-          <div className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {usages.map((u, i) => (
-              <Reveal key={u.slug} delay={i * 50}>
-                <Link
-                  href={`/garde-corps/${u.slug}`}
-                  className="group flex h-full flex-col rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-pine-300 hover:shadow-elevated"
-                >
-                  <div className="flex items-start justify-between">
-                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-pine-50 text-pine-700 ring-1 ring-pine-100/60 transition-colors duration-300 group-hover:bg-pine-700 group-hover:text-white">
-                      <UsageGlyph usage={u.slug} className="h-6 w-6" />
-                    </span>
-                    <ArrowUpRight className="h-4 w-4 text-neutral-300 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-pine-600" />
-                  </div>
-                  <h3 className="mt-4 text-base font-extrabold text-inkgreen transition-colors group-hover:text-pine-700">
-                    {u.name}
-                  </h3>
-                  <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">{u.benefits[0].desc}</p>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
-        </Container>
-      </section>
-
       {/* ======================= SUR-MESURE USINE ======================= */}
       <section className="py-20 sm:py-28">
         <Container className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
