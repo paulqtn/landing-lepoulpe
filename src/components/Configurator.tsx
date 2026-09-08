@@ -94,12 +94,43 @@ export type ConfiguratorDefaults = {
   hauteur?: string;
 };
 
+/** Paramètres figés par la page hôte : l'étape correspondante est retirée du parcours. */
+export type ConfiguratorLock = {
+  /** Usage imposé (ex. page /garde-corps/piscine) — l'étape « Votre projet ? » disparaît. */
+  usage?: string;
+  /** Fixation imposée — l'étape « Quel système ? » disparaît. */
+  systeme?: SystemeKey;
+  /** Épaisseur imposée (pages /verre/*) — transmise telle quelle au moteur de chiffrage. */
+  verre?: "66.4" | "88.4" | "1010.4";
+};
+
+type StepId = "lieu" | "systeme" | "longueurs" | "hauteur" | "teinte" | "coordonnees";
+const ALL_STEPS: StepId[] = ["lieu", "systeme", "longueurs", "hauteur", "teinte", "coordonnees"];
+
 const fmtM = (n: number) => n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefaults }) {
+export function Configurator({
+  defaults = {},
+  lock = {},
+  lockNote,
+  source,
+}: {
+  defaults?: ConfiguratorDefaults;
+  lock?: ConfiguratorLock;
+  /** Petit rappel affiché sous la barre de progression (ex. « Projet piscine »). */
+  lockNote?: string;
+  /** Identifiant de provenance du lead (défaut : configurateur-devis). */
+  source?: string;
+}) {
+  const steps = ALL_STEPS.filter(
+    (id) => !(id === "lieu" && lock.usage) && !(id === "systeme" && lock.systeme),
+  );
   const [step, setStep] = useState(0);
+  const stepId = steps[step];
+  const lastIdx = steps.length - 1;
   const [state, setState] = useState<State>({
-    systeme: defaults.systeme,
+    lieu: lock.usage,
+    systeme: lock.systeme ?? defaults.systeme,
     cotes: defaults.cotes?.length ? defaults.cotes.map((c) => fmtM(c)) : ["3,00"],
     hauteur: defaults.hauteur,
   });
@@ -119,19 +150,24 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
   };
 
   const canContinue =
-    step === 0 ? !!state.lieu
-    : step === 1 ? !!state.systeme
-    : step === 2 ? cotesNum.length > 0
-    : step === 3 ? !!state.hauteur
-    : step === 4 ? !!state.teinte
+    stepId === "lieu" ? !!state.lieu
+    : stepId === "systeme" ? !!state.systeme
+    : stepId === "longueurs" ? cotesNum.length > 0
+    : stepId === "hauteur" ? !!state.hauteur
+    : stepId === "teinte" ? !!state.teinte
     : !Object.values(leadErrors).some(Boolean);
 
   function next() {
-    if (step < 5) {
+    if (step < lastIdx) {
       if (canContinue) setStep((s) => s + 1);
       return;
     }
     void submit();
+  }
+
+  /** Sélection d'une option → on passe directement à l'étape suivante. */
+  function advance() {
+    setStep((s) => Math.min(s + 1, lastIdx));
   }
 
   /** Ajuste un côté de ±0,50 m (minimum 0,50 m). */
@@ -177,6 +213,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
             cotes: cotesNum,
             hauteur: Number(state.hauteur),
             teinte: state.teinte ?? "clair",
+            ...(lock.verre ? { verre: lock.verre } : {}),
             cp: lead.cp,
           }),
         });
@@ -201,10 +238,11 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
             cotes: cotesNum,
             hauteur: state.hauteur,
             teinte: state.teinte,
+            ...(lock.verre ? { verre: lock.verre } : {}),
             codePostal: lead.cp,
             estimationTTC: estimation?.ttc ?? null,
           },
-          source: "configurateur-devis",
+          source: source ?? "configurateur-devis",
         }),
       });
     } catch {
@@ -215,7 +253,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
     setStatus("done");
   }
 
-  const progress = status === "done" ? 100 : ((step + 1) / 6) * 100;
+  const progress = status === "done" ? 100 : ((step + 1) / steps.length) * 100;
 
   return (
     <div className="relative mx-auto max-w-2xl">
@@ -231,11 +269,17 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
             <>
               <div className="flex items-center justify-between gap-3">
                 <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Tarif gratuit · 1 min</p>
-                <p className="font-mono text-xs tabular-nums text-neutral-400">Étape {step + 1}/6</p>
+                <p className="font-mono text-xs tabular-nums text-neutral-400">Étape {step + 1}/{steps.length}</p>
               </div>
               <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
                 <div className="h-full rounded-full bg-pine-600 transition-all duration-500" style={{ width: `${progress}%` }} />
               </div>
+              {lockNote && (
+                <p className="mt-3 inline-flex items-center gap-1.5 self-start rounded-full bg-pine-50 px-3 py-1.5 text-xs font-bold text-pine-700">
+                  <Check className="h-3.5 w-3.5 shrink-0" />
+                  {lockNote} — déjà pris en compte
+                </p>
+              )}
             </>
           )}
 
@@ -288,7 +332,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                   Une question ? {site.phone}
                 </a>
               </div>
-            ) : step === 0 ? (
+            ) : stepId === "lieu" ? (
               <StepShell title="Votre projet ?" help="Où le garde-corps sera-t-il installé ?">
                 <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
                   {lieux.map((l) => {
@@ -298,7 +342,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                         key={l.value}
                         type="button"
                         aria-pressed={on}
-                        onClick={() => { setState((s) => ({ ...s, lieu: l.value })); setStep(1); }}
+                        onClick={() => { setState((s) => ({ ...s, lieu: l.value })); advance(); }}
                         className={`flex flex-col items-center gap-2.5 rounded-xl border px-3 py-4 transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
                       >
                         <span className={`grid h-12 w-12 place-items-center rounded-xl transition-colors ${on ? "bg-pine-700 text-white" : "bg-pine-50 text-pine-700"}`}>
@@ -310,7 +354,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                   })}
                 </div>
               </StepShell>
-            ) : step === 1 ? (
+            ) : stepId === "systeme" ? (
               <StepShell title="Quel système ?" help="Trois façons de tenir le même verre feuilleté — chacune son style et son budget.">
                 <div className="grid gap-2.5 sm:grid-cols-2">
                   {systemes.map((o) => {
@@ -320,7 +364,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                         key={o.value}
                         type="button"
                         aria-pressed={on}
-                        onClick={() => { setState((s) => ({ ...s, systeme: o.value })); setStep(2); }}
+                        onClick={() => { setState((s) => ({ ...s, systeme: o.value })); advance(); }}
                         className={`overflow-hidden rounded-xl border text-left transition ${on ? "border-pine-600 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
                       >
                         <span className="relative block h-20">
@@ -346,7 +390,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                   })}
                 </div>
               </StepShell>
-            ) : step === 2 ? (
+            ) : stepId === "longueurs" ? (
               <StepShell title="Vos longueurs ?" help="Un côté = une longueur à équiper. Les angles entre côtés sont pris en charge automatiquement.">
                 {/* nombre de côtés */}
                 <div className="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-mist/50 px-4 py-3.5">
@@ -435,7 +479,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                   </span>
                 </p>
               </StepShell>
-            ) : step === 3 ? (
+            ) : stepId === "hauteur" ? (
               <StepShell title="Quelle hauteur ?" help="Mesurée du sol fini au sommet du verre — 1,00 m est la hauteur de la norme.">
                 <div className="grid grid-cols-3 gap-2.5">
                   {hauteurs.map((h) => {
@@ -445,7 +489,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                         key={h.value}
                         type="button"
                         aria-pressed={on}
-                        onClick={() => { setState((s) => ({ ...s, hauteur: h.value })); setStep(4); }}
+                        onClick={() => { setState((s) => ({ ...s, hauteur: h.value })); advance(); }}
                         className={`flex flex-col items-center gap-2.5 rounded-xl border px-3 py-5 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
                       >
                         <HeightGlyph h={h.glyph} className="h-12 w-14" />
@@ -458,7 +502,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                   })}
                 </div>
               </StepShell>
-            ) : step === 4 ? (
+            ) : stepId === "teinte" ? (
               <StepShell title="Quelle teinte de verre ?" help="Le clair est le plus courant — les teintes fumées ajoutent intimité et caractère.">
                 <div className="grid grid-cols-2 gap-2.5">
                   {teintes.map((t) => {
@@ -468,7 +512,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                         key={t.value}
                         type="button"
                         aria-pressed={on}
-                        onClick={() => { setState((s) => ({ ...s, teinte: t.value })); setStep(5); }}
+                        onClick={() => { setState((s) => ({ ...s, teinte: t.value })); advance(); }}
                         className={`flex items-center gap-3 rounded-xl border px-3.5 py-3.5 text-left transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
                       >
                         <span className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-lg ring-1 ${t.swatch}`}>
@@ -529,14 +573,14 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                 <button
                   type="button"
                   onClick={next}
-                  disabled={status === "loading" || (!canContinue && step < 5)}
-                  className={`group inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold transition-all disabled:cursor-not-allowed disabled:opacity-40 ${step === 5 ? "bg-amber-500 text-pine-950 shadow-lg shadow-amber-500/30 hover:-translate-y-0.5 hover:bg-amber-600" : "bg-pine-700 text-white hover:bg-pine-600"}`}
+                  disabled={status === "loading" || (!canContinue && step < lastIdx)}
+                  className={`group inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold transition-all disabled:cursor-not-allowed disabled:opacity-40 ${step === lastIdx ? "bg-amber-500 text-pine-950 shadow-lg shadow-amber-500/30 hover:-translate-y-0.5 hover:bg-amber-600" : "bg-pine-700 text-white hover:bg-pine-600"}`}
                 >
                   {status === "loading" ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" /> Calcul en cours…
                     </>
-                  ) : step === 5 ? (
+                  ) : step === lastIdx ? (
                     <>
                       <Zap className="h-4 w-4" />
                       Voir mon tarif
@@ -551,7 +595,7 @@ export function Configurator({ defaults = {} }: { defaults?: ConfiguratorDefault
                 </button>
               </div>
             )}
-            {step === 5 && status !== "done" && (
+            {stepId === "coordonnees" && status !== "done" && (
               <p className="mt-3 flex items-center gap-1.5 text-xs text-neutral-400">
                 <Lock className="h-3.5 w-3.5" />
                 Vos informations restent strictement confidentielles.

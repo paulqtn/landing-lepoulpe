@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, ArrowUpRight, Check, ClipboardList, Phone, Wrench } from "lucide-react";
+import { Configurator } from "@/components/Configurator";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -11,6 +12,7 @@ import {
   combosForUsage,
   getEntry,
   materials,
+  usages,
 } from "@/lib/catalog";
 import { perMl } from "@/lib/pricing";
 import { productsForMaterial } from "@/lib/products";
@@ -62,6 +64,15 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
 
   const kits = entry.material ? productsForMaterial(entry.material).slice(0, 3) : [];
 
+  // Générateur intégré : l'usage de la page est figé, son étape disparaît du parcours.
+  const usageLock =
+    entry.kind === "usage" ? entry.slug
+    : entry.kind === "combo" && entry.material === "verre" ? entry.usage
+    : undefined;
+  const usageName = usageLock ? usages.find((u) => u.slug === usageLock)?.name : undefined;
+  const hasGenerator = Boolean(usageLock && usageName);
+  const estimerHref = hasGenerator ? "#estimation" : "/devis";
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -107,7 +118,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               <p className="mt-5 max-w-2xl text-lg leading-relaxed text-neutral-600">{entry.intro}</p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link
-                  href="/devis"
+                  href={estimerHref}
                   className="group inline-flex items-center justify-center gap-2 rounded-full bg-pine-700 py-3.5 pl-6 pr-5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-pine-600"
                 >
                   <ClipboardList className="h-4 w-4" />
@@ -146,6 +157,32 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
           </div>
         </Container>
       </section>
+
+      {/* générateur — l'usage de la page est figé, l'étape correspondante est retirée */}
+      {hasGenerator && (
+        <section id="estimation" className="border-b border-neutral-200 bg-white py-14 sm:py-20">
+          <Container>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Devis express</p>
+              <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+                Votre {entry.title.toLowerCase()}, chiffré en 1 minute.
+              </h2>
+              <p className="mx-auto mt-3 max-w-xl leading-relaxed text-neutral-500">
+                Votre projet <strong className="font-semibold text-inkgreen">{usageName!.toLowerCase()}</strong> est déjà
+                pris en compte — répondez au reste,{" "}
+                <strong className="font-semibold text-inkgreen">votre tarif exact s’affiche à la fin</strong>.
+              </p>
+            </div>
+            <div className="mx-auto mt-10 max-w-5xl">
+              <Configurator
+                lock={{ usage: usageLock }}
+                lockNote={`Projet ${usageName!.toLowerCase()}`}
+                source={`configurateur-${entry.slug}`}
+              />
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* bénéfices */}
       <section className="py-16 sm:py-24">
@@ -264,7 +301,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               </p>
               <div className="mt-8 flex justify-center">
                 <Link
-                  href="/devis"
+                  href={estimerHref}
                   className="group inline-flex items-center gap-2.5 rounded-full bg-white py-4 pl-7 pr-6 text-base font-bold text-pine-800 transition-all hover:-translate-y-0.5"
                 >
                   <ClipboardList className="h-5 w-5" />

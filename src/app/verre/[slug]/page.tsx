@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, Check, ClipboardList, Layers, Phone } from "lucide-react";
+import { Configurator } from "@/components/Configurator";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -88,7 +89,7 @@ export default async function VerrePage({ params }: { params: Promise<Params> })
               <p className="mt-5 max-w-2xl text-lg leading-relaxed text-neutral-600">{v.intro}</p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link
-                  href="/devis"
+                  href="#estimation"
                   className="group inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-pine-700 py-3.5 pl-6 pr-5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-pine-600"
                 >
                   <ClipboardList className="h-4 w-4 shrink-0" />
@@ -124,6 +125,29 @@ export default async function VerrePage({ params }: { params: Promise<Params> })
                 ))}
               </dl>
             </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* générateur — l'épaisseur de la page est figée et transmise au moteur */}
+      <section id="estimation" className="border-b border-neutral-200 bg-white py-14 sm:py-20">
+        <Container>
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Devis express</p>
+            <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+              Votre garde-corps en {v.label}, chiffré en 1 minute.
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl leading-relaxed text-neutral-500">
+              L’épaisseur <strong className="font-semibold text-inkgreen">{v.label}</strong> est déjà réglée — répondez
+              au reste, <strong className="font-semibold text-inkgreen">votre tarif exact s’affiche à la fin</strong>.
+            </p>
+          </div>
+          <div className="mx-auto mt-10 max-w-5xl">
+            <Configurator
+              lock={{ verre: v.label as "66.4" | "88.4" | "1010.4" }}
+              lockNote={`Verre ${v.label}`}
+              source={`configurateur-verre-${v.slug}`}
+            />
           </div>
         </Container>
       </section>
@@ -226,7 +250,7 @@ export default async function VerrePage({ params }: { params: Promise<Params> })
                 </p>
                 <div className="mt-8 flex justify-center">
                   <Link
-                    href="/devis"
+                    href="#estimation"
                     className="group inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-white py-4 pl-7 pr-6 text-base font-bold text-pine-800 transition-all hover:-translate-y-0.5"
                   >
                     <ClipboardList className="h-5 w-5 shrink-0" />
