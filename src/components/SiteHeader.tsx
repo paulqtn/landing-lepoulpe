@@ -265,6 +265,15 @@ export function SiteHeader() {
                 </div>
               )}
             </div>
+
+            {/* Nos kits — lien direct */}
+            <Link
+              href="/kits-garde-corps-verre"
+              onClick={() => setOpen(null)}
+              className="rounded-full px-3.5 py-2 text-sm font-semibold text-neutral-800 transition hover:bg-amber-500 hover:text-pine-950"
+            >
+              Nos kits
+            </Link>
           </nav>
 
           {/* CTA + burger */}
@@ -349,6 +358,14 @@ export function SiteHeader() {
                   )}
                 </div>
               ))}
+              <Link
+                href="/kits-garde-corps-verre"
+                onClick={() => setMobileOpen(false)}
+                className="flex w-full items-center justify-between border-b border-neutral-100 px-2 py-4 text-base font-bold text-inkgreen"
+              >
+                Nos kits
+                <ArrowUpRight className="h-5 w-5 text-neutral-400" />
+              </Link>
             </div>
             <div className="space-y-3 border-t border-neutral-100 p-5">
               <a href={phoneHref} className="flex items-center justify-center gap-2 rounded-xl bg-mist px-4 py-3 text-sm font-bold text-inkgreen">

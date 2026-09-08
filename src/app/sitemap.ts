@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entry("/devis", 0.9),
     entry("/garde-corps", 0.8),
     entry("/produits", 0.8),
+    entry("/kits-garde-corps-verre", 0.8),
     entry("/guides", 0.7),
     ...allCatalog.map((e) => entry(`/garde-corps/${e.slug}`, e.kind === "combo" ? 0.7 : 0.8)),
     ...verres.map((v) => entry(`/verre/${v.slug}`, 0.7)),

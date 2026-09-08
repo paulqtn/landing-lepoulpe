@@ -26,7 +26,6 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { materials } from "@/lib/catalog";
 import { guides } from "@/lib/guides";
-import { products } from "@/lib/products";
 import { phoneHref, site } from "@/lib/site";
 
 /** Réalisations mises en avant dans le hero (défilement en fondu) — 100 % verre. */
@@ -541,64 +540,6 @@ export default function Home() {
               </div>
             </div>
           </Reveal>
-        </Container>
-      </section>
-
-      {/* ====================== PRODUITS PHARES ====================== */}
-      <section className="border-t border-neutral-200 bg-mist py-20 sm:py-28">
-        <Container>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Kits en direct usine</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                Les kits verre les plus demandés.
-              </h2>
-            </div>
-            <Link href="/produits" className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-pine-700">
-              Toute la gamme
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </div>
-
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {products.filter((p) => p.material === "verre").slice(0, 4).map((p, i) => (
-              <Reveal key={p.slug} delay={i * 60}>
-                <Link
-                  href={`/produits/${p.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-pine-300 hover:shadow-elevated"
-                >
-                  <div className="relative h-24 border-b border-neutral-100">
-                    <MaterialScene material={p.material} className="h-full" />
-                    {p.badge && (
-                      <span className="absolute left-3 top-3 rounded-full bg-amber-500 px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wide text-pine-950 shadow-sm">
-                        {p.badge}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-1 flex-col p-5">
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-neutral-400">
-                      {p.material}
-                    </span>
-                    <h3 className="mt-1 text-lg font-extrabold leading-snug text-inkgreen transition-colors group-hover:text-pine-700">
-                      {p.name}
-                    </h3>
-                    <p className="mt-1.5 flex-1 text-xs leading-relaxed text-neutral-500">
-                      {p.specs[0]} · {p.specs[1]}
-                    </p>
-                    <div className="mt-4 flex items-baseline justify-between border-t border-neutral-100 pt-3.5">
-                      <span className="text-lg font-extrabold text-pine-700">
-                        dès {p.priceFrom} €<span className="text-xs font-semibold text-neutral-400">/ml</span>
-                      </span>
-                      <span className="flex items-center gap-1 text-xs font-bold text-pine-700">
-                        Voir
-                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
         </Container>
       </section>
 
