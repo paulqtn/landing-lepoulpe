@@ -20,11 +20,19 @@ const lieux = usages.map((u) => ({ value: u.slug, label: u.name }));
 
 export type SystemeKey = "rail" | "pinces" | "spider";
 
-const systemes: { value: SystemeKey | "conseil"; label: string; desc: string; photo?: string }[] = [
-  { value: "rail", label: "Verre sur rail", desc: "Rail alu au sol, sans poteaux — le plus épuré", photo: "/verre-sur-rail.jpg" },
+const systemes: { value: SystemeKey | "conseil"; label: string; desc: string; photo?: string; badge?: string }[] = [
+  { value: "rail", label: "Verre sur rail", desc: "Rail alu au sol, sans poteaux — le plus épuré", photo: "/verre-sur-rail.jpg", badge: "Pose facile" },
   { value: "pinces", label: "Verre sur pinces", desc: "Au sol ou sur muret — le classique", photo: "/pinces-au-sol.jpg" },
   { value: "spider", label: "Verre avec spider", desc: "Rotules traversantes — l'esprit architectural", photo: "/garde-corps-verre-fenetre-2.jpg" },
   { value: "conseil", label: "À me conseiller", desc: "Un expert vous oriente selon votre projet" },
+];
+
+/* Sidebar : les étapes regroupées par thème, façon parcours de devis. */
+const STEP_GROUPS: { title: string; items: { id: StepId; label: string }[] }[] = [
+  { title: "Vos besoins", items: [{ id: "lieu", label: "Utilisation" }, { id: "systeme", label: "Fixation" }] },
+  { title: "Vos dimensions", items: [{ id: "longueurs", label: "Longueurs" }, { id: "hauteur", label: "Hauteur" }] },
+  { title: "Le verre", items: [{ id: "teinte", label: "Teinte" }] },
+  { title: "Vos coordonnées", items: [{ id: "coordonnees", label: "Coordonnées" }] },
 ];
 
 const hauteurs = [
@@ -255,8 +263,14 @@ export function Configurator({
 
   const progress = status === "done" ? 100 : ((step + 1) / steps.length) * 100;
 
+  // Groupes de la sidebar, limités aux étapes réellement présentes (verrous déduits).
+  const groups = STEP_GROUPS
+    .map((g) => ({ ...g, items: g.items.filter((it) => steps.includes(it.id)) }))
+    .filter((g) => g.items.length > 0);
+  const activeGroup = status === "done" ? groups.length : groups.findIndex((g) => g.items.some((it) => it.id === stepId));
+
   return (
-    <div className="relative mx-auto max-w-4xl">
+    <div className="relative mx-auto max-w-5xl">
       {/* sticker */}
       <span className="absolute -top-4 left-4 z-10 inline-flex rotate-[-3deg] items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-pine-950 shadow-md sm:-left-3">
         <Zap className="h-3.5 w-3.5" />
@@ -264,20 +278,70 @@ export function Configurator({
       </span>
 
       <div className="overflow-hidden rounded-3xl bg-white shadow-panel ring-1 ring-pine-950/10">
-        <div className="flex min-h-[28rem] flex-col p-6 sm:p-9">
+        <div className="grid lg:grid-cols-[16.5rem_1fr]">
+          {/* ---- sidebar des étapes (desktop) ---- */}
+          <aside className="relative hidden overflow-hidden bg-pine-900 p-7 text-white lg:block">
+            <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
+            <div className="relative">
+              <p className="text-lg font-extrabold leading-snug">
+                Obtenez votre devis en quelques clics
+              </p>
+              <ol className="mt-9 space-y-5">
+                {groups.map((g, gi) => {
+                  const isDone = gi < activeGroup;
+                  const isActive = gi === activeGroup;
+                  return (
+                    <li key={g.title}>
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg font-mono text-xs font-bold transition-colors ${
+                            isActive ? "bg-amber-500 text-pine-950" : isDone ? "bg-pine-600 text-white" : "bg-pine-800 text-pine-400"
+                          }`}
+                        >
+                          {isDone ? <Check className="h-4 w-4" strokeWidth={3} /> : gi + 1}
+                        </span>
+                        <span className={`text-sm font-bold ${isActive ? "text-amber-400" : isDone ? "text-pine-100" : "text-pine-400"}`}>
+                          {g.title}
+                        </span>
+                      </div>
+                      {isActive && g.items.length > 1 && status !== "done" && (
+                        <ul className="ml-[0.85rem] mt-2.5 space-y-2 border-l-2 border-dotted border-pine-600/70 pl-7">
+                          {g.items.map((it) => {
+                            const cur = it.id === stepId;
+                            const itDone = steps.indexOf(it.id) < step;
+                            return (
+                              <li
+                                key={it.id}
+                                className={`text-xs font-bold ${cur ? "text-amber-400" : itDone ? "text-pine-100" : "text-pine-400"}`}
+                              >
+                                {it.label}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          </aside>
+
+          {/* ---- contenu ---- */}
+          <div className="flex min-h-[28rem] flex-col p-6 sm:p-9">
           {status !== "done" && (
             <>
               <div className="flex items-center justify-between gap-3">
-                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-inkgreen">
+                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-inkgreen lg:hidden">
                   Étape {step + 1}<span className="font-semibold text-neutral-400"> / {steps.length}</span>
                 </p>
-                <a href={phoneHref} className="group flex items-center gap-2">
+                <a href={phoneHref} className="group ml-auto flex items-center gap-2">
                   <Phone className="h-4 w-4 shrink-0 text-amber-600 group-hover:animate-wiggle" />
                   <span className="hidden text-sm font-semibold text-neutral-500 sm:inline">Besoin d’aide ?</span>
                   <span className="text-sm font-bold text-inkgreen">{site.phone}</span>
                 </a>
               </div>
-              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100 lg:hidden" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
                 <div className="h-full rounded-full bg-pine-600 transition-all duration-500" style={{ width: `${progress}%` }} />
               </div>
               {lockNote && (
@@ -362,7 +426,7 @@ export function Configurator({
               </StepShell>
             ) : stepId === "systeme" ? (
               <StepShell title="Quel système ?" help="Trois façons de tenir le même verre feuilleté — chacune son style et son budget.">
-                <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-2.5 sm:grid-cols-2">
                   {systemes.map((o) => {
                     const on = state.systeme === o.value;
                     return (
@@ -379,6 +443,11 @@ export function Configurator({
                           ) : (
                             <span className="grid h-full place-items-center bg-mist">
                               <HelpCircle className="h-7 w-7 text-pine-600" />
+                            </span>
+                          )}
+                          {o.badge && (
+                            <span className="absolute left-2 top-2 z-10 rounded-md bg-amber-500 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-pine-950 shadow-md">
+                              {o.badge}
                             </span>
                           )}
                           {on && (
@@ -607,6 +676,7 @@ export function Configurator({
                 Vos informations restent strictement confidentielles.
               </p>
             )}
+            </div>
           </div>
         </div>
       </div>
