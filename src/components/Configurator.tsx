@@ -256,7 +256,7 @@ export function Configurator({
   const progress = status === "done" ? 100 : ((step + 1) / steps.length) * 100;
 
   return (
-    <div className="relative mx-auto max-w-2xl">
+    <div className="relative mx-auto max-w-4xl">
       {/* sticker */}
       <span className="absolute -top-4 left-4 z-10 inline-flex rotate-[-3deg] items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-pine-950 shadow-md sm:-left-3">
         <Zap className="h-3.5 w-3.5" />
@@ -268,8 +268,14 @@ export function Configurator({
           {status !== "done" && (
             <>
               <div className="flex items-center justify-between gap-3">
-                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Tarif gratuit · 1 min</p>
-                <p className="font-mono text-xs tabular-nums text-neutral-400">Étape {step + 1}/{steps.length}</p>
+                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-inkgreen">
+                  Étape {step + 1}<span className="font-semibold text-neutral-400"> / {steps.length}</span>
+                </p>
+                <a href={phoneHref} className="group flex items-center gap-2">
+                  <Phone className="h-4 w-4 shrink-0 text-amber-600 group-hover:animate-wiggle" />
+                  <span className="hidden text-sm font-semibold text-neutral-500 sm:inline">Besoin d’aide ?</span>
+                  <span className="text-sm font-bold text-inkgreen">{site.phone}</span>
+                </a>
               </div>
               <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
                 <div className="h-full rounded-full bg-pine-600 transition-all duration-500" style={{ width: `${progress}%` }} />
@@ -356,7 +362,7 @@ export function Configurator({
               </StepShell>
             ) : stepId === "systeme" ? (
               <StepShell title="Quel système ?" help="Trois façons de tenir le même verre feuilleté — chacune son style et son budget.">
-                <div className="grid gap-2.5 sm:grid-cols-2">
+                <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
                   {systemes.map((o) => {
                     const on = state.systeme === o.value;
                     return (
@@ -565,10 +571,10 @@ export function Configurator({
                   type="button"
                   onClick={() => setStep((s) => Math.max(0, s - 1))}
                   disabled={step === 0}
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-500 transition hover:text-inkgreen disabled:pointer-events-none disabled:opacity-0"
+                  className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-5 py-3 text-sm font-semibold text-neutral-600 transition hover:border-pine-300 hover:text-inkgreen disabled:pointer-events-none disabled:opacity-0"
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  Retour
+                  Précédent
                 </button>
                 <button
                   type="button"
@@ -588,7 +594,7 @@ export function Configurator({
                     </>
                   ) : (
                     <>
-                      Continuer
+                      Suivant
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                     </>
                   )}
