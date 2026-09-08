@@ -20,11 +20,11 @@ const lieux = usages.map((u) => ({ value: u.slug, label: u.name }));
 
 export type SystemeKey = "rail" | "pinces" | "spider";
 
-const systemes: { value: SystemeKey | "conseil"; label: string; desc: string; photo?: string; badge?: string }[] = [
-  { value: "rail", label: "Verre sur rail", desc: "Rail alu au sol, sans poteaux — le plus épuré", photo: "/verre-sur-rail.jpg", badge: "Pose facile" },
-  { value: "pinces", label: "Verre sur pinces", desc: "Au sol ou sur muret — le classique", photo: "/pinces-au-sol.jpg" },
-  { value: "spider", label: "Verre avec spider", desc: "Rotules traversantes — l'esprit architectural", photo: "/garde-corps-verre-fenetre-2.jpg" },
-  { value: "conseil", label: "À me conseiller", desc: "Un expert vous oriente selon votre projet" },
+const systemes: { value: SystemeKey | "conseil"; label: string; photo?: string; badge?: string }[] = [
+  { value: "rail", label: "Rail", photo: "/verre-sur-rail.jpg", badge: "Pose facile" },
+  { value: "pinces", label: "Pince", photo: "/pinces-au-sol.jpg" },
+  { value: "spider", label: "Spider", photo: "/garde-corps-verre-fenetre-2.jpg" },
+  { value: "conseil", label: "À me conseiller" },
 ];
 
 /* Sidebar : les étapes regroupées par thème, façon parcours de devis. */
@@ -120,13 +120,10 @@ const fmtM = (n: number) => n.toLocaleString("fr-FR", { minimumFractionDigits: 2
 export function Configurator({
   defaults = {},
   lock = {},
-  lockNote,
   source,
 }: {
   defaults?: ConfiguratorDefaults;
   lock?: ConfiguratorLock;
-  /** Petit rappel affiché sous la barre de progression (ex. « Projet piscine »). */
-  lockNote?: string;
   /** Identifiant de provenance du lead (défaut : configurateur-devis). */
   source?: string;
 }) {
@@ -344,12 +341,6 @@ export function Configurator({
               <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100 lg:hidden" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
                 <div className="h-full rounded-full bg-pine-600 transition-all duration-500" style={{ width: `${progress}%` }} />
               </div>
-              {lockNote && (
-                <p className="mt-3 inline-flex items-center gap-1.5 self-start rounded-full bg-pine-50 px-3 py-1.5 text-xs font-bold text-pine-700">
-                  <Check className="h-3.5 w-3.5 shrink-0" />
-                  {lockNote} — déjà pris en compte
-                </p>
-              )}
             </>
           )}
 
@@ -425,8 +416,8 @@ export function Configurator({
                 </div>
               </StepShell>
             ) : stepId === "systeme" ? (
-              <StepShell title="Quel système ?" help="Trois façons de tenir le même verre feuilleté — chacune son style et son budget.">
-                <div className="grid gap-2.5 sm:grid-cols-2">
+              <StepShell title="Quel type de fixation ?">
+                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
                   {systemes.map((o) => {
                     const on = state.systeme === o.value;
                     return (
@@ -435,30 +426,34 @@ export function Configurator({
                         type="button"
                         aria-pressed={on}
                         onClick={() => { setState((s) => ({ ...s, systeme: o.value })); advance(); }}
-                        className={`overflow-hidden rounded-xl border text-left transition ${on ? "border-pine-600 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                        className={`overflow-hidden rounded-xl border transition ${on ? "border-pine-600 ring-2 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
                       >
-                        <span className="relative block h-20">
-                          {o.photo ? (
-                            <Image src={o.photo} alt="" fill sizes="16rem" className="object-cover" />
-                          ) : (
-                            <span className="grid h-full place-items-center bg-mist">
-                              <HelpCircle className="h-7 w-7 text-pine-600" />
-                            </span>
-                          )}
+                        {/* carré : image 3/4 haut, label 1/4 bas */}
+                        <span className="relative block aspect-square">
+                          <span className="absolute inset-x-0 top-0 h-3/4 overflow-hidden">
+                            {o.photo ? (
+                              <Image src={o.photo} alt="" fill sizes="12rem" className="object-cover" />
+                            ) : (
+                              <span className="grid h-full w-full place-items-center bg-mist">
+                                <HelpCircle className="h-8 w-8 text-pine-600" />
+                              </span>
+                            )}
+                          </span>
                           {o.badge && (
                             <span className="absolute left-2 top-2 z-10 rounded-md bg-amber-500 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-pine-950 shadow-md">
                               {o.badge}
                             </span>
                           )}
                           {on && (
-                            <span className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-pine-600 text-white shadow-md">
+                            <span className="absolute right-2 top-2 z-10 grid h-6 w-6 place-items-center rounded-full bg-pine-600 text-white shadow-md">
                               <Check className="h-3.5 w-3.5" strokeWidth={3} />
                             </span>
                           )}
-                        </span>
-                        <span className="block px-3.5 py-2.5">
-                          <span className={`block text-sm font-bold ${on ? "text-pine-700" : "text-inkgreen"}`}>{o.label}</span>
-                          <span className="mt-0.5 block text-xs leading-snug text-neutral-500">{o.desc}</span>
+                          <span className="absolute inset-x-0 bottom-0 flex h-1/4 items-center justify-center px-2">
+                            <span className={`truncate text-sm font-bold sm:text-base ${on ? "text-pine-700" : "text-inkgreen"}`}>
+                              {o.label}
+                            </span>
+                          </span>
                         </span>
                       </button>
                     );

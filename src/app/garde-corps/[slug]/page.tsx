@@ -211,11 +211,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               </p>
             </div>
             <div className="mx-auto mt-10 max-w-5xl">
-              <Configurator
-                lock={{ usage: usageLock }}
-                lockNote={`Projet ${usageName!.toLowerCase()}`}
-                source={`configurateur-${entry.slug}`}
-              />
+              <Configurator lock={{ usage: usageLock }} source={`configurateur-${entry.slug}`} />
             </div>
           </Container>
         </section>

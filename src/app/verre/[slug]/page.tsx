@@ -120,11 +120,7 @@ export default async function VerrePage({ params }: { params: Promise<Params> })
             </p>
           </div>
           <div className="mx-auto mt-10 max-w-5xl">
-            <Configurator
-              lock={{ verre: v.label as "66.4" | "88.4" | "1010.4" }}
-              lockNote={`Verre ${v.label}`}
-              source={`configurateur-verre-${v.slug}`}
-            />
+            <Configurator lock={{ verre: v.label as "66.4" | "88.4" | "1010.4" }} source={`configurateur-verre-${v.slug}`} />
           </div>
         </Container>
       </section>
