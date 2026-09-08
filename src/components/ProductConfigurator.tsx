@@ -27,12 +27,12 @@ const epaisseurs = [
   { value: "1010.4", label: "1010.4", desc: "piscine · vent · 1,10 m", reco: false },
 ] as const;
 
-const teintes = [
-  { value: "clair", label: "Clair", swatch: "bg-gradient-to-br from-sky-50 to-pine-100/60 ring-pine-200" },
+const teintes: { value: "clair" | "extra-clair" | "fume-1f" | "fume-2f"; label: string; swatch: string; badge?: string }[] = [
+  { value: "clair", label: "Clair", swatch: "bg-gradient-to-br from-sky-50 to-pine-100/60 ring-pine-200", badge: "Meilleur prix" },
   { value: "extra-clair", label: "Extra-clair", swatch: "bg-gradient-to-br from-white to-neutral-100 ring-neutral-200" },
-  { value: "fume-1f", label: "Fumé 1 face", swatch: "bg-gradient-to-br from-neutral-300 to-neutral-400 ring-neutral-400" },
-  { value: "fume-2f", label: "Fumé 2 faces", swatch: "bg-gradient-to-br from-neutral-500 to-neutral-700 ring-neutral-500" },
-] as const;
+  { value: "fume-1f", label: "Fumé", swatch: "bg-gradient-to-br from-neutral-300 to-neutral-400 ring-neutral-400" },
+  { value: "fume-2f", label: "Fumé deux faces", swatch: "bg-gradient-to-br from-neutral-500 to-neutral-700 ring-neutral-500" },
+];
 
 type Estimation = {
   ttc: number;
@@ -252,7 +252,7 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
       {/* teinte */}
       <div className="mt-5">
         <span className={label}>Teinte du verre</span>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 pt-2 sm:grid-cols-4">
           {teintes.map((t) => {
             const on = teinte === t.value;
             return (
@@ -261,8 +261,13 @@ export function ProductConfigurator({ systeme }: { systeme: "rail" | "pinces" | 
                 type="button"
                 aria-pressed={on}
                 onClick={() => setTeinte(t.value)}
-                className={`flex flex-col items-center gap-1.5 rounded-xl border px-2 py-2.5 transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:border-pine-300"}`}
+                className={`relative flex flex-col items-center gap-1.5 rounded-xl border px-2 py-2.5 transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:border-pine-300"}`}
               >
+                {t.badge && (
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-pine-950 shadow-sm">
+                    {t.badge}
+                  </span>
+                )}
                 <span className={`relative h-8 w-8 overflow-hidden rounded-md ring-1 ${t.swatch}`}>
                   <span className="absolute -left-1 top-0 h-12 w-1.5 rotate-12 bg-white/50" />
                 </span>

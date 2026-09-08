@@ -42,12 +42,12 @@ const hauteurs = [
 ];
 
 /** Teintes de verre — nuancier simple, sans jargon. */
-const teintes = [
-  { value: "clair", label: "Clair", desc: "le classique lumineux", swatch: "bg-gradient-to-br from-sky-50 to-pine-100/60 ring-pine-200" },
+const teintes: { value: "clair" | "extra-clair" | "fume-1f" | "fume-2f"; label: string; desc: string; swatch: string; badge?: string }[] = [
+  { value: "clair", label: "Clair", desc: "le classique lumineux", swatch: "bg-gradient-to-br from-sky-50 to-pine-100/60 ring-pine-200", badge: "Meilleur prix" },
   { value: "extra-clair", label: "Extra-clair", desc: "sans reflet vert, haut de gamme", swatch: "bg-gradient-to-br from-white to-neutral-100 ring-neutral-200" },
-  { value: "fume-1f", label: "Fumé une face", desc: "intimité côté extérieur", swatch: "bg-gradient-to-br from-neutral-300 to-neutral-400 ring-neutral-400" },
+  { value: "fume-1f", label: "Fumé", desc: "intimité côté extérieur", swatch: "bg-gradient-to-br from-neutral-300 to-neutral-400 ring-neutral-400" },
   { value: "fume-2f", label: "Fumé deux faces", desc: "l'effet miroir le plus marqué", swatch: "bg-gradient-to-br from-neutral-500 to-neutral-700 ring-neutral-500" },
-] as const;
+];
 
 /** Forme du garde-corps selon le nombre de côtés : ligne, L, U, enceinte. */
 function ShapeGlyph({ n, className }: { n: number; className?: string }) {
@@ -589,7 +589,14 @@ export function Configurator({
                           <span className="absolute -left-1 top-0 h-16 w-2 rotate-12 bg-white/50" />
                         </span>
                         <span className="min-w-0">
-                          <span className={`block text-sm font-bold ${on ? "text-pine-700" : "text-inkgreen"}`}>{t.label}</span>
+                          <span className="flex flex-wrap items-center gap-1.5">
+                            <span className={`text-sm font-bold ${on ? "text-pine-700" : "text-inkgreen"}`}>{t.label}</span>
+                            {t.badge && (
+                              <span className="rounded-full bg-amber-500 px-2 py-0.5 font-mono text-[8px] font-bold uppercase tracking-wide text-pine-950">
+                                {t.badge}
+                              </span>
+                            )}
+                          </span>
                           <span className="mt-0.5 block text-xs leading-snug text-neutral-500">{t.desc}</span>
                         </span>
                         {on && (
