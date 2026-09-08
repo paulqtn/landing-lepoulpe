@@ -111,9 +111,9 @@ export function SiteHeader() {
 
       {/* ---- barre principale ---- */}
       <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex h-[4.5rem] w-full max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
-          <Link href="/" aria-label={`${site.name} — accueil`} onClick={() => setOpen(null)} className="flex items-center gap-2.5">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-pine-700 text-white">
+        <div className="mx-auto flex h-[4.5rem] w-full max-w-7xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-8">
+          <Link href="/" aria-label={`${site.name} — accueil`} onClick={() => setOpen(null)} className="flex min-w-0 items-center gap-2 sm:gap-2.5">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-pine-700 text-white sm:h-10 sm:w-10">
               {/* glyphe garde-corps */}
               <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
                 <path d="M3 8h18" />
@@ -121,9 +121,11 @@ export function SiteHeader() {
                 <path d="M3 18h18" strokeOpacity="0.5" />
               </svg>
             </span>
-            <span className="flex flex-col leading-none">
-              <span className="text-lg font-extrabold tracking-tight text-inkgreen">{site.name}</span>
-              <span className="mt-1 font-mono text-[9px] font-medium uppercase tracking-[0.18em] text-pine-600">
+            <span className="flex min-w-0 flex-col leading-none">
+              <span className="truncate whitespace-nowrap text-[15px] font-extrabold tracking-tight text-inkgreen sm:text-lg">
+                {site.name}
+              </span>
+              <span className="mt-1 hidden font-mono text-[9px] font-medium uppercase tracking-[0.18em] text-pine-600 sm:block">
                 Sur-mesure &amp; kit · direct usine
               </span>
             </span>
@@ -269,11 +271,11 @@ export function SiteHeader() {
           <div className="flex items-center gap-2">
             <Link
               href="/devis"
-              className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-amber-500 py-2 pl-4 pr-2 text-sm font-bold text-pine-950 shadow-md shadow-amber-500/30 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 hover:shadow-lg hover:shadow-amber-500/40 sm:pl-5"
+              className="group relative inline-flex shrink-0 items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full bg-amber-500 py-2 pl-3.5 pr-1.5 text-sm font-bold text-pine-950 shadow-md shadow-amber-500/30 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 hover:shadow-lg hover:shadow-amber-500/40 sm:gap-2.5 sm:pl-5 sm:pr-2"
             >
               {/* reflet qui balaie le bouton au survol */}
               <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full" />
-              <ClipboardList className="h-4 w-4" />
+              <ClipboardList className="hidden h-4 w-4 sm:block" />
               <span className="hidden sm:inline">Estimer un tarif en direct</span>
               <span className="sm:hidden">Devis 1 min</span>
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-pine-950 text-amber-500 transition-transform duration-300 group-hover:translate-x-0.5">
@@ -283,7 +285,7 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="grid h-10 w-10 place-items-center rounded-lg text-inkgreen transition hover:bg-neutral-100 lg:hidden"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-inkgreen transition hover:bg-neutral-100 lg:hidden"
               aria-label="Ouvrir le menu"
             >
               <Menu className="h-6 w-6" />

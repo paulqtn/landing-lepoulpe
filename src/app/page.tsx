@@ -376,13 +376,13 @@ export default function Home() {
                 </div>
 
                 {/* -------- infographie : circuit classique vs chez nous -------- */}
-                <div className="relative mt-10 overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-6 sm:p-9">
+                <div className="relative mt-8 overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-4 sm:mt-10 sm:p-9">
                   <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
                     <div>
                       <p className="font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-pine-100/80">
                         Circuit classique
                       </p>
-                      <div className="mt-4 flex flex-wrap items-center gap-2.5 sm:gap-3">
+                      <div className="mt-4 flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                         {(
                           [
                             [Factory, "Usine"],
@@ -391,12 +391,12 @@ export default function Home() {
                             [HomeIcon, "Vous"],
                           ] as const
                         ).map(([StepIcon, step], i) => (
-                          <span key={step} className="flex items-center gap-2.5 sm:gap-3">
+                          <span key={step} className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
                             <span className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.07] px-4 py-2.5 backdrop-blur-sm sm:px-5">
                               <StepIcon className="h-[18px] w-[18px] text-pine-100/80" strokeWidth={1.8} />
                               <span className="text-sm font-bold text-white sm:text-base">{step}</span>
                             </span>
-                            {i < 3 && <ArrowRight className="h-4 w-4 shrink-0 text-pine-100/40" />}
+                            {i < 3 && <ArrowRight className="ml-9 h-4 w-4 shrink-0 rotate-90 text-pine-100/40 sm:ml-0 sm:rotate-0" />}
                           </span>
                         ))}
                       </div>
@@ -407,18 +407,34 @@ export default function Home() {
                       <p className="font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-amber-500">
                         Chez nous
                       </p>
-                      <div className="mt-4 flex flex-wrap items-center gap-3 sm:gap-4">
-                        <span className="inline-flex items-center gap-3 rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-6 py-3.5 shadow-[0_8px_32px_rgba(246,167,35,0.4)] ring-1 ring-inset ring-white/40">
+                      <div className="mt-4 flex flex-wrap items-center gap-2 sm:gap-4">
+                        <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-4 py-3 shadow-[0_8px_32px_rgba(246,167,35,0.4)] ring-1 ring-inset ring-white/40 sm:gap-3 sm:px-6 sm:py-3.5">
                           <Factory className="h-5 w-5 text-pine-950" strokeWidth={2} />
                           <span className="text-base font-extrabold text-pine-950 sm:text-lg">Usine</span>
                         </span>
-                        <ArrowRight className="h-6 w-6 shrink-0 text-amber-500" strokeWidth={2.5} />
-                        <span className="inline-flex items-center gap-3 rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-6 py-3.5 shadow-[0_8px_32px_rgba(246,167,35,0.4)] ring-1 ring-inset ring-white/40">
+                        <ArrowRight className="h-5 w-5 shrink-0 text-amber-500 sm:h-6 sm:w-6" strokeWidth={2.5} />
+                        <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-4 py-3 shadow-[0_8px_32px_rgba(246,167,35,0.4)] ring-1 ring-inset ring-white/40 sm:gap-3 sm:px-6 sm:py-3.5">
                           <HomeIcon className="h-5 w-5 text-pine-950" strokeWidth={2} />
                           <span className="text-base font-extrabold text-pine-950 sm:text-lg">Vous</span>
                         </span>
                       </div>
                       <p className="mt-3 text-sm text-pine-100/80">Un seul prix : celui de la fabrication.</p>
+                    </div>
+
+                    {/* carte de France — version mobile, centrée sous les circuits */}
+                    <div className="flex flex-col items-center lg:hidden">
+                      <Image
+                        src="/carte-france.png"
+                        alt="Livraison partout en France depuis l'usine"
+                        width={200}
+                        height={250}
+                        className="h-44 w-auto"
+                      />
+                      <p className="mt-1 -rotate-2 text-center text-base font-medium italic leading-snug text-pine-100/85">
+                        Plus simple. Plus juste.
+                        <br />
+                        Plus proche de vous.
+                      </p>
                     </div>
 
                     {/* carte de France — livraison partout, en direct */}
