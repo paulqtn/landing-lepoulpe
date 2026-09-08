@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, Check, Hammer, HardHat, HelpCircle, Loader2, Lock, Minus, Phone, Plus, Zap } from "lucide-react";
-import { UsageGlyph } from "@/components/Illustrations";
 import { usages } from "@/lib/catalog";
 import { guarantees, phoneHref, site } from "@/lib/site";
+import { USAGE_ICONS } from "@/lib/usage-icons";
 
 /* ================================================================== */
 /*  Configurateur client — une seule colonne, une question à la fois.  */
@@ -414,10 +414,16 @@ export function Configurator({
                         type="button"
                         aria-pressed={on}
                         onClick={() => { setState((s) => ({ ...s, lieu: l.value })); advance(); }}
-                        className={`flex flex-col items-center gap-2.5 rounded-xl border px-3 py-4 transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                        className={`group flex flex-col items-center gap-2.5 rounded-xl border px-3 py-4 transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
                       >
-                        <span className={`grid h-12 w-12 place-items-center rounded-xl transition-colors ${on ? "bg-pine-700 text-white" : "bg-pine-50 text-pine-700"}`}>
-                          <UsageGlyph usage={l.value} className="h-7 w-7" />
+                        <span className={`grid h-12 w-12 place-items-center rounded-xl transition-colors duration-300 ${on ? "bg-amber-500" : "bg-pine-50 group-hover:bg-amber-500/20"}`}>
+                          <Image
+                            src={USAGE_ICONS[l.value]}
+                            alt=""
+                            width={30}
+                            height={30}
+                            className="h-[30px] w-[30px] transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110"
+                          />
                         </span>
                         <span className="text-sm font-bold text-inkgreen">{l.label}</span>
                       </button>
