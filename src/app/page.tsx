@@ -364,41 +364,33 @@ export default function Home() {
 
                 {/* -------- infographie : circuit classique vs chez nous -------- */}
                 <div className="relative mt-10 overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-6 sm:p-9">
-                  <p className="pointer-events-none absolute right-7 top-7 hidden text-right font-mono text-[9px] font-medium uppercase leading-relaxed tracking-[0.2em] text-pine-100/35 md:block">
-                    Des solutions
-                    <br />
-                    en verre
-                    <br />
-                    pour vos projets
-                  </p>
-
-                  <p className="font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-pine-100/80">
-                    Circuit classique
-                  </p>
-                  <div className="mt-4 flex flex-wrap items-center gap-2.5 sm:gap-3">
-                    {(
-                      [
-                        [Factory, "Usine"],
-                        [Warehouse, "Grossiste"],
-                        [Store, "Revendeur"],
-                        [HomeIcon, "Vous"],
-                      ] as const
-                    ).map(([StepIcon, step], i) => (
-                      <span key={step} className="flex items-center gap-2.5 sm:gap-3">
-                        <span className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.07] px-4 py-2.5 backdrop-blur-sm sm:px-5">
-                          <StepIcon className="h-[18px] w-[18px] text-pine-100/80" strokeWidth={1.8} />
-                          <span className="text-sm font-bold text-white sm:text-base">{step}</span>
-                        </span>
-                        {i < 3 && <ArrowRight className="h-4 w-4 shrink-0 text-pine-100/40" />}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="mt-3 text-sm text-pine-100/60">3 marges empilées avant votre devis.</p>
-
-                  <div className="my-7 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-
-                  <div className="grid items-center gap-8 lg:grid-cols-[1fr_auto]">
+                  <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
                     <div>
+                      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-pine-100/80">
+                        Circuit classique
+                      </p>
+                      <div className="mt-4 flex flex-wrap items-center gap-2.5 sm:gap-3">
+                        {(
+                          [
+                            [Factory, "Usine"],
+                            [Warehouse, "Grossiste"],
+                            [Store, "Revendeur"],
+                            [HomeIcon, "Vous"],
+                          ] as const
+                        ).map(([StepIcon, step], i) => (
+                          <span key={step} className="flex items-center gap-2.5 sm:gap-3">
+                            <span className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.07] px-4 py-2.5 backdrop-blur-sm sm:px-5">
+                              <StepIcon className="h-[18px] w-[18px] text-pine-100/80" strokeWidth={1.8} />
+                              <span className="text-sm font-bold text-white sm:text-base">{step}</span>
+                            </span>
+                            {i < 3 && <ArrowRight className="h-4 w-4 shrink-0 text-pine-100/40" />}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="mt-3 text-sm text-pine-100/60">3 marges empilées avant votre devis.</p>
+
+                      <div className="my-7 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+
                       <p className="font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-amber-500">
                         Chez nous
                       </p>
@@ -416,16 +408,17 @@ export default function Home() {
                       <p className="mt-3 text-sm text-pine-100/80">Un seul prix : celui de la fabrication.</p>
                     </div>
 
-                    {/* note manuscrite */}
-                    <div className="hidden -rotate-2 items-center gap-3 pr-2 lg:flex">
-                      <svg viewBox="0 0 44 30" className="h-8 w-11 shrink-0 text-pine-100/50" fill="none" aria-hidden>
-                        <path d="M40 4 C28 22, 16 26, 5 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                        <path d="M10 15 L4.5 20.8 L12 23.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                      </svg>
-                      <p className="text-lg font-medium italic leading-snug text-pine-100/85">
-                        Plus simple.
-                        <br />
-                        Plus juste.
+                    {/* carte de France — livraison partout, en direct */}
+                    <div className="hidden flex-col items-center lg:flex lg:pr-2">
+                      <Image
+                        src="/carte-france.png"
+                        alt="Livraison partout en France depuis l'usine"
+                        width={280}
+                        height={350}
+                        className="h-64 w-auto drop-shadow-[0_0_35px_rgba(74,222,128,0.15)]"
+                      />
+                      <p className="mt-2 -rotate-2 text-center text-lg font-medium italic leading-snug text-pine-100/85">
+                        Plus simple. Plus juste.
                         <br />
                         Plus proche de vous.
                       </p>
