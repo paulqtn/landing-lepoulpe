@@ -136,7 +136,7 @@ export function SiteHeader() {
                 type="button"
                 aria-expanded={open === "usage"}
                 onClick={() => setOpen(open === "usage" ? null : "usage")}
-                className={`flex items-center gap-1 rounded-lg px-3.5 py-2 text-sm font-semibold transition ${open === "usage" ? "text-pine-700" : "text-neutral-800 hover:text-pine-700"}`}
+                className={`flex items-center gap-1 rounded-full px-3.5 py-2 text-sm font-semibold transition ${open === "usage" ? "bg-amber-500 text-pine-950" : "text-neutral-800 hover:bg-amber-500 hover:text-pine-950"}`}
               >
                 Par usage
                 <ChevronDown className={`h-4 w-4 transition-transform ${open === "usage" ? "rotate-180" : ""}`} />
@@ -153,10 +153,10 @@ export function SiteHeader() {
                           key={u.slug}
                           href={`/garde-corps/${u.slug}`}
                           onClick={() => setOpen(null)}
-                          className="group/us flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold text-neutral-800 transition hover:bg-pine-50 hover:text-pine-700"
+                          className="group/us flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold text-neutral-800 transition hover:bg-amber-500/15 hover:text-pine-950"
                         >
                           {u.name}
-                          <ArrowUpRight className="h-3.5 w-3.5 text-neutral-300 transition group-hover/us:text-pine-600" />
+                          <ArrowUpRight className="h-3.5 w-3.5 text-neutral-300 transition group-hover/us:text-amber-600" />
                         </Link>
                       ))}
                     </div>
@@ -171,7 +171,7 @@ export function SiteHeader() {
                 type="button"
                 aria-expanded={open === "fix"}
                 onClick={() => setOpen(open === "fix" ? null : "fix")}
-                className={`flex items-center gap-1 rounded-lg px-3.5 py-2 text-sm font-semibold transition ${open === "fix" ? "text-pine-700" : "text-neutral-800 hover:text-pine-700"}`}
+                className={`flex items-center gap-1 rounded-full px-3.5 py-2 text-sm font-semibold transition ${open === "fix" ? "bg-amber-500 text-pine-950" : "text-neutral-800 hover:bg-amber-500 hover:text-pine-950"}`}
               >
                 Type de fixation
                 <ChevronDown className={`h-4 w-4 transition-transform ${open === "fix" ? "rotate-180" : ""}`} />
@@ -188,15 +188,15 @@ export function SiteHeader() {
                           key={f.slug}
                           href={`/produits/${f.slug}`}
                           onClick={() => setOpen(null)}
-                          className="group/fx flex items-center gap-3.5 rounded-xl p-2.5 transition hover:bg-pine-50"
+                          className="group/fx flex items-center gap-3.5 rounded-xl p-2.5 transition hover:bg-amber-500/15"
                         >
                           <span className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg">
                             <Image src={f.photo} alt="" fill sizes="5rem" className="object-cover" />
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="flex items-center gap-1 text-sm font-bold text-inkgreen group-hover/fx:text-pine-700">
+                            <span className="flex items-center gap-1 text-sm font-bold text-inkgreen group-hover/fx:text-pine-950">
                               {f.name}
-                              <ArrowUpRight className="h-3.5 w-3.5 text-neutral-300 transition group-hover/fx:text-pine-600" />
+                              <ArrowUpRight className="h-3.5 w-3.5 text-neutral-300 transition group-hover/fx:text-amber-600" />
                             </span>
                             <span className="mt-0.5 block truncate text-xs text-neutral-500">{f.desc}</span>
                           </span>
@@ -217,7 +217,7 @@ export function SiteHeader() {
                 type="button"
                 aria-expanded={open === "verre"}
                 onClick={() => setOpen(open === "verre" ? null : "verre")}
-                className={`flex items-center gap-1 rounded-lg px-3.5 py-2 text-sm font-semibold transition ${open === "verre" ? "text-pine-700" : "text-neutral-800 hover:text-pine-700"}`}
+                className={`flex items-center gap-1 rounded-full px-3.5 py-2 text-sm font-semibold transition ${open === "verre" ? "bg-amber-500 text-pine-950" : "text-neutral-800 hover:bg-amber-500 hover:text-pine-950"}`}
               >
                 Épaisseur de verre
                 <ChevronDown className={`h-4 w-4 transition-transform ${open === "verre" ? "rotate-180" : ""}`} />
@@ -234,15 +234,15 @@ export function SiteHeader() {
                           key={e.slug}
                           href={`/verre/${e.slug}`}
                           onClick={() => setOpen(null)}
-                          className="group/ep flex items-center gap-3.5 rounded-xl px-3 py-2.5 transition hover:bg-pine-50"
+                          className="group/ep flex items-center gap-3.5 rounded-xl px-3 py-2.5 transition hover:bg-amber-500/15"
                         >
                           <span className="grid h-10 w-14 shrink-0 place-items-center rounded-lg border border-pine-200 bg-pine-50 font-mono text-xs font-bold text-pine-700">
                             {e.label}
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="flex items-center gap-1 text-sm font-bold text-inkgreen group-hover/ep:text-pine-700">
+                            <span className="flex items-center gap-1 text-sm font-bold text-inkgreen group-hover/ep:text-pine-950">
                               Verre feuilleté {e.label}
-                              <ArrowUpRight className="h-3.5 w-3.5 text-neutral-300 transition group-hover/ep:text-pine-600" />
+                              <ArrowUpRight className="h-3.5 w-3.5 text-neutral-300 transition group-hover/ep:text-amber-600" />
                             </span>
                             <span className="mt-0.5 block truncate text-xs text-neutral-500">{e.desc}</span>
                           </span>
@@ -321,7 +321,7 @@ export function SiteHeader() {
                           key={it.href}
                           href={it.href}
                           onClick={() => setMobileOpen(false)}
-                          className="block rounded-lg px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-pine-50 hover:text-pine-700"
+                          className="block rounded-lg px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-amber-500/15 hover:text-pine-950"
                         >
                           {it.label}
                         </Link>
