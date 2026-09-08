@@ -1,18 +1,41 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Check, ClipboardList, Layers, Phone } from "lucide-react";
+import { ArrowRight, Check, ClipboardList } from "lucide-react";
 import { Configurator } from "@/components/Configurator";
 import { FaqAccordion } from "@/components/FaqAccordion";
+import { PageHero, type PageHeroImage } from "@/components/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { getProduct } from "@/lib/products";
 import { getVerre, verres } from "@/lib/verres";
-import { phoneHref, site } from "@/lib/site";
+import { site } from "@/lib/site";
 
 type Params = { slug: string };
 
 export const dynamicParams = false;
+
+/* Visuel du hero — une image fixe par épaisseur. */
+const HERO_IMAGES: Record<string, PageHeroImage> = {
+  "66-4": {
+    src: "/pinces-au-sol.jpg",
+    alt: "Garde-corps en verre 66.4 sur pinces inox au bord d’une piscine",
+    label: "Verre 66.4 · pinces",
+    title: "Barrière de piscine",
+  },
+  "88-4": {
+    src: "/verre-sur-rail.jpg",
+    alt: "Garde-corps tout verre 88.4 sur rail le long d’une terrasse bois",
+    label: "Verre 88.4 · rail",
+    title: "Terrasse bois",
+  },
+  "1010-4": {
+    src: "/module-verre-invisible-sur-mesure-ht-1m15.jpg",
+    alt: "Garde-corps en verre 1010.4 autoportant autour d’un bassin",
+    label: "Verre 1010.4 · autoportant",
+    title: "Barrière de bassin",
+  },
+};
 
 export function generateStaticParams() {
   return verres.map((v) => ({ slug: v.slug }));
@@ -68,66 +91,20 @@ export default async function VerrePage({ params }: { params: Promise<Params> })
     <main>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      {/* hero */}
-      <section className="border-b border-neutral-200 bg-mist">
-        <Container className="py-12 sm:py-16">
+      {/* hero — même modèle que la homepage, une image fixe */}
+      <PageHero
+        kicker="Épaisseur de verre"
+        title={v.title}
+        intro={v.intro}
+        image={HERO_IMAGES[v.slug] ?? HERO_IMAGES["88-4"]}
+        breadcrumb={
           <nav aria-label="Fil d’Ariane" className="font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-400">
             <Link href="/" className="hover:text-pine-700">Accueil</Link>
             <span className="mx-2">/</span>
             <span className="text-neutral-600">Verre {v.label}</span>
           </nav>
-
-          <div className="mt-8 grid items-end gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-            <div>
-              <p className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
-                <Layers className="h-4 w-4" />
-                Épaisseur de verre
-              </p>
-              <h1 className="mt-3 text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-inkgreen sm:text-5xl">
-                {v.title}
-              </h1>
-              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-neutral-600">{v.intro}</p>
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="#estimation"
-                  className="group inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-pine-700 py-3.5 pl-6 pr-5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-pine-600"
-                >
-                  <ClipboardList className="h-4 w-4 shrink-0" />
-                  Estimer mon projet en 1 min
-                  <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5" />
-                </Link>
-                <a
-                  href={phoneHref}
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white px-6 py-3.5 text-sm font-bold text-inkgreen shadow-card transition-all hover:-translate-y-0.5"
-                >
-                  <Phone className="h-4 w-4 shrink-0 text-pine-600" />
-                  {site.phone}
-                </a>
-              </div>
-            </div>
-
-            {/* fiche technique */}
-            <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-card">
-              <div className="flex items-baseline justify-between gap-4">
-                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-700">
-                  Fiche technique
-                </p>
-                <p className="text-lg font-extrabold tabular-nums text-inkgreen">
-                  dès {v.priceFrom} €<span className="text-xs font-semibold text-neutral-400">/ml</span>
-                </p>
-              </div>
-              <dl className="mt-4 space-y-3">
-                {v.caracteristiques.map((c) => (
-                  <div key={c.label} className="flex items-baseline justify-between gap-4 border-b border-neutral-100 pb-3 last:border-0 last:pb-0">
-                    <dt className="text-sm font-semibold text-neutral-500">{c.label}</dt>
-                    <dd className="text-right text-sm font-bold text-inkgreen">{c.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-          </div>
-        </Container>
-      </section>
+        }
+      />
 
       {/* générateur — l'épaisseur de la page est figée et transmise au moteur */}
       <section id="estimation" className="border-b border-neutral-200 bg-white py-14 sm:py-20">
@@ -156,9 +133,30 @@ export default async function VerrePage({ params }: { params: Promise<Params> })
       <section className="py-16 sm:py-24">
         <Container>
           <h2 className="text-2xl font-extrabold tracking-tight text-inkgreen sm:text-3xl">Pourquoi le {v.label} ?</h2>
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
+          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {/* fiche technique */}
+            <Reveal>
+              <div className="h-full rounded-2xl border border-pine-200 bg-pine-50/50 p-6">
+                <div className="flex items-baseline justify-between gap-4">
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-700">
+                    Fiche technique
+                  </p>
+                  <p className="text-base font-extrabold tabular-nums text-inkgreen">
+                    dès {v.priceFrom} €<span className="text-xs font-semibold text-neutral-400">/ml</span>
+                  </p>
+                </div>
+                <dl className="mt-4 space-y-2.5">
+                  {v.caracteristiques.map((c) => (
+                    <div key={c.label} className="flex items-baseline justify-between gap-3 border-b border-pine-100 pb-2.5 last:border-0 last:pb-0">
+                      <dt className="text-xs font-semibold text-neutral-500">{c.label}</dt>
+                      <dd className="text-right text-xs font-bold text-inkgreen">{c.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </Reveal>
             {v.benefits.map((b, i) => (
-              <Reveal key={b.title} delay={i * 60}>
+              <Reveal key={b.title} delay={(i + 1) * 60}>
                 <div className="h-full rounded-2xl border border-neutral-200 bg-white p-6">
                   <span className="grid h-9 w-9 place-items-center rounded-lg bg-pine-50 text-pine-700">
                     <Check className="h-5 w-5" />

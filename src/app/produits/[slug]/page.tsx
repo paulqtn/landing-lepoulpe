@@ -192,8 +192,15 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
     <main>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <section className="border-b border-neutral-200 bg-mist">
-        <Container className="py-10 sm:py-14">
+      <section className={`relative border-b border-neutral-200 ${systeme ? "overflow-hidden bg-gradient-to-b from-white via-mist to-pine-50/50" : "bg-mist"}`}>
+        {systeme && (
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -right-20 -top-24 h-[34rem] w-[34rem] rounded-full bg-amber-500/[0.18] blur-[110px]" />
+            <div className="absolute -left-32 top-10 h-[30rem] w-[30rem] rounded-full bg-pine-200/50 blur-[100px]" />
+            <div className="absolute inset-0 bg-lightgrid [mask-image:radial-gradient(ellipse_75%_65%_at_45%_20%,#000_35%,transparent_80%)]" />
+          </div>
+        )}
+        <Container className="relative py-10 sm:py-14">
           <nav aria-label="Fil d’Ariane" className="font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-400">
             <Link href="/" className="hover:text-pine-700">Accueil</Link>
             <span className="mx-2">/</span>
@@ -233,6 +240,12 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
 
             {/* ---------- contenu + configurateur ---------- */}
             <div>
+              {systeme && (
+                <p className="mb-4 flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">
+                  <span className="h-[3px] w-10 rounded-full bg-amber-500" />
+                  Type de fixation
+                </p>
+              )}
               <h1 className="text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">{p.name}</h1>
               <p className="mt-2.5 leading-relaxed text-neutral-600">{oneLiner}</p>
 
