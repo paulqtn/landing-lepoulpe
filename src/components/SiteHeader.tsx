@@ -278,6 +278,24 @@ export function SiteHeader() {
                         </Link>
                       ))}
                     </div>
+
+                    {/* aide au choix — l'épaisseur se déduit du projet */}
+                    <Link
+                      href="/devis"
+                      onClick={() => setOpen(null)}
+                      className="group/vhelp mt-2.5 flex items-center gap-3 rounded-xl border border-dashed border-pine-300/70 bg-pine-50/50 px-3.5 py-3 transition hover:border-amber-500 hover:bg-amber-500/15"
+                    >
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-pine-700 shadow-sm ring-1 ring-pine-100 transition-colors group-hover/vhelp:bg-amber-500 group-hover/vhelp:text-pine-950 group-hover/vhelp:ring-amber-500">
+                        <HelpCircle className="h-[18px] w-[18px]" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-bold text-inkgreen">Quelle épaisseur choisir ?</span>
+                        <span className="block text-xs text-neutral-500">
+                          Le devis express applique l&rsquo;épaisseur adaptée à votre projet.
+                        </span>
+                      </span>
+                      <ArrowRight className="h-4 w-4 shrink-0 text-neutral-300 transition group-hover/vhelp:translate-x-0.5 group-hover/vhelp:text-amber-600" />
+                    </Link>
                   </div>
                 </div>
               )}
@@ -341,7 +359,7 @@ export function SiteHeader() {
                 [
                   { id: "usage", label: "Par usage", items: usages.map((u) => ({ href: `/garde-corps/${u.slug}`, label: u.name, usage: u.slug })) },
                   { id: "fix", label: "Type de fixation", items: [...fixations.map((f) => ({ href: `/produits/${f.slug}`, label: f.name })), { href: "/devis", label: "Comment choisir sa fixation ?" }] },
-                  { id: "verre", label: "Épaisseur de verre", items: epaisseurs.map((e) => ({ href: `/verre/${e.slug}`, label: `Verre feuilleté ${e.label}` })) },
+                  { id: "verre", label: "Épaisseur de verre", items: [...epaisseurs.map((e) => ({ href: `/verre/${e.slug}`, label: `Verre feuilleté ${e.label}` })), { href: "/devis", label: "Quelle épaisseur choisir ?" }] },
                 ] as { id: string; label: string; items: { href: string; label: string; usage?: string }[] }[]
               ).map((section) => (
                 <div key={section.id} className="border-b border-neutral-100">
