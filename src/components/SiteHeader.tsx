@@ -8,6 +8,7 @@ import {
   ArrowUpRight,
   ChevronDown,
   ClipboardList,
+  HelpCircle,
   Menu,
   Phone,
   Truck,
@@ -218,6 +219,22 @@ export function SiteHeader() {
                         </Link>
                       ))}
                     </div>
+
+                    {/* aide au choix — vers le générateur, étape fixation */}
+                    <Link
+                      href="/devis"
+                      onClick={() => setOpen(null)}
+                      className="group/help mt-2.5 flex items-center gap-3 rounded-xl border border-dashed border-pine-300/70 bg-pine-50/50 px-3.5 py-3 transition hover:border-amber-500 hover:bg-amber-500/15"
+                    >
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-pine-700 shadow-sm ring-1 ring-pine-100 transition-colors group-hover/help:bg-amber-500 group-hover/help:text-pine-950 group-hover/help:ring-amber-500">
+                        <HelpCircle className="h-[18px] w-[18px]" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-bold text-inkgreen">Comment choisir sa fixation ?</span>
+                        <span className="block text-xs text-neutral-500">Répondez à 2 questions — on vous oriente.</span>
+                      </span>
+                      <ArrowRight className="h-4 w-4 shrink-0 text-neutral-300 transition group-hover/help:translate-x-0.5 group-hover/help:text-amber-600" />
+                    </Link>
                   </div>
                 </div>
               )}
@@ -323,7 +340,7 @@ export function SiteHeader() {
               {(
                 [
                   { id: "usage", label: "Par usage", items: usages.map((u) => ({ href: `/garde-corps/${u.slug}`, label: u.name, usage: u.slug })) },
-                  { id: "fix", label: "Type de fixation", items: fixations.map((f) => ({ href: `/produits/${f.slug}`, label: f.name })) },
+                  { id: "fix", label: "Type de fixation", items: [...fixations.map((f) => ({ href: `/produits/${f.slug}`, label: f.name })), { href: "/devis", label: "Comment choisir sa fixation ?" }] },
                   { id: "verre", label: "Épaisseur de verre", items: epaisseurs.map((e) => ({ href: `/verre/${e.slug}`, label: `Verre feuilleté ${e.label}` })) },
                 ] as { id: string; label: string; items: { href: string; label: string; usage?: string }[] }[]
               ).map((section) => (
