@@ -6,11 +6,13 @@ import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
+  BadgeCheck,
   ChevronDown,
   ClipboardList,
   HelpCircle,
   Menu,
   Phone,
+  Star,
   Truck,
   X,
 } from "lucide-react";
@@ -76,37 +78,38 @@ export function SiteHeader() {
 
   return (
     <>
-      {/* ---- bandeau utilitaire ---- */}
-      <div className="relative bg-gradient-to-r from-pine-950 via-pine-900 to-pine-950 text-pine-100">
-        {/* halo ambré discret + liseré signature */}
-        <div className="pointer-events-none absolute inset-y-0 right-1/4 w-1/2 bg-amber-500/[0.07] blur-2xl" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
-        <div className="relative mx-auto flex h-11 w-full max-w-7xl items-center justify-between px-5 text-xs sm:px-8">
-          <a
-            href={phoneHref}
-            className="group -ml-1.5 flex items-center gap-2.5 rounded-full py-1 pl-1.5 pr-3 transition-colors hover:bg-white/5"
-          >
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-black/40 text-white ring-1 ring-white/15 transition-all duration-300 group-hover:scale-105 group-hover:bg-green-500 group-hover:ring-4 group-hover:ring-green-500/25">
-              <Phone className="h-3.5 w-3.5 group-hover:animate-wiggle" />
+      {/* ---- barre de confiance (style marketplace) ---- */}
+      <div className="border-b border-neutral-200 bg-white">
+        <div className="mx-auto flex h-10 w-full max-w-7xl items-center justify-between gap-4 px-4 text-xs sm:px-8">
+          <span className="flex items-center gap-2">
+            <span className="flex gap-0.5" aria-hidden>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+              ))}
             </span>
-            <span className="font-semibold tracking-wider text-green-100 transition-colors group-hover:text-white">
-              {site.phone}
-            </span>
-            <span className="relative ml-0.5 flex h-2 w-2" aria-hidden>
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
-            </span>
-          </a>
-          <div className="hidden items-center gap-6 sm:flex">
-            <span className="flex items-center gap-2">
-              <ClipboardList className="h-3.5 w-3.5 text-amber-500" />
-              Devis en 1 min
-            </span>
-            <span className="flex items-center gap-2">
-              <Truck className="h-3.5 w-3.5 text-amber-500" />
+            <span className="font-bold text-inkgreen">Excellent 5,0</span>
+            <span className="hidden text-neutral-400 min-[420px]:inline">sur Google</span>
+          </span>
+
+          <div className="hidden items-center gap-6 text-neutral-500 md:flex">
+            <span className="flex items-center gap-1.5">
+              <Truck className="h-3.5 w-3.5 text-pine-600" />
               Livraison partout en France
             </span>
+            <span className="flex items-center gap-1.5">
+              <BadgeCheck className="h-3.5 w-3.5 text-pine-600" />
+              Direct usine — prix fabricant
+            </span>
           </div>
+
+          <a href={phoneHref} className="group flex items-center gap-1.5 font-semibold text-inkgreen transition-colors hover:text-pine-700">
+            <Phone className="h-3.5 w-3.5 text-pine-600 group-hover:animate-wiggle" />
+            {site.phone}
+            <span className="relative ml-0.5 flex h-1.5 w-1.5" aria-hidden>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
+            </span>
+          </a>
         </div>
       </div>
 

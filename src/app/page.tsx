@@ -24,7 +24,8 @@ import { HeroGallery, type HeroSlide } from "@/components/HeroGallery";
 import { GoogleG, MaterialScene } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
-import { materials } from "@/lib/catalog";
+import { materials, usages } from "@/lib/catalog";
+import { USAGE_ICONS } from "@/lib/usage-icons";
 import { guides } from "@/lib/guides";
 import { phoneHref, site } from "@/lib/site";
 
@@ -152,17 +153,13 @@ export default function Home() {
   return (
     <main>
       {/* ============================ HERO ============================ */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-white via-mist to-pine-50/50">
-        {/* fond en couches */}
+      <section className="relative overflow-hidden bg-white">
+        {/* halo très léger derrière le visuel */}
         <div className="pointer-events-none absolute inset-0">
-          {/* halo ambré derrière le visuel : chaleur et profondeur */}
-          <div className="absolute -right-20 -top-24 h-[34rem] w-[34rem] rounded-full bg-amber-500/[0.18] blur-[110px]" />
-          <div className="absolute -left-32 top-10 h-[30rem] w-[30rem] rounded-full bg-pine-200/50 blur-[100px]" />
-          <div className="absolute bottom-[-6rem] left-1/3 h-72 w-[28rem] rounded-full bg-amber-500/[0.07] blur-[90px]" />
-          <div className="absolute inset-0 bg-lightgrid [mask-image:radial-gradient(ellipse_75%_65%_at_45%_20%,#000_35%,transparent_80%)]" />
+          <div className="absolute -right-20 -top-24 h-[30rem] w-[30rem] rounded-full bg-amber-500/[0.08] blur-[110px]" />
         </div>
 
-        <Container className="relative grid items-center gap-14 py-16 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12 lg:py-24">
+        <Container className="relative grid items-center gap-14 pb-8 pt-12 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12 lg:pb-10 lg:pt-16">
           {/* copy */}
           <div className="animate-fade-up">
             <p className="flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">
@@ -244,6 +241,30 @@ export default function Home() {
           {/* nos réalisations */}
           <div className="animate-fade-up [animation-delay:150ms]">
             <HeroGallery slides={heroSlides} />
+          </div>
+
+          {/* parcourir par usage — chips façon marketplace */}
+          <div className="min-w-0 animate-fade-up pb-2 lg:col-span-2 [animation-delay:250ms]">
+            <div className="flex gap-2.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible [&::-webkit-scrollbar]:hidden">
+              {usages.map((u) => (
+                <Link
+                  key={u.slug}
+                  href={`/garde-corps/${u.slug}`}
+                  className="group flex shrink-0 items-center gap-2.5 rounded-full border border-neutral-200 bg-white py-1.5 pl-1.5 pr-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-500 hover:shadow-card"
+                >
+                  <span className="grid h-8 w-8 place-items-center rounded-full bg-mist transition-colors duration-300 group-hover:bg-amber-500">
+                    <Image
+                      src={USAGE_ICONS[u.slug]}
+                      alt=""
+                      width={18}
+                      height={18}
+                      className="h-[18px] w-[18px] transition-transform duration-300 group-hover:scale-110"
+                    />
+                  </span>
+                  <span className="whitespace-nowrap text-sm font-semibold text-inkgreen">{u.name}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </Container>
       </section>
