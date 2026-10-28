@@ -79,7 +79,7 @@ export function SiteHeader() {
   return (
     <>
       {/* ---- barre de confiance (style marketplace) ---- */}
-      <div className="border-b border-neutral-200 bg-white">
+      <div className="bg-pine-950 text-white">
         <div className="mx-auto flex h-10 w-full max-w-7xl items-center justify-between gap-4 px-4 text-xs sm:px-8">
           <span className="flex items-center gap-2">
             <span className="flex gap-0.5" aria-hidden>
@@ -87,23 +87,23 @@ export function SiteHeader() {
                 <Star key={i} className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
               ))}
             </span>
-            <span className="font-bold text-inkgreen">Excellent 5,0</span>
-            <span className="hidden text-neutral-400 min-[420px]:inline">sur Google</span>
+            <span className="font-bold text-white">Excellent 5,0</span>
+            <span className="hidden text-pine-100/60 min-[420px]:inline">sur Google</span>
           </span>
 
-          <div className="hidden items-center gap-6 text-neutral-500 md:flex">
+          <div className="hidden items-center gap-6 text-pine-100/75 md:flex">
             <span className="flex items-center gap-1.5">
-              <Truck className="h-3.5 w-3.5 text-pine-600" />
+              <Truck className="h-3.5 w-3.5 text-amber-500" />
               Livraison partout en France
             </span>
             <span className="flex items-center gap-1.5">
-              <BadgeCheck className="h-3.5 w-3.5 text-pine-600" />
+              <BadgeCheck className="h-3.5 w-3.5 text-amber-500" />
               Direct usine — prix fabricant
             </span>
           </div>
 
-          <a href={phoneHref} className="group flex items-center gap-1.5 font-semibold text-inkgreen transition-colors hover:text-pine-700">
-            <Phone className="h-3.5 w-3.5 text-pine-600 group-hover:animate-wiggle" />
+          <a href={phoneHref} className="group flex items-center gap-1.5 font-semibold text-white transition-colors hover:text-amber-400">
+            <Phone className="h-3.5 w-3.5 text-amber-500 group-hover:animate-wiggle" />
             {site.phone}
             <span className="relative ml-0.5 flex h-1.5 w-1.5" aria-hidden>
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
