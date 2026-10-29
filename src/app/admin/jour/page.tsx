@@ -1,16 +1,13 @@
 import Link from "next/link";
 import { BellRing, Flame, PhoneCall } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
-import { dbConfigured, dueRelances, leadsJour, type Lead } from "@/lib/admin/db";
+import { dueRelances, leadsJour, type Lead } from "@/lib/admin/db";
 
 export const dynamic = "force-dynamic";
 
 /* « Ma journée » — la file de travail du commercial, dans l'ordre. */
 
 export default async function JourPage() {
-  if (!dbConfigured) {
-    return <p className="rounded-2xl border border-neutral-200 bg-white p-6 text-sm text-neutral-500">Base non configurée — voir le tableau de bord.</p>;
-  }
   const [{ aAppeler, chauds }, dues] = await Promise.all([leadsJour(), dueRelances()]);
   const chaudsFiltres = chauds.filter((c) => !aAppeler.some((a) => a.id === c.id));
 

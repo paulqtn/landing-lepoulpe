@@ -113,8 +113,10 @@ export type LeadEvent = {
 /* ----------------------------- Écriture ---------------------------- */
 
 import { randomBytes } from "node:crypto";
+import { demoEvents, demoLead, demoLeadByToken, demoLeads } from "./demo";
 
 export async function insertLead(input: {
+
   name: string;
   email: string;
   phone: string;
@@ -124,6 +126,7 @@ export async function insertLead(input: {
   score?: "A" | "B" | "C";
   scorePoints?: number;
 }): Promise<Lead> {
+  if (!dbConfigured) throw new Error("mode démo — base non connectée");
   const token = randomBytes(12).toString("hex");
   const rows = await q<Lead>(
     `INSERT INTO leads (name, email, phone, source, answers, estimation_ttc, score, score_points, token)
@@ -144,6 +147,7 @@ export async function insertLead(input: {
 }
 
 export async function addEvent(leadId: number, type: string, message?: string): Promise<void> {
+  if (!dbConfigured) return;
   await q(`INSERT INTO lead_events (lead_id, type, message) VALUES ($1, $2, $3)`, [leadId, type, message ?? null]);
 }
 
@@ -156,6 +160,7 @@ export async function updateLead(
     >
   >,
 ): Promise<void> {
+  if (!dbConfigured) return;
   const sets: string[] = [];
   const vals: unknown[] = [];
   Object.entries(patch).forEach(([k, v]) => {
@@ -170,15 +175,25 @@ export async function updateLead(
 /* ------------------------------ Lecture ----------------------------- */
 
 export async function getLead(id: number): Promise<Lead | null> {
+  if (!dbConfigured) return demoLead(id);
   const rows = await q<Lead>(`SELECT * FROM leads WHERE id = $1`, [id]);
   return rows[0] ?? null;
 }
 
 export async function listEvents(leadId: number): Promise<LeadEvent[]> {
+  if (!dbConfigured) return demoEvents(leadId);
   return q<LeadEvent>(`SELECT * FROM lead_events WHERE lead_id = $1 ORDER BY created_at DESC, id DESC`, [leadId]);
 }
 
 export async function listLeads(opts: { statut?: string; search?: string; limit?: number } = {}): Promise<Lead[]> {
+  if (!dbConfigured) {
+    const needle = (opts.search ?? "").toLowerCase();
+    return demoLeads().filter(
+      (l) =>
+        (!opts.statut || l.statut === opts.statut) &&
+        (!needle || [l.name, l.email, l.phone].some((v) => v.toLowerCase().includes(needle))),
+    );
+  }
   const where: string[] = [];
   const vals: unknown[] = [];
   if (opts.statut && (STATUTS as readonly string[]).includes(opts.statut)) {
@@ -199,6 +214,11 @@ export async function listLeads(opts: { statut?: string; search?: string; limit?
 
 /** Relances arrivées à échéance (cron + dashboard). */
 export async function dueRelances(): Promise<Lead[]> {
+  if (!dbConfigured) {
+    return demoLeads().filter(
+      (l) => l.next_relance_at && new Date(l.next_relance_at) <= new Date() && l.statut !== "gagne" && l.statut !== "perdu",
+    );
+  }
   return q<Lead>(
     `SELECT * FROM leads
      WHERE next_relance_at IS NOT NULL AND next_relance_at <= now()
@@ -216,7 +236,23 @@ export async function stats(): Promise<{
   relancesDues: number;
   caGagne: number;
 }> {
+  if (!dbConfigured) {
+    const all = demoLeads();
+    const dues = all.filter(
+      (l) => l.next_relance_at && new Date(l.next_relance_at) <= new Date() && l.statut !== "gagne" && l.statut !== "perdu",
+    );
+    return {
+      total: all.length,
+      semaine: all.length,
+      devisEnvoyes: all.filter((l) => ["devis_envoye", "relance_1", "relance_2", "relance_3"].includes(l.statut)).length,
+      gagnes: 0,
+      perdus: 0,
+      relancesDues: dues.length,
+      caGagne: 0,
+    };
+  }
   const rows = await q<Record<string, string>>(`
+
     SELECT
       count(*)::int AS total,
       count(*) FILTER (WHERE created_at > now() - interval '7 days')::int AS semaine,
@@ -242,12 +278,14 @@ export async function stats(): Promise<{
 /* ---------------------- Devis en ligne & signaux --------------------- */
 
 export async function getLeadByToken(token: string): Promise<Lead | null> {
+  if (!dbConfigured) return demoLeadByToken(token);
   if (!/^[0-9a-f]{24}$/.test(token)) return null;
   const rows = await q<Lead>(`SELECT * FROM leads WHERE token = $1`, [token]);
   return rows[0] ?? null;
 }
 
 export async function findLeadByEmail(email: string): Promise<Lead | null> {
+  if (!dbConfigured) return demoLeads().find((l) => l.email.toLowerCase() === email.toLowerCase()) ?? null;
   const rows = await q<Lead>(`SELECT * FROM leads WHERE lower(email) = lower($1) ORDER BY created_at DESC LIMIT 1`, [email]);
   return rows[0] ?? null;
 }
@@ -257,6 +295,7 @@ export async function recordEngagement(
   id: number,
   inc: { opens?: number; clicks?: number; devis_views?: number },
 ): Promise<void> {
+  if (!dbConfigured) return;
   await q(
     `UPDATE leads SET
        opens = opens + $2,
@@ -269,6 +308,7 @@ export async function recordEngagement(
 }
 
 export async function hasRecentEvent(leadId: number, type: string, hours: number): Promise<boolean> {
+  if (!dbConfigured) return true;
   const rows = await q(
     `SELECT 1 FROM lead_events WHERE lead_id = $1 AND type = $2 AND created_at > now() - ($3 || ' hours')::interval LIMIT 1`,
     [leadId, type, String(hours)],
@@ -279,6 +319,13 @@ export async function hasRecentEvent(leadId: number, type: string, hours: number
 /* ----------------------- Vue « Ma journée » ------------------------- */
 
 export async function leadsJour(): Promise<{ aAppeler: Lead[]; chauds: Lead[] }> {
+  if (!dbConfigured) {
+    const all = demoLeads().filter((l) => l.statut !== "gagne" && l.statut !== "perdu");
+    return {
+      aAppeler: all.filter((l) => l.score === "A").sort((a, b) => b.score_points - a.score_points),
+      chauds: all.filter((l) => l.last_activity_at && Date.now() - Number(new Date(l.last_activity_at)) < 48 * 3600_000),
+    };
+  }
   const [aAppeler, chauds] = await Promise.all([
     q<Lead>(
       `SELECT * FROM leads
@@ -296,6 +343,19 @@ export async function leadsJour(): Promise<{ aAppeler: Lead[]; chauds: Lead[] }>
 
 /** Pipeline : volume et CA estimé par statut. */
 export async function pipeline(): Promise<{ statut: Statut; n: number; total: number }[]> {
+  if (!dbConfigured) {
+    const by = new Map<Statut, { n: number; total: number }>();
+    for (const l of demoLeads()) {
+      const cur = by.get(l.statut) ?? { n: 0, total: 0 };
+      cur.n += 1;
+      cur.total += l.estimation_ttc ? Number(l.estimation_ttc) : 0;
+      by.set(l.statut, cur);
+    }
+    const order = STATUTS as readonly string[];
+    return [...by.entries()]
+      .map(([statut, v]) => ({ statut, ...v }))
+      .sort((a, b) => order.indexOf(a.statut) - order.indexOf(b.statut));
+  }
   const rows = await q<{ statut: Statut; n: string; total: string }>(
     `SELECT statut, count(*)::int AS n, COALESCE(sum(estimation_ttc), 0)::float AS total
      FROM leads GROUP BY statut`,

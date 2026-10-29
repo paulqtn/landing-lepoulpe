@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/auth";
-import { addEvent, insertLead, updateLead } from "@/lib/admin/db";
+import { addEvent, dbConfigured, insertLead, updateLead } from "@/lib/admin/db";
 import { computeScore } from "@/lib/admin/scoring";
 import { chiffrer } from "@/lib/calculateur/engine";
 
@@ -24,6 +24,9 @@ function prix(troncons: number[], fixation: "GS-19-L" | "GS-07-C" | "GS-02", ver
 export async function POST(req: Request) {
   const guard = requireAdmin(req);
   if (guard) return guard;
+  if (!dbConfigured) {
+    return NextResponse.json({ ok: false, error: "mode démo — les clients fictifs sont déjà affichés" }, { status: 400 });
+  }
 
   const demos = [
     {

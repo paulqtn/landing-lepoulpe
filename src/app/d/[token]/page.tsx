@@ -5,7 +5,7 @@ import { ArrowRight, Check, FileText, Phone, PlayCircle, ShieldCheck, Truck } fr
 import { DevisActions } from "@/components/devis/DevisActions";
 import { Container } from "@/components/ui/Container";
 import { fichesPourLead, videoPourLead } from "@/lib/admin/assets";
-import { addEvent, dbConfigured, getLeadByToken, hasRecentEvent, recordEngagement } from "@/lib/admin/db";
+import { addEvent, getLeadByToken, hasRecentEvent, recordEngagement } from "@/lib/admin/db";
 import { rescoreLead } from "@/lib/admin/rescore";
 import { phoneHref, site } from "@/lib/site";
 
@@ -20,7 +20,6 @@ const eur = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 const dateLong = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
 export default async function DevisPage({ params }: { params: Promise<{ token: string }> }) {
-  if (!dbConfigured) notFound();
   const { token } = await params;
   const lead = await getLeadByToken(token);
   if (!lead) notFound();

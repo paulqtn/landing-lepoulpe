@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Eye, ExternalLink, Mail, MousePointerClick, Phone } from "lucide-react";
 import { LeadActions } from "@/components/admin/LeadActions";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
-import { dbConfigured, getLead, listEvents } from "@/lib/admin/db";
+import { getLead, listEvents } from "@/lib/admin/db";
 import { getTeam } from "@/lib/admin/team";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +28,6 @@ const EVENT_LABELS: Record<string, string> = {
 };
 
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
-  if (!dbConfigured) notFound();
   const { id } = await params;
   const lead = await getLead(Number(id));
   if (!lead) notFound();

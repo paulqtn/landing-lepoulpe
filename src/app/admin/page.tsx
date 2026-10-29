@@ -2,13 +2,12 @@ import Link from "next/link";
 import { AlertTriangle, ArrowRight, BellRing, Euro, Inbox, TrendingUp } from "lucide-react";
 import { SeedDemo } from "@/components/admin/SeedDemo";
 import { dateFmt, eurFmt, StatutBadge } from "@/components/admin/ui";
-import { dbConfigured, dueRelances, listLeads, pipeline, stats, STATUT_LABELS } from "@/lib/admin/db";
+import { dueRelances, listLeads, pipeline, stats, STATUT_LABELS } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  if (!dbConfigured) return <SetupNotice />;
 
   const [s, dues, derniers, pipe] = await Promise.all([stats(), dueRelances(), listLeads({ limit: 8 }), pipeline()]);
   const pipeMax = Math.max(1, ...pipe.map((p) => p.n));
@@ -125,17 +124,3 @@ export default async function AdminDashboard() {
   );
 }
 
-function SetupNotice() {
-  return (
-    <div className="rounded-3xl border border-neutral-200 bg-white p-8">
-      <h1 className="text-xl font-extrabold text-inkgreen">Base de données à connecter</h1>
-      <p className="mt-3 max-w-xl text-sm leading-relaxed text-neutral-600">
-        Le back office stocke les demandes dans Postgres. Dans Vercel : onglet
-        <strong> Storage → Create Database → Postgres (Neon)</strong>, liez-la au projet — la variable
-        <code className="mx-1 rounded bg-mist px-1.5 py-0.5 font-mono text-xs">POSTGRES_URL</code>
-        est injectée automatiquement, puis redéployez. Détails et variables optionnelles (emails, cron)
-        dans <strong>ADMIN.md</strong> à la racine du repo.
-      </p>
-    </div>
-  );
-}

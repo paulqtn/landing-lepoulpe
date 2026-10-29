@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Download } from "lucide-react";
 import { LeadsTable, type LeadRow } from "@/components/admin/LeadsTable";
-import { dbConfigured, listLeads, STATUT_LABELS, STATUTS } from "@/lib/admin/db";
+import { listLeads, STATUT_LABELS, STATUTS } from "@/lib/admin/db";
 import { getTeam } from "@/lib/admin/team";
 
 export const dynamic = "force-dynamic";
@@ -12,9 +12,6 @@ export default async function LeadsPage({
   searchParams: Promise<{ statut?: string; q?: string }>;
 }) {
   const { statut, q } = await searchParams;
-  if (!dbConfigured) {
-    return <p className="rounded-2xl border border-neutral-200 bg-white p-6 text-sm text-neutral-500">Base non configurée — voir le tableau de bord.</p>;
-  }
   const leads = await listLeads({ statut, search: q, limit: 200 });
   const rows: LeadRow[] = leads.map((l) => ({
     id: l.id,
