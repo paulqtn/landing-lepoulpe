@@ -13,12 +13,16 @@ export function LeadActions({
   relances,
   nextRelanceAt,
   hasEstimation,
+  team,
+  assignedTo,
 }: {
   leadId: number;
   statut: Statut;
   relances: number;
   nextRelanceAt: string | null;
   hasEstimation: boolean;
+  team: string[];
+  assignedTo: string | null;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -67,6 +71,24 @@ export function LeadActions({
         </div>
       </section>
 
+      {/* assignation */}
+      {team.length > 0 && (
+        <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+          <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Commercial</h2>
+          <select
+            defaultValue={assignedTo ?? ""}
+            disabled={pending}
+            onChange={(e) => patch({ assigned_to: e.target.value })}
+            className="mt-3 w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm font-semibold text-inkgreen outline-none focus:border-pine-500"
+          >
+            <option value="">Non assigné</option>
+            {team.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </section>
+      )}
+
       {/* emails */}
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Emails</h2>
@@ -82,12 +104,12 @@ export function LeadActions({
           </button>
           <button
             type="button"
-            disabled={pending || relances >= 2}
+            disabled={pending || relances >= 3}
             onClick={() => call(`/api/admin/leads/${leadId}/relance`, { method: "POST" })}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"
           >
             <BellPlus className="h-4 w-4" />
-            {relances >= 2 ? "2 relances déjà envoyées" : `Envoyer la relance ${relances + 1} maintenant`}
+            {relances >= 3 ? "Séquence terminée (3 relances)" : `Envoyer la relance ${relances + 1} maintenant`}
           </button>
           {msg && <p className="text-xs font-semibold text-red-600">{msg}</p>}
         </div>

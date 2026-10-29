@@ -36,3 +36,25 @@ email, relances programmées, suivi commercial.
 
 `Nouveau → Devis envoyé → Relancé ×1 → Relancé ×2 → Gagné / Perdu`
 (+ « À rappeler » pour la prise de RDV téléphonique).
+
+## v2 — CRM commercial
+
+- **Score A/B/C** automatique (valeur du projet, intention, signaux, engagement) ;
+  recalculé à chaque ouverture d'email, clic ou consultation du devis.
+- **Ma journée** (`/admin/jour`) : file de travail du commercial — leads A à appeler,
+  signaux chauds (<48h), relances échues, click-to-call.
+- **Devis en ligne** : chaque lead reçoit une page personnelle `/d/{token}` (devis,
+  config, documents techniques, vidéo si renseignée) avec boutons **Valider**,
+  **Être rappelé**, **Corriger mes cotes** (recalcul immédiat par le moteur).
+  Chaque visite est tracée et nourrit le score.
+- **Séquence email** : devis à J0 puis 3 relances (J+2, J+5, J+10) personnalisées
+  par usage ; stop automatique dès engagement client ou statut final.
+- **Webhooks Resend** (`/api/webhooks/resend`, secret `RESEND_WEBHOOK_SECRET`) :
+  ouvertures/clics/bounces dans la timeline.
+- **Équipe** : `ADMIN_TEAM="Prénom1,Prénom2"` active l'assignation (fiche + masse).
+- **Actions en masse** (liste) : statut, assignation, relance immédiate.
+- **Export CSV** : bouton sur la liste (respecte les filtres).
+- `EMAIL_REPLY_TO` : adresse qui reçoit les réponses clients.
+- **Démo** : bouton « Créer des leads de démo » sur le tableau de bord vide
+  (tarifs calculés par le vrai moteur).
+- Vidéos & fiches par système : à renseigner dans `src/lib/admin/assets.ts`.

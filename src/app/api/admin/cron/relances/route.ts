@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { addEvent, dueRelances, updateLead } from "@/lib/admin/db";
-import { mailConfigured, sendRelanceEmail } from "@/lib/admin/mail";
+import { dueRelances, updateLead } from "@/lib/admin/db";
+import { mailConfigured, SEQ_MAX } from "@/lib/admin/mail";
+import { envoyerRelance } from "@/lib/admin/sequence";
 
 /**
  * Cron Vercel (voir vercel.json) : traite les relances arrivées à échéance.
@@ -18,24 +19,13 @@ export async function GET(req: Request) {
   const dues = await dueRelances();
   let envoyees = 0;
   for (const lead of dues) {
-    const numero = lead.relances + 1;
-    if (numero > 2) {
+    if (lead.relances >= SEQ_MAX) {
       await updateLead(lead.id, { next_relance_at: null });
       continue;
     }
-    const mail = await sendRelanceEmail(lead, numero);
-    if (mail.sent) {
-      await updateLead(lead.id, {
-        relances: numero,
-        statut: numero >= 2 ? "relance_2" : "relance_1",
-        next_relance_at: numero >= 2 ? null : new Date(Date.now() + 5 * 86400_000).toISOString(),
-      });
-      await addEvent(lead.id, "relance_envoyee", `Relance ${numero} envoyée automatiquement`);
-      envoyees++;
-    } else {
-      await addEvent(lead.id, "relance_echec", `Relance auto impossible : ${mail.reason}`);
-      await updateLead(lead.id, { next_relance_at: new Date(Date.now() + 86400_000).toISOString() });
-    }
+    const r = await envoyerRelance(lead, "auto");
+    if (r.ok) envoyees++;
+    else await updateLead(lead.id, { next_relance_at: new Date(Date.now() + 86400_000).toISOString() });
   }
   return NextResponse.json({ ok: true, dues: dues.length, envoyees });
 }

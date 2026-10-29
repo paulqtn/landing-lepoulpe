@@ -1,6 +1,6 @@
 /* Statuts du pipeline commercial — partagé client/serveur (aucune dépendance). */
 
-export const STATUTS = ["nouveau", "devis_envoye", "relance_1", "relance_2", "a_rappeler", "gagne", "perdu"] as const;
+export const STATUTS = ["nouveau", "devis_envoye", "relance_1", "relance_2", "relance_3", "a_rappeler", "gagne", "perdu"] as const;
 export type Statut = (typeof STATUTS)[number];
 
 export const STATUT_LABELS: Record<Statut, string> = {
@@ -8,6 +8,7 @@ export const STATUT_LABELS: Record<Statut, string> = {
   devis_envoye: "Devis envoyé",
   relance_1: "Relancé ×1",
   relance_2: "Relancé ×2",
+  relance_3: "Relancé ×3",
   a_rappeler: "À rappeler",
   gagne: "Gagné",
   perdu: "Perdu",

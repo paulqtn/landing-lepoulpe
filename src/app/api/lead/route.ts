@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { addEvent, dbConfigured, insertLead, updateLead } from "@/lib/admin/db";
-import { mailConfigured, sendDevisEmail } from "@/lib/admin/mail";
+import { mailConfigured, sendDevisEmail, SEQ_DELAIS_JOURS } from "@/lib/admin/mail";
+import { computeScore } from "@/lib/admin/scoring";
 
 /**
  * Capture des leads (générateur + fiches produit).
@@ -36,19 +37,23 @@ export async function POST(request: Request) {
   try {
     const a = (answers ?? {}) as Record<string, unknown>;
     const estimation = typeof a.estimationTTC === "number" && Number.isFinite(a.estimationTTC) ? a.estimationTTC : null;
+    const src = typeof source === "string" ? source : undefined;
+    const score = computeScore({ estimationTTC: estimation, source: src ?? null, answers: a });
 
     const lead = await insertLead({
       name: name.trim(),
       email: email.trim(),
       phone: phone.trim(),
-      source: typeof source === "string" ? source : undefined,
+      source: src,
       answers: a,
       estimationTTC: estimation,
+      score: score.grade,
+      scorePoints: score.points,
     });
-    await addEvent(lead.id, "creation", `Demande reçue (${lead.source ?? "site"})`);
+    await addEvent(lead.id, "creation", `Demande reçue (${lead.source ?? "site"}) — score ${score.grade} (${score.points} pts)`);
 
-    // Première relance programmée à J+2 dans tous les cas.
-    const nextRelance = new Date(Date.now() + 2 * 86400_000).toISOString();
+    // Première relance programmée selon la cadence de la séquence.
+    const nextRelance = new Date(Date.now() + SEQ_DELAIS_JOURS[0] * 86400_000).toISOString();
 
     if (estimation !== null) {
       const mail = await sendDevisEmail(lead);

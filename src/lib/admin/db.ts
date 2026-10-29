@@ -55,6 +55,14 @@ async function ensureSchema(): Promise<void> {
         CREATE INDEX IF NOT EXISTS idx_leads_statut ON leads(statut);
         CREATE INDEX IF NOT EXISTS idx_leads_next_relance ON leads(next_relance_at);
         CREATE INDEX IF NOT EXISTS idx_events_lead ON lead_events(lead_id);
+        ALTER TABLE leads ADD COLUMN IF NOT EXISTS score TEXT NOT NULL DEFAULT 'C';
+        ALTER TABLE leads ADD COLUMN IF NOT EXISTS score_points INT NOT NULL DEFAULT 0;
+        ALTER TABLE leads ADD COLUMN IF NOT EXISTS token TEXT;
+        ALTER TABLE leads ADD COLUMN IF NOT EXISTS opens INT NOT NULL DEFAULT 0;
+        ALTER TABLE leads ADD COLUMN IF NOT EXISTS clicks INT NOT NULL DEFAULT 0;
+        ALTER TABLE leads ADD COLUMN IF NOT EXISTS devis_views INT NOT NULL DEFAULT 0;
+        ALTER TABLE leads ADD COLUMN IF NOT EXISTS last_activity_at TIMESTAMPTZ;
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_token ON leads(token);
       `);
     })();
   }
@@ -85,6 +93,13 @@ export type Lead = {
   relances: number;
   next_relance_at: string | null;
   assigned_to: string | null;
+  score: "A" | "B" | "C";
+  score_points: number;
+  token: string | null;
+  opens: number;
+  clicks: number;
+  devis_views: number;
+  last_activity_at: string | null;
 };
 
 export type LeadEvent = {
@@ -97,6 +112,8 @@ export type LeadEvent = {
 
 /* ----------------------------- Écriture ---------------------------- */
 
+import { randomBytes } from "node:crypto";
+
 export async function insertLead(input: {
   name: string;
   email: string;
@@ -104,11 +121,24 @@ export async function insertLead(input: {
   source?: string;
   answers?: Record<string, unknown>;
   estimationTTC?: number | null;
+  score?: "A" | "B" | "C";
+  scorePoints?: number;
 }): Promise<Lead> {
+  const token = randomBytes(12).toString("hex");
   const rows = await q<Lead>(
-    `INSERT INTO leads (name, email, phone, source, answers, estimation_ttc)
-     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-    [input.name, input.email, input.phone, input.source ?? null, input.answers ?? null, input.estimationTTC ?? null],
+    `INSERT INTO leads (name, email, phone, source, answers, estimation_ttc, score, score_points, token)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+    [
+      input.name,
+      input.email,
+      input.phone,
+      input.source ?? null,
+      input.answers ?? null,
+      input.estimationTTC ?? null,
+      input.score ?? "C",
+      input.scorePoints ?? 0,
+      token,
+    ],
   );
   return rows[0];
 }
@@ -119,7 +149,12 @@ export async function addEvent(leadId: number, type: string, message?: string): 
 
 export async function updateLead(
   id: number,
-  patch: Partial<Pick<Lead, "statut" | "relances" | "next_relance_at" | "assigned_to">>,
+  patch: Partial<
+    Pick<
+      Lead,
+      "statut" | "relances" | "next_relance_at" | "assigned_to" | "score" | "score_points" | "answers" | "estimation_ttc"
+    >
+  >,
 ): Promise<void> {
   const sets: string[] = [];
   const vals: unknown[] = [];
@@ -202,4 +237,71 @@ export async function stats(): Promise<{
     relancesDues: Number(r.dues ?? 0),
     caGagne: Number(r.ca ?? 0),
   };
+}
+
+/* ---------------------- Devis en ligne & signaux --------------------- */
+
+export async function getLeadByToken(token: string): Promise<Lead | null> {
+  if (!/^[0-9a-f]{24}$/.test(token)) return null;
+  const rows = await q<Lead>(`SELECT * FROM leads WHERE token = $1`, [token]);
+  return rows[0] ?? null;
+}
+
+export async function findLeadByEmail(email: string): Promise<Lead | null> {
+  const rows = await q<Lead>(`SELECT * FROM leads WHERE lower(email) = lower($1) ORDER BY created_at DESC LIMIT 1`, [email]);
+  return rows[0] ?? null;
+}
+
+/** Incrémente les compteurs d'engagement et met à jour la dernière activité. */
+export async function recordEngagement(
+  id: number,
+  inc: { opens?: number; clicks?: number; devis_views?: number },
+): Promise<void> {
+  await q(
+    `UPDATE leads SET
+       opens = opens + $2,
+       clicks = clicks + $3,
+       devis_views = devis_views + $4,
+       last_activity_at = now()
+     WHERE id = $1`,
+    [id, inc.opens ?? 0, inc.clicks ?? 0, inc.devis_views ?? 0],
+  );
+}
+
+export async function hasRecentEvent(leadId: number, type: string, hours: number): Promise<boolean> {
+  const rows = await q(
+    `SELECT 1 FROM lead_events WHERE lead_id = $1 AND type = $2 AND created_at > now() - ($3 || ' hours')::interval LIMIT 1`,
+    [leadId, type, String(hours)],
+  );
+  return rows.length > 0;
+}
+
+/* ----------------------- Vue « Ma journée » ------------------------- */
+
+export async function leadsJour(): Promise<{ aAppeler: Lead[]; chauds: Lead[] }> {
+  const [aAppeler, chauds] = await Promise.all([
+    q<Lead>(
+      `SELECT * FROM leads
+       WHERE score = 'A' AND statut NOT IN ('gagne', 'perdu')
+       ORDER BY score_points DESC, created_at DESC LIMIT 30`,
+    ),
+    q<Lead>(
+      `SELECT * FROM leads
+       WHERE last_activity_at > now() - interval '48 hours' AND statut NOT IN ('gagne', 'perdu')
+       ORDER BY last_activity_at DESC LIMIT 20`,
+    ),
+  ]);
+  return { aAppeler, chauds };
+}
+
+/** Pipeline : volume et CA estimé par statut. */
+export async function pipeline(): Promise<{ statut: Statut; n: number; total: number }[]> {
+  const rows = await q<{ statut: Statut; n: string; total: string }>(
+    `SELECT statut, count(*)::int AS n, COALESCE(sum(estimation_ttc), 0)::float AS total
+     FROM leads GROUP BY statut`,
+  );
+  const order = STATUTS as readonly string[];
+  return rows
+    .map((r) => ({ statut: r.statut, n: Number(r.n), total: Number(r.total) }))
+    .sort((a, b) => order.indexOf(a.statut) - order.indexOf(b.statut));
 }

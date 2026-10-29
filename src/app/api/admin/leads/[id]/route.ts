@@ -20,11 +20,16 @@ export async function PATCH(req: Request, { params }: Params) {
   const lead = await getLead(Number(id));
   if (!lead) return NextResponse.json({ error: "introuvable" }, { status: 404 });
 
-  let body: { statut?: string; note?: string; next_relance_at?: string | null };
+  let body: { statut?: string; note?: string; next_relance_at?: string | null; assigned_to?: string | null };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "json invalide" }, { status: 400 });
+  }
+
+  if (body.assigned_to !== undefined) {
+    await updateLead(lead.id, { assigned_to: body.assigned_to || null });
+    await addEvent(lead.id, "info", body.assigned_to ? `Assigné à ${body.assigned_to}` : "Assignation retirée");
   }
 
   if (typeof body.note === "string" && body.note.trim()) {

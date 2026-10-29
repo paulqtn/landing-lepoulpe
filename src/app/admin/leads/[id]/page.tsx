@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Mail, Phone } from "lucide-react";
+import { ArrowLeft, Eye, ExternalLink, Mail, MousePointerClick, Phone } from "lucide-react";
 import { LeadActions } from "@/components/admin/LeadActions";
-import { dateFmt, eurFmt, StatutBadge } from "@/components/admin/ui";
+import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { dbConfigured, getLead, listEvents } from "@/lib/admin/db";
+import { getTeam } from "@/lib/admin/team";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,13 @@ const EVENT_LABELS: Record<string, string> = {
   creation: "Demande reçue",
   devis_envoye: "Devis envoyé",
   devis_echec: "Échec d'envoi du devis",
+  devis_consulte: "Devis consulté en ligne",
+  devis_accepte: "Devis accepté par le client",
+  rappel_demande: "Rappel demandé",
+  cotes_maj: "Cotes corrigées par le client",
+  email_ouvert: "Email ouvert",
+  email_clique: "Clic dans un email",
+  email_bounce: "Email non délivré",
   relance_envoyee: "Relance envoyée",
   relance_echec: "Échec de relance",
   relance_programmee: "Relance programmée",
@@ -47,7 +55,10 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-inkgreen">{lead.name}</h1>
+          <div className="flex items-center gap-2.5">
+            <ScoreBadge score={lead.score} points={lead.score_points} />
+            <h1 className="text-2xl font-extrabold text-inkgreen">{lead.name}</h1>
+          </div>
           <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-neutral-500">
             <a href={`mailto:${lead.email}`} className="flex items-center gap-1.5 font-semibold text-pine-700 hover:underline">
               <Mail className="h-3.5 w-3.5" /> {lead.email}
@@ -57,6 +68,22 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             </a>
             <span>reçue le {dateFmt.format(new Date(lead.created_at))}</span>
             <span>source : {lead.source ?? "site"}</span>
+          </p>
+          <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-neutral-400">
+            <span className="flex items-center gap-1">
+              <Eye className="h-3.5 w-3.5" /> {lead.devis_views} vue{lead.devis_views > 1 ? "s" : ""} du devis
+            </span>
+            <span className="flex items-center gap-1">
+              <Mail className="h-3.5 w-3.5" /> {lead.opens} ouverture{lead.opens > 1 ? "s" : ""}
+            </span>
+            <span className="flex items-center gap-1">
+              <MousePointerClick className="h-3.5 w-3.5" /> {lead.clicks} clic{lead.clicks > 1 ? "s" : ""}
+            </span>
+            {lead.token && (
+              <a href={`/d/${lead.token}`} target="_blank" className="flex items-center gap-1 font-semibold text-pine-700 hover:underline">
+                <ExternalLink className="h-3.5 w-3.5" /> Voir le devis en ligne
+              </a>
+            )}
           </p>
         </div>
         <StatutBadge statut={lead.statut} />
@@ -109,6 +136,8 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           relances={lead.relances}
           nextRelanceAt={lead.next_relance_at}
           hasEstimation={Boolean(lead.estimation_ttc)}
+          team={getTeam()}
+          assignedTo={lead.assigned_to}
         />
       </div>
     </div>

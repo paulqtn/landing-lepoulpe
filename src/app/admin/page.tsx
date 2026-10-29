@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { AlertTriangle, ArrowRight, BellRing, Euro, Inbox, TrendingUp } from "lucide-react";
+import { SeedDemo } from "@/components/admin/SeedDemo";
 import { dateFmt, eurFmt, StatutBadge } from "@/components/admin/ui";
-import { dbConfigured, dueRelances, listLeads, stats } from "@/lib/admin/db";
+import { dbConfigured, dueRelances, listLeads, pipeline, stats, STATUT_LABELS } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +10,8 @@ export const dynamic = "force-dynamic";
 export default async function AdminDashboard() {
   if (!dbConfigured) return <SetupNotice />;
 
-  const [s, dues, derniers] = await Promise.all([stats(), dueRelances(), listLeads({ limit: 8 })]);
+  const [s, dues, derniers, pipe] = await Promise.all([stats(), dueRelances(), listLeads({ limit: 8 }), pipeline()]);
+  const pipeMax = Math.max(1, ...pipe.map((p) => p.n));
 
   const kpis = [
     { icon: Inbox, label: "Demandes (7 jours)", value: String(s.semaine), sub: `${s.total} au total` },
@@ -20,7 +22,10 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-inkgreen">Tableau de bord</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-extrabold text-inkgreen">Tableau de bord</h1>
+        {s.total === 0 && <SeedDemo />}
+      </div>
 
       {!mailConfigured && (
         <p className="flex items-start gap-2.5 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-neutral-700">
@@ -42,6 +47,29 @@ export default async function AdminDashboard() {
           </div>
         ))}
       </div>
+
+      {/* pipeline commercial */}
+      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+        <h2 className="text-base font-extrabold text-inkgreen">Pipeline</h2>
+        <div className="mt-3 space-y-2">
+          {pipe.map((p) => (
+            <div key={p.statut} className="flex items-center gap-3">
+              <span className="w-28 shrink-0 text-xs font-semibold text-neutral-500">{STATUT_LABELS[p.statut]}</span>
+              <div className="h-5 flex-1 overflow-hidden rounded-full bg-mist">
+                <div
+                  className={`h-full rounded-full ${p.statut === "gagne" ? "bg-green-500" : p.statut === "perdu" ? "bg-neutral-300" : "bg-pine-600"}`}
+                  style={{ width: `${Math.max(4, (p.n / pipeMax) * 100)}%` }}
+                />
+              </div>
+              <span className="w-10 shrink-0 text-right text-sm font-extrabold tabular-nums text-inkgreen">{p.n}</span>
+              <span className="w-24 shrink-0 text-right text-xs tabular-nums text-neutral-400">
+                {p.total > 0 ? `${eurFmt.format(p.total)} €` : ""}
+              </span>
+            </div>
+          ))}
+          {pipe.length === 0 && <p className="text-sm text-neutral-400">Encore aucune demande.</p>}
+        </div>
+      </section>
 
       {dues.length > 0 && (
         <section className="rounded-2xl border border-amber-500/40 bg-white p-5">

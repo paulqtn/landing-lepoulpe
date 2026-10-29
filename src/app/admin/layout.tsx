@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Inbox, LayoutDashboard, LogOut, Settings2 } from "lucide-react";
+import { Inbox, LayoutDashboard, LogOut, PhoneCall, Settings2 } from "lucide-react";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { AdminLogout } from "@/components/admin/AdminLogout";
 import { isAdmin } from "@/lib/admin/auth";
@@ -21,6 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   const nav = [
+    { href: "/admin/jour", label: "Ma journée", icon: PhoneCall },
     { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
     { href: "/admin/leads", label: "Demandes de devis", icon: Inbox },
     { href: "/calculateur", label: "Calculateur interne", icon: Settings2 },
