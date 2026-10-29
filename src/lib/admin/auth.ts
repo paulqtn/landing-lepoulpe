@@ -11,7 +11,7 @@ export const ADMIN_COOKIE = "mgk_admin";
 const SESSION_HOURS = 12;
 
 function accessCode(): string {
-  return process.env.ADMIN_ACCESS_CODE ?? process.env.CALC_ACCESS_CODE ?? "MGK-2026";
+  return process.env.ADMIN_ACCESS_CODE ?? "HULK";
 }
 
 function secret(): string {
