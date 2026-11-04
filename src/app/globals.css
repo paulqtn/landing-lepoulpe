@@ -159,3 +159,12 @@ body:has(.theme-blue) {
   --color-mist: #f3f6fa;
   --color-inkgreen: #0e1f33;  /* texte fort */
 }
+
+/* Tunnel plein écran : ni le body ni le viewport racine ne doivent
+   pouvoir défiler (sinon on atteint header/footer par chaînage de
+   scroll sur mobile). */
+html:has(.funnel-lock),
+body:has(.funnel-lock) {
+  overflow: hidden;
+  height: 100%;
+}

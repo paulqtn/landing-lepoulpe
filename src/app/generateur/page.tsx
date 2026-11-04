@@ -35,7 +35,7 @@ export default async function GenerateurPage({
   const source = usage ? `generateur-${usage}` : verre ? `generateur-verre-${verre}` : "generateur";
 
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-mist">
+    <div className="funnel-lock fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-mist">
       {/* mini-barre : logo discret + téléphone, rien d'autre */}
       <div className="border-b border-neutral-200/70 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4 sm:px-6">

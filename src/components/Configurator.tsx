@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, Check, Hammer, HardHat, HelpCircle, Loader2, Lock, Minus, Phone, Plus, Zap } from "lucide-react";
 import { usages } from "@/lib/catalog";
@@ -152,6 +152,19 @@ export function Configurator({
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
   const [result, setResult] = useState<Estimation | null>(null);
 
+  // À chaque changement d'étape (ou à l'affichage du résultat), on recadre
+  // doucement le haut de la card — évite les sauts de scroll quand la
+  // hauteur du contenu change, surtout en plein écran mobile.
+  const cardRef = useRef<HTMLDivElement>(null);
+  const firstRender = useRef(true);
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [step, status]);
+
   const cotesNum = state.cotes.map((c) => parseFloat(c.replace(",", "."))).filter((n) => Number.isFinite(n) && n > 0);
   const totalMl = cotesNum.reduce((a, b) => a + b, 0);
 
@@ -277,7 +290,7 @@ export function Configurator({
   const activeGroup = status === "done" ? groups.length : groups.findIndex((g) => g.items.some((it) => it.id === stepId));
 
   return (
-    <div className="relative mx-auto max-w-5xl">
+    <div ref={cardRef} className="relative mx-auto max-w-5xl scroll-mt-24">
       {/* sticker */}
       <span className="absolute -top-4 left-4 z-10 inline-flex rotate-[-3deg] items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-pine-950 shadow-md sm:-left-3">
         <Zap className="h-3.5 w-3.5" />
