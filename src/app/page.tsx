@@ -20,7 +20,6 @@ import {
 import { AdvantagesBar } from "@/components/AdvantagesBar";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { Configurator } from "@/components/Configurator";
-import { HeroGallery, type HeroSlide } from "@/components/HeroGallery";
 import { GoogleG, MaterialScene } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -30,39 +29,6 @@ import { guides } from "@/lib/guides";
 import { phoneHref, site } from "@/lib/site";
 
 /** Réalisations mises en avant dans le hero (défilement en fondu) — 100 % verre. */
-const heroSlides: HeroSlide[] = [
-  {
-    src: "/Miroiterie-Degivry_Toulon-Var_Garde-corps-verre-Piscine.jpeg",
-    alt: "Garde-corps en verre sans montants autour d’une piscine à débordement face à la mer",
-    material: "Verre · sans montants",
-    place: "Piscine à débordement",
-  },
-  {
-    src: "/verre.jpeg",
-    alt: "Garde-corps en verre sur pinces inox le long d’une promenade face à la mer",
-    material: "Verre · pinces inox",
-    place: "Front de mer",
-  },
-  {
-    src: "/1713357460128.jpg",
-    alt: "Garde-corps en verre sur pinces inox le long d’une terrasse bois de piscine",
-    material: "Verre · pinces inox",
-    place: "Plage de piscine",
-  },
-  {
-    src: "/module-verre-invisible-sur-mesure-ht-1m15.jpg",
-    alt: "Garde-corps en verre autoportant sur pinces autour d’un bassin",
-    material: "Verre · autoportant",
-    place: "Barrière de bassin",
-  },
-  {
-    src: "/garde-corps-exterieur-terrasse-cables-acier-et-verre.jpg",
-    alt: "Garde-corps en verre sur structure aluminium noire, balcon contemporain",
-    material: "Verre & aluminium",
-    place: "Balcon contemporain",
-  },
-];
-
 export const metadata: Metadata = {
   title: `Garde-corps en verre sur-mesure & en kit, direct usine | ${site.name}`,
   description:
@@ -154,12 +120,20 @@ export default function Home() {
     <main>
       {/* ============================ HERO ============================ */}
       <section className="relative overflow-hidden bg-white">
-        {/* halo très léger derrière le visuel */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -right-20 -top-24 h-[30rem] w-[30rem] rounded-full bg-amber-500/[0.08] blur-[110px]" />
+        {/* photo plein cadre + fondu blanc côté texte */}
+        <div className="absolute inset-0">
+          <Image
+            src="/hero-homepage.png"
+            alt="Terrasse avec garde-corps en verre face à la mer"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[72%_center]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-white via-white/85 to-white/30 lg:bg-gradient-to-r lg:from-white lg:from-[24%] lg:via-white/75 lg:via-[46%] lg:to-transparent lg:to-[74%]" />
         </div>
 
-        <Container className="relative grid items-center gap-14 pb-8 pt-12 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12 lg:pb-10 lg:pt-16">
+        <Container className="relative pb-10 pt-12 sm:pt-14 lg:pb-12 lg:pt-20">
           {/* copy */}
           <div className="animate-fade-up">
             <p className="flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">
@@ -238,13 +212,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* nos réalisations */}
-          <div className="animate-fade-up [animation-delay:150ms]">
-            <HeroGallery slides={heroSlides} />
-          </div>
-
           {/* parcourir par usage — chips façon marketplace */}
-          <div className="min-w-0 animate-fade-up pb-2 lg:col-span-2 [animation-delay:250ms]">
+          <div className="mt-12 min-w-0 animate-fade-up pb-2 lg:mt-20 [animation-delay:250ms]">
             <div className="flex gap-2.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible [&::-webkit-scrollbar]:hidden">
               {usages.map((u) => (
                 <Link
