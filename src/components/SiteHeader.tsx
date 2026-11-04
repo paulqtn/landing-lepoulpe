@@ -325,7 +325,7 @@ export function SiteHeader() {
               <ClipboardList className="hidden h-4 w-4 sm:block" />
               <span className="hidden sm:inline">Estimer un tarif en direct</span>
               <span className="sm:hidden">Devis 1 min</span>
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-pine-950 text-amber-500 transition-transform duration-300 group-hover:translate-x-0.5">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/25 text-white transition-transform duration-300 group-hover:translate-x-0.5">
                 <ArrowRight className="h-3.5 w-3.5" />
               </span>
             </Link>
