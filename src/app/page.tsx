@@ -123,7 +123,7 @@ export default function Home() {
         {/* photo plein cadre + fondu blanc côté texte */}
         <div className="absolute inset-0">
           <Image
-            src="/hero-homepage.png"
+            src="/hero-homepage.webp"
             alt="Terrasse avec garde-corps en verre face à la mer"
             fill
             priority
