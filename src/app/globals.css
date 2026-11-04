@@ -145,24 +145,19 @@
 /*  bleu partout sur la page, header et footer inclus.                 */
 /* ================================================================== */
 body:has(.theme-blue) {
-  /* Palette : Ink Black 02212E · Dodger Blue 0099FF · Ivory F5FBEF
-     · Muted Teal 92AD94 · Atomic Tangerine EF7B45 */
-  --color-pine-50: #f2f8f4;
-  --color-pine-100: #e3efe7;
-  --color-pine-200: #c5d9c8;
-  --color-pine-300: #92ad94;  /* muted teal */
-  --color-pine-400: #4fb0f7;
-  --color-pine-500: #1a9bf5;
-  --color-pine-600: #0099ff;  /* dodger blue — hover boutons */
-  --color-pine-700: #0077d6;  /* boutons */
-  --color-pine-800: #04476f;
-  --color-pine-900: #042a3c;  /* panneaux sombres */
-  --color-pine-950: #02212e;  /* ink black — bandeau haut */
-  --color-mist: #f5fbef;      /* ivory */
-  --color-inkgreen: #02212e;  /* texte fort */
-  --color-amber-400: #f3915f;
-  --color-amber-500: #ef7b45; /* atomic tangerine — CTA */
-  --color-amber-600: #dd6630;
+  --color-pine-50: #eef4fb;
+  --color-pine-100: #d9e6f6;
+  --color-pine-200: #b6cfec;
+  --color-pine-300: #89b0dd;
+  --color-pine-400: #578cc9;
+  --color-pine-500: #3670b4;
+  --color-pine-600: #27599a;  /* boutons */
+  --color-pine-700: #1e4a82;
+  --color-pine-800: #193c69;
+  --color-pine-900: #132e51;  /* panneaux sombres */
+  --color-pine-950: #0a1a30;  /* bandeau haut / fond nuit */
+  --color-mist: #f3f6fa;
+  --color-inkgreen: #0e1f33;  /* texte fort */
 }
 
 /* Tunnel plein écran : ni le body ni le viewport racine ne doivent
