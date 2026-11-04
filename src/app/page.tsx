@@ -396,12 +396,12 @@ export default function Home() {
                         Chez nous
                       </p>
                       <div className="mt-4 flex flex-wrap items-center gap-2 sm:gap-4">
-                        <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-4 py-3 shadow-[0_8px_32px_rgba(31,195,230,0.4)] ring-1 ring-inset ring-white/40 sm:gap-3 sm:px-6 sm:py-3.5">
+                        <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-4 py-3 shadow-[0_8px_32px_rgba(246,167,35,0.4)] ring-1 ring-inset ring-white/40 sm:gap-3 sm:px-6 sm:py-3.5">
                           <Factory className="h-5 w-5 text-pine-950" strokeWidth={2} />
                           <span className="text-base font-extrabold text-pine-950 sm:text-lg">Usine</span>
                         </span>
                         <ArrowRight className="h-5 w-5 shrink-0 text-amber-500 sm:h-6 sm:w-6" strokeWidth={2.5} />
-                        <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-4 py-3 shadow-[0_8px_32px_rgba(31,195,230,0.4)] ring-1 ring-inset ring-white/40 sm:gap-3 sm:px-6 sm:py-3.5">
+                        <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-4 py-3 shadow-[0_8px_32px_rgba(246,167,35,0.4)] ring-1 ring-inset ring-white/40 sm:gap-3 sm:px-6 sm:py-3.5">
                           <HomeIcon className="h-5 w-5 text-pine-950" strokeWidth={2} />
                           <span className="text-base font-extrabold text-pine-950 sm:text-lg">Vous</span>
                         </span>

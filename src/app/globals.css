@@ -2,32 +2,29 @@
 
 /* ================================================================== */
 /*  DESIGN SYSTEM — Garde-Corps Pro                                    */
-/*  Direction "direct usine" : bleu profond, mist, stickers cyan glacier      */
+/*  Direction "direct usine" : vert profond, mist, stickers ambre      */
 /* ================================================================== */
 @theme {
   /* --- Pine green (brand) --- */
-  --color-pine-50: #eff5fc;
-  --color-pine-100: #dbe8f8;
-  --color-pine-200: #b9d2f0;
-  --color-pine-300: #8cb4e3;
-  --color-pine-400: #5a90d2;
-  --color-pine-500: #3a73bd;
-  --color-pine-600: #2b5ca3;  /* boutons */
-  --color-pine-700: #224b88;
-  --color-pine-800: #1c3d6e;
-  --color-pine-900: #152e53;  /* panneaux sombres */
-  --color-pine-950: #0b1c36;  /* bandeau haut / fond nuit */
+  --color-pine-50: #eef7f1;
+  --color-pine-100: #d8ecdf;
+  --color-pine-200: #b4d9c3;
+  --color-pine-300: #86c0a1;
+  --color-pine-400: #55a37b;
+  --color-pine-500: #2f8a5d;
+  --color-pine-600: #1f6f49;  /* boutons */
+  --color-pine-700: #175a3b;
+  --color-pine-800: #114630;
+  --color-pine-900: #0c3626;  /* panneaux sombres */
+  --color-pine-950: #062017;  /* bandeau haut / fond nuit */
 
   /* --- Accent sticker (ambre) --- */
-  --color-amber-300: #8ae9fb;
-  --color-amber-400: #54d8f2;
-  --color-amber-500: #1fc3e6;
-  --color-amber-600: #0ea5c9;
-  --color-amber-700: #0b7f9c;
+  --color-amber-500: #f6a723;
+  --color-amber-600: #dd8f0e;
 
   /* --- Neutrals --- */
-  --color-mist: #f3f6fa;      /* fond de sections */
-  --color-inkgreen: #0d1d33;  /* texte fort */
+  --color-mist: #f4f6f5;      /* fond de sections */
+  --color-inkgreen: #0d1f17;  /* texte fort */
 
   /* --- Fonts --- */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
