@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Phone } from "lucide-react";
 import { Configurator, type SystemeKey } from "@/components/Configurator";
-import { usages } from "@/lib/catalog";
+import { getEntry, usages } from "@/lib/catalog";
 import { phoneHref, site } from "@/lib/site";
 
 /* ================================================================== */
@@ -62,17 +62,32 @@ export default async function GenerateurPage({
 
       <div className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 sm:px-6 sm:pt-10">
         <div className="mx-auto max-w-2xl text-center">
-          <h1 className="text-balance text-2xl font-extrabold tracking-tight text-inkgreen sm:text-3xl">
-            {usageName
-              ? `Votre garde-corps en verre « ${usageName.toLowerCase()} », au juste prix.`
+          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Devis express</p>
+          <h1 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+            {usage
+              ? `Votre ${(getEntry(usage)?.title ?? `garde-corps ${usageName?.toLowerCase()}`).toLowerCase()}, chiffré en 1 minute.`
               : verre
-                ? `Votre garde-corps en verre ${verre}, au juste prix.`
-                : "Votre garde-corps en verre, au juste prix."}
+                ? `Votre garde-corps en ${verre}, chiffré en 1 minute.`
+                : "Votre garde-corps en verre, chiffré en 1 minute."}
           </h1>
-          <p className="mx-auto mt-2.5 max-w-xl text-sm leading-relaxed text-neutral-500 sm:text-base">
-            Quelques questions —{" "}
-            <strong className="font-semibold text-inkgreen">votre tarif exact s&rsquo;affiche à la fin</strong>, en 1 minute.
-            Gratuit et sans engagement.
+          <p className="mx-auto mt-3 max-w-xl leading-relaxed text-neutral-500">
+            {usage ? (
+              <>
+                Votre projet <strong className="font-semibold text-inkgreen">{usageName?.toLowerCase()}</strong> est déjà
+                pris en compte — répondez au reste,{" "}
+                <strong className="font-semibold text-inkgreen">votre tarif exact s&rsquo;affiche à la fin</strong>.
+              </>
+            ) : verre ? (
+              <>
+                L&rsquo;épaisseur <strong className="font-semibold text-inkgreen">{verre}</strong> est déjà réglée — répondez
+                au reste, <strong className="font-semibold text-inkgreen">votre tarif exact s&rsquo;affiche à la fin</strong>.
+              </>
+            ) : (
+              <>
+                Une question à la fois — votre projet, le système, vos mesures — et{" "}
+                <strong className="font-semibold text-inkgreen">votre tarif exact s&rsquo;affiche à la fin</strong>, en 1 minute.
+              </>
+            )}
           </p>
         </div>
 
