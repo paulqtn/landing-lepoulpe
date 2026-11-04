@@ -318,7 +318,7 @@ export function SiteHeader() {
           <div className="flex items-center gap-2">
             <Link
               href="/devis"
-              className="group relative inline-flex shrink-0 items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full bg-amber-500 py-2 pl-3.5 pr-1.5 text-sm font-extrabold text-[#0c0e11] shadow-md shadow-amber-500/30 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 hover:shadow-lg hover:shadow-amber-500/40 sm:gap-2.5 sm:pl-5 sm:pr-2"
+              className="group relative inline-flex shrink-0 items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full bg-amber-500 py-2 pl-3.5 pr-1.5 text-sm font-extrabold text-white shadow-md shadow-amber-500/30 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 hover:shadow-lg hover:shadow-amber-500/40 sm:gap-2.5 sm:pl-5 sm:pr-2"
             >
               {/* reflet qui balaie le bouton au survol */}
               <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full" />
