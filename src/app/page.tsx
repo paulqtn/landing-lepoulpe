@@ -135,7 +135,7 @@ export default function Home() {
 
         <Container className="relative pb-10 pt-12 sm:pt-14 lg:pb-12 lg:pt-20">
           {/* copy */}
-          <div className="animate-fade-up">
+          <div className="max-w-2xl animate-fade-up">
             <p className="flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">
               <span className="h-[3px] w-10 rounded-full bg-amber-500" />
               Spécialiste garde-corps
@@ -186,7 +186,7 @@ export default function Home() {
             </div>
 
             {/* ligne de confiance — visible mais secondaire */}
-            <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-neutral-200/80 pt-6">
+            <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-3">
               <span className="flex items-center gap-2.5">
                 <GoogleG className="h-5 w-5 shrink-0" />
                 <span className="flex items-center gap-1.5">
