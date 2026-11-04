@@ -141,7 +141,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
     : undefined;
   const usageName = usageLock ? usages.find((u) => u.slug === usageLock)?.name : undefined;
   const hasGenerator = Boolean(usageLock && usageName);
-  const estimerHref = hasGenerator ? "#estimation" : "/devis";
+  const estimerHref = usageLock ? `/generateur?usage=${usageLock}` : "/generateur";
 
   const heroImage =
     HERO_IMAGES[entry.kind === "combo" ? (entry.material === "verre" ? entry.usage! : entry.material!) : entry.slug] ??

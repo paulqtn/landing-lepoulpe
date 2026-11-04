@@ -52,7 +52,7 @@ export default function KitsPage() {
           label: "Kit verre · pinces inox",
           title: "Front de mer",
         }}
-        estimerHref="#estimation"
+        estimerHref="/generateur"
         breadcrumb={
           <nav aria-label="Fil d’Ariane" className="font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-400">
             <Link href="/" className="hover:text-pine-700">Accueil</Link>

@@ -16,7 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     entry("/", 1),
-    entry("/devis", 0.9),
+    entry("/generateur", 0.9),
     entry("/garde-corps", 0.8),
     entry("/produits", 0.8),
     entry("/kits-garde-corps-verre", 0.8),

@@ -97,6 +97,7 @@ export default async function VerrePage({ params }: { params: Promise<Params> })
         title={v.title}
         intro={v.intro}
         image={HERO_IMAGES[v.slug] ?? HERO_IMAGES["88-4"]}
+        estimerHref={`/generateur?verre=${v.label}`}
         breadcrumb={
           <nav aria-label="Fil d’Ariane" className="font-mono text-[11px] uppercase tracking-[0.15em] text-neutral-400">
             <Link href="/" className="hover:text-pine-700">Accueil</Link>
@@ -244,7 +245,7 @@ export default async function VerrePage({ params }: { params: Promise<Params> })
                 </p>
                 <div className="mt-8 flex justify-center">
                   <Link
-                    href="#estimation"
+                    href={`/generateur?verre=${v.label}`}
                     className="group inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-white py-4 pl-7 pr-6 text-base font-bold text-pine-800 transition-all hover:-translate-y-0.5"
                   >
                     <ClipboardList className="h-5 w-5 shrink-0" />

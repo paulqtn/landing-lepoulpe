@@ -24,7 +24,7 @@ export function PageHero({
   title,
   intro,
   image,
-  estimerHref = "#estimation",
+  estimerHref = "/generateur",
   breadcrumb,
 }: {
   kicker: string;
