@@ -285,7 +285,7 @@ export default function Home() {
                   href={`/produits/${m.slug}`}
                   className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-pine-300 hover:shadow-elevated"
                 >
-                  {/* photo de face → fixation zoomée au survol */}
+                  {/* photo de face → fixation zoomée au survol — image nue, sans texte */}
                   <div className="relative h-60 overflow-hidden bg-white sm:h-64">
                     <Image
                       src={m.photo}
@@ -299,18 +299,18 @@ export default function Home() {
                       alt={`Fixation ${m.name.toLowerCase()} en gros plan`}
                       fill
                       sizes="(min-width: 1024px) 24rem, 100vw"
-                      className="scale-125 object-contain p-6 pb-16 opacity-0 transition-all duration-700 ease-out group-hover:scale-100 group-hover:opacity-100"
+                      className="scale-125 object-contain p-6 opacity-0 transition-all duration-700 ease-out group-hover:scale-100 group-hover:opacity-100"
                     />
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-pine-950/90 via-pine-950/35 to-transparent" />
-                    <span className="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500 shadow-sm backdrop-blur">
-                      0{i + 1}
-                    </span>
-                    <div className="absolute inset-x-5 bottom-4">
-                      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-100/90">
-                        {m.tagline}
-                      </p>
-                      <h3 className="mt-1 text-2xl font-extrabold leading-none text-white">{m.name}</h3>
-                    </div>
+                  </div>
+
+                  {/* identité — sous l'image, jamais dessus */}
+                  <div className="border-t border-neutral-100 px-6 pb-3 pt-4">
+                    <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600">
+                      {m.tagline}
+                    </p>
+                    <h3 className="mt-1 text-2xl font-extrabold leading-none text-inkgreen transition-colors group-hover:text-pine-700">
+                      {m.name}
+                    </h3>
                   </div>
 
                   {/* prix — un seul repère, lisible d’un coup d’œil */}
