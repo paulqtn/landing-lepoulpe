@@ -53,6 +53,8 @@ const systemCards: {
   name: string;
   tagline: string;
   photo: string;
+  /** Fixation en gros plan, révélée au survol avec un effet de zoom. */
+  photoZoom: string;
   alt: string;
   badge?: string;
   kitFrom: number;
@@ -62,8 +64,9 @@ const systemCards: {
     sysKey: "rail",
     name: "Verre sur rail",
     tagline: "Le plus épuré",
-    photo: "/verre-sur-rail.jpg",
-    alt: "Garde-corps en verre sur rail aluminium au sol, terrasse bois avec retour d’angle",
+    photo: "/fixation-rail.png",
+    photoZoom: "/fixation-rail-zoom.png",
+    alt: "Garde-corps en verre sur rail aluminium encastré, vue de face",
     badge: "Le plus demandé",
     kitFrom: 320,
   },
@@ -72,8 +75,9 @@ const systemCards: {
     sysKey: "pinces",
     name: "Verre sur pinces",
     tagline: "Le classique discret",
-    photo: "/pinces-au-sol.jpg",
-    alt: "Panneaux de verre sur pinces inox au sol autour d’une piscine",
+    photo: "/fixation-pince.png",
+    photoZoom: "/fixation-pince-zoom.png",
+    alt: "Garde-corps en verre sur pinces inox, vue de face",
     badge: "Kit prix discount",
     kitFrom: 250,
   },
@@ -82,8 +86,9 @@ const systemCards: {
     sysKey: "spider",
     name: "Verre avec spider",
     tagline: "L’esprit architectural",
-    photo: "/garde-corps-verre-fenetre-2.jpg",
-    alt: "Garde-corps en verre fixé par points en applique de façade, fenêtre d’angle",
+    photo: "/fixation-spider.png",
+    photoZoom: "/fixation-spider-zoom.png",
+    alt: "Garde-corps en verre à fixations spider traversantes, vue de face",
     kitFrom: 300,
   },
 ];
@@ -280,14 +285,21 @@ export default function Home() {
                   href={`/produits/${m.slug}`}
                   className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-pine-300 hover:shadow-elevated"
                 >
-                  {/* photo + identité */}
-                  <div className="relative h-60 overflow-hidden sm:h-64">
+                  {/* photo de face → fixation zoomée au survol */}
+                  <div className="relative h-60 overflow-hidden bg-white sm:h-64">
                     <Image
                       src={m.photo}
                       alt={m.alt}
                       fill
                       sizes="(min-width: 1024px) 24rem, 100vw"
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                      className="object-cover transition-all duration-700 ease-out group-hover:scale-110 group-hover:opacity-0"
+                    />
+                    <Image
+                      src={m.photoZoom}
+                      alt={`Fixation ${m.name.toLowerCase()} en gros plan`}
+                      fill
+                      sizes="(min-width: 1024px) 24rem, 100vw"
+                      className="scale-125 object-contain p-6 pb-16 opacity-0 transition-all duration-700 ease-out group-hover:scale-100 group-hover:opacity-100"
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-pine-950/90 via-pine-950/35 to-transparent" />
                     <span className="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500 shadow-sm backdrop-blur">
