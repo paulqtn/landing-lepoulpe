@@ -23,7 +23,6 @@ import { Configurator } from "@/components/Configurator";
 import { GoogleG, MaterialScene } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
-import { ZoomImage } from "@/components/ZoomImage";
 import { materials, usages } from "@/lib/catalog";
 import { USAGE_ICONS } from "@/lib/usage-icons";
 import { guides } from "@/lib/guides";
@@ -47,7 +46,7 @@ const steps = [
 /**
  * Cards des trois systèmes de garde-corps en verre : photo réelle,
  * positionnement, prix comparables et points forts propres à la fixation.
- * Au survol, la photo se laisse inspecter à la loupe (zoom sous le curseur).
+ * Au survol, la photo laisse place à la vue détaillée de la fixation.
  */
 const systemCards: {
   slug: string;
@@ -55,6 +54,8 @@ const systemCards: {
   name: string;
   tagline: string;
   photo: string;
+  /** Vue détaillée affichée au survol, en fondu. */
+  photoHover: string;
   alt: string;
   badge?: string;
   kitFrom: number;
@@ -65,6 +66,7 @@ const systemCards: {
     name: "Verre sur rail",
     tagline: "Le plus épuré",
     photo: "/fixation-rail.png",
+    photoHover: "/fixation-rail-hover.png",
     alt: "Garde-corps en verre sur rail aluminium encastré",
     badge: "Le plus demandé",
     kitFrom: 320,
@@ -75,6 +77,7 @@ const systemCards: {
     name: "Verre sur pinces",
     tagline: "Le classique discret",
     photo: "/fixation-pince.png",
+    photoHover: "/fixation-pince-hover.png",
     alt: "Garde-corps en verre sur pinces inox",
     badge: "Kit prix discount",
     kitFrom: 250,
@@ -85,6 +88,7 @@ const systemCards: {
     name: "Verre avec spider",
     tagline: "L’esprit architectural",
     photo: "/fixation-spider.png",
+    photoHover: "/fixation-spider-hover.png",
     alt: "Garde-corps en verre à fixations spider traversantes",
     kitFrom: 300,
   },
@@ -282,14 +286,27 @@ export default function Home() {
                   href={`/produits/${m.slug}`}
                   className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-pine-300 hover:shadow-elevated"
                 >
-                  {/* photo nue, sans texte — loupe au survol : le zoom suit le
-                      curseur pour inspecter la fixation de près */}
-                  <div className="relative h-60 bg-white sm:h-64">
-                    <ZoomImage
+                  {/* photo entière, jamais rognée (cadre au ratio 3:2 des
+                      images) → vue détaillée de la fixation en fondu au survol */}
+                  <div className="relative aspect-[3/2] bg-white">
+                    <Image
                       src={m.photo}
                       alt={m.alt}
+                      fill
                       sizes="(min-width: 1024px) 24rem, 100vw"
+                      className="object-cover"
                     />
+                    {/* calque opaque : pas de creux blanc pendant le fondu */}
+                    <div className="absolute inset-0 bg-white opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
+                      <Image
+                        src={m.photoHover}
+                        alt={`${m.name} — vue détaillée de la fixation`}
+                        fill
+                        loading="eager"
+                        sizes="(min-width: 1024px) 24rem, 100vw"
+                        className="object-cover"
+                      />
+                    </div>
                   </div>
 
                   {/* identité — sous l'image, jamais dessus */}
