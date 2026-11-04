@@ -304,7 +304,7 @@ export default function Home() {
                         fill
                         loading="eager"
                         sizes="(min-width: 1024px) 24rem, 100vw"
-                        className="object-cover"
+                        className="object-contain p-3"
                       />
                     </div>
                   </div>
