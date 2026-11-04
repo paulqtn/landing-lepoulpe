@@ -138,27 +138,6 @@
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
 }
 
-/* ================================================================== */
-/*  Thème BLEU (type mgk-habitat.fr) — scopé : s'applique uniquement   */
-/*  quand la page porte la classe .theme-blue (homepage pour l'instant)*/
-/*  Les utilitaires pine-* / mist / inkgreen se résolvent alors en     */
-/*  bleu partout sur la page, header et footer inclus.                 */
-/* ================================================================== */
-body:has(.theme-blue) {
-  --color-pine-50: #eef4fb;
-  --color-pine-100: #d9e6f6;
-  --color-pine-200: #b6cfec;
-  --color-pine-300: #89b0dd;
-  --color-pine-400: #578cc9;
-  --color-pine-500: #3670b4;
-  --color-pine-600: #27599a;  /* boutons */
-  --color-pine-700: #1e4a82;
-  --color-pine-800: #193c69;
-  --color-pine-900: #132e51;  /* panneaux sombres */
-  --color-pine-950: #0a1a30;  /* bandeau haut / fond nuit */
-  --color-mist: #f3f6fa;
-  --color-inkgreen: #0e1f33;  /* texte fort */
-}
 
 /* Tunnel plein écran : ni le body ni le viewport racine ne doivent
    pouvoir défiler (sinon on atteint header/footer par chaînage de
