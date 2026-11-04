@@ -23,6 +23,7 @@ import { Configurator } from "@/components/Configurator";
 import { GoogleG, MaterialScene } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
+import { ZoomImage } from "@/components/ZoomImage";
 import { materials, usages } from "@/lib/catalog";
 import { USAGE_ICONS } from "@/lib/usage-icons";
 import { guides } from "@/lib/guides";
@@ -46,6 +47,7 @@ const steps = [
 /**
  * Cards des trois systèmes de garde-corps en verre : photo réelle,
  * positionnement, prix comparables et points forts propres à la fixation.
+ * Au survol, la photo se laisse inspecter à la loupe (zoom sous le curseur).
  */
 const systemCards: {
   slug: string;
@@ -53,8 +55,6 @@ const systemCards: {
   name: string;
   tagline: string;
   photo: string;
-  /** Fixation en gros plan, révélée au survol avec un effet de zoom. */
-  photoZoom: string;
   alt: string;
   badge?: string;
   kitFrom: number;
@@ -65,8 +65,7 @@ const systemCards: {
     name: "Verre sur rail",
     tagline: "Le plus épuré",
     photo: "/fixation-rail.png",
-    photoZoom: "/fixation-rail-zoom.png",
-    alt: "Garde-corps en verre sur rail aluminium encastré, vue de face",
+    alt: "Garde-corps en verre sur rail aluminium encastré",
     badge: "Le plus demandé",
     kitFrom: 320,
   },
@@ -76,8 +75,7 @@ const systemCards: {
     name: "Verre sur pinces",
     tagline: "Le classique discret",
     photo: "/fixation-pince.png",
-    photoZoom: "/fixation-pince-zoom.png",
-    alt: "Garde-corps en verre sur pinces inox, vue de face",
+    alt: "Garde-corps en verre sur pinces inox",
     badge: "Kit prix discount",
     kitFrom: 250,
   },
@@ -87,8 +85,7 @@ const systemCards: {
     name: "Verre avec spider",
     tagline: "L’esprit architectural",
     photo: "/fixation-spider.png",
-    photoZoom: "/fixation-spider-zoom.png",
-    alt: "Garde-corps en verre à fixations spider traversantes, vue de face",
+    alt: "Garde-corps en verre à fixations spider traversantes",
     kitFrom: 300,
   },
 ];
@@ -285,26 +282,14 @@ export default function Home() {
                   href={`/produits/${m.slug}`}
                   className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-neutral-200/80 bg-white shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-pine-300 hover:shadow-elevated"
                 >
-                  {/* photo de face → fixation zoomée au survol — image nue, sans texte */}
-                  <div className="relative h-60 overflow-hidden bg-white sm:h-64">
-                    <Image
+                  {/* photo nue, sans texte — loupe au survol : le zoom suit le
+                      curseur pour inspecter la fixation de près */}
+                  <div className="relative h-60 bg-white sm:h-64">
+                    <ZoomImage
                       src={m.photo}
                       alt={m.alt}
-                      fill
                       sizes="(min-width: 1024px) 24rem, 100vw"
-                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     />
-                    {/* calque opaque : pas de creux blanc pendant le fondu */}
-                    <div className="absolute inset-0 bg-white opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
-                      <Image
-                        src={m.photoZoom}
-                        alt={`Fixation ${m.name.toLowerCase()} en gros plan`}
-                        fill
-                        loading="eager"
-                        sizes="(min-width: 1024px) 24rem, 100vw"
-                        className="scale-110 object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-100"
-                      />
-                    </div>
                   </div>
 
                   {/* identité — sous l'image, jamais dessus */}
