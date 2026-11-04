@@ -147,3 +147,25 @@ body:has(.funnel-lock) {
   overflow: hidden;
   height: 100%;
 }
+
+/* ---------------------- Micro-UX globales ---------------------- */
+
+/* Focus clavier visible partout (accessibilité) — n'apparaît qu'à la
+   navigation clavier, jamais au clic souris. */
+:focus-visible {
+  outline: 2px solid var(--color-amber-500);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Sélection de texte aux couleurs de la marque. */
+::selection {
+  background: var(--color-pine-200);
+  color: var(--color-pine-950);
+}
+
+/* Taps mobiles propres : pas de flash gris WebKit sur les éléments
+   interactifs, nos états hover/active s'en chargent. */
+a, button, [role="button"], input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
