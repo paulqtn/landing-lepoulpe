@@ -292,15 +292,19 @@ export default function Home() {
                       alt={m.alt}
                       fill
                       sizes="(min-width: 1024px) 24rem, 100vw"
-                      className="object-cover transition-all duration-700 ease-out group-hover:scale-110 group-hover:opacity-0"
+                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     />
-                    <Image
-                      src={m.photoZoom}
-                      alt={`Fixation ${m.name.toLowerCase()} en gros plan`}
-                      fill
-                      sizes="(min-width: 1024px) 24rem, 100vw"
-                      className="scale-125 object-contain p-6 opacity-0 transition-all duration-700 ease-out group-hover:scale-100 group-hover:opacity-100"
-                    />
+                    {/* calque opaque : pas de creux blanc pendant le fondu */}
+                    <div className="absolute inset-0 bg-white opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
+                      <Image
+                        src={m.photoZoom}
+                        alt={`Fixation ${m.name.toLowerCase()} en gros plan`}
+                        fill
+                        loading="eager"
+                        sizes="(min-width: 1024px) 24rem, 100vw"
+                        className="scale-110 object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-100"
+                      />
+                    </div>
                   </div>
 
                   {/* identité — sous l'image, jamais dessus */}
