@@ -117,7 +117,7 @@ const advantages = [
 
 export default function Home() {
   return (
-    <main>
+    <main className="theme-blue">
       {/* ============================ HERO ============================ */}
       <section className="relative overflow-hidden bg-white">
         {/* photo plein cadre + fondu blanc côté texte */}
