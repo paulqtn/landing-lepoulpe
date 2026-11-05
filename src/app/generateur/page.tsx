@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Phone } from "lucide-react";
 import { Configurator, type SystemeKey } from "@/components/Configurator";
 import { usages } from "@/lib/catalog";
-import { phoneHref, site } from "@/lib/site";
 
 /* ================================================================== */
 /*  Générateur plein écran — le tunnel de devis, sans distraction ni   */
@@ -43,28 +40,6 @@ export default async function GenerateurPage({
 
   return (
     <div className="funnel-lock fixed inset-0 z-[100] flex flex-col overscroll-contain bg-white">
-      {/* barre mobile : logo + téléphone (en desktop, la sidebar s'en charge) */}
-      <div className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-200/70 bg-white px-4 sm:px-6 lg:hidden">
-        <Link href="/" aria-label={`${site.name} — retour à l'accueil`} className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-pine-700 text-white">
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-              <path d="M3 8h18" />
-              <path d="M5 8v10M9.5 8v10M14.5 8v10M19 8v10" />
-              <path d="M3 18h18" strokeOpacity="0.5" />
-            </svg>
-          </span>
-          <span className="text-sm font-extrabold tracking-tight text-inkgreen">{site.name}</span>
-        </Link>
-        <a href={phoneHref} className="group flex items-center gap-2 text-sm font-bold text-inkgreen transition-colors hover:text-pine-700">
-          <Phone className="h-4 w-4 text-pine-600 group-hover:animate-wiggle" />
-          <span>{site.phone}</span>
-          <span className="relative flex h-1.5 w-1.5" aria-hidden>
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
-          </span>
-        </a>
-      </div>
-
       <div className="min-h-0 flex-1">
         <Configurator
           fullscreen

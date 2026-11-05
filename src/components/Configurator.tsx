@@ -313,29 +313,108 @@ export function Configurator({
       )}
 
       <div className={fullscreen ? "flex min-h-0 flex-1 flex-col bg-white" : "overflow-hidden rounded-3xl bg-white shadow-panel ring-1 ring-pine-950/10"}>
-        <div className={fullscreen ? "grid min-h-0 flex-1 lg:grid-cols-[19rem_1fr]" : "grid lg:grid-cols-[16.5rem_1fr]"}>
-          {/* ---- sidebar des étapes (desktop) ---- */}
-          <aside className={`relative hidden overflow-hidden bg-pine-900 text-white ${fullscreen ? "p-8 lg:flex lg:flex-col" : "p-7 lg:block"}`}>
-            <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
-            <div className={fullscreen ? "relative flex min-h-0 flex-1 flex-col" : "relative"}>
-              {fullscreen && (
-                <Link href="/" aria-label={`${site.name} — retour à l'accueil`} className="mb-9 flex items-center gap-2.5">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15">
-                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-                      <path d="M3 8h18" />
-                      <path d="M5 8v10M9.5 8v10M14.5 8v10M19 8v10" />
-                      <path d="M3 18h18" strokeOpacity="0.5" />
-                    </svg>
+        {/* ---- plein écran : en-tête logo/téléphone + stepper horizontal animé ---- */}
+        {fullscreen && (
+          <div className="shrink-0 border-b border-neutral-200/70 bg-white">
+            <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4 sm:h-16 sm:px-6">
+              <Link href="/" aria-label={`${site.name} — retour à l'accueil`} className="flex items-center gap-2">
+                <span className="grid h-8 w-8 place-items-center rounded-lg bg-pine-700 text-white">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                    <path d="M3 8h18" />
+                    <path d="M5 8v10M9.5 8v10M14.5 8v10M19 8v10" />
+                    <path d="M3 18h18" strokeOpacity="0.5" />
+                  </svg>
+                </span>
+                <span className="text-sm font-extrabold tracking-tight text-inkgreen">{site.name}</span>
+              </Link>
+              <a href={phoneHref} className="group flex items-center gap-2 text-sm font-bold text-inkgreen transition-colors hover:text-pine-700">
+                <Phone className="h-4 w-4 text-pine-600 group-hover:animate-wiggle" />
+                <span className="hidden sm:inline">Besoin d’aide ?</span>
+                <span>{site.phone}</span>
+              </a>
+            </div>
+
+            {/* stepper desktop : pastilles + connecteurs qui se remplissent */}
+            <ol className="mx-auto hidden w-full max-w-5xl items-center px-6 pb-4 pt-1 md:flex">
+              {groups.map((g, gi) => {
+                const isDone = status === "done" || gi < activeGroup;
+                const isActive = status !== "done" && gi === activeGroup;
+                return (
+                  <li
+                    key={g.title}
+                    className="flex min-w-0 animate-fade-up items-center [animation-fill-mode:both]"
+                    style={{ animationDelay: `${gi * 110}ms`, flex: gi < groups.length - 1 ? "1 1 0%" : "0 0 auto" }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        key={`${gi}-${isActive}`}
+                        className={`grid h-8 w-8 shrink-0 place-items-center rounded-full font-mono text-xs font-bold transition-colors duration-300 ${
+                          isActive
+                            ? "animate-scale-in bg-amber-500 text-pine-950 ring-4 ring-amber-500/25"
+                            : isDone
+                              ? "bg-pine-600 text-white"
+                              : "bg-neutral-100 text-neutral-400"
+                        }`}
+                      >
+                        {isDone ? <Check className="h-4 w-4" strokeWidth={3} /> : gi + 1}
+                      </span>
+                      <span className={`whitespace-nowrap text-sm font-bold transition-colors duration-300 ${isActive ? "text-inkgreen" : isDone ? "text-pine-700" : "text-neutral-400"}`}>
+                        {g.title}
+                      </span>
+                    </div>
+                    {gi < groups.length - 1 && (
+                      <div className="mx-3 h-[3px] min-w-6 flex-1 overflow-hidden rounded-full bg-neutral-100">
+                        <div
+                          className="h-full rounded-full bg-pine-600 transition-all duration-700 ease-out"
+                          style={{ width: isDone ? "100%" : "0%" }}
+                        />
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+
+            {/* stepper mobile : segments + étape courante */}
+            <div className="px-4 pb-3.5 md:hidden">
+              <div className="flex items-center gap-1.5">
+                {groups.map((g, gi) => {
+                  const doneIn = g.items.filter((it) => steps.indexOf(it.id) < step).length;
+                  const w =
+                    status === "done" || gi < activeGroup
+                      ? 100
+                      : gi > activeGroup
+                        ? 0
+                        : Math.round(((doneIn + 0.4) / g.items.length) * 100);
+                  return (
+                    <div key={g.title} className="h-1.5 flex-1 overflow-hidden rounded-full bg-neutral-100">
+                      <div className="h-full rounded-full bg-pine-600 transition-all duration-700 ease-out" style={{ width: `${w}%` }} />
+                    </div>
+                  );
+                })}
+              </div>
+              {status !== "done" && (
+                <p className="mt-2 text-xs font-bold text-inkgreen">
+                  <span className="font-mono uppercase tracking-[0.12em] text-pine-700">
+                    Étape {step + 1}/{steps.length}
                   </span>
-                  <span className="text-[0.95rem] font-extrabold tracking-tight">{site.name}</span>
-                </Link>
+                  <span className="mx-1.5 text-neutral-300">·</span>
+                  {groups[Math.min(activeGroup, groups.length - 1)]?.title}
+                </p>
               )}
+            </div>
+          </div>
+        )}
+
+        <div className={fullscreen ? "flex min-h-0 flex-1 flex-col" : "grid lg:grid-cols-[16.5rem_1fr]"}>
+          {/* ---- sidebar des étapes (version card intégrée aux pages) ---- */}
+          {!fullscreen && (
+          <aside className="relative hidden overflow-hidden bg-pine-900 p-7 text-white lg:block">
+            <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
+            <div className="relative">
               <p className="text-lg font-extrabold leading-snug">
                 Obtenez votre devis en quelques clics
               </p>
-              {fullscreen && note && (
-                <p className="mt-3 text-sm leading-relaxed text-pine-200/90">{note}</p>
-              )}
               <ol className="mt-9 space-y-5">
                 {groups.map((g, gi) => {
                   const isDone = gi < activeGroup;
@@ -374,31 +453,22 @@ export function Configurator({
                   );
                 })}
               </ol>
-              {fullscreen && (
-                <ul className="mt-auto space-y-2.5 border-t border-white/10 pt-6">
-                  {guarantees.map((g) => (
-                    <li key={g} className="flex items-center gap-2 text-xs font-semibold text-pine-100/90">
-                      <Check className="h-3.5 w-3.5 shrink-0 text-amber-500" />
-                      {g}
-                    </li>
-                  ))}
-                </ul>
-              )}
             </div>
           </aside>
+          )}
 
           {/* ---- contenu ---- */}
           <div
             ref={paneRef}
-            className={fullscreen ? "flex min-h-0 flex-col overflow-y-auto overscroll-contain p-6 sm:p-10" : "flex min-h-[28rem] flex-col p-6 sm:p-9"}
+            className={fullscreen ? "flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain" : "flex min-h-[28rem] flex-col p-6 sm:p-9"}
           >
-          {status !== "done" && (
+          {status !== "done" && !fullscreen && (
             <>
               <div className="flex items-center justify-between gap-3">
                 <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-inkgreen lg:hidden">
                   Étape {step + 1}<span className="font-semibold text-neutral-400"> / {steps.length}</span>
                 </p>
-                <a href={phoneHref} className={`group ml-auto items-center gap-2 ${fullscreen ? "hidden lg:flex" : "flex"}`}>
+                <a href={phoneHref} className="group ml-auto flex items-center gap-2">
                   <Phone className="h-4 w-4 shrink-0 text-amber-600 group-hover:animate-wiggle" />
                   <span className="hidden text-sm font-semibold text-neutral-500 sm:inline">Besoin d’aide ?</span>
                   <span className="text-sm font-bold text-inkgreen">{site.phone}</span>
@@ -410,7 +480,20 @@ export function Configurator({
             </>
           )}
 
-          <div key={status === "done" ? "done" : step} className="flex flex-1 animate-fade-up flex-col pt-7">
+          <div
+            key={status === "done" ? "done" : step}
+            className={
+              fullscreen
+                ? "mx-auto flex w-full max-w-3xl flex-1 animate-fade-up flex-col px-4 pb-10 pt-7 sm:px-6 sm:pt-9"
+                : "flex flex-1 animate-fade-up flex-col pt-7"
+            }
+          >
+            {fullscreen && note && status !== "done" && step === 0 && (
+              <p className="mb-5 inline-flex items-center gap-2 self-start rounded-full bg-pine-50 px-3.5 py-1.5 text-xs font-semibold text-pine-700 ring-1 ring-pine-100">
+                <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={3} />
+                {note}
+              </p>
+            )}
             {status === "done" ? (
               <div className="flex flex-1 flex-col items-center py-2 text-center">
                 {result ? (
@@ -738,7 +821,7 @@ export function Configurator({
               </StepShell>
             )}
 
-            {status !== "done" && (
+            {status !== "done" && !fullscreen && (
               <div className="mt-7 flex items-center justify-between gap-4 border-t border-neutral-100 pt-5">
                 <button
                   type="button"
@@ -782,10 +865,58 @@ export function Configurator({
             )}
             </div>
           </div>
+
+          {/* ---- plein écran : barre d'actions fixe, toujours visible ---- */}
+          {fullscreen && status !== "done" && (
+            <div className="shrink-0 border-t border-neutral-200/70 bg-white">
+              <div className="mx-auto flex h-[4.25rem] w-full max-w-3xl items-center justify-between gap-4 px-4 sm:px-6">
+                <button
+                  type="button"
+                  onClick={() => setStep((s) => Math.max(0, s - 1))}
+                  disabled={step === 0}
+                  className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-5 py-3 text-sm font-semibold text-neutral-600 transition hover:border-pine-300 hover:text-inkgreen disabled:pointer-events-none disabled:opacity-0"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Retour
+                </button>
+                <ul className="hidden items-center gap-5 md:flex">
+                  {guarantees.map((g) => (
+                    <li key={g} className="flex items-center gap-1.5 text-xs font-semibold text-neutral-400">
+                      <Check className="h-3.5 w-3.5 shrink-0 text-pine-600" />
+                      {g}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  onClick={next}
+                  disabled={status === "loading" || (!canContinue && step < lastIdx)}
+                  className={`group inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold transition-all disabled:cursor-not-allowed disabled:opacity-40 ${step === lastIdx ? "bg-amber-500 text-pine-950 shadow-lg shadow-amber-500/30 hover:-translate-y-0.5 hover:bg-amber-600" : "bg-pine-700 text-white hover:bg-pine-600"}`}
+                >
+                  {status === "loading" ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Calcul en cours…
+                    </>
+                  ) : step === lastIdx ? (
+                    <>
+                      <Zap className="h-4 w-4" />
+                      Voir mon tarif
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  ) : (
+                    <>
+                      Suivant
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* réassurance sous la carte — en plein écran elle vit dans la sidebar */}
+      {/* réassurance sous la carte — en plein écran elle vit dans la barre du bas */}
       {!fullscreen && (
         <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
           {guarantees.map((g) => (
