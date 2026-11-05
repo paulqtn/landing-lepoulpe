@@ -36,8 +36,8 @@ export function PageHero({
 }) {
   return (
     <section className="relative overflow-hidden border-b border-neutral-200 bg-white">
-      {/* photo plein cadre + fondu blanc côté texte — identique à la homepage */}
-      <div className="absolute inset-0">
+      {/* desktop : photo plein cadre + fondu blanc côté texte, comme la homepage */}
+      <div className="absolute inset-0 hidden lg:block">
         <Image
           src={image.src}
           alt={image.alt}
@@ -46,14 +46,28 @@ export function PageHero({
           sizes="100vw"
           className="object-cover object-[72%_center]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/85 to-white/30 lg:bg-gradient-to-r lg:from-white lg:from-[24%] lg:via-white/75 lg:via-[46%] lg:to-transparent lg:to-[74%]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white from-[24%] via-white/75 via-[46%] to-transparent to-[74%]" />
       </div>
 
-      <Container className="relative pb-16 pt-8 lg:pb-24 lg:pt-10">
+      {/* mobile : bande photo pleine en haut, fondue en blanc vers le texte —
+          la lecture se fait entièrement sur fond uni */}
+      <div className="relative h-72 sm:h-80 lg:hidden">
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[72%_center]"
+        />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/55 to-transparent" />
+      </div>
+
+      <Container className="relative pb-16 pt-5 lg:pb-24 lg:pt-10">
         {breadcrumb}
 
         {/* copy */}
-        <div className="mt-6 max-w-2xl animate-fade-up">
+        <div className="mt-4 max-w-2xl animate-fade-up lg:mt-6">
           <p className="flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">
             <span className="h-[3px] w-10 rounded-full bg-amber-500" />
             {kicker}
