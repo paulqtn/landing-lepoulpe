@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, Hammer, HardHat, HelpCircle, Loader2, Lock, Minus, Phone, Plus, Zap } from "lucide-react";
 import { usages } from "@/lib/catalog";
 import { guarantees, phoneHref, site } from "@/lib/site";
@@ -129,11 +130,17 @@ export function Configurator({
   defaults = {},
   lock = {},
   source,
+  fullscreen = false,
+  note,
 }: {
   defaults?: ConfiguratorDefaults;
   lock?: ConfiguratorLock;
   /** Identifiant de provenance du lead (défaut : configurateur-devis). */
   source?: string;
+  /** Tunnel /generateur : deux volets pleine hauteur, sans carte ni sticker. */
+  fullscreen?: boolean;
+  /** Petite phrase de contexte affichée dans la sidebar (plein écran). */
+  note?: string;
 }) {
   const steps = ALL_STEPS.filter(
     (id) => !(id === "lieu" && lock.usage) && !(id === "systeme" && lock.systeme),
@@ -156,14 +163,20 @@ export function Configurator({
   // doucement le haut de la card — évite les sauts de scroll quand la
   // hauteur du contenu change, surtout en plein écran mobile.
   const cardRef = useRef<HTMLDivElement>(null);
+  const paneRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
       return;
     }
-    cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [step, status]);
+    if (fullscreen) {
+      // La page ne défile pas : on recadre le volet de contenu lui-même.
+      paneRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [step, status, fullscreen]);
 
   const cotesNum = state.cotes.map((c) => parseFloat(c.replace(",", "."))).filter((n) => Number.isFinite(n) && n > 0);
   const totalMl = cotesNum.reduce((a, b) => a + b, 0);
@@ -290,22 +303,39 @@ export function Configurator({
   const activeGroup = status === "done" ? groups.length : groups.findIndex((g) => g.items.some((it) => it.id === stepId));
 
   return (
-    <div ref={cardRef} className="relative mx-auto max-w-5xl scroll-mt-24">
-      {/* sticker */}
-      <span className="absolute -top-4 left-4 z-10 inline-flex rotate-[-3deg] items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-pine-950 shadow-md sm:-left-3">
-        <Zap className="h-3.5 w-3.5" />
-        Tarif immédiat
-      </span>
+    <div ref={cardRef} className={fullscreen ? "flex h-full min-h-0 flex-col" : "relative mx-auto max-w-5xl scroll-mt-24"}>
+      {/* sticker — réservé à la version card intégrée aux pages */}
+      {!fullscreen && (
+        <span className="absolute -top-4 left-4 z-10 inline-flex rotate-[-3deg] items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-pine-950 shadow-md sm:-left-3">
+          <Zap className="h-3.5 w-3.5" />
+          Tarif immédiat
+        </span>
+      )}
 
-      <div className="overflow-hidden rounded-3xl bg-white shadow-panel ring-1 ring-pine-950/10">
-        <div className="grid lg:grid-cols-[16.5rem_1fr]">
+      <div className={fullscreen ? "flex min-h-0 flex-1 flex-col bg-white" : "overflow-hidden rounded-3xl bg-white shadow-panel ring-1 ring-pine-950/10"}>
+        <div className={fullscreen ? "grid min-h-0 flex-1 lg:grid-cols-[19rem_1fr]" : "grid lg:grid-cols-[16.5rem_1fr]"}>
           {/* ---- sidebar des étapes (desktop) ---- */}
-          <aside className="relative hidden overflow-hidden bg-pine-900 p-7 text-white lg:block">
+          <aside className={`relative hidden overflow-hidden bg-pine-900 text-white ${fullscreen ? "p-8 lg:flex lg:flex-col" : "p-7 lg:block"}`}>
             <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
-            <div className="relative">
+            <div className={fullscreen ? "relative flex min-h-0 flex-1 flex-col" : "relative"}>
+              {fullscreen && (
+                <Link href="/" aria-label={`${site.name} — retour à l'accueil`} className="mb-9 flex items-center gap-2.5">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15">
+                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                      <path d="M3 8h18" />
+                      <path d="M5 8v10M9.5 8v10M14.5 8v10M19 8v10" />
+                      <path d="M3 18h18" strokeOpacity="0.5" />
+                    </svg>
+                  </span>
+                  <span className="text-[0.95rem] font-extrabold tracking-tight">{site.name}</span>
+                </Link>
+              )}
               <p className="text-lg font-extrabold leading-snug">
                 Obtenez votre devis en quelques clics
               </p>
+              {fullscreen && note && (
+                <p className="mt-3 text-sm leading-relaxed text-pine-200/90">{note}</p>
+              )}
               <ol className="mt-9 space-y-5">
                 {groups.map((g, gi) => {
                   const isDone = gi < activeGroup;
@@ -344,18 +374,31 @@ export function Configurator({
                   );
                 })}
               </ol>
+              {fullscreen && (
+                <ul className="mt-auto space-y-2.5 border-t border-white/10 pt-6">
+                  {guarantees.map((g) => (
+                    <li key={g} className="flex items-center gap-2 text-xs font-semibold text-pine-100/90">
+                      <Check className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+                      {g}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </aside>
 
           {/* ---- contenu ---- */}
-          <div className="flex min-h-[28rem] flex-col p-6 sm:p-9">
+          <div
+            ref={paneRef}
+            className={fullscreen ? "flex min-h-0 flex-col overflow-y-auto overscroll-contain p-6 sm:p-10" : "flex min-h-[28rem] flex-col p-6 sm:p-9"}
+          >
           {status !== "done" && (
             <>
               <div className="flex items-center justify-between gap-3">
                 <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-inkgreen lg:hidden">
                   Étape {step + 1}<span className="font-semibold text-neutral-400"> / {steps.length}</span>
                 </p>
-                <a href={phoneHref} className="group ml-auto flex items-center gap-2">
+                <a href={phoneHref} className={`group ml-auto items-center gap-2 ${fullscreen ? "hidden lg:flex" : "flex"}`}>
                   <Phone className="h-4 w-4 shrink-0 text-amber-600 group-hover:animate-wiggle" />
                   <span className="hidden text-sm font-semibold text-neutral-500 sm:inline">Besoin d’aide ?</span>
                   <span className="text-sm font-bold text-inkgreen">{site.phone}</span>
@@ -742,15 +785,17 @@ export function Configurator({
         </div>
       </div>
 
-      {/* réassurance sous la carte */}
-      <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-        {guarantees.map((g) => (
-          <li key={g} className="flex items-center gap-1.5 text-xs font-semibold text-neutral-500">
-            <Check className="h-3.5 w-3.5 shrink-0 text-pine-600" />
-            {g}
-          </li>
-        ))}
-      </ul>
+      {/* réassurance sous la carte — en plein écran elle vit dans la sidebar */}
+      {!fullscreen && (
+        <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          {guarantees.map((g) => (
+            <li key={g} className="flex items-center gap-1.5 text-xs font-semibold text-neutral-500">
+              <Check className="h-3.5 w-3.5 shrink-0 text-pine-600" />
+              {g}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
