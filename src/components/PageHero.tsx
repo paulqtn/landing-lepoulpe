@@ -51,7 +51,7 @@ export function PageHero({
 
       {/* mobile : bande photo pleine en haut, fondue en blanc vers le texte —
           la lecture se fait entièrement sur fond uni */}
-      <div className="relative h-72 sm:h-80 lg:hidden">
+      <div className="relative h-60 sm:h-72 lg:hidden">
         <Image
           src={image.src}
           alt={image.alt}
@@ -63,28 +63,28 @@ export function PageHero({
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/55 to-transparent" />
       </div>
 
-      <Container className="relative pb-16 pt-5 lg:pb-24 lg:pt-10">
+      <Container className="relative pb-16 pt-4 lg:pb-24 lg:pt-10">
         {breadcrumb}
 
         {/* copy */}
-        <div className="mt-4 max-w-2xl animate-fade-up lg:mt-6">
+        <div className="mt-3 max-w-2xl animate-fade-up lg:mt-6">
           <p className="flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">
             <span className="h-[3px] w-10 rounded-full bg-amber-500" />
             {kicker}
           </p>
-          <h1 className="mt-5 text-balance text-4xl font-extrabold leading-[1.02] tracking-tight text-inkgreen sm:text-5xl">
+          <h1 className="mt-4 text-balance text-4xl font-extrabold leading-[1.02] tracking-tight text-inkgreen sm:text-5xl lg:mt-5">
             {title}
             <span className="ml-3 inline-flex -rotate-2 items-center whitespace-nowrap rounded-lg bg-amber-500 px-3 py-1.5 align-middle font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-pine-950 shadow-md sm:-translate-y-1">
               Direct usine
             </span>
           </h1>
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-neutral-600">{intro}</p>
+          <p className="mt-5 max-w-lg text-lg leading-relaxed text-neutral-600 lg:mt-6">{intro}</p>
 
           {/* CTA — mêmes éléments que la homepage */}
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center lg:mt-9">
             <Link
               href={estimerHref}
-              className="group inline-flex h-16 items-center justify-center gap-3 whitespace-nowrap rounded-full bg-pine-700 px-8 text-base font-bold text-white shadow-xl shadow-pine-900/25 transition-all hover:-translate-y-0.5 hover:bg-pine-600 hover:shadow-2xl hover:shadow-pine-900/30"
+              className="group inline-flex h-14 items-center justify-center gap-3 whitespace-nowrap rounded-full bg-pine-700 px-8 text-base font-bold text-white shadow-xl shadow-pine-900/25 transition-all hover:-translate-y-0.5 hover:bg-pine-600 hover:shadow-2xl hover:shadow-pine-900/30 lg:h-16"
             >
               <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/15">
                 <Check className="h-4 w-4" />
@@ -94,7 +94,7 @@ export function PageHero({
             </Link>
             <a
               href={phoneHref}
-              className="group inline-flex h-16 items-center justify-center gap-3 whitespace-nowrap rounded-full border-2 border-pine-700/15 bg-white pl-3 pr-6 transition-all hover:-translate-y-0.5 hover:border-pine-700/30"
+              className="group inline-flex h-14 items-center justify-center gap-3 whitespace-nowrap rounded-full border-2 border-pine-700/15 bg-white pl-3 pr-6 transition-all hover:-translate-y-0.5 hover:border-pine-700/30 lg:h-16"
             >
               <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-pine-700 text-white">
                 <Phone className="h-4 w-4 group-hover:animate-wiggle" />
@@ -112,7 +112,7 @@ export function PageHero({
           </div>
 
           {/* ligne de confiance — visible mais secondaire */}
-          <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-3">
+          <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3 lg:mt-9">
             <span className="flex items-center gap-2.5">
               <GoogleG className="h-5 w-5 shrink-0" />
               <span className="flex items-center gap-1.5">
