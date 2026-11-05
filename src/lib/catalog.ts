@@ -40,7 +40,7 @@ export const materials: MaterialSeed[] = [
     metaDescription:
       "Garde-corps en verre feuilleté sur-mesure ou en kit, en direct usine. Vue dégagée, conformité NF P01-012, devis détaillé en 24h.",
     intro:
-      "Le garde-corps en verre offre une sécurité totale sans jamais bloquer la vue. Verre feuilleté 44.2 à 88.4 selon la configuration, fixations invisibles ou profilé aluminium en pince : un rendu épuré, conforme à la norme NF P01-012.",
+      "Une sécurité totale sans jamais bloquer la vue : verre feuilleté sur-mesure, fixations discrètes, conforme NF.",
     benefits: [
       { title: "Vue totalement dégagée", desc: "Aucun montant vertical : la transparence du verre préserve le paysage et la lumière." },
       { title: "Sécurité feuilletée", desc: "Verre feuilleté (44.2, 55.2, 66.2…) : en cas de casse, le film retient les morceaux." },
@@ -69,7 +69,7 @@ export const materials: MaterialSeed[] = [
     metaDescription:
       "Garde-corps en aluminium thermolaqué, sur-mesure ou en kit. Léger, zéro entretien, toutes teintes RAL. Devis détaillé gratuit en 24h.",
     intro:
-      "Léger, moderne et sans entretien, le garde-corps aluminium est le meilleur rapport qualité/prix du marché. Thermolaqué dans la teinte RAL de votre choix, il traverse les années sans peinture ni corrosion.",
+      "Léger, moderne, zéro entretien : le meilleur rapport qualité/prix, thermolaqué dans la teinte RAL de votre choix.",
     benefits: [
       { title: "Zéro entretien", desc: "Le thermolaquage protège définitivement : ni rouille, ni peinture à refaire." },
       { title: "Toutes teintes RAL", desc: "Anthracite, noir, blanc ou couleur sur-mesure pour s’accorder à vos menuiseries." },
@@ -98,7 +98,7 @@ export const materials: MaterialSeed[] = [
     metaDescription:
       "Garde-corps inox brossé 304 ou 316 (piscine, bord de mer) : câbles, barres ou verre. Sur-mesure ou kit, devis détaillé gratuit en 24h.",
     intro:
-      "Intemporel et quasi indestructible, le garde-corps inox s’adapte à tous les styles : câbles tendus, barres horizontales ou remplissage verre. Inox 304 en intérieur, 316 autour des piscines et en bord de mer.",
+      "Intemporel, quasi indestructible : câbles, barres ou verre — inox 304 intérieur, 316 piscine et bord de mer.",
     benefits: [
       { title: "Durabilité extrême", desc: "L’inox ne rouille pas, ne se déforme pas et garde son éclat des décennies." },
       { title: "Style contemporain", desc: "Câbles, barres ou verre : des lignes fines et techniques, très architecturales." },
@@ -134,7 +134,7 @@ export const usages: UsageSeed[] = [
     metaDescription:
       "Sécurisez les abords de votre piscine sans sacrifier la vue : garde-corps verre autoportant, inox 316 ou aluminium. Devis gratuit en 24h.",
     intro:
-      "Autour d’un bassin, le garde-corps doit conjuguer sécurité, résistance au chlore et transparence. Verre feuilleté autoportant pour une vue totale, inox 316 pour la durabilité, aluminium thermolaqué pour le budget.",
+      "Sécurité, résistance au chlore et transparence totale sur le bassin : verre autoportant, visserie inox 316.",
     benefits: [
       { title: "Vue sur le bassin", desc: "Surveillez la baignade sans obstacle visuel, notamment avec le verre autoportant." },
       { title: "Matériaux anti-chlore", desc: "Inox 316 et aluminium thermolaqué : aucun risque de corrosion en ambiance piscine." },
@@ -163,7 +163,7 @@ export const usages: UsageSeed[] = [
     metaDescription:
       "Garde-corps rampant d’escalier en verre, inox ou aluminium, sur-mesure au degré près. Conforme NF P01-012. Devis gratuit en 24h.",
     intro:
-      "Un garde-corps d’escalier se fabrique au degré près : pente relevée, verre découpé en parallélogramme ou lisses rampantes, main courante continue. Sur-mesure intégral, conforme à la norme.",
+      "Fabriqué au degré près : verre en parallélogramme, main courante continue, sur-mesure intégral conforme NF.",
     benefits: [
       { title: "Sur-mesure au degré près", desc: "Chaque volée est différente : nous fabriquons d’après vos cotes et votre pente exacte." },
       { title: "Main courante continue", desc: "Une préhension confortable et conforme sur toute la volée, y compris les tournants." },
@@ -192,7 +192,7 @@ export const usages: UsageSeed[] = [
     metaDescription:
       "Remplacez ou créez votre garde-corps de balcon : verre, aluminium ou inox, pose française ou anglaise. Conforme NF P01-012, devis en 24h.",
     intro:
-      "Le balcon est l’usage roi du garde-corps : hauteur de chute réelle, exposition aux intempéries et exigence esthétique côté rue. Fixation sur dalle ou en nez de dalle, remplissage verre, tôle ou barreaudage.",
+      "Hauteur de chute réelle, intempéries, esthétique côté rue : fixation sur dalle ou nez de dalle, au millimètre.",
     benefits: [
       { title: "Sécurité en hauteur", desc: "Dimensionné pour la poussée normative — l’ouvrage qui ne pardonne aucune approximation." },
       { title: "Façade valorisée", desc: "Le garde-corps signe l’esthétique de la façade : verre épuré ou alu graphique." },
@@ -221,7 +221,7 @@ export const usages: UsageSeed[] = [
     metaDescription:
       "Garde-corps de terrasse sur-mesure ou en kit : verre panoramique, alu thermolaqué, inox. Conforme NF P01-012, devis détaillé en 24h.",
     intro:
-      "Terrasse surélevée, toit-terrasse ou plage bois : dès 1 m de hauteur de chute, le garde-corps s’impose. Le verre préserve le panorama, l’aluminium habille de grandes longueurs à budget maîtrisé.",
+      "Dès 1 m de hauteur de chute, le garde-corps s’impose. Le verre préserve votre panorama, l’alu votre budget.",
     benefits: [
       { title: "Panorama préservé", desc: "En verre ou câbles inox, la vue reste intacte depuis la terrasse comme depuis le jardin." },
       { title: "Grandes longueurs", desc: "Kits modulaires et fabrication sur-mesure pour les linéaires importants, angles compris." },
@@ -250,7 +250,7 @@ export const usages: UsageSeed[] = [
     metaDescription:
       "Sécurisez votre mezzanine avec style : garde-corps verre, inox ou alu, fixation plancher ou trémie. Conforme NF P01-012, devis en 24h.",
     intro:
-      "En mezzanine, le garde-corps sécurise la trémie tout en participant pleinement à la décoration intérieure. Verre pour la lumière, inox pour l’esprit loft, aluminium pour la sobriété.",
+      "Sécuriser la trémie en participant à la déco : verre pour la lumière, inox esprit loft, alu pour la sobriété.",
     benefits: [
       { title: "Lumière préservée", desc: "Le verre laisse circuler la lumière entre les niveaux — la mezzanine reste aérienne." },
       { title: "Esprit déco assumé", desc: "Câbles inox esprit loft, verre minimaliste ou alu noir mat architectural." },
@@ -279,7 +279,7 @@ export const usages: UsageSeed[] = [
     metaDescription:
       "Barres d’appui et garde-corps de fenêtre en verre, alu ou inox pour vos ouvertures. Conforme NF P01-012, sur-mesure, devis en 24h.",
     intro:
-      "Fenêtre à soubassement bas, porte-fenêtre à l’étage : la barre d’appui ou le garde-corps de fenêtre est obligatoire dès que l’allège est trop basse. Discret, sur-mesure, posé en tableau ou en façade.",
+      "Obligatoire dès que l’allège est trop basse : barre d’appui ou garde-corps discret, posé en tableau ou façade.",
     benefits: [
       { title: "Conformité des allèges", desc: "Sécurise les fenêtres dont l’allège est inférieure à 90 cm — une obligation trop souvent oubliée." },
       { title: "Discrétion maximale", desc: "Vitrage toute largeur ou fine lisse inox : la lumière et la vue avant tout." },
@@ -308,7 +308,7 @@ export const usages: UsageSeed[] = [
     metaDescription:
       "Garde-corps intérieur design pour escalier, mezzanine ou trémie : verre, inox ou alu noir mat. Sur-mesure, conforme, devis en 24h.",
     intro:
-      "À l’intérieur, le garde-corps devient un élément d’architecture : il structure l’espace, guide la lumière et signe le style de la maison — du minimalisme verre à l’esprit atelier.",
+      "Un élément d’architecture : il structure l’espace et signe le style, du minimalisme verre à l’esprit atelier.",
     benefits: [
       { title: "Un geste déco fort", desc: "Verre invisible, alu noir mat esprit verrière ou inox loft : le style au service de la sécurité." },
       { title: "Lumière traversante", desc: "Les remplissages vitrés font circuler la lumière entre les pièces et les niveaux." },
@@ -337,7 +337,7 @@ export const usages: UsageSeed[] = [
     metaDescription:
       "Garde-corps extérieur toutes configurations : balcon, terrasse, escalier, muret. Matériaux anti-corrosion, conforme NF P01-012, devis 24h.",
     intro:
-      "UV, pluie, gel, embruns : dehors, le garde-corps ne pardonne pas les matériaux médiocres. Aluminium thermolaqué, inox 316 et verre feuilleté sont conçus pour durer sans entretien.",
+      "UV, pluie, gel, embruns : alu thermolaqué, inox 316 et verre feuilleté, conçus pour durer sans entretien.",
     benefits: [
       { title: "Résistance totale aux intempéries", desc: "Thermolaquage, inox marine et verre feuilleté : conçus pour l’exposition permanente." },
       { title: "Toutes configurations", desc: "Balcon, terrasse, escalier extérieur, muret, toiture-terrasse : une réponse par situation." },
