@@ -110,7 +110,7 @@ const atelierPoints: { icon: typeof Ruler; title: string; desc: string }[] = [
   { icon: Ruler, title: "Prise de cotes experte", desc: "chaque projet vérifié avec exigence par un professionnel" },
   { icon: Scissors, title: "Découpe ultra-précise", desc: "usinage sur machines de haute technologie pour un ajustement parfait" },
   { icon: Layers, title: "Finitions d’atelier", desc: "chants, angles et découpes spécifiques réalisés avec soin" },
-  { icon: Headset, title: "Accompagnement sur mesure", desc: "un interlocuteur expert vous guide de la cote à la pose" },
+  { icon: Headset, title: "Accompagnement sur mesure", desc: "notre équipe vous guide de la prise de cote à la livraison" },
 ];
 
 /** Avantages du bandeau défilant — volontairement distincts des arguments du hero. */
@@ -517,9 +517,9 @@ export default function Home() {
               <em className="italic text-pine-600">la précision des machines de pointe.</em>
             </h2>
             <p className="mt-4 max-w-lg leading-relaxed text-neutral-600">
-              Chaque panneau est étudié, découpé et façonné sur mesure dans notre atelier.
-              Le geste expert de nos équipes s’allie à des équipements de dernière
-              génération pour une finition irréprochable, prête à poser.
+              Chaque panneau est étudié, découpé et façonné sur mesure chez notre miroitier.
+              Le geste précis s’alliant à des équipements de dernière génération vous offre
+              une qualité de finition irréprochable, prête à poser.
             </p>
 
             <ul className="mt-8 space-y-5">
