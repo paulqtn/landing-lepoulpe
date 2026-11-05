@@ -372,7 +372,7 @@ export default function Home() {
                   </div>
                   <Link
                     href="/devis"
-                    className="group inline-flex shrink-0 items-center gap-2.5 self-start whitespace-nowrap rounded-full bg-amber-500 py-2.5 pl-6 pr-2.5 text-sm font-bold text-pine-950 shadow-lg shadow-amber-500/25 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 lg:mb-1 lg:self-end"
+                    className="group inline-flex shrink-0 items-center justify-between gap-2.5 self-stretch whitespace-nowrap rounded-full bg-amber-500 py-2.5 pl-6 pr-2.5 text-sm font-bold text-pine-950 shadow-lg shadow-amber-500/25 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 sm:justify-start sm:self-start lg:mb-1 lg:self-end"
                   >
                     Estimer mon garde-corps
                     <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-pine-950 text-amber-500 transition-transform duration-300 group-hover:translate-x-0.5">
@@ -388,7 +388,7 @@ export default function Home() {
                       <p className="font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-pine-100/80">
                         Circuit classique
                       </p>
-                      <div className="mt-4 flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+                      <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-2.5 sm:gap-3">
                         {(
                           [
                             [Factory, "Usine"],
@@ -397,12 +397,14 @@ export default function Home() {
                             [HomeIcon, "Vous"],
                           ] as const
                         ).map(([StepIcon, step], i) => (
-                          <span key={step} className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
-                            <span className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.07] px-4 py-2.5 backdrop-blur-sm sm:px-5">
-                              <StepIcon className="h-[18px] w-[18px] text-pine-100/80" strokeWidth={1.8} />
-                              <span className="text-sm font-bold text-white sm:text-base">{step}</span>
+                          /* pilule + flèche soudées : l'enroulement ne coupe
+                             jamais entre une étape et sa flèche */
+                          <span key={step} className="flex items-center gap-2 sm:gap-3">
+                            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.07] px-3.5 py-2 backdrop-blur-sm sm:gap-2.5 sm:px-5 sm:py-2.5">
+                              <StepIcon className="h-4 w-4 text-pine-100/80 sm:h-[18px] sm:w-[18px]" strokeWidth={1.8} />
+                              <span className="text-[13px] font-bold text-white sm:text-base">{step}</span>
                             </span>
-                            {i < 3 && <ArrowRight className="ml-9 h-4 w-4 shrink-0 rotate-90 text-pine-100/40 sm:ml-0 sm:rotate-0" />}
+                            {i < 3 && <ArrowRight className="h-4 w-4 shrink-0 text-pine-100/40" />}
                           </span>
                         ))}
                       </div>
@@ -427,17 +429,19 @@ export default function Home() {
                       <p className="mt-3 text-sm text-pine-100/80">Un seul prix : celui de la fabrication.</p>
                     </div>
 
-                    {/* carte de France — version mobile, centrée sous les circuits */}
-                    <div className="flex flex-col items-center lg:hidden">
+                    {/* carte de France — mobile : rangée compacte carte + signature */}
+                    <div className="flex items-center justify-center gap-5 border-t border-white/10 pt-5 lg:hidden">
                       <Image
                         src="/carte-france.png"
                         alt="Livraison partout en France depuis l'usine"
                         width={200}
                         height={250}
-                        className="h-44 w-auto"
+                        className="h-28 w-auto shrink-0"
                       />
-                      <p className="mt-1 -rotate-2 text-center text-base font-medium italic leading-snug text-pine-100/85">
-                        Plus simple. Plus juste.
+                      <p className="-rotate-2 text-sm font-medium italic leading-snug text-pine-100/85">
+                        Plus simple.
+                        <br />
+                        Plus juste.
                         <br />
                         Plus proche de vous.
                       </p>
@@ -462,17 +466,21 @@ export default function Home() {
                 </div>
 
                 {/* mécanismes du prix */}
-                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="mt-6 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
                   {discountReasons.map((r) => (
+                    /* mobile : carte-liste horizontale (icône à gauche), moitié
+                       moins haute ; dès sm, carte verticale d'origine */
                     <div
                       key={r.title}
-                      className="rounded-2xl bg-white p-5 shadow-lg shadow-black/25 transition-transform duration-300 hover:-translate-y-1"
+                      className="flex items-start gap-3.5 rounded-2xl bg-white p-4 shadow-lg shadow-black/25 transition-transform duration-300 hover:-translate-y-1 sm:block sm:p-5"
                     >
-                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-500 text-pine-950 shadow-md shadow-amber-500/30">
+                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-500 text-pine-950 shadow-md shadow-amber-500/30">
                         <r.icon className="h-5 w-5" />
                       </span>
-                      <h3 className="mt-3 text-sm font-extrabold text-inkgreen">{r.title}</h3>
-                      <p className="mt-1 text-xs leading-relaxed text-neutral-500">{r.desc}</p>
+                      <div className="min-w-0 sm:mt-3">
+                        <h3 className="text-sm font-extrabold text-inkgreen">{r.title}</h3>
+                        <p className="mt-1 text-xs leading-relaxed text-neutral-500">{r.desc}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
