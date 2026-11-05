@@ -33,7 +33,7 @@ export const verres: VerreSpec[] = [
     metaDescription:
       "Verre feuilleté 66.4 (2 × 6 mm) pour garde-corps : composition, poids, fixations compatibles et prix au ml. Découpe sur mesure en direct usine.",
     intro:
-      "Le 66.4 associe deux verres de 6 mm et quatre films PVB : c'est l'entrée de la gamme sécurité pour garde-corps, idéale sur pinces ou entre fixations rapprochées. Léger à manipuler, il reste conforme NF P01-012 dans les configurations à entraxes serrés.",
+      "Deux verres de 6 mm, quatre films PVB : l'entrée de la gamme sécurité, idéale sur pinces, conforme NF.",
     priceFrom: 250,
     caracteristiques: [
       { label: "Composition", value: "2 × 6 mm + 4 films PVB" },
@@ -65,7 +65,7 @@ export const verres: VerreSpec[] = [
     metaDescription:
       "Verre feuilleté 88.4 (2 × 8 mm) pour garde-corps : le standard du tout-verre sur rail. Composition, poids, fixations compatibles, prix au ml direct usine.",
     intro:
-      "Deux verres de 8 mm et quatre films PVB : le 88.4 est le standard du garde-corps tout verre. Assez rigide pour le rail sans poteaux en hauteur 1,00 m, il offre le meilleur équilibre entre portée, poids et budget — notre épaisseur la plus vendue.",
+      "Le standard du tout verre sur rail, sans poteaux : portée, poids, budget — notre épaisseur la plus vendue.",
     priceFrom: 300,
     caracteristiques: [
       { label: "Composition", value: "2 × 8 mm + 4 films PVB" },
@@ -97,7 +97,7 @@ export const verres: VerreSpec[] = [
     metaDescription:
       "Verre feuilleté 1010.4 (2 × 10 mm) pour garde-corps : grandes portées, hauteur 1,10 m, zones exposées. Composition, poids et prix au ml direct usine.",
     intro:
-      "Deux verres de 10 mm et quatre films PVB : le 1010.4 est notre épaisseur haute performance. Grandes portées entre fixations, hauteur 1,10 m, zones ventées ou usage intensif : quand le projet sort du standard, c'est lui qui prend le relais.",
+      "Notre épaisseur haute performance : grandes portées, hauteur 1,10 m, zones ventées ou usage intensif.",
     priceFrom: 360,
     caracteristiques: [
       { label: "Composition", value: "2 × 10 mm + 4 films PVB" },

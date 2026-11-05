@@ -47,10 +47,10 @@ export default function KitsPage() {
         title="Kits de garde-corps en verre"
         intro="Des kits complets prêts à poser : verre feuilleté de sécurité, fixations, visserie et notice — au prix direct usine, livrés partout en France."
         image={{
-          src: "/verre.jpeg",
-          alt: "Garde-corps en verre sur pinces inox le long d'une promenade face à la mer",
-          label: "Kit verre · pinces inox",
-          title: "Front de mer",
+          src: "/hero-usage-balcon.webp",
+          alt: "Garde-corps en verre prêt à poser sur un balcon panoramique",
+          label: "Kit verre · prêt à poser",
+          title: "Balcon panoramique",
         }}
         estimerHref="/generateur"
         breadcrumb={

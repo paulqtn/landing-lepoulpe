@@ -18,22 +18,22 @@ export const dynamicParams = false;
 /* Visuel du hero — une image fixe par épaisseur. */
 const HERO_IMAGES: Record<string, PageHeroImage> = {
   "66-4": {
-    src: "/pinces-au-sol.jpg",
-    alt: "Garde-corps en verre 66.4 sur pinces inox au bord d’une piscine",
-    label: "Verre 66.4 · pinces",
-    title: "Barrière de piscine",
+    src: "/hero-usage-piscine.webp",
+    alt: "Garde-corps en verre 66.4 au bord d’une piscine de mas provençal",
+    label: "Verre 66.4 · piscine",
+    title: "Plage de piscine",
   },
   "88-4": {
-    src: "/verre-sur-rail.jpg",
-    alt: "Garde-corps tout verre 88.4 sur rail le long d’une terrasse bois",
+    src: "/hero-usage-terrasse.webp",
+    alt: "Garde-corps tout verre 88.4 le long d’une terrasse panoramique",
     label: "Verre 88.4 · rail",
-    title: "Terrasse bois",
+    title: "Terrasse panoramique",
   },
   "1010-4": {
-    src: "/module-verre-invisible-sur-mesure-ht-1m15.jpg",
-    alt: "Garde-corps en verre 1010.4 autoportant autour d’un bassin",
+    src: "/hero-usage-exterieur.webp",
+    alt: "Garde-corps en verre 1010.4 autoportant, vue sur le jardin",
     label: "Verre 1010.4 · autoportant",
-    title: "Barrière de bassin",
+    title: "Jardin & extérieurs",
   },
 };
 
