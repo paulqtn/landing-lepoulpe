@@ -126,8 +126,8 @@ export default function Home() {
     <main>
       {/* ============================ HERO ============================ */}
       <section className="relative overflow-hidden bg-white">
-        {/* photo plein cadre + fondu blanc côté texte */}
-        <div className="absolute inset-0">
+        {/* desktop : photo plein cadre + fondu blanc côté texte */}
+        <div className="absolute inset-0 hidden lg:block">
           <Image
             src="/hero-homepage.webp"
             alt="Terrasse avec garde-corps en verre face à la mer"
@@ -136,17 +136,31 @@ export default function Home() {
             sizes="100vw"
             className="object-cover object-[72%_center]"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-white via-white/85 to-white/30 lg:bg-gradient-to-r lg:from-white lg:from-[24%] lg:via-white/75 lg:via-[46%] lg:to-transparent lg:to-[74%]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white from-[24%] via-white/75 via-[46%] to-transparent to-[74%]" />
         </div>
 
-        <Container className="relative pb-10 pt-12 sm:pt-14 lg:pb-12 lg:pt-20">
+        {/* mobile : bande photo pleine en haut, fondue en blanc — la lecture
+            se fait sous elle, sur fond uni, comme sur les pages usage */}
+        <div className="relative h-60 sm:h-72 lg:hidden">
+          <Image
+            src="/hero-homepage.webp"
+            alt="Terrasse avec garde-corps en verre face à la mer"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[72%_center]"
+          />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/55 to-transparent" />
+        </div>
+
+        <Container className="relative pb-10 pt-4 sm:pt-5 lg:pb-12 lg:pt-20">
           {/* copy */}
           <div className="max-w-2xl animate-fade-up">
             <p className="flex items-center gap-3 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">
               <span className="h-[3px] w-10 rounded-full bg-amber-500" />
               Spécialiste garde-corps
             </p>
-            <h1 className="mt-5 text-balance text-[2.7rem] font-extrabold leading-[1.0] tracking-tight text-inkgreen sm:text-6xl">
+            <h1 className="mt-4 text-balance text-[2.7rem] font-extrabold leading-[1.0] tracking-tight text-inkgreen sm:text-6xl lg:mt-5">
               Garde-corps
               <br />
               <em className="italic text-pine-600">en verre.</em>
@@ -154,17 +168,17 @@ export default function Home() {
                 Direct usine
               </span>
             </h1>
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-neutral-600">
+            <p className="mt-5 max-w-lg text-lg leading-relaxed text-neutral-600 lg:mt-6">
               Sécuriser et sublimer vos espaces avec nos{" "}
               <strong className="font-semibold text-inkgreen">garde-corps en verre sur mesure</strong> à
               prix ultra-compétitifs.
             </p>
 
             {/* CTA — élément dominant du hero */}
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center lg:mt-9">
               <Link
                 href="/devis"
-                className="group inline-flex h-16 items-center justify-center gap-3 whitespace-nowrap rounded-full bg-pine-700 px-8 text-base font-bold text-white shadow-xl shadow-pine-900/25 transition-all hover:-translate-y-0.5 hover:bg-pine-600 hover:shadow-2xl hover:shadow-pine-900/30"
+                className="group inline-flex h-14 items-center justify-center gap-3 whitespace-nowrap rounded-full bg-pine-700 px-8 text-base font-bold text-white shadow-xl shadow-pine-900/25 transition-all hover:-translate-y-0.5 hover:bg-pine-600 hover:shadow-2xl hover:shadow-pine-900/30 lg:h-16"
               >
                 <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/15">
                   <Check className="h-4 w-4" />
@@ -174,7 +188,7 @@ export default function Home() {
               </Link>
               <a
                 href={phoneHref}
-                className="group inline-flex h-16 items-center justify-center gap-3 whitespace-nowrap rounded-full border-2 border-pine-700/15 bg-white pl-3 pr-6 transition-all hover:-translate-y-0.5 hover:border-pine-700/30"
+                className="group inline-flex h-14 items-center justify-center gap-3 whitespace-nowrap rounded-full border-2 border-pine-700/15 bg-white pl-3 pr-6 transition-all hover:-translate-y-0.5 hover:border-pine-700/30 lg:h-16"
               >
                 <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-pine-700 text-white">
                   <Phone className="h-4 w-4 group-hover:animate-wiggle" />
@@ -192,7 +206,7 @@ export default function Home() {
             </div>
 
             {/* ligne de confiance — visible mais secondaire */}
-            <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-3">
+            <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3 lg:mt-9">
               <span className="flex items-center gap-2.5">
                 <GoogleG className="h-5 w-5 shrink-0" />
                 <span className="flex items-center gap-1.5">
@@ -219,7 +233,7 @@ export default function Home() {
           </div>
 
           {/* parcourir par usage — chips façon marketplace */}
-          <div className="mt-12 min-w-0 animate-fade-up pb-2 lg:mt-20 [animation-delay:250ms]">
+          <div className="mt-10 min-w-0 animate-fade-up pb-2 lg:mt-20 [animation-delay:250ms]">
             <div className="flex gap-2.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap lg:overflow-visible [&::-webkit-scrollbar]:hidden">
               {usages.map((u) => (
                 <Link
