@@ -514,7 +514,7 @@ export default function Home() {
             <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
               Le savoir-faire d’un artisan,
               <br />
-              <em className="italic text-amber-600">la précision des machines de pointe.</em>
+              <em className="italic text-pine-600">la précision des machines de pointe.</em>
             </h2>
             <p className="mt-4 max-w-lg leading-relaxed text-neutral-600">
               Chaque panneau est étudié, découpé et façonné sur mesure dans notre atelier.
