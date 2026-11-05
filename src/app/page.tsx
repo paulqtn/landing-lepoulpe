@@ -7,9 +7,12 @@ import {
   ClipboardList,
   Factory,
   HandCoins,
+  Headset,
   Home as HomeIcon,
+  Layers,
   Phone,
   Ruler,
+  Scissors,
   ShieldCheck,
   Star,
   Store,
@@ -102,12 +105,12 @@ const discountReasons: { icon: typeof HandCoins; title: string; desc: string }[]
   { icon: Truck, title: "Livraison rapide", desc: "Expédition partout en France métropolitaine, sous 10 jours depuis nos stocks." },
 ];
 
-/** Points du bloc sur-mesure — la découpe d'usine, argument clé du site. */
-const surMesurePoints: [string, string][] = [
-  ["Longueurs & hauteurs au millimètre", "chaque travée façonnée à la cote exacte"],
-  ["Angles au degré près", "escaliers et pentes suivis parfaitement"],
-  ["Retours & découpes spéciales", "angles rentrants, biseaux, décalages"],
-  ["Alignement soigné", "travées calepinées pour une ligne continue"],
+/** Points du bloc atelier — le geste expert + les machines de pointe. */
+const atelierPoints: { icon: typeof Ruler; title: string; desc: string }[] = [
+  { icon: Ruler, title: "Prise de cotes experte", desc: "chaque projet vérifié avec exigence par un professionnel" },
+  { icon: Scissors, title: "Découpe ultra-précise", desc: "usinage sur machines de haute technologie pour un ajustement parfait" },
+  { icon: Layers, title: "Finitions d’atelier", desc: "chants, angles et découpes spécifiques réalisés avec soin" },
+  { icon: Headset, title: "Accompagnement sur mesure", desc: "un interlocuteur expert vous guide de la cote à la pose" },
 ];
 
 /** Avantages du bandeau défilant — volontairement distincts des arguments du hero. */
@@ -503,70 +506,65 @@ export default function Home() {
           </Reveal>
         </Container>
       </section>
-      {/* ======================= SUR-MESURE USINE ======================= */}
+      {/* ==================== ATELIER & TECHNOLOGIE ==================== */}
       <section className="py-20 sm:py-28">
         <Container className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Atelier de découpe</p>
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Atelier & technologie</p>
             <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-              Le sur-mesure au millimètre, vraiment.
+              Le sur-mesure au millimètre, <em className="italic text-pine-600">vraiment.</em>
             </h2>
             <p className="mt-4 max-w-lg leading-relaxed text-neutral-600">
-              Chaque panneau est façonné à vos cotes en usine : envoyez vos mesures,
-              le verre arrive prêt à poser, aligné d’un bout à l’autre.
+              Chaque panneau est étudié, découpé et façonné sur mesure dans notre atelier.
+              Le geste expert de nos équipes s’allie à des équipements de dernière
+              génération pour une finition irréprochable, prête à poser.
             </p>
 
-            <ul className="mt-7 space-y-4">
-              {surMesurePoints.map(([b, d]) => (
-                <li key={b} className="flex items-start gap-3">
-                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-pine-700 text-white shadow-sm">
-                    <Check className="h-3.5 w-3.5" strokeWidth={3} />
+            <ul className="mt-8 space-y-5">
+              {atelierPoints.map((p) => (
+                <li key={p.title} className="flex items-start gap-4">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-mist text-pine-700 ring-1 ring-neutral-200/70">
+                    <p.icon className="h-5 w-5" strokeWidth={1.8} />
                   </span>
-                  <span className="text-[0.95rem] leading-snug text-neutral-500">
-                    <strong className="font-bold text-inkgreen">{b}</strong> — {d}
+                  <span className="pt-0.5 text-[0.95rem] leading-snug text-neutral-500">
+                    <strong className="font-bold text-inkgreen">{p.title}</strong> — {p.desc}
                   </span>
                 </li>
               ))}
             </ul>
 
-            <div className="mt-8 flex flex-col items-start gap-4 rounded-2xl border border-neutral-200/80 bg-mist/60 p-5 sm:flex-row sm:items-center">
+            <div className="mt-9 flex flex-col items-start gap-4 rounded-2xl border border-neutral-200/80 bg-mist/60 p-5 sm:flex-row sm:items-center">
               <p className="flex-1 text-sm leading-relaxed text-neutral-600">
-                <strong className="font-bold text-inkgreen">Un doute sur la prise de cotes&nbsp;?</strong>{" "}
-                Nos conseillers vérifient chaque dimension avec vous avant de lancer la fabrication.
+                <strong className="font-bold text-inkgreen">Un projet, une contrainte, une cote complexe&nbsp;?</strong>{" "}
+                Nos experts valident avec vous chaque détail technique avant fabrication.
               </p>
-              <a
-                href={phoneHref}
-                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-inkgreen shadow-card transition-all hover:-translate-y-0.5"
-              >
-                <Phone className="h-4 w-4 text-pine-600" />
-                {site.phone}
-              </a>
+              <div className="shrink-0 sm:text-right">
+                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-amber-600">
+                  Parler à un expert
+                </p>
+                <a
+                  href={phoneHref}
+                  className="mt-1.5 inline-flex items-center gap-2 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-pine-900/20 transition-all hover:-translate-y-0.5 hover:bg-pine-600"
+                >
+                  <Phone className="h-4 w-4" />
+                  {site.phone}
+                </a>
+              </div>
             </div>
           </div>
 
-          {/* photo annotée : les cotes prises en charge */}
+          {/* photo d'atelier : contrôle expert devant la découpe numérique */}
           <Reveal delay={120}>
             <div className="relative">
               <div className="pointer-events-none absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-pine-200/50 via-transparent to-amber-500/10" />
-              <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10">
+              <div className="relative aspect-square overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10">
                 <Image
-                  src="/rail-encastre.jpg"
-                  alt="Garde-corps tout verre sur rail encastré, terrasse face à la mer"
+                  src="/atelier-sur-mesure.jpg"
+                  alt="Artisan contrôlant la cote d’un panneau de verre devant la machine de découpe numérique"
                   fill
                   sizes="(min-width: 1024px) 40rem, 100vw"
                   className="object-cover"
                 />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-pine-950/70 to-transparent" />
-                {/* cotes flottantes */}
-                <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-inkgreen shadow-sm backdrop-blur">
-                  H · 1 000 mm
-                </span>
-                <span className="absolute right-4 top-1/3 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-inkgreen shadow-sm backdrop-blur">
-                  ∠ au degré près
-                </span>
-                <span className="absolute bottom-4 left-4 rounded-full bg-amber-500 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-pine-950 shadow-md">
-                  L · au millimètre
-                </span>
               </div>
             </div>
           </Reveal>
