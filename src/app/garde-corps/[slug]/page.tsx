@@ -43,6 +43,28 @@ const NORME_PISCINE: { icon: typeof Ruler; t: string; d: string }[] = [
   },
 ];
 
+/* Bloc piscine : réalisations en photos réelles. */
+const REALISATIONS_PISCINE: { src: string; alt: string; tag: string; title: string }[] = [
+  {
+    src: "/realisation-piscine-1.webp",
+    alt: "Barrière de piscine en verre autoportant autour d’une piscine à débordement",
+    tag: "Verre autoportant",
+    title: "Piscine à débordement",
+  },
+  {
+    src: "/realisation-piscine-2.webp",
+    alt: "Garde-corps en verre sur pinces inox le long d’une plage de piscine",
+    tag: "Verre · pinces inox",
+    title: "Plage de piscine",
+  },
+  {
+    src: "/realisation-piscine-3.webp",
+    alt: "Barrière de bassin en verre autoportant, hauteur 1,15 m",
+    tag: "Autoportant · h 1,15 m",
+    title: "Barrière de bassin",
+  },
+];
+
 /* Visuel du hero — une image fixe par usage ou matériau. */
 const HERO_IMAGES: Record<string, PageHeroImage> = {
   piscine: {
@@ -301,6 +323,55 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   </div>
                 </div>
               </Reveal>
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {/* ---- piscine : nos réalisations ---- */}
+      {entry.slug === "piscine" && (
+        <section className="py-16 sm:py-24">
+          <Container>
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              <div>
+                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
+                  Sur le terrain
+                </p>
+                <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+                  Nos réalisations
+                </h2>
+              </div>
+              <Link
+                href="/generateur?usage=piscine"
+                className="group inline-flex items-center gap-2 text-sm font-bold text-pine-700 transition-colors hover:text-pine-600"
+              >
+                Estimer la mienne
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {REALISATIONS_PISCINE.map((r, i) => (
+                <Reveal key={r.src} delay={i * 70}>
+                  <figure className="group relative overflow-hidden rounded-[1.5rem] shadow-card ring-1 ring-pine-950/10">
+                    <div className="relative aspect-[4/3]">
+                      <Image
+                        src={r.src}
+                        alt={r.alt}
+                        fill
+                        sizes="(min-width: 1024px) 24rem, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                      />
+                    </div>
+                    <figcaption className="absolute inset-x-3 bottom-3 rounded-xl border border-white/15 bg-pine-950/45 px-4 py-2.5 backdrop-blur-md">
+                      <span className="block font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-pine-200">
+                        {r.tag}
+                      </span>
+                      <span className="block truncate text-sm font-bold text-white">{r.title}</span>
+                    </figcaption>
+                  </figure>
+                </Reveal>
+              ))}
             </div>
           </Container>
         </section>
