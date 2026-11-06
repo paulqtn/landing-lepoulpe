@@ -126,6 +126,13 @@ const ALL_STEPS: StepId[] = ["lieu", "systeme", "longueurs", "hauteur", "teinte"
 
 const fmtM = (n: number) => n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+/* Cards de choix : repos sobre, survol qui s'allume franchement en ambre,
+   sélection ambre épaisse — l'option interactive se voit au premier regard. */
+const OPTION_OFF =
+  "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-amber-500 hover:bg-amber-500/[0.06] hover:shadow-[0_12px_32px_-12px_rgba(246,167,35,0.5)]";
+const OPTION_ON =
+  "border-amber-500 bg-amber-500/10 ring-2 ring-amber-500 shadow-[0_12px_32px_-12px_rgba(246,167,35,0.5)]";
+
 export function Configurator({
   defaults = {},
   lock = {},
@@ -543,6 +550,20 @@ export function Configurator({
                 {note}
               </p>
             )}
+
+            {/* rappel d'étape : relie la question au stepper du bandeau */}
+            {fullscreen && status !== "done" && (
+              <div className="mb-3 flex items-center gap-2.5">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-amber-500 text-sm font-extrabold text-pine-950 shadow-sm shadow-amber-500/40">
+                  {step + 1}
+                </span>
+                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-400">
+                  Étape {step + 1} sur {steps.length}
+                  <span className="mx-1.5 text-neutral-300">·</span>
+                  <span className="text-amber-600">{groups[Math.min(activeGroup, groups.length - 1)]?.title}</span>
+                </p>
+              </div>
+            )}
             {status === "done" ? (
               <div className="flex flex-1 flex-col items-center py-2 text-center">
                 {result ? (
@@ -602,9 +623,9 @@ export function Configurator({
                         type="button"
                         aria-pressed={on}
                         onClick={() => { setState((s) => ({ ...s, lieu: l.value })); advance(); }}
-                        className={`group flex flex-col items-center gap-2.5 rounded-xl border px-3 py-4 transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                        className={`group flex flex-col items-center gap-2.5 rounded-xl border px-3 py-4 transition ${on ? OPTION_ON : OPTION_OFF}`}
                       >
-                        <span className={`grid h-12 w-12 place-items-center rounded-xl transition-colors duration-300 ${on ? "bg-amber-500" : "bg-pine-50 group-hover:bg-amber-500/20"}`}>
+                        <span className={`grid h-12 w-12 place-items-center rounded-xl transition-colors duration-300 ${on ? "bg-amber-500" : "bg-pine-50 group-hover:bg-amber-500"}`}>
                           <Image
                             src={USAGE_ICONS[l.value]}
                             alt=""
@@ -630,7 +651,7 @@ export function Configurator({
                         type="button"
                         aria-pressed={on}
                         onClick={() => { setState((s) => ({ ...s, systeme: o.value })); advance(); }}
-                        className={`overflow-hidden rounded-xl border transition ${on ? "border-pine-600 ring-2 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                        className={`group overflow-hidden rounded-xl border transition ${on ? OPTION_ON : OPTION_OFF}`}
                       >
                         {/* carré : image 3/4 haut, label 1/4 bas */}
                         <span className="relative block aspect-square">
@@ -649,7 +670,7 @@ export function Configurator({
                             </span>
                           )}
                           {on && (
-                            <span className="absolute right-2 top-2 z-10 grid h-6 w-6 place-items-center rounded-full bg-pine-600 text-white shadow-md">
+                            <span className="absolute right-2 top-2 z-10 grid h-6 w-6 place-items-center rounded-full bg-amber-500 text-pine-950 shadow-md">
                               <Check className="h-3.5 w-3.5" strokeWidth={3} />
                             </span>
                           )}
@@ -764,7 +785,7 @@ export function Configurator({
                         type="button"
                         aria-pressed={on}
                         onClick={() => { setState((s) => ({ ...s, hauteur: h.value })); advance(); }}
-                        className={`flex flex-col items-center gap-2.5 rounded-xl border px-3 py-5 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                        className={`flex flex-col items-center gap-2.5 rounded-xl border px-3 py-5 text-center transition ${on ? OPTION_ON : OPTION_OFF}`}
                       >
                         <HeightGlyph h={h.glyph} className="h-12 w-14" />
                         <span>
@@ -787,7 +808,7 @@ export function Configurator({
                         type="button"
                         aria-pressed={on}
                         onClick={() => { setState((s) => ({ ...s, teinte: t.value })); advance(); }}
-                        className={`flex items-center gap-3 rounded-xl border px-3.5 py-3.5 text-left transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                        className={`flex items-center gap-3 rounded-xl border px-3.5 py-3.5 text-left transition ${on ? OPTION_ON : OPTION_OFF}`}
                       >
                         <span className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-lg ring-1 ${t.swatch}`}>
                           <span className="absolute -left-1 top-0 h-16 w-2 rotate-12 bg-white/50" />
@@ -824,7 +845,7 @@ export function Configurator({
                         type="button"
                         aria-pressed={on}
                         onClick={() => { setState((s) => ({ ...s, installation: o.value })); advance(); }}
-                        className={`relative flex flex-col items-center rounded-xl border px-4 pb-4 pt-6 text-center transition ${on ? "border-pine-600 bg-pine-50 ring-1 ring-pine-600" : "border-neutral-200 bg-white hover:-translate-y-0.5 hover:border-pine-300"}`}
+                        className={`relative flex flex-col items-center rounded-xl border px-4 pb-4 pt-6 text-center transition ${on ? OPTION_ON : OPTION_OFF}`}
                       >
                         {on && (
                           <span className="absolute right-2.5 top-2.5 grid h-6 w-6 place-items-center rounded-full bg-pine-600 text-white shadow-md">
