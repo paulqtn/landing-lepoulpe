@@ -99,7 +99,7 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
                 <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-300">Devis gratuit</p>
                 <p className="mt-2 text-lg font-extrabold leading-snug">Votre garde-corps, estimé en 1 minute.</p>
                 <Link
-                  href="/devis"
+                  href="/generateur"
                   className="group mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-pine-800 transition-all hover:-translate-y-0.5"
                 >
                   <ClipboardList className="h-4 w-4" />

@@ -15,7 +15,7 @@ export default function NotFound() {
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/devis"
+            href="/generateur"
             className="group inline-flex items-center gap-2 rounded-full bg-pine-700 px-7 py-3.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-pine-600"
           >
             Estimer mon projet

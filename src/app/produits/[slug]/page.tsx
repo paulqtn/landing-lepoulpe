@@ -320,7 +320,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
                     <p className="mt-1.5 text-xs text-neutral-400">Fourniture, hors pose — affiné selon vos dimensions.</p>
                     <div className="mt-6 space-y-3">
                       <Link
-                        href="/devis"
+                        href="/generateur"
                         className="group flex w-full items-center justify-center gap-2 rounded-full bg-pine-700 px-6 py-4 text-base font-bold text-white transition-all hover:bg-pine-600"
                       >
                         <ClipboardList className="h-5 w-5" />

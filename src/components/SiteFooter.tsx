@@ -46,7 +46,7 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/devis" className="font-semibold text-green-300 transition hover:text-green-200">
+                <Link href="/generateur" className="font-semibold text-green-300 transition hover:text-green-200">
                   Devis en 1 min →
                 </Link>
               </li>

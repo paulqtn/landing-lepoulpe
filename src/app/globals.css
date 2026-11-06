@@ -148,6 +148,15 @@ body:has(.funnel-lock) {
   height: 100%;
 }
 
+/* Pendant que le tunnel est monté, le chrome du site n'existe plus :
+   ces règles s'appliquent dans la même passe de style que l'insertion
+   du tunnel, donc aucune frame de transition ne peut montrer le footer
+   (ni provoquer de saut quand la hauteur de page s'effondre). */
+body:has(.funnel-lock) > header,
+body:has(.funnel-lock) > footer {
+  display: none;
+}
+
 /* ---------------------- Micro-UX globales ---------------------- */
 
 /* Focus clavier visible partout (accessibilité) — n'apparaît qu'à la

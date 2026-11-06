@@ -71,7 +71,7 @@ export default function GardeCorpsHub() {
 
           <div className="mt-14 flex justify-center">
             <Link
-              href="/devis"
+              href="/generateur"
               className="group inline-flex items-center gap-2.5 rounded-full bg-pine-700 py-4 pl-7 pr-6 text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-pine-600"
             >
               Estimer mon projet en 1 min

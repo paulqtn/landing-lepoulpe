@@ -180,7 +180,7 @@ export default function Home() {
             {/* CTA — élément dominant du hero */}
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center lg:mt-9">
               <Link
-                href="/devis"
+                href="/generateur"
                 className="group inline-flex h-14 items-center justify-center gap-3 whitespace-nowrap rounded-full bg-pine-700 px-8 text-base font-bold text-white shadow-xl shadow-pine-900/25 transition-all hover:-translate-y-0.5 hover:bg-pine-600 hover:shadow-2xl hover:shadow-pine-900/30 lg:h-16"
               >
                 <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/15">
@@ -388,7 +388,7 @@ export default function Home() {
                     </p>
                   </div>
                   <Link
-                    href="/devis"
+                    href="/generateur"
                     className="group inline-flex shrink-0 items-center justify-between gap-2.5 self-stretch whitespace-nowrap rounded-full bg-amber-500 py-2.5 pl-6 pr-2.5 text-sm font-bold text-pine-950 shadow-lg shadow-amber-500/25 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 sm:justify-start sm:self-start lg:mb-1 lg:self-end"
                   >
                     Estimer mon garde-corps
@@ -733,7 +733,7 @@ export default function Home() {
                   </ul>
                   <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                     <Link
-                      href="/devis"
+                      href="/generateur"
                       className="group inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-white py-4 pl-7 pr-6 text-base font-bold text-pine-800 shadow-xl shadow-black/20 transition-all hover:-translate-y-0.5"
                     >
                       <ClipboardList className="h-5 w-5 shrink-0" />

@@ -225,7 +225,7 @@ export function SiteHeader() {
 
                     {/* aide au choix — vers le générateur, étape fixation */}
                     <Link
-                      href="/devis"
+                      href="/generateur"
                       onClick={() => setOpen(null)}
                       className="group/help mt-2.5 flex items-center gap-3 rounded-xl border border-dashed border-pine-300/70 bg-pine-50/50 px-3.5 py-3 transition hover:border-amber-500 hover:bg-amber-500/15"
                     >
@@ -284,7 +284,7 @@ export function SiteHeader() {
 
                     {/* aide au choix — l'épaisseur se déduit du projet */}
                     <Link
-                      href="/devis"
+                      href="/generateur"
                       onClick={() => setOpen(null)}
                       className="group/vhelp mt-2.5 flex items-center gap-3 rounded-xl border border-dashed border-pine-300/70 bg-pine-50/50 px-3.5 py-3 transition hover:border-amber-500 hover:bg-amber-500/15"
                     >
@@ -317,7 +317,7 @@ export function SiteHeader() {
           {/* CTA + burger */}
           <div className="flex items-center gap-2">
             <Link
-              href="/devis"
+              href="/generateur"
               className="group relative inline-flex shrink-0 items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full bg-amber-500 py-2 pl-3.5 pr-1.5 text-sm font-bold text-pine-950 shadow-md shadow-amber-500/30 ring-1 ring-inset ring-white/40 transition-all hover:-translate-y-0.5 hover:bg-amber-600 hover:shadow-lg hover:shadow-amber-500/40 sm:gap-2.5 sm:pl-5 sm:pr-2"
             >
               {/* reflet qui balaie le bouton au survol */}
@@ -361,8 +361,8 @@ export function SiteHeader() {
               {(
                 [
                   { id: "usage", label: "Par usage", items: usages.map((u) => ({ href: `/garde-corps/${u.slug}`, label: u.name, usage: u.slug })) },
-                  { id: "fix", label: "Type de fixation", items: [...fixations.map((f) => ({ href: `/produits/${f.slug}`, label: f.name })), { href: "/devis", label: "Comment choisir sa fixation ?" }] },
-                  { id: "verre", label: "Épaisseur de verre", items: [...epaisseurs.map((e) => ({ href: `/verre/${e.slug}`, label: `Verre feuilleté ${e.label}` })), { href: "/devis", label: "Quelle épaisseur choisir ?" }] },
+                  { id: "fix", label: "Type de fixation", items: [...fixations.map((f) => ({ href: `/produits/${f.slug}`, label: f.name })), { href: "/generateur", label: "Comment choisir sa fixation ?" }] },
+                  { id: "verre", label: "Épaisseur de verre", items: [...epaisseurs.map((e) => ({ href: `/verre/${e.slug}`, label: `Verre feuilleté ${e.label}` })), { href: "/generateur", label: "Quelle épaisseur choisir ?" }] },
                 ] as { id: string; label: string; items: { href: string; label: string; usage?: string }[] }[]
               ).map((section) => (
                 <div key={section.id} className="border-b border-neutral-100">
@@ -411,7 +411,7 @@ export function SiteHeader() {
                 {site.phone}
               </a>
               <Link
-                href="/devis"
+                href="/generateur"
                 onClick={() => setMobileOpen(false)}
                 className="flex items-center justify-center gap-2 rounded-full bg-amber-500 px-5 py-3.5 text-sm font-bold text-pine-950 shadow-md shadow-amber-500/30 ring-1 ring-inset ring-white/40"
               >
