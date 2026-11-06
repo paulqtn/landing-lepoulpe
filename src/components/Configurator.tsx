@@ -178,6 +178,42 @@ export function Configurator({
     }
   }, [step, status, fullscreen]);
 
+  // Reprise automatique : réponses conservées en local 7 jours — un visiteur
+  // qui ferme l'onglet reprend là où il s'était arrêté. Purgé à l'envoi.
+  const storageKey = `gcp-devis:${lock.usage ?? ""}:${lock.verre ?? ""}:${lock.systeme ?? ""}`;
+  const restored = useRef(false);
+  useEffect(() => {
+    if (restored.current) return;
+    restored.current = true;
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as { t?: number; step?: number; state?: State; lead?: typeof lead };
+      if (!saved?.t || Date.now() - saved.t > 7 * 24 * 3600 * 1000) return;
+      if (saved.state) setState((s) => ({ ...s, ...saved.state }));
+      if (saved.lead) setLead((l) => ({ ...l, ...saved.lead }));
+      if (Number.isInteger(saved.step)) setStep(Math.min(Math.max(saved.step as number, 0), lastIdx));
+    } catch {
+      /* stockage indisponible : parcours normal */
+    }
+  }, [storageKey, lastIdx]);
+  useEffect(() => {
+    if (!restored.current) return;
+    try {
+      if (status === "done") localStorage.removeItem(storageKey);
+      else localStorage.setItem(storageKey, JSON.stringify({ t: Date.now(), step, state, lead }));
+    } catch {
+      /* stockage indisponible */
+    }
+  }, [storageKey, step, state, lead, status]);
+
+  /** Revenir au début d'un groupe d'étapes déjà validé (stepper cliquable). */
+  function jumpToGroup(gi: number) {
+    const first = groups[gi]?.items[0]?.id;
+    const idx = first ? steps.indexOf(first) : -1;
+    if (idx >= 0) setStep(idx);
+  }
+
   const cotesNum = state.cotes.map((c) => parseFloat(c.replace(",", "."))).filter((n) => Number.isFinite(n) && n > 0);
   const totalMl = cotesNum.reduce((a, b) => a + b, 0);
 
@@ -313,59 +349,72 @@ export function Configurator({
       )}
 
       <div className={fullscreen ? "flex min-h-0 flex-1 flex-col bg-white" : "overflow-hidden rounded-3xl bg-white shadow-panel ring-1 ring-pine-950/10"}>
-        {/* ---- plein écran : en-tête logo/téléphone + stepper horizontal animé ---- */}
+        {/* ---- plein écran : bandeau vert logo/téléphone + stepper horizontal ---- */}
         {fullscreen && (
-          <div className="shrink-0 border-b border-neutral-200/70 bg-white">
-            <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4 sm:h-16 sm:px-6">
-              <Link href="/" aria-label={`${site.name} — retour à l'accueil`} className="flex items-center gap-2">
-                <span className="grid h-8 w-8 place-items-center rounded-lg bg-pine-700 text-white">
+          <div className="relative shrink-0 overflow-hidden bg-pine-900 text-white">
+            <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
+            <div className="relative mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4 sm:h-16 sm:px-6">
+              <Link href="/" aria-label={`${site.name} — retour à l'accueil`} className="flex items-center gap-2.5">
+                <span className="grid h-8 w-8 place-items-center rounded-lg bg-white/10 ring-1 ring-white/15">
                   <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
                     <path d="M3 8h18" />
                     <path d="M5 8v10M9.5 8v10M14.5 8v10M19 8v10" />
                     <path d="M3 18h18" strokeOpacity="0.5" />
                   </svg>
                 </span>
-                <span className="text-sm font-extrabold tracking-tight text-inkgreen">{site.name}</span>
+                <span className="text-sm font-extrabold tracking-tight">{site.name}</span>
               </Link>
-              <a href={phoneHref} className="group flex items-center gap-2 text-sm font-bold text-inkgreen transition-colors hover:text-pine-700">
-                <Phone className="h-4 w-4 text-pine-600 group-hover:animate-wiggle" />
-                <span className="hidden sm:inline">Besoin d’aide ?</span>
+              <a href={phoneHref} className="group flex items-center gap-2 text-sm font-bold transition-colors hover:text-amber-400">
+                <Phone className="h-4 w-4 text-amber-500 group-hover:animate-wiggle" />
+                <span className="hidden text-pine-200 sm:inline">Besoin d’aide ?</span>
                 <span>{site.phone}</span>
               </a>
             </div>
 
-            {/* stepper desktop : pastilles + connecteurs qui se remplissent */}
-            <ol className="mx-auto hidden w-full max-w-5xl items-center px-6 pb-4 pt-1 md:flex">
+            {/* stepper desktop : pastilles + connecteurs qui se remplissent,
+                les étapes validées sont cliquables pour corriger une réponse */}
+            <ol className="relative mx-auto hidden w-full max-w-5xl items-center px-6 pb-4 pt-1 md:flex">
               {groups.map((g, gi) => {
                 const isDone = status === "done" || gi < activeGroup;
                 const isActive = status !== "done" && gi === activeGroup;
+                const clickable = isDone && status !== "done";
                 return (
                   <li
                     key={g.title}
                     className="flex min-w-0 animate-fade-up items-center [animation-fill-mode:both]"
                     style={{ animationDelay: `${gi * 110}ms`, flex: gi < groups.length - 1 ? "1 1 0%" : "0 0 auto" }}
                   >
-                    <div className="flex items-center gap-2.5">
+                    <button
+                      type="button"
+                      disabled={!clickable}
+                      onClick={() => jumpToGroup(gi)}
+                      title={clickable ? `Revenir à « ${g.title} »` : undefined}
+                      className={`group/step flex items-center gap-2.5 ${clickable ? "cursor-pointer" : "cursor-default"}`}
+                    >
                       <span
                         key={`${gi}-${isActive}`}
                         className={`grid h-8 w-8 shrink-0 place-items-center rounded-full font-mono text-xs font-bold transition-colors duration-300 ${
                           isActive
-                            ? "animate-scale-in bg-amber-500 text-pine-950 ring-4 ring-amber-500/25"
+                            ? "animate-scale-in bg-amber-500 text-pine-950 ring-4 ring-amber-400/30"
                             : isDone
-                              ? "bg-pine-600 text-white"
-                              : "bg-neutral-100 text-neutral-400"
+                              ? "bg-pine-600 text-white group-hover/step:bg-pine-500"
+                              : "bg-white/10 text-pine-300"
                         }`}
                       >
                         {isDone ? <Check className="h-4 w-4" strokeWidth={3} /> : gi + 1}
                       </span>
-                      <span className={`whitespace-nowrap text-sm font-bold transition-colors duration-300 ${isActive ? "text-inkgreen" : isDone ? "text-pine-700" : "text-neutral-400"}`}>
+                      <span
+                        className={`whitespace-nowrap text-sm font-bold transition-colors duration-300 ${
+                          isActive ? "text-white" : isDone ? "text-pine-100 group-hover/step:text-white group-hover/step:underline" : "text-pine-300/80"
+                        }`}
+                      >
                         {g.title}
                       </span>
-                    </div>
+                    </button>
                     {gi < groups.length - 1 && (
-                      <div className="mx-3 h-[3px] min-w-6 flex-1 overflow-hidden rounded-full bg-neutral-100">
+                      <div className="mx-3 h-[3px] min-w-6 flex-1 overflow-hidden rounded-full bg-white/10">
                         <div
-                          className="h-full rounded-full bg-pine-600 transition-all duration-700 ease-out"
+                          className="h-full rounded-full bg-amber-500 transition-all duration-700 ease-out"
                           style={{ width: isDone ? "100%" : "0%" }}
                         />
                       </div>
@@ -376,7 +425,7 @@ export function Configurator({
             </ol>
 
             {/* stepper mobile : segments + étape courante */}
-            <div className="px-4 pb-3.5 md:hidden">
+            <div className="relative px-4 pb-3.5 md:hidden">
               <div className="flex items-center gap-1.5">
                 {groups.map((g, gi) => {
                   const doneIn = g.items.filter((it) => steps.indexOf(it.id) < step).length;
@@ -387,18 +436,18 @@ export function Configurator({
                         ? 0
                         : Math.round(((doneIn + 0.4) / g.items.length) * 100);
                   return (
-                    <div key={g.title} className="h-1.5 flex-1 overflow-hidden rounded-full bg-neutral-100">
-                      <div className="h-full rounded-full bg-pine-600 transition-all duration-700 ease-out" style={{ width: `${w}%` }} />
+                    <div key={g.title} className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/15">
+                      <div className="h-full rounded-full bg-amber-500 transition-all duration-700 ease-out" style={{ width: `${w}%` }} />
                     </div>
                   );
                 })}
               </div>
               {status !== "done" && (
-                <p className="mt-2 text-xs font-bold text-inkgreen">
-                  <span className="font-mono uppercase tracking-[0.12em] text-pine-700">
+                <p className="mt-2 text-xs font-bold text-white">
+                  <span className="font-mono uppercase tracking-[0.12em] text-amber-400">
                     Étape {step + 1}/{steps.length}
                   </span>
-                  <span className="mx-1.5 text-neutral-300">·</span>
+                  <span className="mx-1.5 text-pine-400">·</span>
                   {groups[Math.min(activeGroup, groups.length - 1)]?.title}
                 </p>
               )}
@@ -795,6 +844,12 @@ export function Configurator({
                 </div>
               </StepShell>
             ) : (
+              <>
+                {/* micro-réassurance : on donne ses coordonnées contre un résultat déjà prêt */}
+                <p className="mb-5 inline-flex items-center gap-2 self-start rounded-full bg-amber-500/10 px-3.5 py-1.5 text-xs font-bold text-amber-700 ring-1 ring-amber-500/25">
+                  <Zap className="h-3.5 w-3.5 shrink-0" />
+                  Votre tarif est calculé — il s’affiche juste après.
+                </p>
               <StepShell title="Dernière étape : votre tarif est prêt !" help="Dites-nous où l'envoyer — il s'affiche aussi juste après, à l'écran.">
                 <div className="space-y-3">
                   <Field label="Nom complet" value={lead.name} onChange={(v) => setLead((l) => ({ ...l, name: v }))} placeholder="Jean Dupont" autoComplete="name" error={showErr && leadErrors.name ? "Indiquez votre nom." : undefined} />
@@ -819,6 +874,7 @@ export function Configurator({
                   )}
                 </div>
               </StepShell>
+              </>
             )}
 
             {status !== "done" && !fullscreen && (
