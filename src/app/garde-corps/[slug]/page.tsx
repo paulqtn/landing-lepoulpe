@@ -204,11 +204,6 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
                 Votre {entry.title.toLowerCase()}, chiffré en 1 minute.
               </h2>
-              <p className="mx-auto mt-3 max-w-xl leading-relaxed text-neutral-500">
-                Votre projet <strong className="font-semibold text-inkgreen">{usageName!.toLowerCase()}</strong> est déjà
-                pris en compte — répondez au reste,{" "}
-                <strong className="font-semibold text-inkgreen">votre tarif exact s’affiche à la fin</strong>.
-              </p>
             </div>
             <div className="mx-auto mt-10 max-w-5xl">
               <Configurator lock={{ usage: usageLock }} source={`configurateur-${entry.slug}`} />
