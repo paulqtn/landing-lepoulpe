@@ -6,13 +6,10 @@ import {
   Check,
   ClipboardList,
   Factory,
-  Hammer,
   HandCoins,
   Headset,
   Home as HomeIcon,
   Layers,
-  MoveHorizontal,
-  MoveVertical,
   Phone,
   Ruler,
   Scissors,
@@ -99,6 +96,49 @@ const systemCards: {
     kitFrom: 300,
   },
 ];
+
+/* ------- Glyphes du bloc normes — dessinés pour coller au schéma ------- */
+type GlyphProps = { className?: string; strokeWidth?: number | string };
+
+/** Cotation verticale : flèche double entre deux butées (hauteur). */
+function GlyphHauteur({ className, strokeWidth = 2 }: GlyphProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <path d="M7 3.5h10" />
+      <path d="M7 20.5h10" />
+      <path d="M12 7v10" />
+      <path d="m9.5 9.5 2.5-2.5 2.5 2.5" />
+      <path d="m9.5 14.5 2.5 2.5 2.5-2.5" />
+    </svg>
+  );
+}
+
+/** Cotation horizontale : flèche double entre deux bornes (vides, dimensions). */
+function GlyphLargeur({ className, strokeWidth = 2 }: GlyphProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <path d="M3.5 7v10" />
+      <path d="M20.5 7v10" />
+      <path d="M7 12h10" />
+      <path d="m9.5 9.5-2.5 2.5 2.5 2.5" />
+      <path d="m14.5 9.5 2.5 2.5-2.5 2.5" />
+    </svg>
+  );
+}
+
+/** Pendule d'impact : bille pleine, tige depuis le pivot, traits de vitesse. */
+function GlyphPendule({ className, strokeWidth = 2 }: GlyphProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" className={className} aria-hidden>
+      <path d="M20 3.5 13.9 12.9" />
+      <circle cx="20" cy="3.5" r="1.1" fill="currentColor" stroke="none" />
+      <circle cx="12.7" cy="15.7" r="3.6" fill="currentColor" stroke="none" />
+      <path d="M3.5 9.5H6" />
+      <path d="M2.8 12.4h2.7" />
+      <path d="M3.5 15.3H6" />
+    </svg>
+  );
+}
 
 /** Mécanismes du prix discount — le « pourquoi c'est moins cher » du direct usine. */
 const discountReasons: { icon: typeof HandCoins; title: string; desc: string }[] = [
@@ -595,10 +635,10 @@ export default function Home() {
             <ul className="mt-6 divide-y divide-neutral-200/80">
               {(
                 [
-                  [MoveVertical, "Hauteur de protection conforme"],
-                  [MoveHorizontal, "Vides et dimensions de sécurité maîtrisés"],
+                  [GlyphHauteur, "Hauteur de protection conforme"],
+                  [GlyphLargeur, "Vides et dimensions de sécurité maîtrisés"],
                   [ShieldCheck, "Résistance mécanique vérifiée"],
-                  [Hammer, "Essai d’impact au pendule sur vitrage feuilleté"],
+                  [GlyphPendule, "Essai d’impact au pendule sur vitrage feuilleté"],
                 ] as const
               ).map(([PointIcon, label]) => (
                 <li key={label} className="flex items-center gap-4 py-3.5">
