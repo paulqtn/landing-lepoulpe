@@ -380,7 +380,7 @@ export default function Home() {
                   <div>
                     <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-amber-500">Direct usine</p>
                     <h2 className="mt-2 text-balance text-3xl font-extrabold leading-[1.05] text-white sm:text-4xl">
-                      Votre garde-corps en verre à prix discount
+                      Votre garde-corps en verre à prix d’usine
                     </h2>
                     <p className="mt-4 max-w-2xl leading-relaxed text-pine-100/75">
                       Un circuit court : voilà tout le secret pour vous faire bénéficier du meilleur prix
