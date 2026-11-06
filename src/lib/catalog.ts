@@ -129,7 +129,7 @@ export const usages: UsageSeed[] = [
     kind: "usage",
     usage: "piscine",
     name: "Piscine",
-    title: "Garde-corps de piscine",
+    title: "Barrière de piscine en verre",
     metaTitle: "Garde-corps piscine — verre, inox, alu | direct usine",
     metaDescription:
       "Sécurisez les abords de votre piscine sans sacrifier la vue : garde-corps verre autoportant, inox 316 ou aluminium. Devis gratuit en 24h.",

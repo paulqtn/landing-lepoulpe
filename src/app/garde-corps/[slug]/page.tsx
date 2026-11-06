@@ -202,7 +202,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
             <div className="mx-auto max-w-2xl text-center">
               <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Devis express</p>
               <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                Votre {entry.title.toLowerCase()}, chiffré en 1 minute.
+                Votre {entry.title.toLowerCase()}, chiffré{/^barrière/i.test(entry.title) ? "e" : ""} en 1 minute.
               </h2>
             </div>
             <div className="mx-auto mt-10 max-w-5xl">
@@ -322,7 +322,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
             <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
             <div className="relative mx-auto max-w-2xl">
               <h2 className="text-balance text-3xl font-extrabold leading-[1.05] sm:text-4xl">
-                Votre {entry.title.toLowerCase()}, estimé en 1 minute.
+                Votre {entry.title.toLowerCase()}, estimé{/^barrière/i.test(entry.title) ? "e" : ""} en 1 minute.
               </h2>
               <p className="mx-auto mt-4 max-w-lg text-pine-100/75">
                 Estimation immédiate, devis détaillé sous 24h — gratuit et sans engagement.
