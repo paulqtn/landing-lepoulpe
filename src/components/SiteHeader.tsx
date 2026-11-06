@@ -26,6 +26,7 @@ const fixations = [
     slug: "garde-corps-verre-sur-rail",
     name: "Verre sur rail",
     desc: "Rail alu au sol, sans poteaux",
+    tag: "Le plus discret",
     photo: "/fixation-rail.png",
     hover: "/fixation-rail-hover.png",
     price: 320,
@@ -34,6 +35,7 @@ const fixations = [
     slug: "garde-corps-verre-sur-pinces",
     name: "Verre sur pinces",
     desc: "Au sol ou sur muret",
+    tag: "Le prix le plus bas",
     photo: "/fixation-pince.png",
     hover: "/fixation-pince-hover.png",
     price: 250,
@@ -42,6 +44,7 @@ const fixations = [
     slug: "garde-corps-verre-avec-spider",
     name: "Verre avec spider",
     desc: "Rotules traversantes, pose latérale",
+    tag: "Architectural",
     photo: "/fixation-spider.png",
     hover: "/fixation-spider-hover.png",
     price: 300,
@@ -207,7 +210,7 @@ export function SiteHeader() {
                           key={f.slug}
                           href={`/produits/${f.slug}`}
                           onClick={() => setOpen(null)}
-                          className="group/fx flex items-center gap-3.5 rounded-xl p-2.5 transition hover:bg-amber-500/20 hover:ring-1 hover:ring-inset hover:ring-amber-500/50"
+                          className="group/fx flex items-center gap-3.5 rounded-xl p-2.5 transition hover:bg-amber-500/20 hover:ring-1 hover:ring-inset hover:ring-amber-600"
                         >
                           <span className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-white ring-1 ring-neutral-200/80 transition-transform duration-300 ease-out group-hover/fx:scale-110">
                             <Image src={f.photo} alt="" fill sizes="6rem" className="object-cover" />
@@ -218,12 +221,15 @@ export function SiteHeader() {
                           </span>
                           <span className="min-w-0 flex-1 origin-left transition-transform duration-300 ease-out group-hover/fx:scale-[1.04]">
                             <span className="flex items-center gap-1 text-sm font-bold text-inkgreen group-hover/fx:text-pine-950">
-                              {f.name}
-                              <ArrowUpRight className="h-3.5 w-3.5 text-neutral-300 transition group-hover/fx:text-amber-600" />
+                              <span className="whitespace-nowrap">{f.name}</span>
+                              <span className="ml-1 shrink-0 rounded-md bg-amber-500/15 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-amber-700">
+                                {f.tag}
+                              </span>
+                              <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-neutral-300 transition group-hover/fx:text-amber-600" />
                             </span>
                             <span className="mt-0.5 block truncate text-xs text-neutral-500">{f.desc}</span>
                           </span>
-                          <span className="shrink-0 text-sm font-extrabold tabular-nums text-pine-700">
+                          <span className="shrink-0 origin-right text-sm font-extrabold tabular-nums text-pine-700 transition-transform duration-300 ease-out group-hover/fx:scale-110">
                             dès {f.price} €<span className="text-[10px] font-semibold text-neutral-400">/ml</span>
                           </span>
                         </Link>
