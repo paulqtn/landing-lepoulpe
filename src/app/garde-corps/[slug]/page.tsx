@@ -283,12 +283,14 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               </Link>
             </div>
 
-            <div className="mt-12 grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-              {/* exigences de la norme — cards déroulantes */}
+            <div className="mt-12 grid items-start gap-8 lg:grid-cols-2 lg:gap-12">
+              {/* exigences de la norme — cards déroulantes, une seule ouverte
+                  à la fois (name natif) : l'image d'en face ne bouge pas */}
               <div className="space-y-3.5">
                 {NORME_PISCINE.map((item, i) => (
                   <details
                     key={item.t}
+                    name="norme-piscine"
                     open={i === 0}
                     className="group rounded-2xl border border-neutral-200 bg-white shadow-card transition-colors open:border-pine-300"
                   >
