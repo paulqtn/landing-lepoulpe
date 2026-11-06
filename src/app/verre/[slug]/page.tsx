@@ -115,10 +115,6 @@ export default async function VerrePage({ params }: { params: Promise<Params> })
             <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
               Votre garde-corps en {v.label}, chiffré en 1 minute.
             </h2>
-            <p className="mx-auto mt-3 max-w-xl leading-relaxed text-neutral-500">
-              L’épaisseur <strong className="font-semibold text-inkgreen">{v.label}</strong> est déjà réglée — répondez
-              au reste, <strong className="font-semibold text-inkgreen">votre tarif exact s’affiche à la fin</strong>.
-            </p>
           </div>
           <div className="mx-auto mt-10 max-w-5xl">
             <Configurator lock={{ verre: v.label as "66.4" | "88.4" | "1010.4" }} source={`configurateur-verre-${v.slug}`} />
