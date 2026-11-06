@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Check, Hammer, HardHat, HelpCircle, Loader2, Lock, Minus, Phone, Plus, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Hammer, HardHat, HelpCircle, Loader2, Lock, Minus, MousePointerClick, Phone, Plus, Zap } from "lucide-react";
+import { FunnelHelp } from "@/components/FunnelHelp";
 import { usages } from "@/lib/catalog";
 import { guarantees, phoneHref, site } from "@/lib/site";
 import { USAGE_ICONS } from "@/lib/usage-icons";
@@ -346,7 +347,7 @@ export function Configurator({
   const activeGroup = status === "done" ? groups.length : groups.findIndex((g) => g.items.some((it) => it.id === stepId));
 
   return (
-    <div ref={cardRef} className={fullscreen ? "flex h-full min-h-0 flex-col" : "relative mx-auto max-w-5xl scroll-mt-24"}>
+    <div ref={cardRef} className={fullscreen ? "relative flex h-full min-h-0 flex-col" : "relative mx-auto max-w-5xl scroll-mt-24"}>
       {/* sticker — réservé à la version card intégrée aux pages */}
       {!fullscreen && (
         <span className="absolute -top-4 left-4 z-10 inline-flex rotate-[-3deg] items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-pine-950 shadow-md sm:-left-3">
@@ -956,19 +957,22 @@ export function Configurator({
                   <ArrowLeft className="h-4 w-4" />
                   Retour
                 </button>
-                <ul className="hidden items-center gap-5 md:flex">
-                  {guarantees.map((g) => (
-                    <li key={g} className="flex items-center gap-1.5 text-xs font-semibold text-neutral-400">
-                      <Check className="h-3.5 w-3.5 shrink-0 text-pine-600" />
-                      {g}
-                    </li>
-                  ))}
-                </ul>
+                {!canContinue && step < lastIdx ? (
+                  /* le bouton est grisé : on dit pourquoi, au même endroit */
+                  <p className="hidden items-center gap-2 text-sm font-semibold text-neutral-400 sm:flex">
+                    <MousePointerClick className="h-4 w-4 shrink-0 text-amber-500" />
+                    Sélectionnez une option pour continuer
+                  </p>
+                ) : (
+                  <p className="hidden text-xs font-semibold text-neutral-400 md:block">
+                    {guarantees.join("  ·  ")}
+                  </p>
+                )}
                 <button
                   type="button"
                   onClick={next}
                   disabled={status === "loading" || (!canContinue && step < lastIdx)}
-                  className={`group inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold transition-all disabled:cursor-not-allowed disabled:opacity-40 ${step === lastIdx ? "bg-amber-500 text-pine-950 shadow-lg shadow-amber-500/30 hover:-translate-y-0.5 hover:bg-amber-600" : "bg-pine-700 text-white hover:bg-pine-600"}`}
+                  className="group inline-flex items-center gap-2 rounded-full bg-amber-500 px-7 py-3.5 text-sm font-bold text-pine-950 shadow-lg shadow-amber-500/30 transition-all hover:-translate-y-0.5 hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
                 >
                   {status === "loading" ? (
                     <>
@@ -989,6 +993,19 @@ export function Configurator({
                 </button>
               </div>
             </div>
+          )}
+
+          {/* assistant d'aide flottant — questions de l'étape + rappel immédiat */}
+          {fullscreen && (
+            <FunnelHelp
+              stepId={status === "done" ? "done" : stepId}
+              context={{
+                lieu: state.lieu ?? null,
+                systeme: state.systeme ?? null,
+                cotes: state.cotes,
+                hauteur: state.hauteur ?? null,
+              }}
+            />
           )}
         </div>
       </div>

@@ -19,12 +19,18 @@ export async function POST(request: Request) {
 
   const { name, email, phone, answers, source } = (body ?? {}) as Record<string, unknown>;
 
+  // Les demandes de rappel (assistant du tunnel) n'exigent qu'un nom et un
+  // téléphone valide — l'email reste obligatoire partout ailleurs.
+  const isRappel = source === "rappel-generateur";
+  const emailOk = typeof email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const phoneOk = typeof phone === "string" && phone.replace(/\D/g, "").length >= 8;
+
   if (
     typeof name !== "string" ||
     typeof email !== "string" ||
     typeof phone !== "string" ||
     name.trim().length < 2 ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    (!emailOk && !(isRappel && phoneOk))
   ) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 422 });
   }

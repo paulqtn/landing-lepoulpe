@@ -22,6 +22,8 @@ type SendResult = { sent: boolean; reason?: string };
 
 async function send(to: string, subject: string, html: string): Promise<SendResult> {
   if (!mailConfigured) return { sent: false, reason: "RESEND_API_KEY non configurée" };
+  // Leads « à rappeler » (assistant du tunnel) : pas d'email — on ne tente rien.
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) return { sent: false, reason: "lead sans email (demande de rappel)" };
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
