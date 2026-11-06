@@ -39,13 +39,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-const steps = [
-  { n: "01", title: "Configurez en 1 min", desc: "Projet, matériau, dimensions : le configurateur estime votre budget immédiatement." },
-  { n: "02", title: "Devis détaillé en 24h", desc: "Un conseiller affine et vous envoie un devis poste par poste, gratuit et sans engagement." },
-  { n: "03", title: "Fabrication d’usine", desc: "Sur-mesure au millimètre ou kit expédié : contrôle qualité avant chaque départ." },
-  { n: "04", title: "Pose ou livraison", desc: "Posé par notre réseau, ou livré prêt à poser sous 10 jours, partout en France." },
-];
-
 /**
  * Cards des trois systèmes de garde-corps en verre : photo réelle,
  * positionnement, prix comparables et points forts propres à la fixation.
@@ -680,31 +673,6 @@ export default function Home() {
               </div>
             </div>
           </Reveal>
-        </Container>
-      </section>
-
-      {/* ========================== ÉTAPES =========================== */}
-      <section className="py-20 sm:py-28">
-        <Container>
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Comment ça marche</p>
-          <h2 className="mt-2 max-w-xl text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-            De l’estimation à la pose, en 4 étapes.
-          </h2>
-
-          <div className="relative mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="absolute left-[12%] right-[12%] top-11 hidden border-t-2 border-dashed border-pine-200 lg:block" />
-            {steps.map((s, i) => (
-              <Reveal key={s.n} delay={i * 70}>
-                <div className="relative h-full rounded-2xl border border-neutral-200/80 bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-elevated">
-                  <span className="relative z-10 grid h-11 w-11 place-items-center rounded-xl bg-pine-700 font-mono text-sm font-bold text-white shadow-md shadow-pine-900/20">
-                    {s.n}
-                  </span>
-                  <h3 className="mt-4 text-lg font-extrabold text-inkgreen">{s.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-neutral-600">{s.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
         </Container>
       </section>
 
