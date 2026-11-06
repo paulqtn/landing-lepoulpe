@@ -63,7 +63,9 @@ export function PageHero({
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/55 to-transparent" />
       </div>
 
-      <Container className="relative pb-16 pt-4 lg:pb-24 lg:pt-10">
+      {/* lg:min-h : toutes les pages partagent la hauteur du hero le plus
+          grand — le contenu reste calé en haut, la photo respire dessous. */}
+      <Container className="relative pb-16 pt-4 lg:min-h-[36.5rem] lg:pb-24 lg:pt-10">
         {breadcrumb}
 
         {/* copy */}
