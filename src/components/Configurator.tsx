@@ -173,9 +173,16 @@ export function Configurator({
   const cardRef = useRef<HTMLDivElement>(null);
   const paneRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
+  /* La reprise automatique change l'étape au chargement : ce recadrage-là
+     ne doit PAS se produire, sinon la page saute vers le générateur. */
+  const skipScroll = useRef(false);
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
+      return;
+    }
+    if (skipScroll.current) {
+      skipScroll.current = false;
       return;
     }
     if (fullscreen) {
@@ -200,7 +207,10 @@ export function Configurator({
       if (!saved?.t || Date.now() - saved.t > 7 * 24 * 3600 * 1000) return;
       if (saved.state) setState((s) => ({ ...s, ...saved.state }));
       if (saved.lead) setLead((l) => ({ ...l, ...saved.lead }));
-      if (Number.isInteger(saved.step)) setStep(Math.min(Math.max(saved.step as number, 0), lastIdx));
+      if (Number.isInteger(saved.step) && (saved.step as number) > 0) {
+        skipScroll.current = true;
+        setStep(Math.min(saved.step as number, lastIdx));
+      }
     } catch {
       /* stockage indisponible : parcours normal */
     }
