@@ -6,10 +6,13 @@ import {
   Check,
   ClipboardList,
   Factory,
+  Hammer,
   HandCoins,
   Headset,
   Home as HomeIcon,
   Layers,
+  MoveHorizontal,
+  MoveVertical,
   Phone,
   Ruler,
   Scissors,
@@ -563,6 +566,76 @@ export default function Home() {
                 <Image
                   src="/atelier-sur-mesure.jpg"
                   alt="Artisan contrôlant la cote d’un panneau de verre devant la machine de découpe numérique"
+                  fill
+                  sizes="(min-width: 1024px) 40rem, 100vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </Reveal>
+        </Container>
+      </section>
+
+      {/* ================== CONFORMITÉ & RÉSISTANCE NF ================== */}
+      <section className="border-y border-neutral-200 bg-mist/60 py-20 sm:py-28">
+        <Container className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr]">
+          <div>
+            <h2 className="text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+              Garde-corps en verre :{" "}
+              <span className="text-pine-600">résistance et conformité aux normes françaises</span>
+            </h2>
+            <span className="mt-4 block h-[3px] w-12 rounded-full bg-amber-500" />
+            <p className="mt-5 max-w-xl leading-relaxed text-neutral-600">
+              Conçus pour sécuriser les espaces en hauteur, nos garde-corps en verre répondent aux
+              exigences de la norme <strong className="font-bold text-inkgreen">NF P01-012</strong> et
+              font l’objet d’essais de résistance mécanique selon les méthodes d’essai{" "}
+              <strong className="font-bold text-inkgreen">NF P01-013</strong>.
+            </p>
+
+            <ul className="mt-6 divide-y divide-neutral-200/80">
+              {(
+                [
+                  [MoveVertical, "Hauteur de protection conforme"],
+                  [MoveHorizontal, "Vides et dimensions de sécurité maîtrisés"],
+                  [ShieldCheck, "Résistance mécanique vérifiée"],
+                  [Hammer, "Essai d’impact au pendule sur vitrage feuilleté"],
+                ] as const
+              ).map(([PointIcon, label]) => (
+                <li key={label} className="flex items-center gap-4 py-3.5">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-pine-700 shadow-sm ring-1 ring-neutral-200/80">
+                    <PointIcon className="h-5 w-5" strokeWidth={1.9} />
+                  </span>
+                  <span className="text-[0.95rem] font-bold text-inkgreen">{label}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* badge de conformité */}
+            <div className="mt-6 flex items-center gap-4 rounded-2xl bg-pine-900 px-6 py-5 text-white shadow-panel">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15">
+                <ShieldCheck className="h-6 w-6 text-amber-400" />
+              </span>
+              <div>
+                <p className="text-lg font-extrabold leading-tight">
+                  Conformité&nbsp;: <span className="text-amber-400">NF P01-012</span>
+                </p>
+                <p className="mt-0.5 text-sm text-pine-200">Essais de résistance&nbsp;: NF P01-013</p>
+              </div>
+            </div>
+            <p className="mt-3 flex gap-2.5 text-xs italic leading-relaxed text-neutral-500">
+              <span className="mt-0.5 h-3.5 w-[3px] shrink-0 rounded-full bg-amber-500" />
+              La conformité finale dépend du dimensionnement, de la pose et de la configuration du projet.
+            </p>
+          </div>
+
+          {/* essai d'impact au pendule : la preuve en image */}
+          <Reveal delay={120}>
+            <div className="relative">
+              <div className="pointer-events-none absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-pine-200/50 via-transparent to-amber-500/10" />
+              <div className="relative aspect-[884/941] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10">
+                <Image
+                  src="/conformite-nf.jpg"
+                  alt="Essai d’impact au pendule sur un garde-corps en verre feuilleté, selon la méthode NF P01-013"
                   fill
                   sizes="(min-width: 1024px) 40rem, 100vw"
                   className="object-cover"
