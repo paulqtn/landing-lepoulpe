@@ -210,7 +210,7 @@ export function SiteHeader() {
                           key={f.slug}
                           href={`/produits/${f.slug}`}
                           onClick={() => setOpen(null)}
-                          className="group/fx flex items-center gap-3.5 rounded-xl p-2.5 transition hover:bg-amber-500/20 hover:ring-1 hover:ring-inset hover:ring-amber-600"
+                          className="group/fx flex items-center gap-3.5 rounded-xl p-2.5 transition hover:bg-amber-500/30 hover:ring-2 hover:ring-inset hover:ring-amber-600"
                         >
                           <span className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-white ring-1 ring-neutral-200/80 transition-transform duration-300 ease-out group-hover/fx:scale-110">
                             <Image src={f.photo} alt="" fill sizes="6rem" className="object-cover" />
@@ -222,7 +222,7 @@ export function SiteHeader() {
                           <span className="min-w-0 flex-1 origin-left transition-transform duration-300 ease-out group-hover/fx:scale-[1.04]">
                             <span className="flex items-center gap-1 text-sm font-bold text-inkgreen group-hover/fx:text-pine-950">
                               <span className="whitespace-nowrap">{f.name}</span>
-                              <span className="ml-1 shrink-0 rounded-md bg-amber-500/15 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-amber-700">
+                              <span className="ml-1 shrink-0 rounded-md bg-amber-500 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide text-pine-950 shadow-sm">
                                 {f.tag}
                               </span>
                               <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-neutral-300 transition group-hover/fx:text-amber-600" />
