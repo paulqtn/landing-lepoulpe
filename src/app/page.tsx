@@ -651,16 +651,13 @@ export default function Home() {
             </ul>
 
             {/* badge de conformité */}
-            <div className="mt-6 flex items-center gap-4 rounded-2xl bg-pine-900 px-6 py-5 text-white shadow-panel">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15">
-                <ShieldCheck className="h-6 w-6 text-amber-400" />
+            <div className="mt-6 inline-flex items-center gap-3.5 rounded-2xl bg-pine-900 px-6 py-3.5 text-white shadow-panel">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15">
+                <ShieldCheck className="h-5 w-5 text-amber-400" />
               </span>
-              <div>
-                <p className="text-lg font-extrabold leading-tight">
-                  Conformité&nbsp;: <span className="text-amber-400">NF P01-012</span>
-                </p>
-                <p className="mt-0.5 text-sm text-pine-200">Essais de résistance&nbsp;: NF P01-013</p>
-              </div>
+              <p className="text-lg font-extrabold leading-tight">
+                Conformité&nbsp;: <span className="text-amber-400">NF P01-012</span>
+              </p>
             </div>
             <p className="mt-3 flex gap-2.5 text-xs italic leading-relaxed text-neutral-500">
               <span className="mt-0.5 h-3.5 w-[3px] shrink-0 rounded-full bg-amber-500" />
