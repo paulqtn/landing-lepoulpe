@@ -4,7 +4,7 @@
  */
 
 export const site = {
-  name: "Garde-Corps Pro",
+  name: "Garde-Corps Verre",
   legalName: "Garde-Corps Pro",
   tagline: "Garde-corps en direct usine",
   description:
