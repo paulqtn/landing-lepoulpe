@@ -210,7 +210,7 @@ export function SiteHeader() {
                           key={f.slug}
                           href={`/produits/${f.slug}`}
                           onClick={() => setOpen(null)}
-                          className="group/fx flex items-center gap-3.5 rounded-xl p-2.5 transition hover:bg-amber-500/30 hover:ring-2 hover:ring-inset hover:ring-amber-600"
+                          className="group/fx flex items-center gap-3.5 rounded-xl p-2.5 transition hover:bg-amber-500/15"
                         >
                           <span className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-white ring-1 ring-neutral-200/80 transition-transform duration-300 ease-out group-hover/fx:scale-110">
                             <Image src={f.photo} alt="" fill sizes="6rem" className="object-cover" />
