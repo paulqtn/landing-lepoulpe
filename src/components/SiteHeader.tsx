@@ -26,21 +26,21 @@ const fixations = [
     slug: "garde-corps-verre-sur-rail",
     name: "Verre sur rail",
     desc: "Rail alu au sol, sans poteaux",
-    photo: "/verre-sur-rail.jpg",
+    photo: "/fixation-rail.png",
     price: 320,
   },
   {
     slug: "garde-corps-verre-sur-pinces",
     name: "Verre sur pinces",
     desc: "Au sol ou sur muret",
-    photo: "/pinces-au-sol.jpg",
+    photo: "/fixation-pince.png",
     price: 250,
   },
   {
     slug: "garde-corps-verre-avec-spider",
     name: "Verre avec spider",
     desc: "Rotules traversantes, pose latérale",
-    photo: "/garde-corps-verre-fenetre-2.jpg",
+    photo: "/fixation-spider.png",
     price: 300,
   },
 ];
@@ -206,8 +206,8 @@ export function SiteHeader() {
                           onClick={() => setOpen(null)}
                           className="group/fx flex items-center gap-3.5 rounded-xl p-2.5 transition hover:bg-amber-500/15"
                         >
-                          <span className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg">
-                            <Image src={f.photo} alt="" fill sizes="5rem" className="object-cover" />
+                          <span className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-white ring-1 ring-neutral-200/80">
+                            <Image src={f.photo} alt="" fill sizes="6rem" className="object-cover" />
                           </span>
                           <span className="min-w-0 flex-1">
                             <span className="flex items-center gap-1 text-sm font-bold text-inkgreen group-hover/fx:text-pine-950">
