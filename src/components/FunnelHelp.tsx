@@ -115,7 +115,9 @@ export function FunnelHelp({ stepId, context }: { stepId: string; context: Recor
   }
 
   return (
-    <>
+    /* Desktop uniquement : sur mobile le bouton flottant gêne le parcours,
+       et la barre du haut porte déjà le téléphone. */
+    <div className="hidden lg:contents">
       {/* bouton flottant */}
       <button
         type="button"
@@ -227,6 +229,6 @@ export function FunnelHelp({ stepId, context }: { stepId: string; context: Recor
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
