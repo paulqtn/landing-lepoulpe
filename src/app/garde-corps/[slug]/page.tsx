@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, ArrowUpRight, Check, ClipboardList, Wrench } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Ban, Check, ChevronDown, ClipboardList, DoorOpen, Lock, Ruler, Wrench } from "lucide-react";
 import { Configurator } from "@/components/Configurator";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { PageHero, type PageHeroImage } from "@/components/PageHero";
@@ -17,6 +18,30 @@ import {
 } from "@/lib/catalog";
 import { productsForMaterial } from "@/lib/products";
 import { site } from "@/lib/site";
+
+/* Bloc piscine : les exigences NF P90-306, en cards déroulantes. */
+const NORME_PISCINE: { icon: typeof Ruler; t: string; d: string }[] = [
+  {
+    icon: Ruler,
+    t: "Hauteur 1m10",
+    d: "La norme exige 1,10 m minimum entre deux points d’appui : nos panneaux sont façonnés à cette hauteur, au millimètre près.",
+  },
+  {
+    icon: DoorOpen,
+    t: "Portillon en verre",
+    d: "Un portillon assorti à la barrière, à fermeture et verrouillage automatiques : l’accès ne reste jamais ouvert derrière vous.",
+  },
+  {
+    icon: Lock,
+    t: "Accès sécurisé",
+    d: "Le déverrouillage demande une double action, pensée pour résister aux manipulations d’un enfant de moins de 5 ans.",
+  },
+  {
+    icon: Ban,
+    t: "Aucun point d’appui pour escalader",
+    d: "Le verre feuilleté lisse n’offre ni prise ni marche : impossible d’escalader la barrière, contrairement aux clôtures à barreaux.",
+  },
+];
 
 /* Visuel du hero — une image fixe par usage ou matériau. */
 const HERO_IMAGES: Record<string, PageHeroImage> = {
@@ -207,6 +232,75 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
             </div>
             <div className="mx-auto mt-10 max-w-5xl">
               <Configurator lock={{ usage: usageLock }} source={`configurateur-${entry.slug}`} />
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {/* ---- piscine : la conformité NF P90-306, en texte + image ---- */}
+      {entry.slug === "piscine" && (
+        <section className="border-b border-neutral-200 bg-mist/60 py-16 sm:py-24">
+          <Container>
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+                Barrière de piscine en verre conforme{" "}
+                <span className="whitespace-nowrap text-pine-600">NF P90-306</span>
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl leading-relaxed text-neutral-600">
+                Notre garde-corps en verre est conçu pour répondre à la norme NF P90-306 visant à
+                sécuriser votre piscine.
+              </p>
+              <Link
+                href="/generateur?usage=piscine"
+                className="group mt-7 inline-flex items-center gap-2.5 rounded-full bg-amber-500 py-3 pl-7 pr-3 text-sm font-bold text-pine-950 shadow-lg shadow-amber-500/25 transition-all hover:-translate-y-0.5 hover:bg-amber-600"
+              >
+                Obtenir mon devis
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-pine-950 text-amber-500 transition-transform duration-300 group-hover:translate-x-0.5">
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              </Link>
+            </div>
+
+            <div className="mt-12 grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+              {/* exigences de la norme — cards déroulantes */}
+              <div className="space-y-3.5">
+                {NORME_PISCINE.map((item, i) => (
+                  <details
+                    key={item.t}
+                    open={i === 0}
+                    className="group rounded-2xl border border-neutral-200 bg-white shadow-card transition-colors open:border-pine-300"
+                  >
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 [&::-webkit-details-marker]:hidden">
+                      <span className="flex items-center gap-3.5">
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-pine-50 text-pine-700">
+                          <item.icon className="h-[18px] w-[18px]" strokeWidth={2} />
+                        </span>
+                        <span className="text-[0.95rem] font-extrabold text-inkgreen">{item.t}</span>
+                      </span>
+                      <ChevronDown className="h-5 w-5 shrink-0 text-neutral-400 transition-transform duration-300 group-open:rotate-180" />
+                    </summary>
+                    <p className="px-5 pb-5 text-sm leading-relaxed text-neutral-600 sm:pl-[4.65rem]">
+                      {item.d}
+                    </p>
+                  </details>
+                ))}
+              </div>
+
+              {/* la barrière en situation */}
+              <Reveal delay={120}>
+                <div className="relative">
+                  <div className="pointer-events-none absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-pine-200/50 via-transparent to-amber-500/10" />
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10">
+                    <Image
+                      src="/barriere-piscine-nf.webp"
+                      alt="Barrière de piscine en verre sur pinces inox avec portillon, conforme NF P90-306"
+                      fill
+                      sizes="(min-width: 1024px) 40rem, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
+              </Reveal>
             </div>
           </Container>
         </section>
