@@ -549,73 +549,6 @@ export default function Home() {
           </Reveal>
         </Container>
       </section>
-      {/* ==================== ATELIER & TECHNOLOGIE ==================== */}
-      <section className="py-20 sm:py-28">
-        <Container className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
-          <div>
-            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Atelier & technologie</p>
-            <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-              Le savoir-faire d’un artisan,
-              <br />
-              <em className="italic text-pine-600">la précision des machines de pointe.</em>
-            </h2>
-            <p className="mt-4 max-w-lg leading-relaxed text-neutral-600">
-              Chaque panneau est étudié, découpé et façonné sur mesure chez notre miroitier.
-              Le geste précis s’alliant à des équipements de dernière génération vous offre
-              une qualité de finition irréprochable, prête à poser.
-            </p>
-
-            <ul className="mt-8 space-y-5">
-              {atelierPoints.map((p) => (
-                <li key={p.title} className="flex items-start gap-4">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-mist text-pine-700 ring-1 ring-neutral-200/70">
-                    <p.icon className="h-5 w-5" strokeWidth={1.8} />
-                  </span>
-                  <span className="pt-0.5 text-[0.95rem] leading-snug text-neutral-500">
-                    <strong className="font-bold text-inkgreen">{p.title}</strong> — {p.desc}
-                  </span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-9 flex flex-col items-start gap-4 rounded-2xl border border-neutral-200/80 bg-mist/60 p-5 sm:flex-row sm:items-center">
-              <p className="flex-1 text-sm leading-relaxed text-neutral-600">
-                <strong className="font-bold text-inkgreen">Un projet, une contrainte, une cote complexe&nbsp;?</strong>{" "}
-                Nos experts valident avec vous chaque détail technique avant fabrication.
-              </p>
-              <div className="shrink-0 sm:text-right">
-                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-amber-600">
-                  Parler à un expert
-                </p>
-                <a
-                  href={phoneHref}
-                  className="mt-1.5 inline-flex items-center gap-2 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-pine-900/20 transition-all hover:-translate-y-0.5 hover:bg-pine-600"
-                >
-                  <Phone className="h-4 w-4" />
-                  {site.phone}
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* photo d'atelier : contrôle expert devant la découpe numérique */}
-          <Reveal delay={120}>
-            <div className="relative">
-              <div className="pointer-events-none absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-pine-200/50 via-transparent to-amber-500/10" />
-              <div className="relative aspect-square overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10">
-                <Image
-                  src="/atelier-sur-mesure.jpg"
-                  alt="Artisan contrôlant la cote d’un panneau de verre devant la machine de découpe numérique"
-                  fill
-                  sizes="(min-width: 1024px) 40rem, 100vw"
-                  className="object-cover"
-                />
-              </div>
-            </div>
-          </Reveal>
-        </Container>
-      </section>
-
       {/* ================== CONFORMITÉ & RÉSISTANCE NF ================== */}
       <section className="border-y border-neutral-200 bg-mist/60 py-20 sm:py-28">
         <Container className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr]">
@@ -673,6 +606,73 @@ export default function Home() {
                 <Image
                   src="/conformite-nf.jpg"
                   alt="Essai d’impact au pendule sur un garde-corps en verre feuilleté, selon la méthode NF P01-013"
+                  fill
+                  sizes="(min-width: 1024px) 40rem, 100vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </Reveal>
+        </Container>
+      </section>
+
+      {/* ==================== ATELIER & TECHNOLOGIE ==================== */}
+      <section className="py-20 sm:py-28">
+        <Container className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
+          <div>
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">Atelier & technologie</p>
+            <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+              Le savoir-faire d’un artisan,
+              <br />
+              <em className="italic text-pine-600">la précision des machines de pointe.</em>
+            </h2>
+            <p className="mt-4 max-w-lg leading-relaxed text-neutral-600">
+              Chaque panneau est étudié, découpé et façonné sur mesure chez notre miroitier.
+              Le geste précis s’alliant à des équipements de dernière génération vous offre
+              une qualité de finition irréprochable, prête à poser.
+            </p>
+
+            <ul className="mt-8 space-y-5">
+              {atelierPoints.map((p) => (
+                <li key={p.title} className="flex items-start gap-4">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-mist text-pine-700 ring-1 ring-neutral-200/70">
+                    <p.icon className="h-5 w-5" strokeWidth={1.8} />
+                  </span>
+                  <span className="pt-0.5 text-[0.95rem] leading-snug text-neutral-500">
+                    <strong className="font-bold text-inkgreen">{p.title}</strong> — {p.desc}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-9 flex flex-col items-start gap-4 rounded-2xl border border-neutral-200/80 bg-mist/60 p-5 sm:flex-row sm:items-center">
+              <p className="flex-1 text-sm leading-relaxed text-neutral-600">
+                <strong className="font-bold text-inkgreen">Un projet, une contrainte, une cote complexe&nbsp;?</strong>{" "}
+                Nos experts valident avec vous chaque détail technique avant fabrication.
+              </p>
+              <div className="shrink-0 sm:text-right">
+                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-amber-600">
+                  Parler à un expert
+                </p>
+                <a
+                  href={phoneHref}
+                  className="mt-1.5 inline-flex items-center gap-2 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-pine-900/20 transition-all hover:-translate-y-0.5 hover:bg-pine-600"
+                >
+                  <Phone className="h-4 w-4" />
+                  {site.phone}
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* photo d'atelier : contrôle expert devant la découpe numérique */}
+          <Reveal delay={120}>
+            <div className="relative">
+              <div className="pointer-events-none absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-pine-200/50 via-transparent to-amber-500/10" />
+              <div className="relative aspect-square overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10">
+                <Image
+                  src="/atelier-sur-mesure.jpg"
+                  alt="Artisan contrôlant la cote d’un panneau de verre devant la machine de découpe numérique"
                   fill
                   sizes="(min-width: 1024px) 40rem, 100vw"
                   className="object-cover"
