@@ -379,7 +379,8 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
-      {/* bénéfices */}
+      {/* bénéfices — remplacés sur piscine par les blocs norme + réalisations */}
+      {entry.slug !== "piscine" && (
       <section className="py-16 sm:py-24">
         <Container>
           <h2 className="text-2xl font-extrabold tracking-tight text-inkgreen sm:text-3xl">Pourquoi ce choix ?</h2>
@@ -398,8 +399,10 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
           </div>
         </Container>
       </section>
+      )}
 
-      {/* technique */}
+      {/* technique — idem : retiré sur piscine */}
+      {entry.slug !== "piscine" && (
       <section className="border-y border-neutral-200 bg-mist py-16 sm:py-24">
         <Container>
           <div className="flex items-center gap-3">
@@ -419,6 +422,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
           </div>
         </Container>
       </section>
+      )}
 
       {/* kits associés */}
       {kits.length > 0 && (
