@@ -42,6 +42,8 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
     ["Verre", answers.verre ?? answers.epaisseur],
     ["Teinte", answers.teinte],
     ["Installation", answers.installation],
+    ["Adresse du chantier", answers.adresse],
+    ["Ville", answers.ville],
     ["Code postal", answers.codePostal],
   ];
 
