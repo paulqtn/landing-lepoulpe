@@ -72,6 +72,66 @@ function ShapeGlyph({ n, className }: { n: number; className?: string }) {
   );
 }
 
+/** Plan vu de dessus, dessiné en direct : chaque côté à l'échelle avec son
+    numéro et sa longueur, les angles marqués — le client voit son projet. */
+function ShapeDiagram({ cotes }: { cotes: string[] }) {
+  const lens = cotes.map((c) => {
+    const n = parseFloat(c.replace(",", "."));
+    return Number.isFinite(n) && n > 0 ? n : 1;
+  });
+  const dirs: [number, number][] = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+  const pts: [number, number][] = [[0, 0]];
+  lens.forEach((L, i) => {
+    const d = dirs[i % 4];
+    const [x, y] = pts[i];
+    pts.push([x + d[0] * L, y + d[1] * L]);
+  });
+  const xs = pts.map((p) => p[0]);
+  const ys = pts.map((p) => p[1]);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const W = 340, H = 200, pad = 42;
+  const k = Math.min((W - 2 * pad) / Math.max(maxX - minX, 0.001), (H - 2 * pad) / Math.max(maxY - minY, 0.001));
+  const offX = pad + ((W - 2 * pad) - (maxX - minX) * k) / 2;
+  const offY = pad + ((H - 2 * pad) - (maxY - minY) * k) / 2;
+  const P = pts.map(([x, y]) => [offX + (x - minX) * k, offY + (y - minY) * k] as [number, number]);
+  const dAttr = "M" + P.map((p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" L");
+  const cx = P.reduce((a, p) => a + p[0], 0) / P.length;
+  const cy = P.reduce((a, p) => a + p[1], 0) / P.length;
+  const labels = lens.map((L, i) => {
+    const mx = (P[i][0] + P[i + 1][0]) / 2;
+    const my = (P[i][1] + P[i + 1][1]) / 2;
+    let ox = mx - cx, oy = my - cy;
+    const n = Math.hypot(ox, oy);
+    if (n < 1) { ox = 0; oy = -1; } else { ox /= n; oy /= n; }
+    return { x: mx + ox * 20, y: my + oy * 20 + 4, txt: `${i + 1} · ${fmtM(L)} m` };
+  });
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" aria-hidden>
+      <path d={dAttr} fill="none" className="stroke-pine-700" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+      {P.slice(1, -1).map((p, i) => (
+        <circle key={i} cx={p[0]} cy={p[1]} r="5" className="fill-amber-500 stroke-white" strokeWidth="2" />
+      ))}
+      {labels.map((l) => (
+        <text
+          key={l.txt}
+          x={l.x}
+          y={l.y}
+          textAnchor="middle"
+          fontSize="12.5"
+          fontWeight="800"
+          paintOrder="stroke"
+          stroke="#ffffff"
+          strokeWidth="4"
+          className="fill-pine-900"
+        >
+          {l.txt}
+        </text>
+      ))}
+    </svg>
+  );
+}
+
 /** Panneau vu de côté avec flèche de hauteur — plus haut = plus protecteur. */
 function HeightGlyph({ h, className }: { h: number; className?: string }) {
   const top = 30 - h;
@@ -697,54 +757,52 @@ export function Configurator({
                 </div>
               </StepShell>
             ) : stepId === "longueurs" ? (
-              <StepShell title="Vos longueurs ?" help="Un côté = une longueur à équiper. Les angles entre côtés sont pris en charge automatiquement.">
-                {/* nombre de côtés */}
-                <div className="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-mist/50 px-4 py-3.5">
-                  <div className="flex items-center gap-3.5">
-                    <ShapeGlyph n={state.cotes.length} className="h-10 w-10 shrink-0" />
-                    <div>
-                      <p className="text-sm font-bold text-inkgreen">
-                        {state.cotes.length} côté{state.cotes.length > 1 ? "s" : ""}
-                        {state.cotes.length > 1 && (
-                          <span className="font-semibold text-neutral-500"> · {state.cotes.length - 1} angle{state.cotes.length > 2 ? "s" : ""} géré{state.cotes.length > 2 ? "s" : ""} auto</span>
-                        )}
-                      </p>
-                      <p className="text-[11px] text-neutral-500">
-                        {state.cotes.length === 1 ? "En ligne droite" : state.cotes.length === 2 ? "En L" : state.cotes.length === 3 ? "En U" : "Forme complexe"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setNbCotes(state.cotes.length - 1)}
-                      disabled={state.cotes.length <= 1}
-                      aria-label="Retirer un côté"
-                      className="grid h-10 w-10 place-items-center rounded-full border border-neutral-200 bg-white text-neutral-600 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-30"
-                    >
-                      <Minus className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setNbCotes(state.cotes.length + 1)}
-                      disabled={state.cotes.length >= 6}
-                      aria-label="Ajouter un côté"
-                      className="grid h-10 w-10 place-items-center rounded-full border border-neutral-200 bg-white text-neutral-600 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-30"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </button>
-                  </div>
+              <StepShell title="Vos longueurs ?" help="Mesurez au nez de dalle — un côté = une longueur droite, les angles entre côtés se règlent automatiquement.">
+                {/* forme du garde-corps : un clic, pas de compteur abstrait */}
+                <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
+                  {([
+                    [1, "Ligne droite"],
+                    [2, "En L"],
+                    [3, "En U"],
+                    [4, "4 côtés +"],
+                  ] as const).map(([n, label]) => {
+                    const on = n === 4 ? state.cotes.length >= 4 : state.cotes.length === n;
+                    return (
+                      <button
+                        key={n}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => setNbCotes(n)}
+                        className={`flex flex-col items-center gap-1.5 rounded-xl border px-2 py-3 transition ${on ? OPTION_ON : OPTION_OFF}`}
+                      >
+                        <ShapeGlyph n={n} className="h-8 w-8" />
+                        <span className="text-xs font-bold text-inkgreen">{label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
 
-                {/* longueur de chaque côté */}
-                <div className="mt-4 space-y-2.5">
+                <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_1.05fr] sm:items-start">
+                  {/* plan vu de dessus, dessiné en direct */}
+                  <div className="rounded-2xl border border-neutral-200 bg-mist/50 p-3">
+                    <p className="px-1 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-neutral-400">
+                      Votre projet vu de dessus
+                    </p>
+                    <ShapeDiagram cotes={state.cotes} />
+                    {state.cotes.length > 1 && (
+                      <p className="flex items-center gap-1.5 px-1 text-[11px] font-semibold text-neutral-500">
+                        <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-amber-500 ring-2 ring-amber-500/30" />
+                        {state.cotes.length - 1} angle{state.cotes.length > 2 ? "s" : ""} réglé{state.cotes.length > 2 ? "s" : ""} automatiquement
+                      </p>
+                    )}
+                  </div>
+
+                  {/* longueur de chaque côté */}
+                  <div className="space-y-2.5">
                   {state.cotes.map((c, i) => (
-                    <div key={i} className="flex items-center gap-3 rounded-2xl border border-neutral-200 px-4 py-3">
+                    <div key={i} className="flex items-center gap-3 rounded-2xl border border-neutral-200 px-3.5 py-2.5">
                       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-pine-50 font-mono text-xs font-bold text-pine-700">
                         {i + 1}
-                      </span>
-                      <span className="hidden text-xs font-semibold uppercase tracking-wide text-neutral-400 sm:block">
-                        Côté {i + 1}
                       </span>
                       <div className="ml-auto flex items-center gap-2">
                         <button
@@ -776,14 +834,15 @@ export function Configurator({
                       </div>
                     </div>
                   ))}
-                </div>
 
-                <p className="mt-4 flex items-baseline justify-between rounded-xl bg-pine-50 px-4 py-3">
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-pine-700">Longueur totale</span>
-                  <span className="text-lg font-extrabold tabular-nums text-pine-700">
-                    {fmt.format(Math.round(totalMl * 100) / 100)} ml
-                  </span>
-                </p>
+                  <p className="flex items-baseline justify-between rounded-xl bg-pine-50 px-4 py-3">
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-pine-700">Longueur totale</span>
+                    <span className="text-lg font-extrabold tabular-nums text-pine-700">
+                      {fmt.format(Math.round(totalMl * 100) / 100)} ml
+                    </span>
+                  </p>
+                  </div>
+                </div>
               </StepShell>
             ) : stepId === "hauteur" ? (
               <StepShell title="Quelle hauteur ?" help="Mesurée du sol fini au sommet du verre — 1,00 m est la hauteur de la norme.">
