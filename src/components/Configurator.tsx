@@ -23,9 +23,9 @@ const lieux = usages.map((u) => ({ value: u.slug, label: u.name }));
 export type SystemeKey = "rail" | "pinces" | "spider";
 
 const systemes: { value: SystemeKey | "conseil"; label: string; photo?: string; badge?: string }[] = [
-  { value: "rail", label: "Rail", photo: "/verre-sur-rail.jpg", badge: "Pose facile" },
-  { value: "pinces", label: "Pince", photo: "/pinces-au-sol.jpg" },
-  { value: "spider", label: "Spider", photo: "/garde-corps-verre-fenetre-2.jpg" },
+  { value: "rail", label: "Rail", photo: "/fixation-rail-hover.png", badge: "Pose facile" },
+  { value: "pinces", label: "Pince", photo: "/fixation-pince-hover.png", badge: "Économique" },
+  { value: "spider", label: "Spider", photo: "/fixation-spider-hover.png", badge: "Architectural" },
   { value: "conseil", label: "À me conseiller" },
 ];
 
@@ -666,9 +666,9 @@ export function Configurator({
                       >
                         {/* carré : image 3/4 haut, label 1/4 bas */}
                         <span className="relative block aspect-square">
-                          <span className="absolute inset-x-0 top-0 h-3/4 overflow-hidden">
+                          <span className="absolute inset-x-0 top-0 h-3/4 overflow-hidden bg-white">
                             {o.photo ? (
-                              <Image src={o.photo} alt="" fill sizes="12rem" className="object-cover" />
+                              <Image src={o.photo} alt="" fill sizes="12rem" className="object-contain p-2" />
                             ) : (
                               <span className="grid h-full w-full place-items-center bg-mist">
                                 <HelpCircle className="h-8 w-8 text-pine-600" />
