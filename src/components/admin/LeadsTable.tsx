@@ -128,7 +128,7 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
                   <ScoreBadge score={l.score} points={l.score_points} />
                 </td>
                 <td className="px-4 py-3">
-                  <Link href={`/admin/leads/${l.id}`} className="font-bold text-inkgreen hover:text-pine-700">
+                  <Link href={`/commercial/clients/${l.id}`} className="font-bold text-inkgreen hover:text-pine-700">
                     {l.name}
                   </Link>
                   <p className="text-xs text-neutral-400">

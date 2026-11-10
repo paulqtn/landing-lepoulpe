@@ -33,9 +33,9 @@ export default async function LeadsPage({
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-extrabold text-inkgreen">Demandes de devis</h1>
+        <h1 className="text-2xl font-extrabold text-inkgreen">Clients</h1>
         <div className="flex items-center gap-2">
-          <form className="flex gap-2" action="/admin/leads">
+          <form className="flex gap-2" action="/commercial/clients">
             {statut && <input type="hidden" name="statut" value={statut} />}
             <input
               name="q"
@@ -55,9 +55,9 @@ export default async function LeadsPage({
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        <FilterChip href="/admin/leads" active={!statut} label="Tous" />
+        <FilterChip href="/commercial/clients" active={!statut} label="Tous" />
         {STATUTS.map((s) => (
-          <FilterChip key={s} href={`/admin/leads?statut=${s}`} active={statut === s} label={STATUT_LABELS[s]} />
+          <FilterChip key={s} href={`/commercial/clients?statut=${s}`} active={statut === s} label={STATUT_LABELS[s]} />
         ))}
       </div>
 
