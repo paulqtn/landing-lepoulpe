@@ -1,126 +1,168 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, BellRing, Euro, Inbox, TrendingUp } from "lucide-react";
+import { AlertTriangle, ArrowRight, BarChart3, Boxes, PhoneCall, Truck } from "lucide-react";
 import { SeedDemo } from "@/components/admin/SeedDemo";
-import { dateFmt, eurFmt, StatutBadge } from "@/components/admin/ui";
-import { dueRelances, listLeads, pipeline, stats, STATUT_LABELS } from "@/lib/admin/db";
-import { mailConfigured } from "@/lib/admin/mail";
+import { eurFmt, ScoreBadge } from "@/components/admin/ui";
+import { leadsJour, listLeads, stats } from "@/lib/admin/db";
+import { listOrders, listShipments, listStock, ORDER_LABELS, SHIPMENT_LABELS } from "@/lib/admin/logistics";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminDashboard() {
+const dayFmt = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
 
-  const [s, dues, derniers, pipe] = await Promise.all([stats(), dueRelances(), listLeads({ limit: 8 }), pipeline()]);
-  const pipeMax = Math.max(1, ...pipe.map((p) => p.n));
+export default async function AdminHome() {
+  const [s, jour, orders, stock, ships] = await Promise.all([stats(), leadsJour(), listOrders(), listStock(), listShipments()]);
+
+  const atelier = orders.filter((o) => ["a_preparer", "decoupe", "faconnage", "pret"].includes(o.statut));
+  const alertesStock = stock.filter((it) => Number(it.qty) <= Number(it.seuil) || it.previsionnel < 0);
+  const prochainesExp = ships.filter((x) => x.statut !== "livree").slice(0, 3);
+  const aTraiter = jour.aAppeler.length + jour.chauds.length;
 
   const kpis = [
-    { icon: Inbox, label: "Demandes (7 jours)", value: String(s.semaine), sub: `${s.total} au total` },
-    { icon: TrendingUp, label: "Devis en cours", value: String(s.devisEnvoyes), sub: `${s.gagnes} gagnés · ${s.perdus} perdus` },
-    { icon: BellRing, label: "Relances à traiter", value: String(s.relancesDues), sub: mailConfigured ? "envoi auto chaque matin" : "emails non configurés" },
-    { icon: Euro, label: "CA gagné (TTC)", value: `${eurFmt.format(s.caGagne)} €`, sub: "sur les demandes marquées gagnées" },
+    { label: "Demandes (7 jours)", value: String(s.semaine), href: "/admin/commercial" },
+    { label: "À traiter aujourd’hui", value: String(aTraiter + s.relancesDues), href: "/admin/jour" },
+    { label: "Commandes en atelier", value: String(atelier.length), href: "/admin/gestion" },
+    { label: "Alertes stock", value: String(alertesStock.length), href: "/admin/gestion#stock", warn: alertesStock.length > 0 },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-extrabold text-inkgreen">Tableau de bord</h1>
+        <div>
+          <h1 className="text-2xl font-extrabold text-inkgreen">Bonjour 👋</h1>
+          <p className="text-sm capitalize text-neutral-400">{dayFmt.format(new Date())}</p>
+        </div>
         {s.total === 0 && <SeedDemo />}
       </div>
 
-      {!mailConfigured && (
-        <p className="flex items-start gap-2.5 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-neutral-700">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-          Emails automatiques inactifs : ajoutez RESEND_API_KEY et EMAIL_FROM dans Vercel (voir ADMIN.md).
-          En attendant, devis et relances se font à la main depuis chaque fiche.
-        </p>
-      )}
-
+      {/* le pouls du jour */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((k) => (
-          <div key={k.label} className="rounded-2xl border border-neutral-200 bg-white p-5">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-pine-50 text-pine-700">
-              <k.icon className="h-5 w-5" />
-            </span>
-            <p className="mt-3 text-2xl font-extrabold tabular-nums text-inkgreen">{k.value}</p>
-            <p className="text-sm font-semibold text-neutral-600">{k.label}</p>
-            <p className="mt-0.5 text-xs text-neutral-400">{k.sub}</p>
-          </div>
+          <Link
+            key={k.label}
+            href={k.href}
+            className={`rounded-2xl border bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-card ${k.warn ? "border-amber-500/60" : "border-neutral-200"}`}
+          >
+            <p className={`text-3xl font-extrabold tabular-nums ${k.warn ? "text-amber-600" : "text-inkgreen"}`}>{k.value}</p>
+            <p className="mt-1 text-sm font-semibold text-neutral-600">{k.label}</p>
+          </Link>
         ))}
       </div>
 
-      {/* pipeline commercial */}
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="text-base font-extrabold text-inkgreen">Pipeline</h2>
-        <div className="mt-3 space-y-2">
-          {pipe.map((p) => (
-            <div key={p.statut} className="flex items-center gap-3">
-              <span className="w-28 shrink-0 text-xs font-semibold text-neutral-500">{STATUT_LABELS[p.statut]}</span>
-              <div className="h-5 flex-1 overflow-hidden rounded-full bg-mist">
-                <div
-                  className={`h-full rounded-full ${p.statut === "gagne" ? "bg-green-500" : p.statut === "perdu" ? "bg-neutral-300" : "bg-pine-600"}`}
-                  style={{ width: `${Math.max(4, (p.n / pipeMax) * 100)}%` }}
-                />
-              </div>
-              <span className="w-10 shrink-0 text-right text-sm font-extrabold tabular-nums text-inkgreen">{p.n}</span>
-              <span className="w-24 shrink-0 text-right text-xs tabular-nums text-neutral-400">
-                {p.total > 0 ? `${eurFmt.format(p.total)} €` : ""}
-              </span>
-            </div>
-          ))}
-          {pipe.length === 0 && <p className="text-sm text-neutral-400">Encore aucune demande.</p>}
-        </div>
-      </section>
-
-      {dues.length > 0 && (
-        <section className="rounded-2xl border border-amber-500/40 bg-white p-5">
-          <h2 className="flex items-center gap-2 text-base font-extrabold text-inkgreen">
-            <BellRing className="h-4 w-4 text-amber-600" />
-            Relances arrivées à échéance
-          </h2>
-          <ul className="mt-3 divide-y divide-neutral-100">
-            {dues.slice(0, 6).map((l) => (
+      {/* les 3 pôles */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        {/* commercial */}
+        <section className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-5">
+          <div className="flex items-center gap-2.5">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-pine-700 text-amber-400">
+              <PhoneCall className="h-5 w-5" />
+            </span>
+            <h2 className="text-base font-extrabold text-inkgreen">Commercial</h2>
+          </div>
+          <p className="mt-1.5 text-xs text-neutral-500">
+            {s.devisEnvoyes} devis en cours · {s.relancesDues} relance{s.relancesDues > 1 ? "s" : ""} due{s.relancesDues > 1 ? "s" : ""}
+          </p>
+          <ul className="mt-3 flex-1 space-y-1.5">
+            {[...new Map([...jour.chauds, ...jour.aAppeler].map((l) => [l.id, l])).values()].slice(0, 3).map((l) => (
               <li key={l.id}>
-                <Link href={`/admin/leads/${l.id}`} className="flex items-center justify-between gap-3 py-2.5 transition hover:bg-mist/60">
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-bold text-inkgreen">{l.name}</span>
-                    <span className="text-xs text-neutral-400">
-                      relance {l.relances + 1} · prévue le {dateFmt.format(new Date(l.next_relance_at!))}
-                    </span>
-                  </span>
-                  <StatutBadge statut={l.statut} />
+                <Link href={`/admin/leads/${l.id}`} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition hover:bg-mist/70">
+                  <ScoreBadge score={l.score} />
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-inkgreen">{l.name}</span>
+                  {l.estimation_ttc && <span className="text-xs tabular-nums text-neutral-400">{eurFmt.format(Number(l.estimation_ttc))} €</span>}
                 </Link>
               </li>
             ))}
+            {jour.chauds.length + jour.aAppeler.length === 0 && (
+              <li className="px-2 py-4 text-center text-xs text-neutral-400">Rien d’urgent — belle journée.</li>
+            )}
           </ul>
-        </section>
-      )}
-
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-base font-extrabold text-inkgreen">Dernières demandes</h2>
-          <Link href="/admin/leads" className="group flex items-center gap-1 text-sm font-bold text-pine-700">
-            Tout voir
+          <Link href="/admin/commercial" className="group mt-3 inline-flex items-center gap-1 text-sm font-bold text-pine-700">
+            Ouvrir le pôle
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
-        </div>
-        <ul className="mt-3 divide-y divide-neutral-100">
-          {derniers.map((l) => (
-            <li key={l.id}>
-              <Link href={`/admin/leads/${l.id}`} className="flex items-center justify-between gap-3 py-2.5 transition hover:bg-mist/60">
-                <span className="min-w-0">
-                  <span className="block truncate text-sm font-bold text-inkgreen">{l.name}</span>
-                  <span className="text-xs text-neutral-400">
-                    {dateFmt.format(new Date(l.created_at))} · {l.source ?? "site"}
-                    {l.estimation_ttc ? ` · ${eurFmt.format(Number(l.estimation_ttc))} € TTC` : ""}
-                  </span>
-                </span>
-                <StatutBadge statut={l.statut} />
+        </section>
+
+        {/* gestion */}
+        <section className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-5">
+          <div className="flex items-center gap-2.5">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-pine-700 text-amber-400">
+              <Boxes className="h-5 w-5" />
+            </span>
+            <h2 className="text-base font-extrabold text-inkgreen">Gestion</h2>
+          </div>
+          <p className="mt-1.5 text-xs text-neutral-500">
+            {atelier.length} commande{atelier.length > 1 ? "s" : ""} en atelier · {alertesStock.length} alerte{alertesStock.length > 1 ? "s" : ""} stock
+          </p>
+          <ul className="mt-3 flex-1 space-y-1.5">
+            {alertesStock.slice(0, 2).map((it) => (
+              <li key={it.sku} className="flex items-center gap-2 rounded-lg bg-amber-500/10 px-2.5 py-1.5 text-xs font-semibold text-amber-800">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-600" />
+                <span className="min-w-0 flex-1 truncate">{it.label}</span>
+                <span className="tabular-nums">{it.qty} {it.unite}</span>
+              </li>
+            ))}
+            {prochainesExp.slice(0, 2).map((x) => (
+              <li key={x.ref} className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-neutral-600">
+                <Truck className="h-3.5 w-3.5 shrink-0 text-pine-600" />
+                <span className="min-w-0 flex-1 truncate">{x.ref} · dép. {x.departement}</span>
+                <span className="text-neutral-400">{SHIPMENT_LABELS[x.statut]}</span>
+              </li>
+            ))}
+          </ul>
+          <Link href="/admin/gestion" className="group mt-3 inline-flex items-center gap-1 text-sm font-bold text-pine-700">
+            Ouvrir le pôle
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </section>
+
+        {/* statistiques */}
+        <section className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-5">
+          <div className="flex items-center gap-2.5">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-pine-700 text-amber-400">
+              <BarChart3 className="h-5 w-5" />
+            </span>
+            <h2 className="text-base font-extrabold text-inkgreen">Statistiques</h2>
+          </div>
+          <dl className="mt-3 flex-1 space-y-2.5">
+            <div className="flex items-baseline justify-between">
+              <dt className="text-xs font-semibold text-neutral-500">CA gagné (TTC)</dt>
+              <dd className="text-sm font-extrabold tabular-nums text-inkgreen">{eurFmt.format(s.caGagne)} €</dd>
+            </div>
+            <div className="flex items-baseline justify-between">
+              <dt className="text-xs font-semibold text-neutral-500">Devis en cours</dt>
+              <dd className="text-sm font-extrabold tabular-nums text-inkgreen">{s.devisEnvoyes}</dd>
+            </div>
+            <div className="flex items-baseline justify-between">
+              <dt className="text-xs font-semibold text-neutral-500">Gagnées / perdues</dt>
+              <dd className="text-sm font-extrabold tabular-nums text-inkgreen">{s.gagnes} / {s.perdus}</dd>
+            </div>
+          </dl>
+          <Link href="/admin/stats" className="group mt-3 inline-flex items-center gap-1 text-sm font-bold text-pine-700">
+            Toutes les stats
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </section>
+      </div>
+
+      {/* atelier en un coup d'œil */}
+      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+        <h2 className="text-base font-extrabold text-inkgreen">Atelier en un coup d’œil</h2>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {(Object.keys(ORDER_LABELS) as (keyof typeof ORDER_LABELS)[]).map((st) => {
+            const n = orders.filter((o) => o.statut === st).length;
+            return (
+              <Link
+                key={st}
+                href="/admin/gestion"
+                className={`rounded-full px-3.5 py-1.5 text-xs font-bold ring-1 ring-inset transition hover:-translate-y-0.5 ${
+                  n > 0 ? "bg-pine-50 text-pine-800 ring-pine-200" : "bg-neutral-50 text-neutral-400 ring-neutral-200"
+                }`}
+              >
+                {ORDER_LABELS[st]} · {n}
               </Link>
-            </li>
-          ))}
-          {derniers.length === 0 && <li className="py-6 text-center text-sm text-neutral-400">Aucune demande pour l&rsquo;instant.</li>}
-        </ul>
+            );
+          })}
+        </div>
       </section>
     </div>
   );
 }
-

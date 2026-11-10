@@ -13,3 +13,18 @@ export const STATUT_LABELS: Record<Statut, string> = {
   gagne: "Gagné",
   perdu: "Perdu",
 };
+
+/** Libellés des usages (slug du catalogue → nom affiché dans l'admin). */
+export const USAGE_LABELS: Record<string, string> = {
+  piscine: "Piscine",
+  escalier: "Escalier",
+  balcon: "Balcon",
+  terrasse: "Terrasse",
+  mezzanine: "Mezzanine",
+  fenetre: "Fenêtre",
+  interieur: "Intérieur",
+  exterieur: "Extérieur",
+  verre: "Muret / verre",
+  aluminium: "Aluminium",
+  inox: "Inox",
+};

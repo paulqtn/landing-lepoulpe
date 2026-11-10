@@ -63,11 +63,59 @@ async function ensureSchema(): Promise<void> {
         ALTER TABLE leads ADD COLUMN IF NOT EXISTS devis_views INT NOT NULL DEFAULT 0;
         ALTER TABLE leads ADD COLUMN IF NOT EXISTS last_activity_at TIMESTAMPTZ;
         CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_token ON leads(token);
+
+        -- ---- Pôle gestion : commandes atelier, stock, expéditions ----
+        CREATE TABLE IF NOT EXISTS orders (
+          id SERIAL PRIMARY KEY,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          ref TEXT UNIQUE NOT NULL,
+          lead_id INT REFERENCES leads(id) ON DELETE SET NULL,
+          client TEXT NOT NULL,
+          statut TEXT NOT NULL DEFAULT 'a_preparer',
+          ml NUMERIC,
+          nb_verres INT,
+          hauteur TEXT,
+          verre TEXT,
+          systeme TEXT,
+          montant_ttc NUMERIC,
+          departement TEXT,
+          shipment_id INT
+        );
+        CREATE TABLE IF NOT EXISTS stock_items (
+          id SERIAL PRIMARY KEY,
+          sku TEXT UNIQUE NOT NULL,
+          label TEXT NOT NULL,
+          categorie TEXT NOT NULL,
+          unite TEXT NOT NULL,
+          qty NUMERIC NOT NULL DEFAULT 0,
+          seuil NUMERIC NOT NULL DEFAULT 0
+        );
+        CREATE TABLE IF NOT EXISTS stock_moves (
+          id SERIAL PRIMARY KEY,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          item_id INT NOT NULL REFERENCES stock_items(id) ON DELETE CASCADE,
+          delta NUMERIC NOT NULL,
+          motif TEXT
+        );
+        CREATE TABLE IF NOT EXISTS shipments (
+          id SERIAL PRIMARY KEY,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          ref TEXT UNIQUE NOT NULL,
+          transporteur TEXT,
+          departement TEXT,
+          date_prevue DATE,
+          statut TEXT NOT NULL DEFAULT 'planifiee'
+        );
+        CREATE INDEX IF NOT EXISTS idx_orders_statut ON orders(statut);
       `);
     })();
   }
   return schemaReady;
 }
+
+/** Accès requêtes pour les modules admin voisins (logistics). */
+export const adminQuery = q;
 
 async function q<T = Record<string, unknown>>(text: string, params: unknown[] = []): Promise<T[]> {
   await ensureSchema();

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Eye, ExternalLink, Mail, MousePointerClick, Phone } from "lucide-react";
 import { LeadActions } from "@/components/admin/LeadActions";
+import { CreateOrderButton } from "@/components/admin/LogisticsActions";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { getLead, listEvents } from "@/lib/admin/db";
 import { getTeam } from "@/lib/admin/team";
@@ -140,6 +141,17 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           team={getTeam()}
           assignedTo={lead.assigned_to}
         />
+
+        {lead.statut === "gagne" && (
+          <div className="rounded-2xl border border-pine-200 bg-pine-50/60 p-4">
+            <p className="text-sm font-bold text-inkgreen">Client gagné 🎉</p>
+            <p className="mb-3 mt-0.5 text-xs text-neutral-500">
+              Envoyez le dossier à l&rsquo;atelier : la commande apparaît dans le pôle Gestion
+              avec la matière réservée.
+            </p>
+            <CreateOrderButton leadId={lead.id} />
+          </div>
+        )}
       </div>
     </div>
   );
