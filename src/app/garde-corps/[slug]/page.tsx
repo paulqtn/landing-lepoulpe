@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, ArrowUpRight, Ban, Check, ChevronDown, ClipboardList, DoorOpen, Droplets, Lock, Ruler, ShieldCheck, Wrench } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Ban, Check, ClipboardList, DoorOpen, Lock, Ruler, Wrench } from "lucide-react";
 import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
 import { Configurator } from "@/components/Configurator";
 import { FaqAccordion } from "@/components/FaqAccordion";
@@ -20,50 +20,59 @@ import {
 import { productsForMaterial } from "@/lib/products";
 import { site } from "@/lib/site";
 
-/* Bloc piscine : les exigences NF P90-306, en cards déroulantes. */
-const NORME_PISCINE: { icon: typeof Ruler; t: string; d: string }[] = [
+/* Les trois blocs piscine sous le générateur partagent ces recettes :
+   même surtitre, même H2, même bouton — seule la composition change. */
+const PISCINE_KICKER = "font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700";
+const PISCINE_H2 = "text-balance text-[1.75rem] font-extrabold leading-[1.15] tracking-tight text-inkgreen sm:text-4xl";
+const PISCINE_CTA =
+  "group flex items-center justify-center gap-2.5 rounded-full bg-pine-700 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-pine-900/20 transition-all hover:-translate-y-0.5 hover:bg-pine-600 sm:inline-flex";
+
+/* Bloc piscine 1 — transparence : trois points distincts, sans pictos. */
+const VUE_PISCINE: { t: string; d: string }[] = [
   {
-    icon: Ruler,
-    t: "Hauteur 1m10",
-    d: "La norme exige 1,10 m minimum entre deux points d’appui : nos panneaux sont façonnés à cette hauteur, au millimètre près.",
+    t: "La vue reste entière",
+    d: "Depuis la maison comme depuis la terrasse, le regard porte jusqu’au bassin, sans barreaux ni grillage.",
   },
   {
-    icon: DoorOpen,
-    t: "Portillon en verre",
-    d: "Un portillon assorti à la barrière, à fermeture et verrouillage automatiques : l’accès ne reste jamais ouvert derrière vous.",
+    t: "Le décor n’est pas coupé",
+    d: "Une barrière en verre pour piscine s’efface devant la pierre, le bois ou la végétation, dans un extérieur contemporain comme traditionnel.",
   },
   {
-    icon: Lock,
-    t: "Accès sécurisé",
-    d: "Le déverrouillage demande une double action, pensée pour résister aux manipulations d’un enfant de moins de 5 ans.",
-  },
-  {
-    icon: Ban,
-    t: "Aucun point d’appui pour escalader",
-    d: "Le verre feuilleté lisse n’offre ni prise ni marche : impossible d’escalader la barrière, contrairement aux clôtures à barreaux.",
+    t: "Un tracé à vos mesures",
+    d: "Longueurs, angles et type de fixation sont définis selon votre bassin et ses abords.",
   },
 ];
 
-/* Bloc piscine : l'inox 316 — trois faits, pas de superlatifs. */
-const INOX_PISCINE: { icon: typeof Ruler; t: string; court: string; d: string }[] = [
+/* Bloc piscine 2 — NF P90-306 : ce que la norme regarde, formulé sans
+   promesse de conformité (elle s'apprécie sur l'installation complète). */
+const NORME_PISCINE: { icon: typeof Ruler; t: string; d: string }[] = [
   {
-    icon: ShieldCheck,
-    t: "Le chlore ne lui fait pas peur",
-    court: "Ne craint pas le chlore",
-    d: "Son molybdène le protège des chlorures de l’eau traitée : vos fixations restent saines, saison après saison.",
+    icon: Ruler,
+    t: "1,10 m de hauteur minimale",
+    d: "Mesurée entre deux points d’appui : le sol, une marche ou un muret voisin entrent en compte.",
   },
   {
-    icon: Wrench,
-    t: "Aucune vis au rabais",
-    court: "Visserie 100 % inox 316",
-    d: "Rail ou pinces, toute la visserie livrée est en inox 316 : la même qualité partout, jusqu’à la dernière vis.",
+    icon: DoorOpen,
+    t: "Un portillon intégré à la barrière",
+    d: "Il fait partie du dispositif et ne doit rester ni ouvert ni déverrouillé. Le nôtre est en verre, comme les panneaux.",
   },
   {
-    icon: Droplets,
-    t: "Zéro entretien, ou presque",
-    court: "Un rinçage suffit",
-    d: "Un coup d’eau claire de temps en temps et il garde son aspect du premier jour. Rien à traiter, rien à repeindre.",
+    icon: Lock,
+    t: "Un verrou à l’épreuve des petits",
+    d: "L’ouverture doit résister aux manipulations d’un enfant de moins de 5 ans.",
   },
+  {
+    icon: Ban,
+    t: "Peu de prises pour grimper",
+    d: "Un vitrage plein et lisse limite les possibilités d’escalade, à condition de ne rien laisser à côté : mobilier, jardinière, muret.",
+  },
+];
+
+/* Bloc piscine 3 — inox 316 : une ligne de bénéfices, rien de plus. */
+const INOX_PISCINE = [
+  "Résistance renforcée à la corrosion",
+  "Adapté aux environnements piscine",
+  "Finition discrète et élégante",
 ];
 
 /* Bloc piscine : réalisations en photos réelles. */
@@ -282,205 +291,175 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
-      {/* ---- piscine : transparence & design, comparateur avant/après ---- */}
+      {/* ---- piscine 1 : transparence & design — le visuel d'abord ---- */}
       {entry.slug === "piscine" && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
-            <header className="mx-auto max-w-2xl text-center lg:max-w-5xl">
-              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
-                Transparence &amp; design
-              </p>
-              <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                Sécurisez votre piscine sans gâcher la vue
-              </h2>
-              {/* desktop : deux lignes équilibrées, sur la largeur du comparateur */}
-              <p className="mx-auto mt-4 max-w-xl leading-relaxed text-neutral-600 lg:max-w-none lg:text-balance">
-                Protéger les abords de votre bassin ne signifie pas renoncer à son esthétique. Avec une
-                barrière de piscine en verre, profitez d&rsquo;une protection discrète qui préserve la vue
-                sur l&rsquo;eau et s&rsquo;intègre naturellement à votre terrasse ou à votre jardin.
+            <header className="mx-auto max-w-2xl text-center lg:max-w-3xl">
+              <p className={PISCINE_KICKER}>Transparence &amp; design</p>
+              <h2 className={`mt-2 ${PISCINE_H2}`}>Sécurisez votre piscine sans gâcher la vue</h2>
+              <p className="mx-auto mt-4 max-w-xl text-pretty leading-relaxed text-neutral-600 lg:max-w-2xl">
+                Une barrière de piscine en verre protège les abords du bassin sans les cacher : l&rsquo;eau, la
+                terrasse et le jardin restent visibles, comme avant.
               </p>
             </header>
 
-            {/* le comparateur, élément dominant — glissez la poignée */}
+            {/* le comparateur, élément dominant — bord à bord en mobile */}
             <BeforeAfterSlider
-              className="mt-10"
+              className="-mx-5 mt-8 sm:mx-0 sm:mt-12"
+              frameClassName="sm:rounded-[1.75rem] sm:shadow-panel sm:ring-1 sm:ring-pine-950/10"
+              caption="Faites glisser pour comparer : la même piscine, avant et après."
               before={{
                 src: "/comparateur-piscine-avant.webp",
                 alt: "Piscine sans barrière de protection, vue depuis la terrasse",
               }}
               after={{
                 src: "/comparateur-piscine-apres.webp",
-                alt: "La même piscine sécurisée par une barrière de piscine en verre, prise du même angle",
+                alt: "La même piscine entourée d’une barrière de piscine en verre, prise du même angle",
               }}
             />
 
-            <div className="mt-10 grid gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
-              <div>
-                <h3 className="text-xl font-extrabold tracking-tight text-inkgreen">
-                  Une barrière de piscine en verre qui se fait oublier
-                </h3>
-                <p className="mt-3 leading-relaxed text-neutral-600">
-                  Contrairement aux clôtures traditionnelles, une barrière de piscine en verre préserve la
-                  perspective sur votre bassin et les espaces extérieurs. Ses panneaux forment une
-                  protection de piscine en verre visuellement légère, idéale pour sécuriser une piscine
-                  tout en conservant l&rsquo;harmonie de votre aménagement.
-                </p>
-                <Link
-                  href="#estimation"
-                  className="group mt-7 inline-flex items-center gap-2.5 rounded-full bg-pine-700 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-pine-900/20 transition-all hover:-translate-y-0.5 hover:bg-pine-600"
-                >
-                  Configurer ma barrière de piscine
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
-              </div>
+            {/* contenu secondaire : trois lignes sobres, un filet pour seule déco */}
+            <ul className="mt-10 grid sm:mt-14 sm:grid-cols-3 sm:gap-x-10">
+              {VUE_PISCINE.map((v) => (
+                <li key={v.t} className="border-t border-pine-900/10 py-4 sm:pb-0 sm:pt-5">
+                  <p className="text-[0.95rem] font-extrabold tracking-tight text-inkgreen">{v.t}</p>
+                  <p className="mt-1 text-pretty text-sm leading-relaxed text-neutral-600">{v.d}</p>
+                </li>
+              ))}
+            </ul>
 
-              <ul className="space-y-5">
-                {[
-                  ["Une vue dégagée sur votre piscine", "Profitez d’une séparation transparente qui préserve la perspective sur le bassin."],
-                  ["Une intégration élégante à votre extérieur", "Le verre s’associe naturellement aux terrasses contemporaines comme aux jardins plus traditionnels."],
-                  ["Une solution adaptée à votre projet", "Dimensions, implantation et systèmes de fixation sont étudiés en fonction de votre piscine et de ses abords."],
-                ].map(([t, d]) => (
-                  <li key={t} className="flex items-start gap-3.5">
-                    <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-pine-700 text-white">
-                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
-                    </span>
-                    <span>
-                      <span className="block text-[0.95rem] font-extrabold text-inkgreen">{t}</span>
-                      <span className="mt-0.5 block text-sm leading-relaxed text-neutral-600">{d}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
+            <div className="mt-6 text-center sm:mt-12">
+              <Link href="#estimation" className={PISCINE_CTA}>
+                Configurer ma barrière de piscine
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
             </div>
           </Container>
         </section>
       )}
 
-      {/* ---- piscine : la conformité NF P90-306, en texte + image ---- */}
+      {/* ---- piscine 2 : norme NF P90-306 — repères clairs, photo en regard ---- */}
       {entry.slug === "piscine" && (
         <section className="border-b border-neutral-200 bg-mist/60 py-16 sm:py-24">
           <Container>
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                Barrière de piscine en verre conforme{" "}
-                <span className="whitespace-nowrap text-pine-600">NF P90-306</span>
+            <header className="mx-auto max-w-2xl text-center lg:max-w-3xl">
+              <p className={PISCINE_KICKER}>Sécurité &amp; réglementation</p>
+              <h2 className={`mt-2 ${PISCINE_H2}`}>
+                Barrière de piscine <br className="sm:hidden" />
+                en verre et norme <span className="whitespace-nowrap text-pine-600">NF P90-306</span>
               </h2>
-              <p className="mx-auto mt-4 max-w-xl leading-relaxed text-neutral-600">
-                Notre garde-corps en verre est conçu pour répondre à la norme NF P90-306 visant à
-                sécuriser votre piscine.
+              <p className="mx-auto mt-4 max-w-xl text-pretty leading-relaxed text-neutral-600 lg:max-w-2xl">
+                Toute piscine privée enterrée ou semi-enterrée doit être équipée d&rsquo;un dispositif de
+                sécurité normalisé. Pour une barrière, la référence est la norme NF&nbsp;P90-306 : elle vise à
+                empêcher un enfant de moins de 5 ans d&rsquo;accéder seul au bassin.
               </p>
-              <Link
-                href="/generateur?usage=piscine"
-                className="group mt-7 inline-flex items-center gap-2.5 rounded-full bg-amber-500 py-3 pl-7 pr-3 text-sm font-bold text-pine-950 shadow-lg shadow-amber-500/25 transition-all hover:-translate-y-0.5 hover:bg-amber-600"
-              >
-                Obtenir mon devis
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-pine-950 text-amber-500 transition-transform duration-300 group-hover:translate-x-0.5">
-                  <ArrowRight className="h-4 w-4" />
-                </span>
-              </Link>
-            </div>
+            </header>
 
-            <div className="mt-12 grid items-start gap-8 lg:grid-cols-2 lg:gap-12">
-              {/* exigences de la norme — cards déroulantes, une seule ouverte
-                  à la fois (name natif) : l'image d'en face ne bouge pas */}
-              <div className="space-y-3.5">
-                {NORME_PISCINE.map((item, i) => (
-                  <details
-                    key={item.t}
-                    name="norme-piscine"
-                    open={i === 0}
-                    className="group rounded-2xl border border-neutral-200 bg-white shadow-card transition-colors open:border-pine-300"
-                  >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 [&::-webkit-details-marker]:hidden">
-                      <span className="flex items-center gap-3.5">
-                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-pine-50 text-pine-700">
-                          <item.icon className="h-[18px] w-[18px]" strokeWidth={2} />
-                        </span>
-                        <span className="text-[0.95rem] font-extrabold text-inkgreen">{item.t}</span>
-                      </span>
-                      <ChevronDown className="h-5 w-5 shrink-0 text-neutral-400 transition-transform duration-300 group-open:rotate-180" />
-                    </summary>
-                    <p className="px-5 pb-5 text-sm leading-relaxed text-neutral-600 sm:pl-[4.65rem]">
-                      {item.d}
-                    </p>
-                  </details>
-                ))}
-              </div>
-
-              {/* la barrière en situation */}
-              <Reveal delay={120}>
-                <div className="relative">
-                  <div className="pointer-events-none absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-pine-200/50 via-transparent to-amber-500/10" />
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10">
-                    <Image
-                      src="/barriere-piscine-nf.webp"
-                      alt="Barrière de piscine en verre sur pinces inox avec portillon, conforme NF P90-306"
-                      fill
-                      sizes="(min-width: 1024px) 40rem, 100vw"
-                      className="object-cover"
-                    />
-                  </div>
+            <div className="mt-8 grid gap-8 sm:mt-12 lg:grid-cols-[1fr_0.92fr] lg:items-stretch lg:gap-14">
+              {/* la barrière en situation — avant la liste en mobile, en regard en desktop */}
+              <Reveal className="lg:order-2">
+                <div className="relative aspect-[3/2] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 lg:aspect-auto lg:h-full lg:min-h-[26rem]">
+                  <Image
+                    src="/barriere-piscine-nf.webp"
+                    alt="Barrière de piscine en verre sur pinces inox, avec portillon, autour d’un bassin"
+                    fill
+                    sizes="(min-width: 1024px) 32rem, 100vw"
+                    className="object-cover"
+                  />
                 </div>
               </Reveal>
+
+              <div className="lg:order-1">
+                {/* les quatre points que regarde la norme — toujours visibles, sans cartes */}
+                <ul className="divide-y divide-pine-900/10 border-y border-pine-900/10">
+                  {NORME_PISCINE.map((item) => (
+                    <li key={item.t} className="flex items-start gap-3.5 py-4 sm:gap-4 sm:py-5">
+                      <span className="grid h-9 w-9 shrink-0 sm:h-10 sm:w-10 place-items-center rounded-full bg-white text-pine-700 ring-1 ring-pine-900/10">
+                        <item.icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+                      </span>
+                      <div>
+                        <h3 className="text-[0.95rem] font-extrabold tracking-tight text-inkgreen">{item.t}</h3>
+                        <p className="mt-1 text-pretty text-sm leading-relaxed text-neutral-600">{item.d}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                <p className="mt-5 text-pretty text-[13px] leading-relaxed text-neutral-500">
+                  La conformité s&rsquo;apprécie sur l&rsquo;installation complète (implantation, pose, portillon,
+                  abords), pas sur les panneaux seuls. Nous faisons le point avec vous au moment du devis.
+                </p>
+
+                <Link
+                  href="/generateur?usage=piscine"
+                  className="group mt-5 inline-flex items-center gap-2 text-sm font-bold text-pine-700 transition-colors hover:text-pine-600"
+                >
+                  Obtenir mon devis
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </div>
             </div>
           </Container>
         </section>
       )}
 
-      {/* ---- piscine : matériaux & durabilité, l'inox 316 ---- */}
+      {/* ---- piscine 3 : matériaux & durabilité — la photo produit, puis l'essentiel ---- */}
       {entry.slug === "piscine" && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
-            <div className="grid gap-8 lg:grid-cols-[0.92fr_1fr] lg:items-stretch lg:gap-14">
-              {/* la pince au bord du bassin — paysage en mobile, portrait en desktop */}
+            <div className="grid gap-7 lg:grid-cols-[0.92fr_1fr] lg:items-stretch lg:gap-14">
+              {/* la pince au bord du bassin — paysage court en mobile, portrait en desktop */}
               <Reveal>
-                <div className="relative h-full">
-                  <div className="pointer-events-none absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-pine-200/50 via-transparent to-amber-500/10" />
-                  <div className="relative aspect-[7/4] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 lg:aspect-auto lg:h-full lg:min-h-[32rem]">
-                    <Image
-                      src="/inox-316-piscine-paysage.webp"
-                      alt="Pince de fixation en inox 316 d’une barrière de piscine en verre, au bord du bassin"
-                      fill
-                      sizes="100vw"
-                      className="object-cover lg:hidden"
-                    />
-                    <Image
-                      src="/inox-316-piscine-portrait.webp"
-                      alt="Pince de fixation en inox 316 d’une barrière de piscine en verre, au bord du bassin"
-                      fill
-                      sizes="(min-width: 1024px) 36rem, 1px"
-                      className="hidden object-cover lg:block"
-                    />
-                  </div>
+                <div className="relative aspect-[2/1] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 lg:aspect-auto lg:h-full lg:min-h-[30rem]">
+                  <Image
+                    src="/inox-316-piscine-paysage.webp"
+                    alt="Fixation d’une barrière de piscine en verre au bord du bassin, visserie en inox 316"
+                    fill
+                    sizes="100vw"
+                    className="object-cover lg:hidden"
+                  />
+                  <Image
+                    src="/inox-316-piscine-portrait.webp"
+                    alt="Fixation d’une barrière de piscine en verre au bord du bassin, visserie en inox 316"
+                    fill
+                    sizes="(min-width: 1024px) 36rem, 1px"
+                    className="hidden object-cover lg:block"
+                  />
                 </div>
               </Reveal>
 
               {/* min-w-0 : le bandeau défilant ne doit pas élargir la colonne */}
-              <div className="min-w-0 lg:py-1">
-                <p className="flex items-center gap-4 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
+              <div className="min-w-0 lg:self-center">
+                <p className={`flex items-center gap-4 ${PISCINE_KICKER}`}>
                   Matériaux &amp; durabilité
                   <span className="h-px flex-1 bg-pine-900/15" aria-hidden="true" />
                 </p>
-                <h2 className="mt-3 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                  L&rsquo;<span className="text-pine-600">inox 316</span>, pensé pour nos barrières de piscine
-                  en verre
+                <h2 className={`mt-3 ${PISCINE_H2}`}>
+                  Une visserie <span className="whitespace-nowrap text-pine-600">inox 316</span>{" "}
+                  <br className="hidden lg:block" />
+                  pensée pour durer
                 </h2>
-                <p className="mt-4 leading-relaxed text-neutral-600">
-                  Au bord d&rsquo;un bassin, les fixations reçoivent l&rsquo;eau et les produits de
-                  traitement toute l&rsquo;année. Toute notre visserie est donc en inox 316, la nuance
-                  d&rsquo;inox utilisée en piscine et en bord de mer.
+                <p className="mt-4 text-pretty leading-relaxed text-neutral-600">
+                  Nos barrières de piscine en verre intègrent une visserie en inox 316, reconnu pour sa
+                  résistance renforcée à la corrosion. Un choix particulièrement adapté aux environnements
+                  humides et aux abords des piscines, qui associe durabilité et finition soignée.
                 </p>
 
-                {/* mobile : les trois points en bandeau défilant, sans les détails
+                {/* mobile : les trois bénéfices en bandeau défilant discret
                     (deux moitiés identiques → boucle sans raccord) */}
-                <div className="mt-6 overflow-hidden rounded-xl bg-mist py-3 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] lg:hidden">
-                  <div className="flex w-max animate-marquee items-center">
-                    {[0, 1, 2, 3, 4, 5].map((copy) => (
-                      <ul key={copy} className="flex items-center" aria-hidden={copy > 0}>
-                        {INOX_PISCINE.map((f) => (
-                          <li key={f.court} className="flex items-center">
-                            <span className="whitespace-nowrap text-[13px] font-semibold text-pine-800">{f.court}</span>
-                            <span className="mx-4 h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500" aria-hidden="true" />
+                <div className="mt-6 overflow-hidden border-y border-pine-900/10 py-3 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] motion-reduce:[mask-image:none] lg:hidden">
+                  <div className="flex w-max animate-marquee items-center motion-reduce:w-auto motion-reduce:animate-none">
+                    {[0, 1, 2, 3].map((copy) => (
+                      <ul
+                        key={copy}
+                        className={`flex items-center motion-reduce:flex-col motion-reduce:items-start motion-reduce:gap-y-1.5 ${copy > 0 ? "motion-reduce:hidden" : ""}`}
+                        aria-hidden={copy > 0}
+                      >
+                        {INOX_PISCINE.map((b) => (
+                          <li key={b} className="flex items-center">
+                            <span className="whitespace-nowrap text-[13px] font-semibold text-pine-800">{b}</span>
+                            <span className="mx-4 h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500 motion-reduce:hidden" aria-hidden="true" />
                           </li>
                         ))}
                       </ul>
@@ -488,38 +467,26 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   </div>
                 </div>
 
-                {/* desktop : les trois points détaillés, séparés d'un filet */}
-                <ul className="mt-6 hidden divide-y divide-neutral-200 lg:block">
-                  {INOX_PISCINE.map((f) => (
-                    <li key={f.t} className="flex items-center gap-5 py-3.5 first:pt-0">
-                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-pine-50 text-pine-700">
-                        <f.icon className="h-[22px] w-[22px]" strokeWidth={1.75} />
-                      </span>
-                      <span>
-                        <span className="block text-[1.05rem] font-extrabold tracking-tight text-inkgreen">{f.t}</span>
-                        <span className="mt-0.5 block text-pretty text-sm leading-relaxed text-neutral-600">{f.d}</span>
-                      </span>
+                {/* desktop : les mêmes bénéfices, en liste filetée, sans pictos */}
+                <ul className="mt-7 hidden divide-y divide-pine-900/10 border-y border-pine-900/10 lg:block">
+                  {INOX_PISCINE.map((b) => (
+                    <li key={b} className="flex items-center gap-3.5 py-3.5 text-[0.95rem] font-semibold text-inkgreen">
+                      <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500" aria-hidden="true" />
+                      {b}
                     </li>
                   ))}
                 </ul>
+                <p className="mt-5 hidden text-pretty text-[13px] leading-relaxed text-neutral-500 lg:block">
+                  Comme tout inox, il n&rsquo;est pas inaltérable : un rinçage occasionnel à l&rsquo;eau claire
+                  aide à préserver son aspect.
+                </p>
 
-                {/* le repère concret, pour comparer deux devis */}
-                <div className="mt-2 hidden rounded-2xl bg-mist px-5 py-4 lg:block">
-                  <p className="text-[0.95rem] font-extrabold text-inkgreen">Comment reconnaître l&rsquo;inox 316 ?</p>
-                  <p className="mt-1 text-pretty text-sm leading-relaxed text-neutral-600">
-                    En visserie, il porte le marquage <strong className="font-bold text-inkgreen">A4</strong>.
-                    L&rsquo;inox 304, plus courant et moins résistant au chlore, est marqué A2 : un repère
-                    simple pour comparer deux devis.
-                  </p>
+                <div className="mt-7">
+                  <Link href="/generateur?usage=piscine" className={PISCINE_CTA}>
+                    Configurer ma barrière
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
                 </div>
-
-                <Link
-                  href="/generateur?usage=piscine"
-                  className="group mt-6 flex items-center justify-center gap-2.5 rounded-full bg-pine-700 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-pine-900/20 transition-all hover:-translate-y-0.5 hover:bg-pine-600 sm:inline-flex"
-                >
-                  Estimer ma barrière de piscine en verre
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
               </div>
             </div>
           </Container>
