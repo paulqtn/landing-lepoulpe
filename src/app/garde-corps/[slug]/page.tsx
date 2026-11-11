@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, ArrowUpRight, Ban, Check, ChevronDown, ClipboardList, DoorOpen, Lock, Ruler, Wrench } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Ban, Check, ChevronDown, ClipboardList, DoorOpen, Droplets, Lock, Ruler, ShieldCheck, Wrench } from "lucide-react";
 import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
 import { Configurator } from "@/components/Configurator";
 import { FaqAccordion } from "@/components/FaqAccordion";
@@ -44,21 +44,25 @@ const NORME_PISCINE: { icon: typeof Ruler; t: string; d: string }[] = [
   },
 ];
 
-/* Bloc piscine : visserie inox 316, sur rail comme sur pinces. */
-const VISSERIE_PISCINE: { src: string; alt: string; tag: string; t: string; d: string }[] = [
+/* Bloc piscine : l'inox 316 — trois faits, pas de superlatifs. */
+const INOX_PISCINE: { icon: typeof Ruler; t: string; court: string; d: string }[] = [
   {
-    src: "/fixation-rail-hover.png",
-    alt: "Vitrage de barrière de piscine pris dans un rail au sol, visserie inox 316",
-    tag: "Sur rail",
-    t: "Un ancrage qui ne craint pas l’eau",
-    d: "Le rail est fixé et serré avec une visserie inox 316 : la tenue reste la même au bord du bassin, saison après saison.",
+    icon: ShieldCheck,
+    t: "Il tient face au chlore",
+    court: "Tient face au chlore",
+    d: "Il contient du molybdène, absent de l’inox 304 courant : c’est ce qui le protège des chlorures de l’eau traitée.",
   },
   {
-    src: "/fixation-pince-hover.png",
-    alt: "Vitrage de barrière de piscine maintenu par une pince au sol, visserie inox 316",
-    tag: "Sur pinces",
-    t: "La même exigence, pince par pince",
-    d: "Chaque pince est maintenue par une visserie inox 316, pensée pour vivre dehors, les pieds près de l’eau.",
+    icon: Wrench,
+    t: "Sur rail comme sur pinces",
+    court: "Rail ou pinces",
+    d: "Quelle que soit la fixation choisie, toute la visserie livrée est en inox 316.",
+  },
+  {
+    icon: Droplets,
+    t: "Un rinçage, et c’est tout",
+    court: "Un simple rinçage",
+    d: "Un passage à l’eau claire de temps en temps lui garde son aspect d’origine.",
   },
 ];
 
@@ -423,50 +427,90 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
-      {/* ---- piscine : visserie inox 316, faite pour durer ---- */}
+      {/* ---- piscine : matériaux & durabilité, l'inox 316 ---- */}
       {entry.slug === "piscine" && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
-            <header className="mx-auto max-w-2xl text-center lg:max-w-4xl">
-              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
-                Visserie &amp; fixations
-              </p>
-              <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
-                Toute la visserie en{" "}
-                <span className="whitespace-nowrap text-pine-600">inox 316</span>, faite pour durer
-              </h2>
-              <p className="mx-auto mt-4 max-w-xl leading-relaxed text-neutral-600 lg:max-w-none lg:text-balance">
-                Autour d&rsquo;un bassin, les fixations vivent au contact de l&rsquo;eau. Sur rail comme sur
-                pinces, toute notre visserie est en inox 316 : elle résiste à l&rsquo;eau sans souci, année
-                après année.
-              </p>
-            </header>
+            <div className="grid gap-8 lg:grid-cols-[0.92fr_1fr] lg:items-stretch lg:gap-14">
+              {/* la pince au bord du bassin — paysage en mobile, portrait en desktop */}
+              <Reveal>
+                <div className="relative h-full">
+                  <div className="pointer-events-none absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-pine-200/50 via-transparent to-amber-500/10" />
+                  <div className="relative aspect-[7/4] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 lg:aspect-auto lg:h-full lg:min-h-[32rem]">
+                    <Image
+                      src="/inox-316-piscine-paysage.webp"
+                      alt="Pince de fixation en inox 316 d’une barrière de piscine en verre, au bord du bassin"
+                      fill
+                      sizes="100vw"
+                      className="object-cover lg:hidden"
+                    />
+                    <Image
+                      src="/inox-316-piscine-portrait.webp"
+                      alt="Pince de fixation en inox 316 d’une barrière de piscine en verre, au bord du bassin"
+                      fill
+                      sizes="(min-width: 1024px) 36rem, 1px"
+                      className="hidden object-cover lg:block"
+                    />
+                  </div>
+                </div>
+              </Reveal>
 
-            <div className="mx-auto mt-10 grid max-w-5xl gap-5 sm:grid-cols-2 lg:gap-8">
-              {VISSERIE_PISCINE.map((v, i) => (
-                <Reveal key={v.tag} delay={i * 80}>
-                  <article className="flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-white shadow-panel ring-1 ring-pine-950/10">
-                    {/* rendu entier, jamais rogné — aucun texte sur l'image ;
-                        fond calé sur le blanc du rendu (254) : pas de cadre visible */}
-                    <div className="relative aspect-[4/3] bg-[#fefefe]">
-                      <Image
-                        src={v.src}
-                        alt={v.alt}
-                        fill
-                        sizes="(min-width: 1024px) 31rem, (min-width: 640px) 50vw, 100vw"
-                        className="object-contain p-4"
-                      />
-                    </div>
-                    <div className="border-t border-neutral-100 px-6 pb-6 pt-5">
-                      <span className="inline-block rounded-full bg-amber-500 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-pine-950">
-                        {v.tag} · Inox 316
+              <div className="lg:py-1">
+                <p className="flex items-center gap-4 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
+                  Matériaux &amp; durabilité
+                  <span className="h-px flex-1 bg-pine-900/15" aria-hidden="true" />
+                </p>
+                <h2 className="mt-3 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+                  L&rsquo;<span className="text-pine-600">inox 316</span>, pensé pour nos barrières de piscine
+                  en verre
+                </h2>
+                <p className="mt-4 leading-relaxed text-neutral-600">
+                  Au bord d&rsquo;un bassin, les fixations reçoivent l&rsquo;eau et les produits de
+                  traitement toute l&rsquo;année. Toute notre visserie est donc en inox 316, la nuance
+                  d&rsquo;inox utilisée en piscine et en bord de mer.
+                </p>
+
+                {/* mobile : les trois points en une ligne, sans les détails */}
+                <ul className="mt-6 grid grid-cols-3 items-center divide-x divide-pine-900/10 rounded-xl bg-mist py-3 text-center text-[13px] font-semibold leading-snug text-pine-800 lg:hidden">
+                  {INOX_PISCINE.map((f) => (
+                    <li key={f.court} className="text-balance px-2.5">
+                      {f.court}
+                    </li>
+                  ))}
+                </ul>
+
+                {/* desktop : les trois points détaillés, séparés d'un filet */}
+                <ul className="mt-6 hidden divide-y divide-neutral-200 lg:block">
+                  {INOX_PISCINE.map((f) => (
+                    <li key={f.t} className="flex items-center gap-5 py-3.5 first:pt-0">
+                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-pine-50 text-pine-700">
+                        <f.icon className="h-[22px] w-[22px]" strokeWidth={1.75} />
                       </span>
-                      <h3 className="mt-3 text-lg font-extrabold tracking-tight text-inkgreen">{v.t}</h3>
-                      <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">{v.d}</p>
-                    </div>
-                  </article>
-                </Reveal>
-              ))}
+                      <span>
+                        <span className="block text-[1.05rem] font-extrabold tracking-tight text-inkgreen">{f.t}</span>
+                        <span className="mt-0.5 block text-pretty text-sm leading-relaxed text-neutral-600">{f.d}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* le repère concret, pour comparer deux devis */}
+                <div className="mt-2 hidden rounded-2xl bg-mist px-5 py-4 lg:block">
+                  <p className="text-[0.95rem] font-extrabold text-inkgreen">Comment reconnaître l&rsquo;inox 316 ?</p>
+                  <p className="mt-1 text-sm leading-relaxed text-neutral-600">
+                    En visserie, il porte le marquage <strong className="font-bold text-inkgreen">A4</strong> ;
+                    l&rsquo;inox 304, lui, est marqué A2. Un repère simple pour comparer deux devis.
+                  </p>
+                </div>
+
+                <Link
+                  href="/generateur?usage=piscine"
+                  className="group mt-6 flex items-center justify-center gap-2.5 rounded-full bg-pine-700 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-pine-900/20 transition-all hover:-translate-y-0.5 hover:bg-pine-600 sm:inline-flex"
+                >
+                  Estimer ma barrière de piscine en verre
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </div>
             </div>
           </Container>
         </section>
