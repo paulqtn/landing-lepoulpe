@@ -189,7 +189,10 @@ export function Configurator({
       // La page ne défile pas : on recadre le volet de contenu lui-même.
       paneRef.current?.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      // « nearest » : aucun mouvement tant que la card est visible — l'écran
+      // reste où il est quand on change d'étape, et ne se recadre que si la
+      // card est réellement sortie du viewport.
+      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
   }, [step, status, fullscreen]);
 
@@ -530,7 +533,7 @@ export function Configurator({
           {/* ---- contenu ---- */}
           <div
             ref={paneRef}
-            className={fullscreen ? "flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain" : "flex min-h-[56rem] flex-col p-6 sm:min-h-[44rem] sm:p-9"}
+            className={fullscreen ? "flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain" : "flex min-h-[28rem] flex-col p-6 sm:p-9"}
           >
           {status !== "done" && !fullscreen && (
             <>
