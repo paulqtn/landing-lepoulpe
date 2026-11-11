@@ -455,7 +455,8 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 </div>
               </Reveal>
 
-              <div className="lg:py-1">
+              {/* min-w-0 : le bandeau défilant ne doit pas élargir la colonne */}
+              <div className="min-w-0 lg:py-1">
                 <p className="flex items-center gap-4 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
                   Matériaux &amp; durabilité
                   <span className="h-px flex-1 bg-pine-900/15" aria-hidden="true" />
@@ -470,14 +471,22 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   d&rsquo;inox utilisée en piscine et en bord de mer.
                 </p>
 
-                {/* mobile : les trois points en une ligne, sans les détails */}
-                <ul className="mt-6 grid grid-cols-3 items-center divide-x divide-pine-900/10 rounded-xl bg-mist py-3 text-center text-[13px] font-semibold leading-snug text-pine-800 lg:hidden">
-                  {INOX_PISCINE.map((f) => (
-                    <li key={f.court} className="text-balance px-2.5">
-                      {f.court}
-                    </li>
-                  ))}
-                </ul>
+                {/* mobile : les trois points en bandeau défilant, sans les détails
+                    (deux moitiés identiques → boucle sans raccord) */}
+                <div className="mt-6 overflow-hidden rounded-xl bg-mist py-3 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] lg:hidden">
+                  <div className="flex w-max animate-marquee items-center">
+                    {[0, 1, 2, 3, 4, 5].map((copy) => (
+                      <ul key={copy} className="flex items-center" aria-hidden={copy > 0}>
+                        {INOX_PISCINE.map((f) => (
+                          <li key={f.court} className="flex items-center">
+                            <span className="whitespace-nowrap text-[13px] font-semibold text-pine-800">{f.court}</span>
+                            <span className="mx-4 h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500" aria-hidden="true" />
+                          </li>
+                        ))}
+                      </ul>
+                    ))}
+                  </div>
+                </div>
 
                 {/* desktop : les trois points détaillés, séparés d'un filet */}
                 <ul className="mt-6 hidden divide-y divide-neutral-200 lg:block">
