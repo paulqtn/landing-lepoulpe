@@ -530,7 +530,7 @@ export function Configurator({
           {/* ---- contenu ---- */}
           <div
             ref={paneRef}
-            className={fullscreen ? "flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain" : "flex min-h-[28rem] flex-col p-6 sm:p-9"}
+            className={fullscreen ? "flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain" : "flex min-h-[56rem] flex-col p-6 sm:min-h-[44rem] sm:p-9"}
           >
           {status !== "done" && !fullscreen && (
             <>
