@@ -44,6 +44,24 @@ const NORME_PISCINE: { icon: typeof Ruler; t: string; d: string }[] = [
   },
 ];
 
+/* Bloc piscine : visserie inox 316, sur rail comme sur pinces. */
+const VISSERIE_PISCINE: { src: string; alt: string; tag: string; t: string; d: string }[] = [
+  {
+    src: "/fixation-rail-hover.png",
+    alt: "Vitrage de barrière de piscine pris dans un rail au sol, visserie inox 316",
+    tag: "Sur rail",
+    t: "Un ancrage qui ne craint pas l’eau",
+    d: "Le rail est fixé et serré avec une visserie inox 316 : la tenue reste la même au bord du bassin, saison après saison.",
+  },
+  {
+    src: "/fixation-pince-hover.png",
+    alt: "Vitrage de barrière de piscine maintenu par une pince au sol, visserie inox 316",
+    tag: "Sur pinces",
+    t: "La même exigence, pince par pince",
+    d: "Chaque pince est maintenue par une visserie inox 316, pensée pour vivre dehors, les pieds près de l’eau.",
+  },
+];
+
 /* Bloc piscine : réalisations en photos réelles. */
 const REALISATIONS_PISCINE: { src: string; alt: string; tag: string; title: string }[] = [
   {
@@ -400,6 +418,55 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   </div>
                 </div>
               </Reveal>
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {/* ---- piscine : visserie inox 316, faite pour durer ---- */}
+      {entry.slug === "piscine" && (
+        <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
+          <Container>
+            <header className="mx-auto max-w-2xl text-center lg:max-w-4xl">
+              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
+                Visserie &amp; fixations
+              </p>
+              <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+                Toute la visserie en{" "}
+                <span className="whitespace-nowrap text-pine-600">inox 316</span>, faite pour durer
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl leading-relaxed text-neutral-600 lg:max-w-none lg:text-balance">
+                Autour d&rsquo;un bassin, les fixations vivent au contact de l&rsquo;eau. Sur rail comme sur
+                pinces, toute notre visserie est en inox 316 : elle résiste à l&rsquo;eau sans souci, année
+                après année.
+              </p>
+            </header>
+
+            <div className="mx-auto mt-10 grid max-w-5xl gap-5 sm:grid-cols-2 lg:gap-8">
+              {VISSERIE_PISCINE.map((v, i) => (
+                <Reveal key={v.tag} delay={i * 80}>
+                  <article className="flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-white shadow-panel ring-1 ring-pine-950/10">
+                    {/* rendu entier, jamais rogné — aucun texte sur l'image ;
+                        fond calé sur le blanc du rendu (254) : pas de cadre visible */}
+                    <div className="relative aspect-[4/3] bg-[#fefefe]">
+                      <Image
+                        src={v.src}
+                        alt={v.alt}
+                        fill
+                        sizes="(min-width: 1024px) 31rem, (min-width: 640px) 50vw, 100vw"
+                        className="object-contain p-4"
+                      />
+                    </div>
+                    <div className="border-t border-neutral-100 px-6 pb-6 pt-5">
+                      <span className="inline-block rounded-full bg-amber-500 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-pine-950">
+                        {v.tag} · Inox 316
+                      </span>
+                      <h3 className="mt-3 text-lg font-extrabold tracking-tight text-inkgreen">{v.t}</h3>
+                      <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">{v.d}</p>
+                    </div>
+                  </article>
+                </Reveal>
+              ))}
             </div>
           </Container>
         </section>
