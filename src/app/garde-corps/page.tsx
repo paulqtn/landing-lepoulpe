@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
-import { combos, materials, usages } from "@/lib/catalog";
+import { catalogPath, combos, materials, usages } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Tous nos garde-corps : verre, aluminium, inox — par usage",
@@ -30,7 +30,7 @@ export default function GardeCorpsHub() {
             {materials.map((m) => (
               <Link
                 key={m.slug}
-                href={`/garde-corps/${m.slug}`}
+                href={catalogPath(m.slug)}
                 className="group rounded-2xl border border-neutral-200 bg-white p-6 transition-all hover:-translate-y-1 hover:border-pine-300 hover:shadow-card"
               >
                 <h3 className="flex items-center gap-1.5 text-xl font-extrabold text-inkgreen group-hover:text-pine-700">
@@ -47,7 +47,7 @@ export default function GardeCorpsHub() {
             {usages.map((u) => (
               <Link
                 key={u.slug}
-                href={`/garde-corps/${u.slug}`}
+                href={catalogPath(u.slug)}
                 className="group flex items-center justify-between rounded-xl border border-neutral-200 bg-white px-5 py-4 text-sm font-bold text-inkgreen transition-all hover:-translate-y-0.5 hover:border-pine-300 hover:text-pine-700"
               >
                 {u.title}
@@ -61,7 +61,7 @@ export default function GardeCorpsHub() {
             {combos.map((c) => (
               <Link
                 key={c.slug}
-                href={`/garde-corps/${c.slug}`}
+                href={catalogPath(c.slug)}
                 className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700"
               >
                 {c.title}

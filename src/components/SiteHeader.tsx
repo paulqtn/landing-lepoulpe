@@ -16,7 +16,7 @@ import {
   Truck,
   X,
 } from "lucide-react";
-import { usages } from "@/lib/catalog";
+import { catalogPath, usages } from "@/lib/catalog";
 import { phoneHref, site } from "@/lib/site";
 import { USAGE_ICONS } from "@/lib/usage-icons";
 
@@ -164,7 +164,7 @@ export function SiteHeader() {
                       {usages.map((u) => (
                         <Link
                           key={u.slug}
-                          href={`/garde-corps/${u.slug}`}
+                          href={catalogPath(u.slug)}
                           onClick={() => setOpen(null)}
                           className="group/us flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-semibold text-neutral-800 transition hover:bg-amber-500/15 hover:text-pine-950"
                         >
@@ -372,7 +372,7 @@ export function SiteHeader() {
             <div className="flex-1 overflow-y-auto px-5 py-4">
               {(
                 [
-                  { id: "usage", label: "Par usage", items: usages.map((u) => ({ href: `/garde-corps/${u.slug}`, label: u.name, usage: u.slug })) },
+                  { id: "usage", label: "Par usage", items: usages.map((u) => ({ href: catalogPath(u.slug), label: u.name, usage: u.slug })) },
                   { id: "fix", label: "Type de fixation", items: [...fixations.map((f) => ({ href: `/produits/${f.slug}`, label: f.name })), { href: "/generateur", label: "Comment choisir sa fixation ?" }] },
                   { id: "verre", label: "Épaisseur de verre", items: [...epaisseurs.map((e) => ({ href: `/verre/${e.slug}`, label: `Verre feuilleté ${e.label}` })), { href: "/generateur", label: "Quelle épaisseur choisir ?" }] },
                 ] as { id: string; label: string; items: { href: string; label: string; usage?: string }[] }[]

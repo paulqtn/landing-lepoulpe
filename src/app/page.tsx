@@ -26,7 +26,7 @@ import { Configurator } from "@/components/Configurator";
 import { GoogleG, MaterialScene } from "@/components/Illustrations";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
-import { materials, usages } from "@/lib/catalog";
+import { catalogPath, materials, usages } from "@/lib/catalog";
 import { USAGE_ICONS } from "@/lib/usage-icons";
 import { guides } from "@/lib/guides";
 import { phoneHref, site } from "@/lib/site";
@@ -277,7 +277,7 @@ export default function Home() {
               {usages.map((u) => (
                 <Link
                   key={u.slug}
-                  href={`/garde-corps/${u.slug}`}
+                  href={catalogPath(u.slug)}
                   className="group flex shrink-0 items-center gap-2.5 rounded-full border border-neutral-200 bg-white py-1.5 pl-1.5 pr-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-500 hover:shadow-card"
                 >
                   <span className="grid h-8 w-8 place-items-center rounded-full bg-mist transition-colors duration-300 group-hover:bg-amber-500">

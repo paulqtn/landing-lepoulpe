@@ -130,9 +130,9 @@ export const usages: UsageSeed[] = [
     usage: "piscine",
     name: "Piscine",
     title: "Barrière de piscine en verre",
-    metaTitle: "Garde-corps piscine — verre, inox, alu | direct usine",
+    metaTitle: "Barrière de piscine en verre sur-mesure",
     metaDescription:
-      "Sécurisez les abords de votre piscine sans sacrifier la vue : garde-corps verre autoportant, inox 316 ou aluminium. Devis gratuit en 24h.",
+      "Barrière de piscine en verre sur-mesure, en direct usine : sécurisez le bassin sans gâcher la vue. Repères NF P90-306, visserie inox 316. Devis gratuit.",
     intro:
       "Sécurité, résistance au chlore et transparence totale sur le bassin : verre autoportant, visserie inox 316.",
     benefits: [
@@ -443,6 +443,18 @@ export const combos: CatalogEntry[] = materials.flatMap((m) => usages.map((u) =>
 /* ------------------------------ Accès ------------------------------ */
 
 export const allCatalog: CatalogEntry[] = [...materials, ...usages, ...combos];
+
+/* URL publique d'une entrée. Le slug interne reste la clé (usage du
+   générateur, données) ; seules quelques pages ont une adresse dédiée,
+   alignée sur leur mot-clé. Les anciennes adresses sont redirigées dans
+   next.config.ts — garder les deux listes synchronisées. */
+const CUSTOM_PATHS: Record<string, string> = {
+  piscine: "/barriere-piscine-verre",
+};
+
+export function catalogPath(slug: string): string {
+  return CUSTOM_PATHS[slug] ?? `/garde-corps/${slug}`;
+}
 
 export function getEntry(slug: string): CatalogEntry | undefined {
   return allCatalog.find((e) => e.slug === slug);

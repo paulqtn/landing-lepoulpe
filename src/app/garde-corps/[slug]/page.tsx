@@ -11,6 +11,7 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import {
   allCatalog,
+  catalogPath,
   combosForMaterial,
   combosForUsage,
   getEntry,
@@ -182,11 +183,11 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   return {
     title: entry.metaTitle,
     description: entry.metaDescription,
-    alternates: { canonical: `/garde-corps/${entry.slug}` },
+    alternates: { canonical: catalogPath(entry.slug) },
     openGraph: {
       type: "website",
       locale: "fr_FR",
-      url: `${site.url}/garde-corps/${entry.slug}`,
+      url: `${site.url}${catalogPath(entry.slug)}`,
       siteName: site.name,
       title: entry.metaTitle,
       description: entry.metaDescription,
@@ -238,7 +239,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Accueil", item: site.url },
           { "@type": "ListItem", position: 2, name: "Garde-corps", item: `${site.url}/garde-corps` },
-          { "@type": "ListItem", position: 3, name: entry.title, item: `${site.url}/garde-corps/${entry.slug}` },
+          { "@type": "ListItem", position: 3, name: entry.title, item: `${site.url}${catalogPath(entry.slug)}` },
         ],
       },
       {
@@ -636,7 +637,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
             {related.filter(Boolean).map((r) => (
               <Link
                 key={r.slug}
-                href={`/garde-corps/${r.slug}`}
+                href={catalogPath(r.slug)}
                 className="group inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700"
               >
                 {r.title}

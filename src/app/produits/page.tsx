@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
-import { materials } from "@/lib/catalog";
+import { catalogPath, materials } from "@/lib/catalog";
 import { products } from "@/lib/products";
 
 export const metadata: Metadata = {
@@ -36,7 +36,7 @@ export default function ProduitsPage() {
             <Container>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <h2 className="text-2xl font-extrabold text-inkgreen">{m.title}s</h2>
-                <Link href={`/garde-corps/${m.slug}`} className="group inline-flex items-center gap-1.5 text-sm font-bold text-pine-700">
+                <Link href={catalogPath(m.slug)} className="group inline-flex items-center gap-1.5 text-sm font-bold text-pine-700">
                   Tout savoir sur le {m.name.toLowerCase()}
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>

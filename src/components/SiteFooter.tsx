@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
-import { materials, usages } from "@/lib/catalog";
+import { catalogPath, materials, usages } from "@/lib/catalog";
 import { guides } from "@/lib/guides";
 import { phoneHref, site } from "@/lib/site";
 
@@ -35,7 +35,7 @@ export function SiteFooter() {
             <ul className="mt-4 space-y-2.5 text-sm">
               {materials.map((m) => (
                 <li key={m.slug}>
-                  <Link href={`/garde-corps/${m.slug}`} className="text-pine-100/80 transition hover:text-white">
+                  <Link href={catalogPath(m.slug)} className="text-pine-100/80 transition hover:text-white">
                     {m.title}
                   </Link>
                 </li>
@@ -58,7 +58,7 @@ export function SiteFooter() {
             <ul className="mt-4 space-y-2.5 text-sm">
               {usages.map((u) => (
                 <li key={u.slug}>
-                  <Link href={`/garde-corps/${u.slug}`} className="text-pine-100/80 transition hover:text-white">
+                  <Link href={catalogPath(u.slug)} className="text-pine-100/80 transition hover:text-white">
                     Garde-corps {u.name.toLowerCase()}
                   </Link>
                 </li>

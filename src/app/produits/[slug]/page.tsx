@@ -9,7 +9,7 @@ import { ProductConfigurator } from "@/components/ProductConfigurator";
 import { ProductGallery } from "@/components/ProductGallery";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
-import { getEntry, usages, type QA } from "@/lib/catalog";
+import { catalogPath, getEntry, usages, type QA } from "@/lib/catalog";
 import { getProduct, products } from "@/lib/products";
 import { verres } from "@/lib/verres";
 import { phoneHref, site } from "@/lib/site";
@@ -444,7 +444,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <h2 className="text-2xl font-extrabold text-inkgreen">Dans la même gamme</h2>
             {materialEntry && (
-              <Link href={`/garde-corps/${materialEntry.slug}`} className="group inline-flex items-center gap-1.5 text-sm font-bold text-pine-700">
+              <Link href={catalogPath(materialEntry.slug)} className="group inline-flex items-center gap-1.5 text-sm font-bold text-pine-700">
                 Tout savoir sur le {materialEntry.name.toLowerCase()}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
