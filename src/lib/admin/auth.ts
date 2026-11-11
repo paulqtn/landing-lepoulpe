@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 /* ================================================================== */
 
 export const ADMIN_COOKIE = "mgk_admin";
+export const REP_COOKIE = "mgk_rep";
 const SESSION_HOURS = 12;
 
 function accessCode(): string {
@@ -61,4 +62,43 @@ export function requireAdmin(req: Request): Response | null {
     ?.slice(ADMIN_COOKIE.length + 1);
   if (verifySession(token)) return null;
   return Response.json({ error: "non autorisé" }, { status: 401 });
+}
+
+/* ----------------------- Identité du commercial ----------------------- */
+
+export function makeRepToken(name: string): string {
+  const payload = Buffer.from(name, "utf8").toString("base64url");
+  return `${payload}.${sign(payload)}`;
+}
+
+function verifyRepToken(token: string | undefined): string | null {
+  if (!token) return null;
+  const [payload, sig] = token.split(".");
+  if (!payload || !sig) return null;
+  const good = sign(payload);
+  const a = Buffer.from(sig);
+  const b = Buffer.from(good);
+  if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
+  try {
+    return Buffer.from(payload, "base64url").toString("utf8");
+  } catch {
+    return null;
+  }
+}
+
+/** Nom du commercial connecté (choisi à la connexion), ou null. */
+export async function currentRep(): Promise<string | null> {
+  const jar = await cookies();
+  return verifyRepToken(jar.get(REP_COOKIE)?.value);
+}
+
+/** Variante pour les routes API (lecture de l'en-tête cookie). */
+export function repFromRequest(req: Request): string | null {
+  const cookie = req.headers.get("cookie") ?? "";
+  const token = cookie
+    .split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith(`${REP_COOKIE}=`))
+    ?.slice(REP_COOKIE.length + 1);
+  return verifyRepToken(token ? decodeURIComponent(token) : undefined);
 }

@@ -62,6 +62,7 @@ async function ensureSchema(): Promise<void> {
         ALTER TABLE leads ADD COLUMN IF NOT EXISTS clicks INT NOT NULL DEFAULT 0;
         ALTER TABLE leads ADD COLUMN IF NOT EXISTS devis_views INT NOT NULL DEFAULT 0;
         ALTER TABLE leads ADD COLUMN IF NOT EXISTS last_activity_at TIMESTAMPTZ;
+        ALTER TABLE leads ADD COLUMN IF NOT EXISTS won_at TIMESTAMPTZ;
         CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_token ON leads(token);
 
         -- ---- Pôle gestion : commandes atelier, stock, expéditions ----
@@ -148,6 +149,7 @@ export type Lead = {
   clicks: number;
   devis_views: number;
   last_activity_at: string | null;
+  won_at: string | null;
 };
 
 export type LeadEvent = {
@@ -215,6 +217,7 @@ export async function updateLead(
     vals.push(v);
     sets.push(`${k} = $${vals.length}`);
   });
+  if (patch.statut === "gagne") sets.push(`won_at = COALESCE(won_at, now())`);
   if (!sets.length) return;
   vals.push(id);
   await q(`UPDATE leads SET ${sets.join(", ")} WHERE id = $${vals.length}`, vals);
@@ -233,12 +236,13 @@ export async function listEvents(leadId: number): Promise<LeadEvent[]> {
   return q<LeadEvent>(`SELECT * FROM lead_events WHERE lead_id = $1 ORDER BY created_at DESC, id DESC`, [leadId]);
 }
 
-export async function listLeads(opts: { statut?: string; search?: string; limit?: number } = {}): Promise<Lead[]> {
+export async function listLeads(opts: { statut?: string; search?: string; limit?: number; assigned?: string } = {}): Promise<Lead[]> {
   if (!dbConfigured) {
     const needle = (opts.search ?? "").toLowerCase();
     return demoLeads().filter(
       (l) =>
         (!opts.statut || l.statut === opts.statut) &&
+        (!opts.assigned || (opts.assigned === "__libre" ? !l.assigned_to : l.assigned_to === opts.assigned)) &&
         (!needle || [l.name, l.email, l.phone].some((v) => v.toLowerCase().includes(needle))),
     );
   }
@@ -251,6 +255,12 @@ export async function listLeads(opts: { statut?: string; search?: string; limit?
   if (opts.search) {
     vals.push(`%${opts.search}%`);
     where.push(`(name ILIKE $${vals.length} OR email ILIKE $${vals.length} OR phone ILIKE $${vals.length})`);
+  }
+  if (opts.assigned === "__libre") {
+    where.push(`assigned_to IS NULL`);
+  } else if (opts.assigned) {
+    vals.push(opts.assigned);
+    where.push(`assigned_to = $${vals.length}`);
   }
   vals.push(Math.min(opts.limit ?? 100, 500));
   return q<Lead>(

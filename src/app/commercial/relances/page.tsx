@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BellRing, CalendarClock, MailCheck } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
+import { currentRep } from "@/lib/admin/auth";
 import { dueRelances, listLeads, type Lead } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
 
@@ -9,8 +10,11 @@ export const dynamic = "force-dynamic";
 /* Relances — l'automatisation sous contrôle : ce qui est dû maintenant,
    ce qui partira ensuite, et l'engagement constaté sur chaque client. */
 
-export default async function RelancesPage() {
-  const [dues, tous] = await Promise.all([dueRelances(), listLeads({ limit: 500 })]);
+export default async function RelancesPage({ searchParams }: { searchParams: Promise<{ qui?: string }> }) {
+  const [{ qui }, rep, duesAll, tousAll] = await Promise.all([searchParams, currentRep(), dueRelances(), listLeads({ limit: 500 })]);
+  const mine = rep && qui !== "tous";
+  const dues = mine ? duesAll.filter((l) => l.assigned_to === rep) : duesAll;
+  const tous = mine ? tousAll.filter((l) => l.assigned_to === rep) : tousAll;
   const now = Date.now();
   const aVenir = tous
     .filter(
@@ -30,6 +34,12 @@ export default async function RelancesPage() {
           Séquence automatique J0 → J+2 → J+5 → J+10 ·{" "}
           {mailConfigured ? "envoi chaque matin par le robot" : "emails non configurés : relancez depuis chaque fiche"}
         </p>
+        {rep && (
+          <div className="mt-2.5 flex gap-1.5">
+            <Chip href="/commercial/relances" active={mine === true} label="Les miennes" />
+            <Chip href="/commercial/relances?qui=tous" active={!mine} label="Toute l'équipe" />
+          </div>
+        )}
       </div>
 
       <section className="rounded-2xl border border-amber-500/40 bg-white p-5">
@@ -80,5 +90,13 @@ function Liste({ leads, vide, mode }: { leads: Lead[]; vide: string; mode: "due"
         </li>
       ))}
     </ul>
+  );
+}
+
+function Chip({ href, active, label }: { href: string; active: boolean; label: string }) {
+  return (
+    <a href={href} className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${active ? "bg-pine-700 text-white" : "border border-neutral-200 bg-white text-neutral-600 hover:border-pine-300 hover:text-pine-700"}`}>
+      {label}
+    </a>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Download } from "lucide-react";
 import { LeadsTable, type LeadRow } from "@/components/admin/LeadsTable";
+import { currentRep } from "@/lib/admin/auth";
 import { listLeads, STATUT_LABELS, STATUTS } from "@/lib/admin/db";
 import { getTeam } from "@/lib/admin/team";
 
@@ -9,10 +10,13 @@ export const dynamic = "force-dynamic";
 export default async function LeadsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ statut?: string; q?: string }>;
+  searchParams: Promise<{ statut?: string; q?: string; qui?: string }>;
 }) {
-  const { statut, q } = await searchParams;
-  const leads = await listLeads({ statut, search: q, limit: 200 });
+  const { statut, q, qui } = await searchParams;
+  const rep = await currentRep();
+  const mode = qui === "tous" || !rep ? "tous" : qui === "libre" ? "libre" : "moi";
+  const assigned = mode === "moi" && rep ? rep : mode === "libre" ? "__libre" : undefined;
+  const leads = await listLeads({ statut, search: q, limit: 200, assigned });
   const rows: LeadRow[] = leads.map((l) => ({
     id: l.id,
     created_at: String(l.created_at),
@@ -37,6 +41,7 @@ export default async function LeadsPage({
         <div className="flex items-center gap-2">
           <form className="flex gap-2" action="/commercial/clients">
             {statut && <input type="hidden" name="statut" value={statut} />}
+            {qui && <input type="hidden" name="qui" value={qui} />}
             <input
               name="q"
               defaultValue={q ?? ""}
@@ -54,10 +59,18 @@ export default async function LeadsPage({
         </div>
       </div>
 
+      {rep && (
+        <div className="flex flex-wrap gap-1.5">
+          <FilterChip href={`/commercial/clients${statut ? `?statut=${statut}` : ""}`} active={mode === "moi"} label={`Mes clients`} />
+          <FilterChip href={`/commercial/clients?qui=tous${statut ? `&statut=${statut}` : ""}`} active={mode === "tous"} label="Toute l'équipe" />
+          <FilterChip href={`/commercial/clients?qui=libre${statut ? `&statut=${statut}` : ""}`} active={mode === "libre"} label="À piocher" />
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-1.5">
-        <FilterChip href="/commercial/clients" active={!statut} label="Tous" />
+        <FilterChip href={`/commercial/clients${mode !== "moi" ? `?qui=${qui}` : ""}`} active={!statut} label="Tous statuts" />
         {STATUTS.map((s) => (
-          <FilterChip key={s} href={`/commercial/clients?statut=${s}`} active={statut === s} label={STATUT_LABELS[s]} />
+          <FilterChip key={s} href={`/commercial/clients?statut=${s}${mode !== "moi" && qui ? `&qui=${qui}` : ""}`} active={statut === s} label={STATUT_LABELS[s]} />
         ))}
       </div>
 

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { ADMIN_COOKIE, checkCode, makeSession } from "@/lib/admin/auth";
+import { ADMIN_COOKIE, checkCode, makeRepToken, makeSession, REP_COOKIE } from "@/lib/admin/auth";
 
 export async function POST(req: Request) {
-  let body: { code?: string };
+  let body: { code?: string; rep?: string };
   try {
     body = await req.json();
   } catch {
@@ -19,5 +19,14 @@ export async function POST(req: Request) {
     path: "/",
     maxAge: 12 * 3600,
   });
+  if (typeof body.rep === "string" && body.rep.trim().length > 0 && body.rep.trim().length <= 40) {
+    res.cookies.set(REP_COOKIE, makeRepToken(body.rep.trim()), {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 12 * 3600,
+    });
+  }
   return res;
 }

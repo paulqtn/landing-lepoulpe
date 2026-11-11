@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { FlaskConical } from "lucide-react";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { CommercialNav } from "@/components/admin/CommercialNav";
-import { isAdmin } from "@/lib/admin/auth";
+import { currentRep, isAdmin } from "@/lib/admin/auth";
+import { getTeam } from "@/lib/admin/team";
 import { dbConfigured } from "@/lib/admin/db";
 import { site } from "@/lib/site";
 
@@ -12,10 +13,11 @@ export const metadata: Metadata = {
 };
 
 export default async function CommercialLayout({ children }: { children: React.ReactNode }) {
+  const rep = await currentRep();
   if (!(await isAdmin())) {
     return (
       <main className="grid min-h-[70vh] place-items-center bg-mist px-5 py-16">
-        <AdminLogin />
+        <AdminLogin team={getTeam()} />
       </main>
     );
   }
@@ -25,9 +27,15 @@ export default async function CommercialLayout({ children }: { children: React.R
       <div className="mx-auto flex w-full max-w-7xl gap-6 px-4 py-6 sm:px-6">
         <aside className="hidden w-56 shrink-0 md:block">
           <div className="sticky top-24 rounded-2xl border border-neutral-200 bg-white p-3">
-            <p className="px-3 pb-2 pt-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+            <p className="px-3 pb-1 pt-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
               Espace commercial
             </p>
+            {rep && (
+              <p className="mx-3 mb-2 inline-flex items-center gap-1.5 rounded-full bg-pine-50 px-2.5 py-1 text-xs font-bold text-pine-800">
+                <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                {rep}
+              </p>
+            )}
             <CommercialNav />
           </div>
         </aside>

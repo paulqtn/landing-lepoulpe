@@ -2,17 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BellRing, Factory, Home, KanbanSquare, LogOut, Settings2, Users } from "lucide-react";
+import { BarChart3, BellRing, Factory, FileText, Home, KanbanSquare, LogOut, Settings2, Users } from "lucide-react";
 import { AdminLogout } from "@/components/admin/AdminLogout";
 
 /* Navigation de l'espace commercial : sa home et ses sous-catégories. */
 
 const NAV = [
   { href: "/commercial", label: "État des lieux", icon: Home, exact: true },
+  { href: "/commercial/devis", label: "Devis à traiter", icon: FileText, exact: false },
   { href: "/commercial/clients", label: "Clients", icon: Users, exact: false },
   { href: "/commercial/relances", label: "Relances", icon: BellRing, exact: false },
   { href: "/commercial/pipeline", label: "Pipeline", icon: KanbanSquare, exact: false },
   { href: "/commercial/production", label: "Production", icon: Factory, exact: false },
+  { href: "/commercial/stats", label: "Statistiques", icon: BarChart3, exact: false },
 ];
 
 export function CommercialNav() {

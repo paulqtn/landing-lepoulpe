@@ -45,6 +45,7 @@ function build(): { leads: Lead[]; events: Record<number, LeadEvent[]> } {
       createdAgo: 26 * h,
       engagement: { opens: 1, clicks: 1, devis_views: 2 },
       statut: "devis_envoye" as const,
+      assigned: "Sophie",
       nextRelanceAgo: 2 * h, // échue → alimente « relances à traiter »
       token: "000000000000000000000001",
     },
@@ -59,6 +60,7 @@ function build(): { leads: Lead[]; events: Record<number, LeadEvent[]> } {
       createdAgo: 20 * h,
       engagement: { opens: 0, clicks: 0, devis_views: 0 },
       statut: "devis_envoye" as const,
+      assigned: "Karim",
       nextRelanceAgo: 1 * h,
       token: "000000000000000000000002",
     },
@@ -73,8 +75,25 @@ function build(): { leads: Lead[]; events: Record<number, LeadEvent[]> } {
       createdAgo: 3 * h,
       engagement: { opens: 0, clicks: 0, devis_views: 0 },
       statut: "nouveau" as const,
+      assigned: null,
       nextRelanceAgo: -46 * h, // à venir
       token: "000000000000000000000003",
+    },
+    {
+      id: 4,
+      name: "Démo — Atelier Loft (M. Besson)",
+      email: "besson.demo@exemple.fr",
+      phone: "06 44 33 22 11",
+      source: "generateur-terrasse",
+      answers: { lieu: "terrasse", systeme: "rail", cotes: [4, 2], hauteur: "100", teinte: "clair", installation: "moi-meme", codePostal: "34000", adresse: "18 Rue des Arts, 34000 Montpellier", ville: "Montpellier" },
+      estimation: prix([4, 2], "GS-19-L", "88.4", 100, "34"),
+      createdAgo: 9 * 24 * h,
+      engagement: { opens: 3, clicks: 2, devis_views: 3 },
+      statut: "gagne" as const,
+      assigned: "Sophie",
+      wonAgo: 3 * 24 * h,
+      nextRelanceAgo: -200 * h,
+      token: "000000000000000000000004",
     },
   ];
 
@@ -93,7 +112,7 @@ function build(): { leads: Lead[]; events: Record<number, LeadEvent[]> } {
       statut: d.statut,
       relances: 0,
       next_relance_at: iso(d.nextRelanceAgo),
-      assigned_to: null,
+      assigned_to: ("assigned" in d ? (d as { assigned: string | null }).assigned : null),
       score: s.grade,
       score_points: s.points,
       token: d.token,
@@ -101,6 +120,7 @@ function build(): { leads: Lead[]; events: Record<number, LeadEvent[]> } {
       clicks: d.engagement.clicks,
       devis_views: d.engagement.devis_views,
       last_activity_at: d.engagement.devis_views > 0 ? iso(5 * h) : null,
+      won_at: "wonAgo" in d ? iso((d as { wonAgo: number }).wonAgo) : null,
     };
   });
 
@@ -114,6 +134,7 @@ function build(): { leads: Lead[]; events: Record<number, LeadEvent[]> } {
     if (l.clicks > 0) push("email_clique", "Le client a cliqué dans un email", 6 * h);
     if (l.opens > 0) push("email_ouvert", "Le client a ouvert un email", 7 * h);
     if (l.statut === "devis_envoye") push("devis_envoye", "Email de devis automatique envoyé [démo]", Number(new Date()) - Number(new Date(l.created_at)) - 60_000);
+    if (l.statut === "gagne") push("statut", "Affaire gagnée — devis validé par le client [démo]", 3 * 24 * h);
     push("creation", `Demande reçue (${l.source}) — score ${l.score} (${l.score_points} pts) [démo]`, Number(new Date()) - Number(new Date(l.created_at)));
     events[l.id] = list;
   }
