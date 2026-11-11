@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, ArrowUpRight, Ban, Check, ChevronDown, ClipboardList, DoorOpen, Lock, Ruler, Wrench } from "lucide-react";
+import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
 import { Configurator } from "@/components/Configurator";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { PageHero, type PageHeroImage } from "@/components/PageHero";
@@ -254,6 +255,79 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
             </div>
             <div className="mx-auto mt-10 max-w-5xl">
               <Configurator lock={{ usage: usageLock }} source={`configurateur-${entry.slug}`} />
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {/* ---- piscine : transparence & design, comparateur avant/après ---- */}
+      {entry.slug === "piscine" && (
+        <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
+          <Container>
+            <header className="max-w-2xl">
+              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
+                Transparence &amp; design
+              </p>
+              <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+                Sécurisez votre piscine sans gâcher la vue
+              </h2>
+              <p className="mt-4 leading-relaxed text-neutral-600">
+                Protéger les abords de votre bassin ne signifie pas renoncer à son esthétique. Avec une
+                barrière de piscine en verre, profitez d&rsquo;une protection discrète qui préserve la vue
+                sur l&rsquo;eau et s&rsquo;intègre naturellement à votre terrasse ou à votre jardin.
+              </p>
+            </header>
+
+            {/* le comparateur, élément dominant — glissez la poignée */}
+            <BeforeAfterSlider
+              className="mt-10"
+              before={{
+                src: "/comparateur-piscine-avant.webp",
+                alt: "Piscine sans barrière de protection, vue depuis la terrasse",
+              }}
+              after={{
+                src: "/comparateur-piscine-apres.webp",
+                alt: "La même piscine sécurisée par une barrière de piscine en verre, prise du même angle",
+              }}
+            />
+
+            <div className="mt-10 grid gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
+              <div>
+                <h3 className="text-xl font-extrabold tracking-tight text-inkgreen">
+                  Une barrière de piscine en verre qui se fait oublier
+                </h3>
+                <p className="mt-3 leading-relaxed text-neutral-600">
+                  Contrairement aux clôtures traditionnelles, une barrière de piscine en verre préserve la
+                  perspective sur votre bassin et les espaces extérieurs. Ses panneaux forment une
+                  protection de piscine en verre visuellement légère, idéale pour sécuriser une piscine
+                  tout en conservant l&rsquo;harmonie de votre aménagement.
+                </p>
+                <Link
+                  href="#estimation"
+                  className="group mt-7 inline-flex items-center gap-2.5 rounded-full bg-pine-700 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-pine-900/20 transition-all hover:-translate-y-0.5 hover:bg-pine-600"
+                >
+                  Configurer ma barrière de piscine
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </div>
+
+              <ul className="space-y-5">
+                {[
+                  ["Une vue dégagée sur votre piscine", "Profitez d’une séparation transparente qui préserve la perspective sur le bassin."],
+                  ["Une intégration élégante à votre extérieur", "Le verre s’associe naturellement aux terrasses contemporaines comme aux jardins plus traditionnels."],
+                  ["Une solution adaptée à votre projet", "Dimensions, implantation et systèmes de fixation sont étudiés en fonction de votre piscine et de ses abords."],
+                ].map(([t, d]) => (
+                  <li key={t} className="flex items-start gap-3.5">
+                    <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-pine-700 text-white">
+                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                    </span>
+                    <span>
+                      <span className="block text-[0.95rem] font-extrabold text-inkgreen">{t}</span>
+                      <span className="mt-0.5 block text-sm leading-relaxed text-neutral-600">{d}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </Container>
         </section>
