@@ -264,14 +264,15 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       {entry.slug === "piscine" && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
-            <header className="mx-auto max-w-2xl text-center">
+            <header className="mx-auto max-w-2xl text-center lg:max-w-5xl">
               <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
                 Transparence &amp; design
               </p>
               <h2 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
                 Sécurisez votre piscine sans gâcher la vue
               </h2>
-              <p className="mx-auto mt-4 max-w-xl leading-relaxed text-neutral-600">
+              {/* desktop : deux lignes équilibrées, sur la largeur du comparateur */}
+              <p className="mx-auto mt-4 max-w-xl leading-relaxed text-neutral-600 lg:max-w-none lg:text-balance">
                 Protéger les abords de votre bassin ne signifie pas renoncer à son esthétique. Avec une
                 barrière de piscine en verre, profitez d&rsquo;une protection discrète qui préserve la vue
                 sur l&rsquo;eau et s&rsquo;intègre naturellement à votre terrasse ou à votre jardin.
