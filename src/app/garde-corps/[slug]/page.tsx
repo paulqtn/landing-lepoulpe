@@ -446,37 +446,35 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   humides et aux abords des piscines, qui associe durabilité et finition soignée.
                 </p>
 
-                {/* mobile : les trois bénéfices en bandeau défilant discret
-                    (deux moitiés identiques → boucle sans raccord) */}
-                <div className="mt-6 overflow-hidden border-y border-pine-900/10 py-3 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] motion-reduce:[mask-image:none] lg:hidden">
-                  <div className="flex w-max animate-marquee items-center motion-reduce:w-auto motion-reduce:animate-none">
-                    {[0, 1, 2, 3].map((copy) => (
-                      <ul
-                        key={copy}
-                        className={`flex items-center motion-reduce:flex-col motion-reduce:items-start motion-reduce:gap-y-1.5 ${copy > 0 ? "motion-reduce:hidden" : ""}`}
-                        aria-hidden={copy > 0}
-                      >
-                        {INOX_PISCINE.map((b) => (
-                          <li key={b} className="flex items-center">
-                            <span className="whitespace-nowrap text-[13px] font-semibold text-pine-800">{b}</span>
-                            <span className="mx-4 h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500 motion-reduce:hidden" aria-hidden="true" />
-                          </li>
-                        ))}
-                      </ul>
-                    ))}
+                {/* Les trois bénéfices, écrits UNE seule fois dans le HTML.
+                    Mobile : ils défilent — la seconde moitié de la boucle est
+                    décorative (libellés en attribut, rendus en CSS, donc
+                    absents du texte de la page). Tablette : ligne fixe.
+                    Desktop : liste filetée. */}
+                <div className="mt-6 overflow-hidden border-y border-pine-900/10 py-3 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] motion-reduce:[mask-image:none] sm:[mask-image:none] lg:mt-7 lg:py-0">
+                  <div className="flex w-max animate-marquee items-center motion-reduce:w-auto motion-reduce:animate-none sm:w-auto sm:animate-none lg:block">
+                    <ul className="flex items-center motion-reduce:flex-col motion-reduce:items-start motion-reduce:gap-y-1.5 sm:flex-wrap sm:gap-y-1.5 lg:block lg:divide-y lg:divide-pine-900/10">
+                      {INOX_PISCINE.map((b) => (
+                        <li
+                          key={b}
+                          className="flex items-center gap-3 whitespace-nowrap pr-7 text-[13px] font-semibold text-pine-800 lg:gap-3.5 lg:py-3.5 lg:pr-0 lg:text-[0.95rem] lg:text-inkgreen"
+                        >
+                          <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500" aria-hidden="true" />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="flex items-center motion-reduce:hidden sm:hidden" aria-hidden="true">
+                      {INOX_PISCINE.map((b) => (
+                        <span key={b} className="flex items-center gap-3 whitespace-nowrap pr-7 text-[13px] font-semibold text-pine-800">
+                          <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500" />
+                          <span data-label={b} className="after:content-[attr(data-label)]" />
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-
-                {/* desktop : les mêmes bénéfices, en liste filetée, sans pictos */}
-                <ul className="mt-7 hidden divide-y divide-pine-900/10 border-y border-pine-900/10 lg:block">
-                  {INOX_PISCINE.map((b) => (
-                    <li key={b} className="flex items-center gap-3.5 py-3.5 text-[0.95rem] font-semibold text-inkgreen">
-                      <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500" aria-hidden="true" />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-5 hidden text-pretty text-[13px] leading-relaxed text-neutral-500 lg:block">
+                <p className="mt-4 text-pretty text-[13px] leading-relaxed text-neutral-500 lg:mt-5">
                   Comme tout inox, il n&rsquo;est pas inaltérable : un rinçage occasionnel à l&rsquo;eau claire
                   aide à préserver son aspect.
                 </p>
