@@ -48,21 +48,21 @@ const NORME_PISCINE: { icon: typeof Ruler; t: string; d: string }[] = [
 const INOX_PISCINE: { icon: typeof Ruler; t: string; court: string; d: string }[] = [
   {
     icon: ShieldCheck,
-    t: "Il tient face au chlore",
-    court: "Tient face au chlore",
-    d: "Il contient du molybdène, absent de l’inox 304 courant : c’est ce qui le protège des chlorures de l’eau traitée.",
+    t: "Le chlore ne lui fait pas peur",
+    court: "Ne craint pas le chlore",
+    d: "Son molybdène le protège des chlorures de l’eau traitée : vos fixations restent saines, saison après saison.",
   },
   {
     icon: Wrench,
-    t: "Sur rail comme sur pinces",
-    court: "Rail ou pinces",
-    d: "Quelle que soit la fixation choisie, toute la visserie livrée est en inox 316.",
+    t: "Aucune vis au rabais",
+    court: "Visserie 100 % inox 316",
+    d: "Rail ou pinces, toute la visserie livrée est en inox 316 : la même qualité partout, jusqu’à la dernière vis.",
   },
   {
     icon: Droplets,
-    t: "Un rinçage, et c’est tout",
-    court: "Un simple rinçage",
-    d: "Un passage à l’eau claire de temps en temps lui garde son aspect d’origine.",
+    t: "Zéro entretien, ou presque",
+    court: "Un rinçage suffit",
+    d: "Un coup d’eau claire de temps en temps et il garde son aspect du premier jour. Rien à traiter, rien à repeindre.",
   },
 ];
 
@@ -506,9 +506,10 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 {/* le repère concret, pour comparer deux devis */}
                 <div className="mt-2 hidden rounded-2xl bg-mist px-5 py-4 lg:block">
                   <p className="text-[0.95rem] font-extrabold text-inkgreen">Comment reconnaître l&rsquo;inox 316 ?</p>
-                  <p className="mt-1 text-sm leading-relaxed text-neutral-600">
-                    En visserie, il porte le marquage <strong className="font-bold text-inkgreen">A4</strong> ;
-                    l&rsquo;inox 304, lui, est marqué A2. Un repère simple pour comparer deux devis.
+                  <p className="mt-1 text-pretty text-sm leading-relaxed text-neutral-600">
+                    En visserie, il porte le marquage <strong className="font-bold text-inkgreen">A4</strong>.
+                    L&rsquo;inox 304, plus courant et moins résistant au chlore, est marqué A2 : un repère
+                    simple pour comparer deux devis.
                   </p>
                 </div>
 
