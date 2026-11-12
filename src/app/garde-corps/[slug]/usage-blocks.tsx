@@ -190,8 +190,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
   },
 
   /* ------------------------------ ESCALIER ----------------------------- */
-  /* PROPOSITION — les quatre images sont provisoires (recadrages de la
-     photo du haut de page) en attendant des photos dédiées. */
+  /* Les images des blocs norme et matière sont provisoires (recadrages de
+     la photo du haut de page) en attendant des photos dédiées. */
   escalier: {
     vue: {
       kicker: "Lumière & design",
@@ -203,9 +203,16 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         </>
       ),
       media: {
-        kind: "image",
-        src: "/escalier-vue.webp",
-        alt: "Escalier bois d’un séjour lumineux, protégé par un garde-corps d’escalier en verre",
+        kind: "compare",
+        caption: "Faites glisser pour comparer : le même escalier, rampe pleine puis garde-corps en verre.",
+        before: {
+          src: "/comparateur-escalier-avant.webp",
+          alt: "Escalier fermé par une rampe pleine maçonnée, dans un séjour lumineux",
+        },
+        after: {
+          src: "/comparateur-escalier-apres.webp",
+          alt: "Le même escalier ouvert sur le séjour, protégé par un garde-corps d’escalier en verre",
+        },
       },
       points: [
         {
