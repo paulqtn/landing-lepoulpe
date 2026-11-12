@@ -140,12 +140,15 @@ export function PageHero({
           </div>
         </div>
 
-        {/* pastille contexte en verre dépoli, posée sur la photo (desktop) */}
-        <div className="pointer-events-none absolute bottom-6 right-6 hidden rounded-2xl border border-white/25 bg-pine-950/35 px-5 py-3 backdrop-blur-md lg:block">
-          <span className="block font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-pine-100">
+        {/* pastille contexte en verre dépoli, posée sur la photo (desktop).
+            Lisibilité : fond assez dense pour le contraste, texte ≥ 11 px, et
+            hauteurs de ligne entières — sinon la pastille tombe sur un demi-
+            pixel et le texte bave sur écran standard. */}
+        <div className="pointer-events-none absolute bottom-6 right-6 hidden rounded-2xl border border-white/20 bg-pine-950/70 px-5 py-3 backdrop-blur-md lg:block">
+          <span className="block font-mono text-[11px] font-bold uppercase leading-4 tracking-[0.14em] text-white/80">
             {image.label}
           </span>
-          <span className="mt-0.5 block text-sm font-bold text-white">{image.title}</span>
+          <span className="mt-0.5 block text-[15px] font-bold leading-5 text-white">{image.title}</span>
         </div>
       </Container>
     </section>
