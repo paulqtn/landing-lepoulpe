@@ -231,7 +231,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       ),
       intro: (
         <>
-          Droit, tournant ou hélicoïdal : chaque garde-corps en verre est fabriqué sur mesure, d&rsquo;après
+          Droit, quart tournant ou hélicoïdal : chaque garde-corps en verre est fabriqué sur mesure, d&rsquo;après
           les cotes de votre escalier, en intérieur comme en extérieur.
         </>
       ),
@@ -244,8 +244,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           alt: "Schéma d’un escalier droit équipé d’un garde-corps en verre",
         },
         {
-          t: "Escalier tournant",
-          d: "Quart tournant ou double quart : chaque panneau est découpé à l’angle exact pour accompagner le virage et le palier.",
+          t: "Escalier quart tournant",
+          d: "Un quart de tour, ou deux : chaque panneau est découpé à l’angle exact pour accompagner le virage et le palier.",
           point: "Changement d’angle géré au degré près",
           img: "/escalier-tournant.svg",
           alt: "Schéma d’un escalier quart tournant avec palier, équipé d’un garde-corps en verre",
