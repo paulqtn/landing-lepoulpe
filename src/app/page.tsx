@@ -21,6 +21,7 @@ import {
   Zap,
 } from "lucide-react";
 import { AdvantagesBar } from "@/components/AdvantagesBar";
+import { TrustBar, type TrustItem } from "@/components/TrustBar";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { Configurator } from "@/components/Configurator";
 import { GoogleG, MaterialScene } from "@/components/Illustrations";
@@ -158,6 +159,20 @@ const advantages = [
   "Pinces & visserie inox 316",
   "Kits pré-percés, prêts à poser",
   "Conseil technique par nos experts",
+];
+
+/** Bandeau « Ils nous ont fait confiance » — ÉLÉMENTS PROVISOIRES À REMPLACER.
+ *  Un nom seul s'affiche en toutes lettres ; ajouter `logo: "/logos/x.svg"`
+ *  (fichier dans /public) pour afficher un logo à la place. */
+const references: TrustItem[] = [
+  { name: "Logo client 1" },
+  { name: "Logo client 2" },
+  { name: "Logo client 3" },
+  { name: "Logo client 4" },
+  { name: "Logo client 5" },
+  { name: "Logo client 6" },
+  { name: "Logo client 7" },
+  { name: "Logo client 8" },
 ];
 
 export default function Home() {
@@ -318,6 +333,9 @@ export default function Home() {
           </div>
         </Container>
       </section>
+
+      {/* ================== ILS NOUS ONT FAIT CONFIANCE ================== */}
+      <TrustBar items={references} />
 
       {/* ==================== SYSTÈMES (gamme verre) ==================== */}
       <section className="py-20 sm:py-28">
