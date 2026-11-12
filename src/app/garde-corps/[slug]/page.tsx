@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, ArrowUpRight, Ban, Check, ClipboardList, DoorOpen, Lock, Ruler, Wrench } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, ClipboardList, Wrench } from "lucide-react";
 import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
 import { Configurator } from "@/components/Configurator";
 import { FaqAccordion } from "@/components/FaqAccordion";
@@ -20,61 +20,15 @@ import {
 } from "@/lib/catalog";
 import { productsForMaterial } from "@/lib/products";
 import { site } from "@/lib/site";
+import { USAGE_BLOCKS } from "./usage-blocks";
 
-/* Les trois blocs piscine sous le générateur partagent ces recettes :
-   même surtitre, même H2, même bouton — seule la composition change. */
+/* Les trois blocs par usage sous le générateur (contenu : usage-blocks.tsx)
+   partagent ces recettes : même surtitre, même H2, même bouton — seule la
+   composition change. */
 const PISCINE_KICKER = "font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700";
 const PISCINE_H2 = "text-balance text-[1.75rem] font-extrabold leading-[1.15] tracking-tight text-inkgreen sm:text-4xl";
 const PISCINE_CTA =
   "group flex items-center justify-center gap-2.5 rounded-full bg-pine-700 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-pine-900/20 transition-all hover:-translate-y-0.5 hover:bg-pine-600 sm:inline-flex";
-
-/* Bloc piscine 1 — transparence : trois points distincts, sans pictos. */
-const VUE_PISCINE: { t: string; d: string }[] = [
-  {
-    t: "La vue reste entière",
-    d: "Depuis la maison comme depuis la terrasse, le regard porte jusqu’au bassin, sans barreaux ni grillage.",
-  },
-  {
-    t: "Le décor n’est pas coupé",
-    d: "Une barrière en verre pour piscine s’efface devant la pierre, le bois ou la végétation, dans un extérieur contemporain comme traditionnel.",
-  },
-  {
-    t: "Un tracé à vos mesures",
-    d: "Longueurs, angles et type de fixation sont définis selon votre bassin et ses abords.",
-  },
-];
-
-/* Bloc piscine 2 — NF P90-306 : ce que la norme regarde, formulé sans
-   promesse de conformité (elle s'apprécie sur l'installation complète). */
-const NORME_PISCINE: { icon: typeof Ruler; t: string; d: string }[] = [
-  {
-    icon: Ruler,
-    t: "Une hauteur de 1,10 m minimum",
-    d: "La hauteur de protection est évaluée depuis chaque point d’appui accessible : sol, marche ou muret à proximité de la piscine.",
-  },
-  {
-    icon: DoorOpen,
-    t: "Un portillon intégré et sécurisé",
-    d: "Entièrement vitré, le portillon s’intègre harmonieusement à la barrière. Il doit rester fermé et verrouillé après chaque passage.",
-  },
-  {
-    icon: Lock,
-    t: "Un verrouillage adapté à la sécurité des enfants",
-    d: "Le système de fermeture doit résister aux tentatives d’ouverture des enfants de moins de 5 ans, pour une protection renforcée.",
-  },
-  {
-    icon: Ban,
-    t: "Une conception limitant l’escalade",
-    d: "La surface lisse et continue du verre limite les prises. Aucun mobilier, jardinière ou autre point d’appui ne doit faciliter le franchissement.",
-  },
-];
-
-/* Bloc piscine 3 — inox 316 : une ligne de bénéfices, rien de plus. */
-const INOX_PISCINE = [
-  "Résistance renforcée à la corrosion",
-  "Adapté aux environnements piscine",
-  "Finition discrète et élégante",
-];
 
 /* Bloc piscine : réalisations en photos réelles. */
 const REALISATIONS_PISCINE: { src: string; alt: string; tag: string; title: string }[] = [
@@ -214,6 +168,9 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
 
   const kits = entry.material ? productsForMaterial(entry.material).slice(0, 3) : [];
 
+  // Blocs dédiés sous le générateur (piscine, escalier…) — sinon, blocs génériques.
+  const blocks = USAGE_BLOCKS[entry.slug];
+
   // Générateur intégré : l'usage de la page est figé, son étape disparaît du parcours.
   const usageLock =
     entry.kind === "usage" ? entry.slug
@@ -292,37 +249,49 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
-      {/* ---- piscine 1 : transparence & design — le visuel d'abord ---- */}
-      {entry.slug === "piscine" && (
+      {/* ---- bloc 1 : le visuel d'abord (comparateur avant/après ou photo) ---- */}
+      {blocks && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
             <header className="mx-auto max-w-2xl text-center lg:max-w-3xl">
-              <p className={PISCINE_KICKER}>Transparence &amp; design</p>
-              <h2 className={`mt-2 ${PISCINE_H2}`}>Sécurisez votre piscine sans gâcher la vue</h2>
+              <p className={PISCINE_KICKER}>{blocks.vue.kicker}</p>
+              <h2 className={`mt-2 ${PISCINE_H2}`}>{blocks.vue.h2}</h2>
               <p className="mx-auto mt-4 max-w-xl text-pretty leading-relaxed text-neutral-600 lg:max-w-2xl">
-                Une barrière de piscine en verre protège les abords du bassin sans les cacher : l&rsquo;eau, la
-                terrasse et le jardin restent visibles, comme avant.
+                {blocks.vue.intro}
               </p>
             </header>
 
-            {/* le comparateur, élément dominant — bord à bord en mobile */}
-            <BeforeAfterSlider
-              className="-mx-5 mt-8 sm:mx-0 sm:mt-12"
-              frameClassName="sm:rounded-[1.75rem] sm:shadow-panel sm:ring-1 sm:ring-pine-950/10"
-              caption="Faites glisser pour comparer : la même piscine, avant et après."
-              before={{
-                src: "/comparateur-piscine-avant.webp",
-                alt: "Piscine sans barrière de protection, vue depuis la terrasse",
-              }}
-              after={{
-                src: "/comparateur-piscine-apres.webp",
-                alt: "La même piscine entourée d’une barrière de piscine en verre, prise du même angle",
-              }}
-            />
+            {/* le visuel, élément dominant — bord à bord en mobile */}
+            {blocks.vue.media.kind === "compare" ? (
+              <BeforeAfterSlider
+                className="-mx-5 mt-8 sm:mx-0 sm:mt-12"
+                frameClassName="sm:rounded-[1.75rem] sm:shadow-panel sm:ring-1 sm:ring-pine-950/10"
+                caption={blocks.vue.media.caption}
+                before={blocks.vue.media.before}
+                after={blocks.vue.media.after}
+              />
+            ) : (
+              <figure className="-mx-5 mt-8 sm:mx-0 sm:mt-12">
+                <div className="relative aspect-[16/9] overflow-hidden sm:rounded-[1.75rem] sm:shadow-panel sm:ring-1 sm:ring-pine-950/10">
+                  <Image
+                    src={blocks.vue.media.src}
+                    alt={blocks.vue.media.alt}
+                    fill
+                    sizes="(min-width: 1152px) 68rem, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+                {blocks.vue.media.caption && (
+                  <figcaption className="mt-3 px-5 text-center text-[13px] text-neutral-500 sm:px-0">
+                    {blocks.vue.media.caption}
+                  </figcaption>
+                )}
+              </figure>
+            )}
 
             {/* contenu secondaire : trois lignes sobres, un filet pour seule déco */}
             <ul className="mt-10 grid sm:mt-14 sm:grid-cols-3 sm:gap-x-10">
-              {VUE_PISCINE.map((v) => (
+              {blocks.vue.points.map((v) => (
                 <li key={v.t} className="border-t border-pine-900/10 py-4 sm:pb-0 sm:pt-5">
                   <p className="text-[0.95rem] font-extrabold tracking-tight text-inkgreen">{v.t}</p>
                   <p className="mt-1 text-pretty text-sm leading-relaxed text-neutral-600">{v.d}</p>
@@ -331,8 +300,8 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
             </ul>
 
             <div className="mt-6 text-center sm:mt-12">
-              <Link href="#estimation" className={PISCINE_CTA}>
-                Configurer ma barrière de piscine
+              <Link href={blocks.vue.cta.href} className={PISCINE_CTA}>
+                {blocks.vue.cta.label}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
@@ -340,20 +309,15 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
-      {/* ---- piscine 2 : norme NF P90-306 — repères clairs, photo en regard ---- */}
-      {entry.slug === "piscine" && (
+      {/* ---- bloc 2 : la norme — repères clairs, photo en regard ---- */}
+      {blocks && (
         <section className="border-b border-neutral-200 bg-mist/60 py-16 sm:py-24">
           <Container>
             <header className="mx-auto max-w-2xl text-center lg:max-w-3xl">
-              <p className={PISCINE_KICKER}>Sécurité &amp; réglementation</p>
-              <h2 className={`mt-2 ${PISCINE_H2}`}>
-                Barrière de piscine <br className="sm:hidden" />
-                en verre et norme <span className="whitespace-nowrap text-pine-600">NF P90-306</span>
-              </h2>
+              <p className={PISCINE_KICKER}>{blocks.norme.kicker}</p>
+              <h2 className={`mt-2 ${PISCINE_H2}`}>{blocks.norme.h2}</h2>
               <p className="mx-auto mt-4 max-w-xl text-pretty leading-relaxed text-neutral-600 lg:max-w-2xl">
-                Toute piscine privée enterrée ou semi-enterrée doit être équipée d&rsquo;un dispositif de
-                sécurité normalisé. Pour une barrière, la référence est la norme NF&nbsp;P90-306 : elle vise à
-                empêcher un enfant de moins de 5 ans d&rsquo;accéder seul au bassin.
+                {blocks.norme.intro}
               </p>
             </header>
 
@@ -362,8 +326,8 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               <Reveal className="lg:order-2">
                 <div className="relative aspect-[3/2] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 lg:aspect-auto lg:h-full lg:min-h-[26rem]">
                   <Image
-                    src="/barriere-piscine-nf.webp"
-                    alt="Barrière de piscine en verre sur pinces inox, avec portillon, autour d’un bassin"
+                    src={blocks.norme.photo.src}
+                    alt={blocks.norme.photo.alt}
                     fill
                     sizes="(min-width: 1024px) 32rem, 100vw"
                     className="object-cover"
@@ -374,7 +338,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               <div className="lg:order-1">
                 {/* les quatre points que regarde la norme — toujours visibles, sans cartes */}
                 <ul className="divide-y divide-pine-900/10 border-y border-pine-900/10">
-                  {NORME_PISCINE.map((item) => (
+                  {blocks.norme.items.map((item) => (
                     <li key={item.t} className="flex items-start gap-3.5 py-4 sm:gap-4 sm:py-5">
                       <span className="grid h-9 w-9 shrink-0 sm:h-10 sm:w-10 place-items-center rounded-full bg-white text-pine-700 ring-1 ring-pine-900/10">
                         <item.icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
@@ -388,14 +352,13 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 </ul>
 
                 <p className="mt-5 text-pretty text-[13px] leading-relaxed text-neutral-500">
-                  La conformité s&rsquo;apprécie sur l&rsquo;installation complète (implantation, pose, portillon,
-                  abords), pas sur les panneaux seuls. Nous faisons le point avec vous au moment du devis.
+                  {blocks.norme.note}
                 </p>
 
-                {/* même bouton que les deux autres blocs piscine */}
+                {/* même bouton que les deux autres blocs */}
                 <div className="mt-6">
-                  <Link href="/generateur?usage=piscine" className={PISCINE_CTA}>
-                    Obtenir mon devis
+                  <Link href={blocks.norme.cta.href} className={PISCINE_CTA}>
+                    {blocks.norme.cta.label}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </div>
@@ -405,24 +368,24 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
-      {/* ---- piscine 3 : matériaux & durabilité — la photo produit, puis l'essentiel ---- */}
-      {entry.slug === "piscine" && (
+      {/* ---- bloc 3 : matériaux & durabilité — la photo produit, puis l'essentiel ---- */}
+      {blocks && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
             <div className="grid gap-7 lg:grid-cols-[0.92fr_1fr] lg:items-stretch lg:gap-14">
-              {/* la pince au bord du bassin — paysage court en mobile, portrait en desktop */}
+              {/* la photo produit — paysage court en mobile, portrait en desktop */}
               <Reveal>
                 <div className="relative aspect-[2/1] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 lg:aspect-auto lg:h-full lg:min-h-[30rem]">
                   <Image
-                    src="/inox-316-piscine-paysage.webp"
-                    alt="Fixation d’une barrière de piscine en verre au bord du bassin, visserie en inox 316"
+                    src={blocks.matiere.photoPaysage}
+                    alt={blocks.matiere.alt}
                     fill
                     sizes="100vw"
                     className="object-cover lg:hidden"
                   />
                   <Image
-                    src="/inox-316-piscine-portrait.webp"
-                    alt="Fixation d’une barrière de piscine en verre au bord du bassin, visserie en inox 316"
+                    src={blocks.matiere.photoPortrait}
+                    alt={blocks.matiere.alt}
                     fill
                     sizes="(min-width: 1024px) 36rem, 1px"
                     className="hidden object-cover lg:block"
@@ -433,19 +396,11 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               {/* min-w-0 : le bandeau défilant ne doit pas élargir la colonne */}
               <div className="min-w-0 lg:self-center">
                 <p className={`flex items-center gap-4 ${PISCINE_KICKER}`}>
-                  Matériaux &amp; durabilité
+                  {blocks.matiere.kicker}
                   <span className="h-px flex-1 bg-pine-900/15" aria-hidden="true" />
                 </p>
-                <h2 className={`mt-3 ${PISCINE_H2}`}>
-                  Une visserie <span className="whitespace-nowrap text-pine-600">inox 316</span>{" "}
-                  <br className="hidden lg:block" />
-                  pensée pour durer
-                </h2>
-                <p className="mt-4 text-pretty leading-relaxed text-neutral-600">
-                  Nos barrières de piscine en verre intègrent une visserie en inox 316, reconnu pour sa
-                  résistance renforcée à la corrosion. Un choix particulièrement adapté aux environnements
-                  humides et aux abords des piscines, qui associe durabilité et finition soignée.
-                </p>
+                <h2 className={`mt-3 ${PISCINE_H2}`}>{blocks.matiere.h2}</h2>
+                <p className="mt-4 text-pretty leading-relaxed text-neutral-600">{blocks.matiere.text}</p>
 
                 {/* Les trois bénéfices, écrits UNE seule fois dans le HTML.
                     Mobile : ils défilent — la seconde moitié de la boucle est
@@ -455,7 +410,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 <div className="mt-6 overflow-hidden border-y border-pine-900/10 py-3 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] motion-reduce:[mask-image:none] sm:[mask-image:none] lg:mt-7 lg:py-0">
                   <div className="flex w-max animate-marquee items-center motion-reduce:w-auto motion-reduce:animate-none sm:w-auto sm:animate-none lg:block">
                     <ul className="flex items-center motion-reduce:flex-col motion-reduce:items-start motion-reduce:gap-y-1.5 sm:flex-wrap sm:gap-y-1.5 lg:block lg:divide-y lg:divide-pine-900/10">
-                      {INOX_PISCINE.map((b) => (
+                      {blocks.matiere.benefits.map((b) => (
                         <li
                           key={b}
                           className="flex items-center gap-3 whitespace-nowrap pr-7 text-[13px] font-semibold text-pine-800 lg:gap-3.5 lg:py-3.5 lg:pr-0 lg:text-[0.95rem] lg:text-inkgreen"
@@ -466,7 +421,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                       ))}
                     </ul>
                     <div className="flex items-center motion-reduce:hidden sm:hidden" aria-hidden="true">
-                      {INOX_PISCINE.map((b) => (
+                      {blocks.matiere.benefits.map((b) => (
                         <span key={b} className="flex items-center gap-3 whitespace-nowrap pr-7 text-[13px] font-semibold text-pine-800">
                           <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500" />
                           <span data-label={b} className="after:content-[attr(data-label)]" />
@@ -476,13 +431,12 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   </div>
                 </div>
                 <p className="mt-4 text-pretty text-[13px] leading-relaxed text-neutral-500 lg:mt-5">
-                  Comme tout inox, il n&rsquo;est pas inaltérable : un rinçage occasionnel à l&rsquo;eau claire
-                  aide à préserver son aspect.
+                  {blocks.matiere.note}
                 </p>
 
                 <div className="mt-7">
-                  <Link href="/generateur?usage=piscine" className={PISCINE_CTA}>
-                    Configurer ma barrière
+                  <Link href={blocks.matiere.cta.href} className={PISCINE_CTA}>
+                    {blocks.matiere.cta.label}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </div>
@@ -542,7 +496,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       )}
 
       {/* bénéfices — remplacés sur piscine par les blocs norme + réalisations */}
-      {entry.slug !== "piscine" && (
+      {!blocks && (
       <section className="py-16 sm:py-24">
         <Container>
           <h2 className="text-2xl font-extrabold tracking-tight text-inkgreen sm:text-3xl">Pourquoi ce choix ?</h2>
@@ -564,7 +518,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       )}
 
       {/* technique — idem : retiré sur piscine */}
-      {entry.slug !== "piscine" && (
+      {!blocks && (
       <section className="border-y border-neutral-200 bg-mist py-16 sm:py-24">
         <Container>
           <div className="flex items-center gap-3">
@@ -623,9 +577,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       <section className={`py-16 sm:py-24 ${kits.length > 0 ? "border-t border-neutral-200 bg-mist" : ""}`}>
         <Container>
           <h2 className="text-balance text-2xl font-extrabold tracking-tight text-inkgreen sm:text-3xl">
-            {entry.slug === "piscine"
-              ? "Questions fréquentes sur les barrières de piscine en verre"
-              : "Questions fréquentes"}
+            {blocks?.faqTitle ?? "Questions fréquentes"}
           </h2>
           <div className="mt-8 max-w-3xl">
             <FaqAccordion faq={entry.faq} />
@@ -633,10 +585,10 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </Container>
       </section>
 
-      {/* Fin de page. Piscine : directement l'appel au devis (les liens par
-          usage sont déjà dans le footer). Autres pages : liens « À explorer
-          aussi », puis l'appel au devis. */}
-      {entry.slug !== "piscine" && (
+      {/* Fin de page. Pages à blocs dédiés : directement l'appel au devis (les
+          liens par usage sont déjà dans le footer). Autres pages : liens
+          « À explorer aussi », puis l'appel au devis. */}
+      {!blocks && (
       <section className="border-t border-neutral-200 py-16 sm:py-20">
         <Container>
           <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-500">À explorer aussi</p>
