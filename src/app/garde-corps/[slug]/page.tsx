@@ -420,7 +420,11 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       {blocks && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
-            <div className="grid gap-7 lg:grid-cols-[0.92fr_1fr] lg:items-stretch lg:gap-14">
+            <div
+              className={`grid gap-7 lg:items-stretch lg:gap-14 ${
+                blocks.matiere.proof ? "lg:grid-cols-[0.72fr_1fr]" : "lg:grid-cols-[0.92fr_1fr]"
+              }`}
+            >
               {/* la photo produit — paysage court en mobile, portrait en desktop */}
               <Reveal>
                 <div className="relative aspect-[2/1] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 lg:aspect-auto lg:h-full lg:min-h-[30rem]">
@@ -450,44 +454,99 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 <h2 className={`mt-3 ${PISCINE_H2}`}>{blocks.matiere.h2}</h2>
                 <p className="mt-4 text-pretty leading-relaxed text-neutral-600">{blocks.matiere.text}</p>
 
-                {/* Les trois bénéfices, écrits UNE seule fois dans le HTML.
-                    Mobile : ils défilent — la seconde moitié de la boucle est
-                    décorative (libellés en attribut, rendus en CSS, donc
-                    absents du texte de la page). Tablette : ligne fixe.
-                    Desktop : liste filetée. */}
-                <div className="mt-6 overflow-hidden border-y border-pine-900/10 py-3 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] motion-reduce:[mask-image:none] sm:[mask-image:none] lg:mt-7 lg:py-0">
-                  <div className="flex w-max animate-marquee items-center motion-reduce:w-auto motion-reduce:animate-none sm:w-auto sm:animate-none lg:block">
-                    <ul className="flex items-center motion-reduce:flex-col motion-reduce:items-start motion-reduce:gap-y-1.5 sm:flex-wrap sm:gap-y-1.5 lg:block lg:divide-y lg:divide-pine-900/10">
-                      {blocks.matiere.benefits.map((b) => (
-                        <li
-                          key={b}
-                          className="flex items-center gap-3 whitespace-nowrap pr-7 text-[13px] font-semibold text-pine-800 lg:gap-3.5 lg:py-3.5 lg:pr-0 lg:text-[0.95rem] lg:text-inkgreen"
-                        >
-                          <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500" aria-hidden="true" />
-                          {b}
+                {blocks.matiere.proof ? (
+                  <>
+                    {/* variante « chiffre clé » : la charge de référence, puis ce qui fait la résistance */}
+                    <div className="mt-6 grid gap-5 rounded-2xl bg-mist p-5 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-7 sm:p-6">
+                      <p>
+                        <span className="block text-[2.75rem] font-extrabold leading-none tracking-tight text-pine-700 sm:text-5xl">
+                          {blocks.matiere.proof.stat.value}
+                        </span>
+                        <span className="mt-2 block max-w-[13rem] text-sm leading-snug text-neutral-700">
+                          {blocks.matiere.proof.stat.label}
+                        </span>
+                      </p>
+                      <div className="flex items-start gap-3.5 border-t border-pine-900/10 pt-5 sm:border-l sm:border-t-0 sm:pl-7 sm:pt-0">
+                        <blocks.matiere.proof.highlight.icon className="mt-0.5 h-7 w-7 shrink-0 text-pine-700" strokeWidth={1.5} />
+                        <div>
+                          <h3 className="text-[0.95rem] font-extrabold tracking-tight text-inkgreen">
+                            {blocks.matiere.proof.highlight.t}
+                          </h3>
+                          <p className="mt-1 text-pretty text-[13px] leading-relaxed text-neutral-600">
+                            {blocks.matiere.proof.highlight.d}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <ul className="mt-5 grid gap-4 sm:grid-cols-2 sm:gap-0 sm:divide-x sm:divide-pine-900/10">
+                      {blocks.matiere.proof.features.map((f) => (
+                        <li key={f.t} className="flex items-start gap-3.5 sm:px-5 sm:first:pl-0 sm:last:pr-0">
+                          <f.icon className="mt-0.5 h-7 w-7 shrink-0 text-pine-700" strokeWidth={1.5} />
+                          <div>
+                            <h3 className="text-[0.95rem] font-extrabold tracking-tight text-inkgreen">{f.t}</h3>
+                            <p className="mt-1 text-pretty text-[13px] leading-relaxed text-neutral-600">{f.d}</p>
+                          </div>
                         </li>
                       ))}
                     </ul>
-                    <div className="flex items-center motion-reduce:hidden sm:hidden" aria-hidden="true">
-                      {blocks.matiere.benefits.map((b) => (
-                        <span key={b} className="flex items-center gap-3 whitespace-nowrap pr-7 text-[13px] font-semibold text-pine-800">
-                          <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500" />
-                          <span data-label={b} className="after:content-[attr(data-label)]" />
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-4 text-pretty text-[13px] leading-relaxed text-neutral-500 lg:mt-5">
-                  {blocks.matiere.note}
-                </p>
 
-                <div className="mt-7">
-                  <Link href={blocks.matiere.cta.href} className={PISCINE_CTA}>
-                    {blocks.matiere.cta.label}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                </div>
+                    {blocks.matiere.note && (
+                      <p className="mt-5 text-pretty text-[13px] leading-relaxed text-neutral-500">{blocks.matiere.note}</p>
+                    )}
+
+                    <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+                      <Link href={blocks.matiere.cta.href} className={`${PISCINE_CTA} shrink-0 whitespace-nowrap`}>
+                        {blocks.matiere.cta.label}
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                      </Link>
+                      <p className="text-pretty text-xs italic leading-snug text-neutral-500 sm:max-w-[15rem] sm:text-right">
+                        {blocks.matiere.proof.footnote}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Les trois bénéfices, écrits UNE seule fois dans le HTML.
+                        Mobile : ils défilent — la seconde moitié de la boucle est
+                        décorative (libellés en attribut, rendus en CSS, donc
+                        absents du texte de la page). Tablette : ligne fixe.
+                        Desktop : liste filetée. */}
+                    <div className="mt-6 overflow-hidden border-y border-pine-900/10 py-3 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] motion-reduce:[mask-image:none] sm:[mask-image:none] lg:mt-7 lg:py-0">
+                      <div className="flex w-max animate-marquee items-center motion-reduce:w-auto motion-reduce:animate-none sm:w-auto sm:animate-none lg:block">
+                        <ul className="flex items-center motion-reduce:flex-col motion-reduce:items-start motion-reduce:gap-y-1.5 sm:flex-wrap sm:gap-y-1.5 lg:block lg:divide-y lg:divide-pine-900/10">
+                          {(blocks.matiere.benefits ?? []).map((b) => (
+                            <li
+                              key={b}
+                              className="flex items-center gap-3 whitespace-nowrap pr-7 text-[13px] font-semibold text-pine-800 lg:gap-3.5 lg:py-3.5 lg:pr-0 lg:text-[0.95rem] lg:text-inkgreen"
+                            >
+                              <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500" aria-hidden="true" />
+                              {b}
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="flex items-center motion-reduce:hidden sm:hidden" aria-hidden="true">
+                          {(blocks.matiere.benefits ?? []).map((b) => (
+                            <span key={b} className="flex items-center gap-3 whitespace-nowrap pr-7 text-[13px] font-semibold text-pine-800">
+                              <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-amber-500" />
+                              <span data-label={b} className="after:content-[attr(data-label)]" />
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="mt-4 text-pretty text-[13px] leading-relaxed text-neutral-500 lg:mt-5">
+                      {blocks.matiere.note}
+                    </p>
+
+                    <div className="mt-7">
+                      <Link href={blocks.matiere.cta.href} className={PISCINE_CTA}>
+                        {blocks.matiere.cta.label}
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                      </Link>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </Container>

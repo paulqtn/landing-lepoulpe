@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Ban, DoorOpen, Lock, MoveHorizontal, Ruler, TrendingUp, type LucideIcon } from "lucide-react";
+import { Ban, DoorOpen, Gem, Layers, Lock, MoveHorizontal, Ruler, ShieldCheck, TrendingUp, type LucideIcon } from "lucide-react";
 
 /* ================================================================== */
 /*  Contenu des trois blocs placés sous le générateur sur les pages    */
@@ -52,8 +52,15 @@ export type UsageBlocks = {
     h2: ReactNode;
     text: ReactNode;
     /** Une ligne de bénéfices, écrite une seule fois dans le HTML. */
-    benefits: string[];
-    note: ReactNode;
+    benefits?: string[];
+    note?: ReactNode;
+    /** Variante « chiffre clé » : remplace la ligne de bénéfices et la note. */
+    proof?: {
+      stat: { value: string; label: string };
+      highlight: { icon: LucideIcon; t: string; d: ReactNode };
+      features: { icon: LucideIcon; t: string; d: string }[];
+      footnote: string;
+    };
     /** Photo produit : paysage court en mobile, portrait en desktop. */
     photoPaysage: string;
     photoPortrait: string;
@@ -317,21 +324,41 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       cta: { label: "Obtenir mon devis", href: "/generateur?usage=escalier" },
     },
     matiere: {
-      kicker: "Matériaux & durabilité",
+      kicker: "Résistance & sécurité",
       h2: (
         <>
-          Un <span className={ACCENT}>verre feuilleté</span> <br className="hidden lg:block" />
-          pensé pour l&rsquo;escalier
+          La transparence du verre. <br className="hidden sm:block" />
+          La <span className={ACCENT}>résistance</span> d&rsquo;un véritable{" "}
+          <span className="whitespace-nowrap">garde-corps.</span>
         </>
       ),
       text: (
         <>
-          Nos garde-corps d&rsquo;escalier sont fabriqués en verre feuilleté : deux vitrages assemblés par
-          des films intercalaires, qui restent solidaires en cas de choc. Chaque panneau est façonné en
-          usine pour suivre exactement la pente de votre escalier.
+          Derrière son apparence légère, le verre feuilleté de sécurité est conçu pour répondre aux
+          contraintes mécaniques d&rsquo;un escalier et offrir une protection fiable contre les chutes.
         </>
       ),
-      benefits: ["Verre feuilleté de sécurité", "Découpe au degré près", "Fixation sur limon ou sur marche"],
+      proof: {
+        stat: { value: "600 N/m", label: "Charge horizontale de référence en habitation*" },
+        highlight: {
+          icon: Layers,
+          t: "Verre feuilleté de sécurité",
+          d: "Plusieurs feuilles de verre assemblées par un intercalaire, qui retient les fragments en cas de casse.",
+        },
+        features: [
+          {
+            icon: ShieldCheck,
+            t: "Protection antichute",
+            d: "Une conception pensée pour répondre aux exigences de sécurité en vigueur.",
+          },
+          {
+            icon: Gem,
+            t: "Haute résistance",
+            d: "Un ensemble vitrage et fixations dimensionné pour durer.",
+          },
+        ],
+        footnote: "*Selon l’Eurocode 1 (EN 1991-1-1) et son Annexe Nationale.",
+      },
       note: (
         <>
           Trois épaisseurs au choix selon la fixation retenue :{" "}
