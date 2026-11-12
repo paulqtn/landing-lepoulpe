@@ -163,10 +163,10 @@ export const usages: UsageSeed[] = [
     metaDescription:
       "Garde-corps rampant d’escalier en verre, inox ou aluminium, sur-mesure au degré près. Conforme NF P01-012. Devis gratuit en 24h.",
     intro:
-      "Fabriqué au degré près : verre en parallélogramme, main courante continue, sur-mesure intégral conforme NF.",
+      "Fabriqué au degré près : verre en parallélogramme, protection continue, main courante en option.",
     benefits: [
       { title: "Sur-mesure au degré près", desc: "Chaque volée est différente : nous fabriquons d’après vos cotes et votre pente exacte." },
-      { title: "Main courante continue", desc: "Une préhension confortable et conforme sur toute la volée, y compris les tournants." },
+      { title: "Vitrage continu", desc: "Les panneaux se suivent sans interruption sur toute la volée, y compris les tournants ; la main courante est en option." },
       { title: "Lumière traversante", desc: "En verre, l’escalier reste baigné de lumière — idéal dans un séjour ou une cage sombre." },
       { title: "Montée sécurisée", desc: "Remplissages conformes : pas d’effet d’échelle, espacements contrôlés." },
     ],

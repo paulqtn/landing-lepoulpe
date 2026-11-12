@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Ban, DoorOpen, Hand, Lock, Ruler, TrendingUp, type LucideIcon } from "lucide-react";
+import { Ban, DoorOpen, Lock, MoveHorizontal, Ruler, TrendingUp, type LucideIcon } from "lucide-react";
 
 /* ================================================================== */
 /*  Contenu des trois blocs placés sous le générateur sur les pages    */
@@ -299,9 +299,9 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           d: "Un vitrage plein et lisse n’offre ni barreau ni lisse horizontale sur lesquels prendre appui.",
         },
         {
-          icon: Hand,
-          t: "Une main courante continue",
-          d: "Elle accompagne la main sur toute la volée, y compris dans les tournants.",
+          icon: MoveHorizontal,
+          t: "Un vitrage continu",
+          d: "Les panneaux se suivent sans interruption sur toute la volée, y compris dans les tournants. La main courante est proposée en option.",
         },
       ],
       note: (
