@@ -219,31 +219,31 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       kicker: "Matériaux & durabilité",
       h2: (
         <>
-          Une visserie <span className={ACCENT}>inox 316</span> <br className="hidden lg:block" />
+          Une fixation en <span className={ACCENT}>aluminium anodisé</span> <br className="hidden lg:block" />
           pensée pour durer
         </>
       ),
       text: (
         <>
-          Nos barrières de piscine en verre intègrent une visserie en inox 316, reconnu pour sa
-          résistance renforcée à la corrosion. Un choix particulièrement adapté aux environnements
-          humides et aux abords des piscines, qui associe durabilité et finition soignée.
+          Nos barrières de piscine en verre intègrent des pinces et rails en aluminium anodisé, reconnus
+          pour leur excellente résistance à la corrosion. Un choix particulièrement adapté aux
+          environnements humides et aux abords des piscines, qui associe durabilité et finition soignée.
         </>
       ),
       benefits: [
-        "Résistance renforcée à la corrosion",
+        "Résistance durable à la corrosion",
         "Adapté aux environnements piscine",
         "Finition discrète et élégante",
       ],
       note: (
         <>
-          Comme tout inox, il n&rsquo;est pas inaltérable : un rinçage occasionnel à l&rsquo;eau claire
-          aide à préserver son aspect.
+          L&rsquo;anodisation protège l&rsquo;aluminium, qui ne rouille pas : un simple rinçage à l&rsquo;eau
+          claire suffit à l&rsquo;entretenir. La visserie, elle, est en inox 316.
         </>
       ),
-      photoPaysage: "/inox-316-piscine-paysage.webp",
-      photoPortrait: "/inox-316-piscine-portrait.webp",
-      alt: "Fixation d’une barrière de piscine en verre au bord du bassin, visserie en inox 316",
+      photoPaysage: "/fixation-alu-piscine-paysage.webp",
+      photoPortrait: "/fixation-alu-piscine-portrait.webp",
+      alt: "Pince de fixation en aluminium anodisé d’une barrière de piscine en verre, au bord du bassin",
       cta: { label: "Configurer ma barrière", href: "/generateur?usage=piscine" },
     },
     faqTitle: "Questions fréquentes sur les barrières de piscine en verre",
