@@ -21,12 +21,13 @@ export function TrustBar({ title = "Ils nous ont fait confiance", items }: { tit
   if (items.length === 0) return null;
 
   return (
-    <section className="border-b border-neutral-200 bg-white py-10 sm:py-12">
-      <h2 className="px-5 text-center font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
+    <section className="border-b border-neutral-200 bg-white py-10 sm:py-12 lg:py-16">
+      {/* mobile : surtitre discret ; desktop : vrai titre, gras et lisible */}
+      <h2 className="px-5 text-center font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700 lg:font-sans lg:text-3xl lg:font-extrabold lg:normal-case lg:tracking-tight lg:text-inkgreen">
         {title}
       </h2>
 
-      <div className="mt-6 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] motion-reduce:[mask-image:none]">
+      <div className="mt-6 overflow-hidden lg:mt-8 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] motion-reduce:[mask-image:none]">
         <div
           className="flex w-max animate-marquee items-center hover:[animation-play-state:paused] motion-reduce:w-auto motion-reduce:animate-none"
           style={{ animationDuration: `${Math.max(40, items.length * 9)}s` }}
