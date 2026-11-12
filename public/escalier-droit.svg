@@ -48,9 +48,5 @@
 <line x1="78.3" y1="154.3" x2="199.1" y2="224.0" stroke="#175a3b" stroke-width="1.1"/>
 <line x1="78.3" y1="154.3" x2="78.3" y2="67.8" stroke="#175a3b" stroke-width="1.1"/>
 <polygon points="198.8,221.8 139.7,145.4 139.7,95.9 198.8,172.2" fill="#1f6f49" fill-opacity="0.13" stroke="#1f6f49" stroke-width="1.2"/>
-<circle cx="190.7" cy="208.7" r="2.3" fill="#f6a723" stroke="#175a3b" stroke-width="0.8"/>
-<circle cx="147.8" cy="141.6" r="2.3" fill="#f6a723" stroke="#175a3b" stroke-width="0.8"/>
 <polygon points="137.0,142.0 78.0,65.6 78.0,16.0 137.0,92.4" fill="#1f6f49" fill-opacity="0.13" stroke="#1f6f49" stroke-width="1.2"/>
-<circle cx="129.0" cy="128.8" r="2.3" fill="#f6a723" stroke="#175a3b" stroke-width="0.8"/>
-<circle cx="86.0" cy="61.7" r="2.3" fill="#f6a723" stroke="#175a3b" stroke-width="0.8"/>
 </svg>
