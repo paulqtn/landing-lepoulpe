@@ -622,7 +622,11 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       {/* FAQ */}
       <section className={`py-16 sm:py-24 ${kits.length > 0 ? "border-t border-neutral-200 bg-mist" : ""}`}>
         <Container>
-          <h2 className="text-2xl font-extrabold tracking-tight text-inkgreen sm:text-3xl">Questions fréquentes</h2>
+          <h2 className="text-balance text-2xl font-extrabold tracking-tight text-inkgreen sm:text-3xl">
+            {entry.slug === "piscine"
+              ? "Questions fréquentes sur les barrières de piscine en verre"
+              : "Questions fréquentes"}
+          </h2>
           <div className="mt-8 max-w-3xl">
             <FaqAccordion faq={entry.faq} />
           </div>
