@@ -49,23 +49,23 @@ const VUE_PISCINE: { t: string; d: string }[] = [
 const NORME_PISCINE: { icon: typeof Ruler; t: string; d: string }[] = [
   {
     icon: Ruler,
-    t: "1,10 m de hauteur minimale",
-    d: "Mesurée entre deux points d’appui : le sol, une marche ou un muret voisin entrent en compte.",
+    t: "Une hauteur de 1,10 m minimum",
+    d: "La hauteur de protection est évaluée depuis chaque point d’appui accessible : sol, marche ou muret à proximité de la piscine.",
   },
   {
     icon: DoorOpen,
-    t: "Un portillon intégré à la barrière",
-    d: "Il fait partie du dispositif et ne doit rester ni ouvert ni déverrouillé. Le nôtre est en verre, comme les panneaux.",
+    t: "Un portillon intégré et sécurisé",
+    d: "Entièrement vitré, le portillon s’intègre harmonieusement à la barrière. Il doit rester fermé et verrouillé après chaque passage.",
   },
   {
     icon: Lock,
-    t: "Un verrou à l’épreuve des petits",
-    d: "L’ouverture doit résister aux manipulations d’un enfant de moins de 5 ans.",
+    t: "Un verrouillage adapté à la sécurité des enfants",
+    d: "Le système de fermeture doit résister aux tentatives d’ouverture des enfants de moins de 5 ans, pour une protection renforcée.",
   },
   {
     icon: Ban,
-    t: "Peu de prises pour grimper",
-    d: "Un vitrage plein et lisse limite les possibilités d’escalade, à condition de ne rien laisser à côté : mobilier, jardinière, muret.",
+    t: "Une conception limitant l’escalade",
+    d: "La surface lisse et continue du verre limite les prises. Aucun mobilier, jardinière ou autre point d’appui ne doit faciliter le franchissement.",
   },
 ];
 
@@ -392,13 +392,13 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   abords), pas sur les panneaux seuls. Nous faisons le point avec vous au moment du devis.
                 </p>
 
-                <Link
-                  href="/generateur?usage=piscine"
-                  className="group mt-5 inline-flex items-center gap-2 text-sm font-bold text-pine-700 transition-colors hover:text-pine-600"
-                >
-                  Obtenir mon devis
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
+                {/* même bouton que les deux autres blocs piscine */}
+                <div className="mt-6">
+                  <Link href="/generateur?usage=piscine" className={PISCINE_CTA}>
+                    Obtenir mon devis
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
               </div>
             </div>
           </Container>
