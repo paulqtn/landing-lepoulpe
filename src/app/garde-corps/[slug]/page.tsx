@@ -20,6 +20,7 @@ import {
 } from "@/lib/catalog";
 import { productsForMaterial } from "@/lib/products";
 import { site } from "@/lib/site";
+import { USAGE_ICONS } from "@/lib/usage-icons";
 
 /* Les trois blocs piscine sous le générateur partagent ces recettes :
    même surtitre, même H2, même bouton — seule la composition change. */
@@ -629,7 +630,10 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </Container>
       </section>
 
-      {/* maillage interne */}
+      {/* Fin de page. Piscine : l'appel au devis d'abord, puis toutes les
+          catégories par usage (maillage + navigation). Autres pages : liens
+          « À explorer aussi », puis l'appel au devis. */}
+      {entry.slug !== "piscine" && (
       <section className="border-t border-neutral-200 py-16 sm:py-20">
         <Container>
           <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-500">À explorer aussi</p>
@@ -647,14 +651,17 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
           </div>
         </Container>
       </section>
+      )}
 
       {/* CTA final */}
-      <section className="pb-20">
+      <section className={entry.slug === "piscine" ? "pb-16 sm:pb-24" : "pb-20"}>
         <Container>
           <div className="relative overflow-hidden rounded-[2rem] bg-pine-900 px-6 py-14 text-center text-white sm:px-12">
             <div className="pointer-events-none absolute inset-0 bg-pinegrid" />
             <div className="relative mx-auto max-w-2xl">
-              <h2 className="text-balance text-3xl font-extrabold leading-[1.05] sm:text-4xl">
+              {/* text-white explicite : la règle de base des titres (vert foncé)
+                  l'emportait sur la couleur héritée du panneau */}
+              <h2 className="text-balance text-3xl font-extrabold leading-[1.05] text-white sm:text-4xl">
                 Votre {entry.title.toLowerCase()}, estimé{/^barrière/i.test(entry.title) ? "e" : ""} en 1 minute.
               </h2>
               <p className="mx-auto mt-4 max-w-lg text-pine-100/75">
@@ -674,6 +681,67 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
           </div>
         </Container>
       </section>
+
+      {/* ---- piscine : toutes les catégories par usage ---- */}
+      {entry.slug === "piscine" && (
+        <section className="bg-mist py-14 sm:py-20">
+          <Container>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className={PISCINE_KICKER}>Par usage</p>
+              <h2 className="mt-2 text-balance text-2xl font-extrabold tracking-tight text-inkgreen sm:text-3xl">
+                Un garde-corps en verre pour chaque projet
+              </h2>
+            </div>
+
+            <ul className="mt-8 grid gap-2.5 sm:mt-10 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4">
+              {usages.map((u) => {
+                const current = u.slug === entry.slug;
+                const inner = (
+                  <>
+                    <span
+                      className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl transition-colors duration-300 ${
+                        current ? "bg-amber-500" : "bg-pine-50 group-hover:bg-amber-500"
+                      }`}
+                    >
+                      <Image src={USAGE_ICONS[u.slug]} alt="" width={20} height={20} className="h-5 w-5" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-bold leading-snug text-inkgreen">{u.title}</span>
+                      {current && (
+                        <span className="mt-0.5 block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-pine-700">
+                          Vous êtes ici
+                        </span>
+                      )}
+                    </span>
+                    {!current && (
+                      <ArrowUpRight className="h-4 w-4 shrink-0 text-neutral-300 transition group-hover:text-amber-600" />
+                    )}
+                  </>
+                );
+                return (
+                  <li key={u.slug}>
+                    {current ? (
+                      <div
+                        aria-current="page"
+                        className="flex h-full items-center gap-3 rounded-2xl border border-pine-300 bg-white p-3 pr-4"
+                      >
+                        {inner}
+                      </div>
+                    ) : (
+                      <Link
+                        href={catalogPath(u.slug)}
+                        className="group flex h-full items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-3 pr-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-500 hover:shadow-card"
+                      >
+                        {inner}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </Container>
+        </section>
+      )}
     </main>
   );
 }
