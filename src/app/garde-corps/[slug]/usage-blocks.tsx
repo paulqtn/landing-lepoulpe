@@ -305,8 +305,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       cards: [
         {
           t: "Escalier droit",
-          d: "Une seule volée, une seule pente : les panneaux s’alignent d’un bout à l’autre, sans rupture.",
-          point: "Protection continue sur toute la longueur",
+          d: "Une seule volée, une seule pente : les panneaux s’alignent d’un bout à l’autre, à intervalle régulier.",
+          point: "Protection sur toute la longueur de la volée",
           img: "/escalier-droit.svg",
           alt: "Schéma d’un escalier droit équipé d’un garde-corps en verre",
         },
@@ -338,7 +338,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       intro: (
         <>
           Dès qu&rsquo;une chute de plus d&rsquo;un mètre est possible, l&rsquo;escalier doit être protégé. La
-          norme NF&nbsp;P01-012 fixe les dimensions à respecter : hauteur, remplissage et continuité de la
+          norme NF&nbsp;P01-012 fixe les dimensions à respecter : hauteur, remplissage et espacements de la
           protection.
         </>
       ),
@@ -360,8 +360,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
         {
           icon: MoveHorizontal,
-          t: "Un vitrage continu",
-          d: "Les panneaux se suivent sans interruption sur toute la volée, y compris dans les tournants. La main courante est proposée en option.",
+          t: "Un espacement maîtrisé entre panneaux",
+          d: "L’écart entre deux panneaux de verre respecte la limite fixée par la norme, sur toute la volée comme dans les tournants. La main courante est proposée en option.",
         },
       ],
       note: (
@@ -459,7 +459,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
         {
           t: "La façade s’allège",
-          d: "Vu de la rue, le vitrage dessine une ligne fine et continue, en construction neuve comme en rénovation.",
+          d: "Vu de la rue, le vitrage dessine une ligne fine et régulière, en construction neuve comme en rénovation.",
         },
         {
           t: "Toute la surface reste utile",
@@ -490,13 +490,13 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
         {
           icon: PanelBottom,
-          t: "Une zone basse sans vide",
-          d: "Sur les 45 premiers centimètres, le remplissage doit rester plein ou très serré : un vitrage toute hauteur y répond naturellement.",
+          t: "Une zone basse pleine",
+          d: "Sur les 45 premiers centimètres, le remplissage doit rester plein ou très serré : des panneaux vitrés toute hauteur y répondent naturellement.",
         },
         {
           icon: Ban,
           t: "Aucun appui pour grimper",
-          d: "Une surface lisse et continue ne laisse ni lisse ni barreau horizontal à escalader.",
+          d: "Une surface vitrée lisse ne laisse ni lisse ni barreau horizontal à escalader.",
         },
         {
           icon: Anchor,
@@ -616,8 +616,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
         {
           icon: PanelBottom,
-          t: "Un remplissage sans vide",
-          d: "Sur toute sa hauteur, le vitrage ne laisse ni jour ni appui, y compris en partie basse.",
+          t: "Un remplissage plein",
+          d: "Chaque panneau est plein sur toute sa hauteur, et l’écart entre deux panneaux reste dans la limite fixée par la norme.",
         },
         {
           icon: Anchor,
@@ -716,8 +716,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
         {
           icon: PanelBottom,
-          t: "Une zone basse sans vide",
-          d: "Le remplissage reste plein en partie basse : un vitrage toute hauteur ne laisse aucun passage.",
+          t: "Une zone basse pleine",
+          d: "Le remplissage reste plein en partie basse : des panneaux vitrés toute hauteur y répondent, avec un écart entre panneaux limité par la norme.",
         },
         {
           icon: Ban,
@@ -842,8 +842,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
         {
           icon: PanelBottom,
-          t: "Un remplissage sans vide",
-          d: "Un panneau vitré toute largeur ferme l’ouverture sans laisser de jour en partie basse.",
+          t: "Un remplissage plein",
+          d: "Un panneau vitré toute largeur protège l’ouverture, plein jusqu’en partie basse.",
         },
         {
           icon: BrickWall,
@@ -943,8 +943,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
         {
           icon: PanelBottom,
-          t: "Une zone basse sans vide",
-          d: "Le remplissage reste plein en partie basse : un vitrage toute hauteur y répond d’emblée.",
+          t: "Une zone basse pleine",
+          d: "Le remplissage reste plein en partie basse : des panneaux vitrés toute hauteur y répondent d’emblée.",
         },
         {
           icon: Anchor,
