@@ -147,10 +147,10 @@ export const usages: UsageSeed[] = [
       { title: "Fixation sur plage ou muret", desc: "Profilé autoportant en pince sur dalle, ou poteaux sur muret selon la configuration." },
     ],
     faq: [
-      { q: "Un garde-corps suffit-il pour sécuriser ma piscine ?", a: "Un garde-corps sécurise une zone en hauteur (plage surélevée, terrasse dominant le bassin). S’il sert de barrière de protection de la piscine elle-même, il doit en plus répondre à la norme NF P90-306 (hauteur, portillon, résistance)." },
-      { q: "Quel matériau autour d’une piscine ?", a: "Le verre feuilleté (vue et absence de corrosion) et l’inox 316 (résistance au chlore) sont les deux références. L’aluminium thermolaqué est l’option économique, également sans corrosion." },
-      { q: "Le verre ne chauffe-t-il pas au soleil ?", a: "Le verre monte en température mais reste manipulable ; contrairement au métal foncé, il ne provoque pas de brûlure au contact bref. L’essentiel du confort se joue sur la plage elle-même." },
-      { q: "Quelle hauteur autour d’une piscine ?", a: "En garde-corps de zone en hauteur : 1,00 m minimum (NF P01-012). En barrière de piscine NF P90-306 : 1,10 m minimum depuis le sol." },
+      { q: "À quelle distance de la piscine installer une barrière en verre ?", a: "Il est recommandé de prévoir au moins 1 mètre entre la barrière et le plan d’eau. Cet espace facilite la circulation et l’entretien du bassin. L’implantation doit également tenir compte des accès, du mobilier extérieur et des éventuels obstacles." },
+      { q: "Peut-on installer une barrière en verre sur une terrasse existante ?", a: "Oui, sous réserve que le support permette un ancrage fiable. Sur une terrasse carrelée autour de votre piscine, les fixations doivent être reprises dans une structure suffisamment résistante, et non dans le carrelage seul. Une vérification du support permet de déterminer la solution adaptée." },
+      { q: "Comment entretenir une barrière de piscine en verre ?", a: "Un nettoyage régulier à l’eau claire avec un produit doux suffit généralement à préserver la transparence du vitrage. Les fixations, charnières et systèmes de verrouillage doivent également être contrôlés de temps en temps." },
+      { q: "Peut-on réaliser une barrière en verre pour piscine sur mesure ?", a: "Oui, chaque projet de barrière en verre peut être conçu selon les dimensions et les contraintes de votre espace extérieur pour sécuriser votre piscine. L’implantation est étudiée pour associer sécurité, transparence et intégration harmonieuse autour du bassin." },
     ],
   },
   {
