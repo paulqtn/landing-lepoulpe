@@ -8,6 +8,7 @@ import { Ban, DoorOpen, Hand, Lock, Ruler, TrendingUp, type LucideIcon } from "l
 /*  n'apporte ici que ses textes, ses images et ses liens.             */
 /*                                                                      */
 /*    1. vue     — le visuel d'abord (comparateur avant/après ou photo) */
+/*       formes  — (facultatif) trois cartes illustrées, juste après    */
 /*    2. norme   — les repères réglementaires, photo en regard          */
 /*    3. matiere — la photo produit, puis l'essentiel sur les matériaux */
 /*                                                                      */
@@ -27,6 +28,13 @@ export type UsageBlocks = {
       | { kind: "image"; src: string; alt: string; caption?: string };
     /** Trois points distincts, sans pictos. */
     points: { t: string; d: string }[];
+    cta: Cta;
+  };
+  /** Facultatif : trois cartes illustrées (ex. formes d'escalier). */
+  formes?: {
+    h2: ReactNode;
+    intro: ReactNode;
+    cards: { t: string; d: string; point: string; img: string; alt: string }[];
     cta: Cta;
   };
   norme: {
@@ -214,6 +222,43 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
       ],
       cta: { label: "Configurer mon garde-corps d’escalier", href: "#estimation" },
+    },
+    formes: {
+      h2: (
+        <>
+          Adapté à <span className={ACCENT}>toutes les formes</span> d&rsquo;escalier
+        </>
+      ),
+      intro: (
+        <>
+          Droit, tournant ou hélicoïdal : chaque garde-corps en verre est fabriqué sur mesure, d&rsquo;après
+          les cotes de votre escalier, en intérieur comme en extérieur.
+        </>
+      ),
+      cards: [
+        {
+          t: "Escalier droit",
+          d: "Une seule volée, une seule pente : les panneaux s’alignent d’un bout à l’autre, sans rupture.",
+          point: "Protection continue sur toute la longueur",
+          img: "/escalier-droit.svg",
+          alt: "Schéma d’un escalier droit équipé d’un garde-corps en verre",
+        },
+        {
+          t: "Escalier tournant",
+          d: "Quart tournant ou double quart : chaque panneau est découpé à l’angle exact pour accompagner le virage et le palier.",
+          point: "Changement d’angle géré au degré près",
+          img: "/escalier-tournant.svg",
+          alt: "Schéma d’un escalier quart tournant avec palier, équipé d’un garde-corps en verre",
+        },
+        {
+          t: "Escalier hélicoïdal",
+          d: "Pour une courbe, les panneaux sont définis d’après un gabarit relevé sur votre escalier, marche après marche.",
+          point: "Une protection qui suit la courbe",
+          img: "/escalier-helicoidal.svg",
+          alt: "Schéma d’un escalier hélicoïdal équipé d’un garde-corps en verre",
+        },
+      ],
+      cta: { label: "Devis rapide en ligne", href: "/generateur?usage=escalier" },
     },
     norme: {
       kicker: "Sécurité & réglementation",

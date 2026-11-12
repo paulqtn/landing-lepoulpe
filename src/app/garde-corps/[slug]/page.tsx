@@ -309,6 +309,54 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
+      {/* ---- bloc facultatif : trois cartes illustrées (formes d'escalier…) ---- */}
+      {blocks?.formes && (
+        <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
+          <Container>
+            <header className="mx-auto max-w-2xl text-center lg:max-w-3xl">
+              <h2 className={PISCINE_H2}>{blocks.formes.h2}</h2>
+              <p className="mx-auto mt-4 max-w-xl text-pretty leading-relaxed text-neutral-600 lg:max-w-2xl">
+                {blocks.formes.intro}
+              </p>
+            </header>
+
+            <ul className="mt-8 grid gap-4 sm:mt-12 md:grid-cols-3 md:gap-5">
+              {blocks.formes.cards.map((c, i) => (
+                <li key={c.t}>
+                  <Reveal delay={i * 80} className="h-full">
+                    {/* texte en haut, schéma calé en bas : les trois cartes s'alignent */}
+                    <article className="flex h-full flex-col rounded-[1.75rem] bg-mist p-6 sm:p-7">
+                      <h3 className="text-lg font-extrabold tracking-tight text-inkgreen">{c.t}</h3>
+                      <p className="mt-2 text-pretty text-sm leading-relaxed text-neutral-600">{c.d}</p>
+                      <p className="mt-3 flex items-start gap-2 text-sm font-bold leading-snug text-pine-700">
+                        <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                        {c.point}
+                      </p>
+                      <div className="mt-auto pt-6">
+                        <Image
+                          src={c.img}
+                          alt={c.alt}
+                          width={320}
+                          height={240}
+                          className="mx-auto h-auto w-full max-w-[15rem] md:max-w-[17rem]"
+                        />
+                      </div>
+                    </article>
+                  </Reveal>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8 text-center sm:mt-12">
+              <Link href={blocks.formes.cta.href} className={PISCINE_CTA}>
+                {blocks.formes.cta.label}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          </Container>
+        </section>
+      )}
+
       {/* ---- bloc 2 : la norme — repères clairs, photo en regard ---- */}
       {blocks && (
         <section className="border-b border-neutral-200 bg-mist/60 py-16 sm:py-24">
