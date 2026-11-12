@@ -456,17 +456,19 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
 
                 {blocks.matiere.proof ? (
                   <>
-                    {/* variante « chiffre clé » : la charge de référence, puis ce qui fait la résistance */}
-                    <div className="mt-6 grid gap-5 rounded-2xl bg-mist p-5 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-7 sm:p-6">
-                      <p>
-                        <span className="block text-[2.75rem] font-extrabold leading-none tracking-tight text-pine-700 sm:text-5xl">
+                    {/* variante « chiffre clé » : la charge de référence, puis ce qui fait la résistance.
+                        Mobile : un seul fil — le chiffre entre deux filets, puis trois points
+                        de même forme. À partir de sm : chiffre et verre feuilleté dans un encadré. */}
+                    <div className="mt-6 sm:grid sm:grid-cols-[auto_1fr] sm:items-center sm:gap-7 sm:rounded-2xl sm:bg-mist sm:p-6">
+                      <p className="flex items-center gap-4 border-y border-pine-900/10 py-5 sm:block sm:border-0 sm:py-0">
+                        <span className="block shrink-0 text-[2.5rem] font-extrabold leading-none tracking-tight text-pine-700 sm:text-5xl">
                           {blocks.matiere.proof.stat.value}
                         </span>
-                        <span className="mt-2 block max-w-[13rem] text-sm leading-snug text-neutral-700">
+                        <span className="block text-[13px] leading-snug text-neutral-700 sm:mt-2 sm:max-w-[13rem] sm:text-sm">
                           {blocks.matiere.proof.stat.label}
                         </span>
                       </p>
-                      <div className="flex items-start gap-3.5 border-t border-pine-900/10 pt-5 sm:border-l sm:border-t-0 sm:pl-7 sm:pt-0">
+                      <div className="flex items-start gap-3.5 border-b border-pine-900/10 py-4 sm:border-b-0 sm:border-l sm:py-0 sm:pl-7">
                         <blocks.matiere.proof.highlight.icon className="mt-0.5 h-7 w-7 shrink-0 text-pine-700" strokeWidth={1.5} />
                         <div>
                           <h3 className="text-[0.95rem] font-extrabold tracking-tight text-inkgreen">
@@ -479,9 +481,12 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                       </div>
                     </div>
 
-                    <ul className="mt-5 grid gap-4 sm:grid-cols-2 sm:gap-0 sm:divide-x sm:divide-pine-900/10">
+                    <ul className="sm:mt-5 sm:grid sm:grid-cols-2 sm:divide-x sm:divide-pine-900/10">
                       {blocks.matiere.proof.features.map((f) => (
-                        <li key={f.t} className="flex items-start gap-3.5 sm:px-5 sm:first:pl-0 sm:last:pr-0">
+                        <li
+                          key={f.t}
+                          className="flex items-start gap-3.5 border-b border-pine-900/10 py-4 last:border-b-0 sm:border-b-0 sm:px-5 sm:py-0 sm:first:pl-0 sm:last:pr-0"
+                        >
                           <f.icon className="mt-0.5 h-7 w-7 shrink-0 text-pine-700" strokeWidth={1.5} />
                           <div>
                             <h3 className="text-[0.95rem] font-extrabold tracking-tight text-inkgreen">{f.t}</h3>
@@ -492,7 +497,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                     </ul>
 
                     {blocks.matiere.note && (
-                      <p className="mt-5 text-pretty text-[13px] leading-relaxed text-neutral-500">{blocks.matiere.note}</p>
+                      <p className="mt-1 text-pretty text-[13px] leading-relaxed text-neutral-500 sm:mt-5">{blocks.matiere.note}</p>
                     )}
 
                     <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
