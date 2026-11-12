@@ -340,11 +340,12 @@ export default function Home() {
       {/* ==================== SYSTÈMES (gamme verre) ==================== */}
       <section className="py-20 sm:py-28">
         <Container>
-          <div className="max-w-2xl">
+          <div className="mx-auto max-w-2xl text-center lg:max-w-5xl">
             <h2 className="text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
               Les différentes fixations de garde-corps en verre
             </h2>
-            <p className="mt-3 leading-relaxed text-neutral-500">
+            {/* desktop : deux lignes équilibrées */}
+            <p className="mx-auto mt-3 max-w-2xl text-balance leading-relaxed text-neutral-500">
               Plusieurs solutions s&rsquo;offrent à vous pour fixer vos garde-corps en verre selon votre
               projet ou vos préférences esthétiques.
             </p>
