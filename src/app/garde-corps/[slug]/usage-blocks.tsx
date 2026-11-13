@@ -575,9 +575,16 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         </>
       ),
       media: {
-        kind: "image",
-        src: provisoire("terrasse").vue,
-        alt: "Toit-terrasse aménagé avec vue sur la ville, protégé par un garde-corps de terrasse en verre",
+        kind: "compare",
+        caption: "Faites glisser pour comparer : la même terrasse, garde-corps à tôle pleine puis garde-corps en verre.",
+        before: {
+          src: "/comparateur-terrasse-avant.webp",
+          alt: "Toit-terrasse fermé par un garde-corps métallique à panneaux pleins qui coupe la vue sur la ville",
+        },
+        after: {
+          src: "/comparateur-terrasse-apres.webp",
+          alt: "La même terrasse protégée par un garde-corps de terrasse en verre, le panorama urbain entièrement dégagé",
+        },
       },
       points: [
         {
