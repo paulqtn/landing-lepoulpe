@@ -372,7 +372,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       ),
       photo: {
         src: "/escalier-norme.webp",
-        alt: "Garde-corps d’escalier en verre suivant la pente d’une volée droite",
+        alt: "Un enfant monte sereinement un escalier protégé par un garde-corps en verre toute hauteur",
       },
       cta: { label: "Obtenir mon devis", href: "/generateur?usage=escalier" },
     },
