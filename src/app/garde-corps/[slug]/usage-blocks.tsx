@@ -448,9 +448,16 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         </>
       ),
       media: {
-        kind: "image",
-        src: provisoire("balcon").vue,
-        alt: "Balcon ouvert sur la campagne, protégé par un garde-corps de balcon en verre",
+        kind: "compare",
+        caption: "Faites glisser pour comparer : le même balcon, garde-corps plein puis garde-corps en verre.",
+        before: {
+          src: "/comparateur-balcon-avant.webp",
+          alt: "Balcon fermé par un garde-corps métallique plein qui masque le paysage",
+        },
+        after: {
+          src: "/comparateur-balcon-apres.webp",
+          alt: "Le même balcon protégé par un garde-corps de balcon en verre, la vue sur les collines entièrement dégagée",
+        },
       },
       points: [
         {
