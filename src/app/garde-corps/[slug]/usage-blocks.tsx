@@ -688,9 +688,17 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         </>
       ),
       media: {
-        kind: "image",
-        src: provisoire("mezzanine").vue,
-        alt: "Mezzanine ouverte sur un séjour lumineux, protégée par un garde-corps de mezzanine en verre",
+        kind: "compare",
+        caption:
+          "Faites glisser pour comparer : la même mezzanine, muret plein puis garde-corps en verre.",
+        before: {
+          src: "/comparateur-mezzanine-avant.webp",
+          alt: "Mezzanine fermée par un muret plein qui cloisonne le séjour en double hauteur et bloque la lumière",
+        },
+        after: {
+          src: "/comparateur-mezzanine-apres.webp",
+          alt: "La même mezzanine protégée par un garde-corps de mezzanine en verre, le volume ouvert et la lumière traversante",
+        },
       },
       points: [
         {
