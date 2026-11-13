@@ -925,9 +925,17 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         </>
       ),
       media: {
-        kind: "image",
-        src: provisoire("interieur").vue,
-        alt: "Coursive intérieure ouverte sur un grand volume, protégée par un garde-corps intérieur en verre",
+        kind: "compare",
+        caption:
+          "Faites glisser pour comparer : la même coursive, allège maçonnée pleine puis garde-corps en verre.",
+        before: {
+          src: "/comparateur-interieur-avant.webp",
+          alt: "Coursive d’étage fermée par une allège maçonnée pleine qui alourdit le séjour en double hauteur",
+        },
+        after: {
+          src: "/comparateur-interieur-apres.webp",
+          alt: "La même coursive protégée par un garde-corps intérieur en verre, l’étage ouvert sur le séjour",
+        },
       },
       points: [
         {
