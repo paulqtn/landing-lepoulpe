@@ -816,9 +816,17 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         </>
       ),
       media: {
-        kind: "image",
-        src: provisoire("fenetre").vue,
-        alt: "Façade contemporaine dont les fenêtres sont protégées par des garde-corps de fenêtre en verre",
+        kind: "compare",
+        caption:
+          "Faites glisser pour comparer : la même fenêtre, barreaudage métallique puis garde-corps en verre.",
+        before: {
+          src: "/comparateur-fenetre-avant.webp",
+          alt: "Porte-fenêtre protégée par un barreaudage métallique qui raye la vue et charge la façade",
+        },
+        after: {
+          src: "/comparateur-fenetre-apres.webp",
+          alt: "La même porte-fenêtre protégée par un garde-corps de fenêtre en verre sur points inox, la baie entièrement dégagée",
+        },
       },
       points: [
         {
