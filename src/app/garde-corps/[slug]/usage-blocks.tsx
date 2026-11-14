@@ -38,7 +38,16 @@ export type UsageBlocks = {
     h2: ReactNode;
     intro: ReactNode;
     media:
-      | { kind: "compare"; before: Img; after: Img; caption: string }
+      | {
+          kind: "compare";
+          before: Img;
+          after: Img;
+          caption: string;
+          /** Intitulé du curseur pour les lecteurs d'écran. */
+          ariaLabel?: string;
+          /** Ratio du cadre quand la paire n'est pas en 16/9 (ex. panorama). */
+          aspectClassName?: string;
+        }
       | { kind: "image"; src: string; alt: string; caption?: string };
     /** Trois points distincts, sans pictos. */
     points: { t: string; d: string }[];
@@ -140,6 +149,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       ),
       media: {
         kind: "compare",
+        ariaLabel: "Comparer la piscine avant et après la pose de la barrière en verre",
         caption: "Faites glisser pour comparer : la même piscine, avant et après.",
         before: {
           src: "/comparateur-piscine-avant.webp",
@@ -1034,9 +1044,18 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         </>
       ),
       media: {
-        kind: "image",
-        src: provisoire("exterieur").vue,
-        alt: "Terrasse et escalier extérieurs d’une maison, protégés par un garde-corps extérieur en verre",
+        kind: "compare",
+        caption:
+          "Faites glisser pour comparer : la même terrasse de montagne, barreaudage métallique puis garde-corps en verre.",
+        aspectClassName: "aspect-[16/9] lg:aspect-[3/1]",
+        before: {
+          src: "/comparateur-exterieur-avant.webp",
+          alt: "Terrasse de chalet face aux montagnes, fermée par un garde-corps à barreaux métalliques qui hachure le paysage",
+        },
+        after: {
+          src: "/comparateur-exterieur-apres.webp",
+          alt: "La même terrasse protégée par un garde-corps extérieur en verre, le panorama de montagne intact",
+        },
       },
       points: [
         {

@@ -19,14 +19,20 @@ export function BeforeAfterSlider({
   caption,
   className = "",
   frameClassName = "rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10",
+  aspectClassName = "aspect-[16/9]",
+  ariaLabel = "Comparer la vue avant et après la pose du garde-corps en verre",
 }: {
   before: Img;
   after: Img;
   /** Légende discrète sous le cadre (figcaption). */
   caption?: string;
   className?: string;
-  /** Habillage du cadre (arrondi, ombre) — le ratio 16/9 reste fixe. */
+  /** Habillage du cadre (arrondi, ombre). */
   frameClassName?: string;
+  /** Ratio du cadre — 16/9 par défaut, surchargable pour une paire panoramique. */
+  aspectClassName?: string;
+  /** Intitulé du curseur pour les lecteurs d'écran, adapté au sujet comparé. */
+  ariaLabel?: string;
 }) {
   const [pos, setPos] = useState(50);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -87,7 +93,7 @@ export function BeforeAfterSlider({
       <div
         ref={frameRef}
         onPointerDown={onPointerDown}
-        className={`relative aspect-[16/9] cursor-ew-resize touch-pan-y select-none overflow-hidden ${frameClassName}`}
+        className={`relative ${aspectClassName} cursor-ew-resize touch-pan-y select-none overflow-hidden ${frameClassName}`}
       >
         {/* après — pleine surface */}
         <Image src={after.src} alt={after.alt} fill sizes="(min-width: 1152px) 68rem, 100vw" draggable={false} className="object-cover" />
@@ -115,7 +121,7 @@ export function BeforeAfterSlider({
         <button
           type="button"
           role="slider"
-          aria-label="Comparer la piscine avant et après la pose de la barrière en verre"
+          aria-label={ariaLabel}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(pos)}
