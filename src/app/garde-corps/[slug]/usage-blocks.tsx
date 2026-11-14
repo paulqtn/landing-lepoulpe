@@ -1042,9 +1042,17 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         </>
       ),
       media: {
-        kind: "image",
-        src: provisoire("exterieur").vue,
-        alt: "Terrasse et escalier extérieurs d’une maison, protégés par un garde-corps extérieur en verre",
+        kind: "compare",
+        caption:
+          "Faites glisser pour comparer : la même terrasse de montagne, barreaudage métallique puis garde-corps en verre.",
+        before: {
+          src: "/comparateur-exterieur-avant.webp",
+          alt: "Terrasse de chalet face aux montagnes, fermée par un garde-corps à barreaux métalliques qui hachure le paysage",
+        },
+        after: {
+          src: "/comparateur-exterieur-apres.webp",
+          alt: "La même terrasse protégée par un garde-corps extérieur en verre, le panorama de montagne intact",
+        },
       },
       points: [
         {
