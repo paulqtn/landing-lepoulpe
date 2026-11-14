@@ -270,7 +270,6 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 before={blocks.vue.media.before}
                 after={blocks.vue.media.after}
                 ariaLabel={blocks.vue.media.ariaLabel}
-                aspectClassName={blocks.vue.media.aspectClassName}
               />
             ) : (
               <figure className="-mx-5 mt-8 sm:mx-0 sm:mt-12">

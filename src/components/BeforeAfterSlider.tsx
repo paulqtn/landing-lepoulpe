@@ -19,7 +19,6 @@ export function BeforeAfterSlider({
   caption,
   className = "",
   frameClassName = "rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10",
-  aspectClassName = "aspect-[16/9]",
   ariaLabel = "Comparer la vue avant et après la pose du garde-corps en verre",
 }: {
   before: Img;
@@ -27,10 +26,8 @@ export function BeforeAfterSlider({
   /** Légende discrète sous le cadre (figcaption). */
   caption?: string;
   className?: string;
-  /** Habillage du cadre (arrondi, ombre). */
+  /** Habillage du cadre (arrondi, ombre) — le ratio 16/9 reste fixe. */
   frameClassName?: string;
-  /** Ratio du cadre — 16/9 par défaut, surchargable pour une paire panoramique. */
-  aspectClassName?: string;
   /** Intitulé du curseur pour les lecteurs d'écran, adapté au sujet comparé. */
   ariaLabel?: string;
 }) {
@@ -93,7 +90,7 @@ export function BeforeAfterSlider({
       <div
         ref={frameRef}
         onPointerDown={onPointerDown}
-        className={`relative ${aspectClassName} cursor-ew-resize touch-pan-y select-none overflow-hidden ${frameClassName}`}
+        className={`relative aspect-[16/9] cursor-ew-resize touch-pan-y select-none overflow-hidden ${frameClassName}`}
       >
         {/* après — pleine surface */}
         <Image src={after.src} alt={after.alt} fill sizes="(min-width: 1152px) 68rem, 100vw" draggable={false} className="object-cover" />

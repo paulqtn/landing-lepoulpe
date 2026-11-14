@@ -45,8 +45,6 @@ export type UsageBlocks = {
           caption: string;
           /** Intitulé du curseur pour les lecteurs d'écran. */
           ariaLabel?: string;
-          /** Ratio du cadre quand la paire n'est pas en 16/9 (ex. panorama). */
-          aspectClassName?: string;
         }
       | { kind: "image"; src: string; alt: string; caption?: string };
     /** Trois points distincts, sans pictos. */
@@ -1044,18 +1042,9 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         </>
       ),
       media: {
-        kind: "compare",
-        caption:
-          "Faites glisser pour comparer : la même terrasse de montagne, barreaudage métallique puis garde-corps en verre.",
-        aspectClassName: "aspect-[16/9] lg:aspect-[3/1]",
-        before: {
-          src: "/comparateur-exterieur-avant.webp",
-          alt: "Terrasse de chalet face aux montagnes, fermée par un garde-corps à barreaux métalliques qui hachure le paysage",
-        },
-        after: {
-          src: "/comparateur-exterieur-apres.webp",
-          alt: "La même terrasse protégée par un garde-corps extérieur en verre, le panorama de montagne intact",
-        },
+        kind: "image",
+        src: provisoire("exterieur").vue,
+        alt: "Terrasse et escalier extérieurs d’une maison, protégés par un garde-corps extérieur en verre",
       },
       points: [
         {
