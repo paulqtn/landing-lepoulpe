@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Check, ChevronDown, Image as ImageGlyph, PencilRuler } from "lucide-react";
+import { Check, ChevronDown, Image as ImageGlyph } from "lucide-react";
 
 /* ================================================================== */
 /*  Sélecteur de pose (française / anglaise) — cartes accordéon à      */
@@ -19,11 +19,9 @@ export type FixationPose = {
   /** Description de la carte dépliée. */
   text: string;
   points: string[];
-  /** La photo en situation, et son étiquette posée sur l'image.
-      Sans src, un placeholder tient la place en attendant le visuel. */
-  vue: { src?: string; alt: string; chip: string };
-  /** L'illustration technique du système — placeholder tant que src manque. */
-  detail: { src?: string; alt: string };
+  /** Visuel composite plein cadre (vue du balcon + détail technique légendé,
+      étiquettes incluses dans l'image) — placeholder tant que src manque. */
+  image: { src?: string; alt: string };
 };
 
 export function FixationPoses({
@@ -102,41 +100,26 @@ export function FixationPoses({
         </div>
 
         {/* key sur la pose : l'animation d'apparition rejoue à chaque bascule */}
-        <div key={pose.title} className="mt-4 grid animate-fade-up gap-3 sm:grid-cols-2">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-pine-950/10 sm:aspect-[1.08]">
-            {pose.vue.src ? (
-              <Image src={pose.vue.src} alt={pose.vue.alt} fill sizes="(min-width: 1152px) 26rem, 100vw" className="object-cover" />
-            ) : (
-              <span className="absolute inset-2 grid place-items-center rounded-lg border-2 border-dashed border-neutral-300 bg-mist">
-                <span className="flex flex-col items-center gap-2 px-6 text-center">
-                  <ImageGlyph className="h-6 w-6 text-neutral-400" strokeWidth={1.6} />
-                  <span className="text-[12px] font-semibold leading-snug text-neutral-500">
-                    Votre photo « vue du balcon » arrive ici
-                  </span>
+        <div key={pose.title} className="relative mt-4 aspect-[16/10] animate-fade-up overflow-hidden rounded-xl ring-1 ring-pine-950/10 sm:aspect-[1.97]">
+          {pose.image.src ? (
+            <Image
+              src={pose.image.src}
+              alt={pose.image.alt}
+              fill
+              sizes="(min-width: 1152px) 54rem, 100vw"
+              className="object-cover"
+            />
+          ) : (
+            <span className="absolute inset-2 grid place-items-center rounded-lg border-2 border-dashed border-neutral-300 bg-mist">
+              <span className="flex flex-col items-center gap-2 px-6 text-center">
+                <ImageGlyph className="h-6 w-6 text-neutral-400" strokeWidth={1.6} />
+                <span className="text-[12px] font-semibold leading-snug text-neutral-500">
+                  Votre visuel « {pose.title.toLowerCase()} » arrive ici — vue du balcon et détail technique
+                  légendé
                 </span>
               </span>
-            )}
-            <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-inkgreen shadow-sm">
-              {pose.num} · Vue du balcon
             </span>
-            <span className="absolute bottom-3 left-3 right-3 w-fit rounded-lg bg-pine-950/70 px-3 py-1.5 text-[12px] font-bold leading-snug text-white backdrop-blur-sm">
-              {pose.vue.chip}
-            </span>
-          </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-white ring-1 ring-pine-950/10 sm:aspect-[1.08]">
-            {pose.detail.src ? (
-              <Image src={pose.detail.src} alt={pose.detail.alt} fill sizes="(min-width: 1152px) 26rem, 100vw" className="object-cover" />
-            ) : (
-              <span className="absolute inset-2 grid place-items-center rounded-lg border-2 border-dashed border-neutral-300 bg-mist">
-                <span className="flex flex-col items-center gap-2 px-6 text-center">
-                  <PencilRuler className="h-6 w-6 text-neutral-400" strokeWidth={1.6} />
-                  <span className="text-[12px] font-semibold leading-snug text-neutral-500">
-                    Votre schéma technique légendé arrive ici
-                  </span>
-                </span>
-              </span>
-            )}
-          </div>
+          )}
         </div>
 
         <p className="mt-3 text-[12.5px] leading-relaxed text-neutral-500">

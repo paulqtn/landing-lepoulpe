@@ -567,13 +567,9 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
             "Sabots de maintien et ancrages verticaux",
             "Finition extérieure discrète",
           ],
-          /* src volontairement absents : placeholders en attendant les visuels dédiés. */
-          vue: {
-            alt: "Garde-corps de balcon en verre posé sur le dessus de la dalle, vu depuis le balcon",
-            chip: "Pose à la française sur rail en butée de dalle",
-          },
-          detail: {
-            alt: "Schéma technique légendé du rail aluminium fixé verticalement dans la dalle",
+          image: {
+            src: "/pose-francaise-balcon.webp",
+            alt: "Pose à la française : garde-corps en verre sur rail en butée de dalle, et coupe technique légendée du rail aluminium ancré dans la dalle",
           },
         },
         {
@@ -586,13 +582,9 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
             "Rendu épuré et contemporain",
             "Particulièrement apprécié en rénovation",
           ],
-          /* src volontairement absents : placeholders en attendant les visuels dédiés. */
-          vue: {
-            alt: "Garde-corps en verre fixé contre le nez de dalle d’un balcon, vu depuis le balcon",
-            chip: "Pose à l’anglaise en nez de dalle",
-          },
-          detail: {
-            alt: "Schéma technique légendé des fixations ancrées dans le chant de dalle",
+          /* src volontairement absent : placeholder en attendant le visuel dédié. */
+          image: {
+            alt: "Pose à l’anglaise : garde-corps en verre fixé contre le nez de dalle, et coupe technique légendée des fixations traversantes",
           },
         },
       ],
