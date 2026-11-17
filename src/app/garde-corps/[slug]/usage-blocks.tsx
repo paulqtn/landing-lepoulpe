@@ -487,8 +487,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       kicker: "Sécurité & réglementation",
       h2: (
         <>
-          Garde-corps de balcon <br className="sm:hidden" />
-          en verre et norme <span className={ACCENT}>NF P01-012</span>
+          Ce que la norme <span className={ACCENT}>NF&nbsp;P01-012</span> <br className="sm:hidden" />
+          impose à votre balcon
         </>
       ),
       intro: (
@@ -530,8 +530,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       kicker: "Résistance & sécurité",
       h2: (
         <>
-          Un vitrage discret, <br className="hidden sm:block" />
-          <span className={ACCENT}>dimensionné</span> pour la poussée.
+          Fait pour qu&rsquo;on s&rsquo;y accoude, <br className="hidden sm:block" />
+          <span className={ACCENT}>taillé</span> pour vivre dehors.
         </>
       ),
       text: (
