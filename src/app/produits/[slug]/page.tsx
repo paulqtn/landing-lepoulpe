@@ -426,7 +426,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
                 {usages.map((u) => (
                   <Link
                     key={u.slug}
-                    href={`/garde-corps/verre-${u.slug}`}
+                    href={catalogPath(u.slug)}
                     className="group inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700"
                   >
                     Garde-corps verre {u.name.toLowerCase()}

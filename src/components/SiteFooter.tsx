@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
-import { catalogPath, materials, usages } from "@/lib/catalog";
+import { catalogPath, usages } from "@/lib/catalog";
 import { guides } from "@/lib/guides";
 import { phoneHref, site } from "@/lib/site";
 
@@ -8,15 +8,15 @@ export function SiteFooter() {
   return (
     <footer className="bg-pine-950 text-pine-100">
       <div className="mx-auto w-full max-w-7xl px-5 py-16 sm:px-8">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr]">
           <div>
             <p className="text-lg font-extrabold text-white">{site.name}</p>
             <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-pine-300">
               {site.tagline}
             </p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-pine-100/70">
-              Garde-corps en verre, aluminium et inox — sur-mesure au millimètre
-              ou en kit, conformes NF P01-012, livrés partout en France.
+              Garde-corps en verre — sur-mesure au millimètre ou en kit,
+              conformes NF P01-012, livrés partout en France.
             </p>
             <div className="mt-6 space-y-2.5 text-sm">
               <a href={phoneHref} className="flex items-center gap-2.5 font-semibold text-white transition hover:text-green-300">
@@ -31,12 +31,12 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-pine-300">Matériaux</h3>
+            <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-pine-300">Par usage</h3>
             <ul className="mt-4 space-y-2.5 text-sm">
-              {materials.map((m) => (
-                <li key={m.slug}>
-                  <Link href={catalogPath(m.slug)} className="text-pine-100/80 transition hover:text-white">
-                    {m.title}
+              {usages.map((u) => (
+                <li key={u.slug}>
+                  <Link href={catalogPath(u.slug)} className="text-pine-100/80 transition hover:text-white">
+                    Garde-corps {u.name.toLowerCase()}
                   </Link>
                 </li>
               ))}
@@ -50,19 +50,6 @@ export function SiteFooter() {
                   Devis en 1 min →
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-pine-300">Par usage</h3>
-            <ul className="mt-4 space-y-2.5 text-sm">
-              {usages.map((u) => (
-                <li key={u.slug}>
-                  <Link href={catalogPath(u.slug)} className="text-pine-100/80 transition hover:text-white">
-                    Garde-corps {u.name.toLowerCase()}
-                  </Link>
-                </li>
-              ))}
             </ul>
           </div>
 

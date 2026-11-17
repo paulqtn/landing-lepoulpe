@@ -154,18 +154,6 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
   const entry = getEntry(slug);
   if (!entry) notFound();
 
-  // Maillage interne : pages liées selon le type d'entrée.
-  const related =
-    entry.kind === "material"
-      ? combosForMaterial(entry.material!)
-      : entry.kind === "usage"
-        ? combosForUsage(entry.usage!)
-        : [
-            ...materials.filter((m) => m.slug !== entry.material).map((m) => getEntry(`${m.slug}-${entry.usage}`)!),
-            getEntry(entry.material!)!,
-            getEntry(entry.usage!)!,
-          ];
-
   const kits = entry.material ? productsForMaterial(entry.material).slice(0, 3) : [];
 
   // Blocs dédiés sous le générateur (piscine, escalier…) — sinon, blocs génériques.
@@ -841,29 +829,6 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
           </div>
         </Container>
       </section>
-
-      {/* Fin de page. Pages à blocs dédiés : directement l'appel au devis (les
-          liens par usage sont déjà dans le footer). Autres pages : liens
-          « À explorer aussi », puis l'appel au devis. */}
-      {!blocks && (
-      <section className="border-t border-neutral-200 py-16 sm:py-20">
-        <Container>
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-500">À explorer aussi</p>
-          <div className="mt-5 flex flex-wrap gap-2.5">
-            {related.filter(Boolean).map((r) => (
-              <Link
-                key={r.slug}
-                href={catalogPath(r.slug)}
-                className="group inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700"
-              >
-                {r.title}
-                <ArrowUpRight className="h-3.5 w-3.5 text-neutral-300 transition group-hover:text-pine-600" />
-              </Link>
-            ))}
-          </div>
-        </Container>
-      </section>
-      )}
 
       {/* CTA final */}
       <section className="pb-20">

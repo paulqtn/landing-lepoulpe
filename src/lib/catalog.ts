@@ -446,11 +446,15 @@ function buildCombo(m: MaterialSeed, u: UsageSeed): CatalogEntry {
   };
 }
 
-export const combos: CatalogEntry[] = materials.flatMap((m) => usages.map((u) => buildCombo(m, u)));
+/* Catalogue recentré sur le verre : les pages matériaux (verre, aluminium,
+   inox) et leurs combinaisons ne sont plus publiées — anciennes URL
+   redirigées en 301 dans next.config.ts. Les données matériaux restent
+   comme source de contenu (FAQ homepage, regroupement des kits). */
+export const combos: CatalogEntry[] = [];
 
 /* ------------------------------ Accès ------------------------------ */
 
-export const allCatalog: CatalogEntry[] = [...materials, ...usages, ...combos];
+export const allCatalog: CatalogEntry[] = [...usages];
 
 /* URL publique d'une entrée. Le slug interne reste la clé (usage du
    générateur, données) ; seules quelques pages ont une adresse dédiée,
