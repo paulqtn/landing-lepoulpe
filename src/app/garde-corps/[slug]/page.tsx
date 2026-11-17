@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, ArrowUpRight, Check, ClipboardList, Lightbulb, ShieldCheck, Wrench } from "lucide-react";
 import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
 import { Configurator } from "@/components/Configurator";
+import { FixationPoses } from "@/components/FixationPoses";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { PageHero, type PageHeroImage } from "@/components/PageHero";
 import { Container } from "@/components/ui/Container";
@@ -352,7 +353,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
-      {/* ---- fixations : les deux modes de pose comparés, détail à l'appui ---- */}
+      {/* ---- fixations : sélecteur de pose, illustrations synchronisées ---- */}
       {blocks?.fixations && (
         <section className="border-b border-neutral-200 bg-mist/60 py-16 sm:py-24">
           <Container>
@@ -364,69 +365,11 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               </p>
             </header>
 
-            <div className="mt-9 grid gap-5 sm:mt-12 lg:grid-cols-2 lg:gap-7">
-              {blocks.fixations.cards.map((card) => (
-                <Reveal key={card.title}>
-                  <article className="h-full overflow-hidden rounded-[1.75rem] bg-white shadow-panel ring-1 ring-pine-950/10 sm:grid sm:grid-cols-[0.72fr_1fr]">
-                    <div className="relative aspect-[16/10] sm:aspect-auto sm:h-full">
-                      <Image
-                        src={card.photo.src}
-                        alt={card.photo.alt}
-                        fill
-                        sizes="(min-width: 1152px) 18rem, (min-width: 640px) 40vw, 100vw"
-                        className="object-cover"
-                        style={card.photo.position ? { objectPosition: card.photo.position } : undefined}
-                      />
-                    </div>
-                    <div className="p-6 sm:p-7">
-                      <h3 className="text-xl font-extrabold tracking-tight text-inkgreen sm:text-2xl">{card.title}</h3>
-                      <p className="mt-2 text-[15px] leading-relaxed text-neutral-600">{card.text}</p>
-                      <ul className="mt-4 space-y-2.5">
-                        {card.points.map((pt) => (
-                          <li key={pt} className="flex items-start gap-2.5">
-                            <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-green-600/15 text-green-700">
-                              <Check className="h-3 w-3" strokeWidth={3} />
-                            </span>
-                            <span className="text-[15px] leading-snug text-neutral-700">{pt}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      {/* le détail de la fixation, en vignette ronde étiquetée */}
-                      <div className="mt-6 flex items-center gap-3">
-                        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-white ring-1 ring-pine-950/10 sm:h-28 sm:w-28">
-                          <Image src={card.detail.img.src} alt={card.detail.img.alt} fill sizes="7rem" className="object-cover" />
-                        </div>
-                        <svg viewBox="0 0 36 26" className="h-6 w-8 shrink-0 text-neutral-400" fill="none" aria-hidden="true">
-                          <path d="M33 4c-12 1-22 6-27 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                          <path d="M5 13l1 7 7-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        <span className="rounded-xl bg-white px-3.5 py-2 text-[12px] font-bold leading-snug text-inkgreen shadow-sm ring-1 ring-pine-950/10">
-                          {card.detail.label}
-                        </span>
-                      </div>
-                    </div>
-                  </article>
-                </Reveal>
-              ))}
-            </div>
-
-            {/* bandeau d'aide : le générateur tranche */}
-            <div className="mt-6 flex flex-col gap-5 rounded-[1.5rem] bg-pine-700/[0.06] px-6 py-6 ring-1 ring-pine-700/10 lg:mt-7 lg:flex-row lg:items-center lg:px-8">
-              <div className="flex items-start gap-4">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-pine-700/10 text-pine-700">
-                  <Lightbulb className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-[17px] font-extrabold tracking-tight text-inkgreen">{blocks.fixations.help.title}</p>
-                  <p className="mt-0.5 text-sm leading-relaxed text-neutral-600">{blocks.fixations.help.text}</p>
-                </div>
-              </div>
-              <Link href={blocks.fixations.help.cta.href} className={`${PISCINE_CTA} shrink-0 whitespace-nowrap lg:ml-auto`}>
-                {blocks.fixations.help.cta.label}
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </div>
+            <FixationPoses
+              poses={blocks.fixations.poses}
+              hint={blocks.fixations.hint}
+              panelSub={blocks.fixations.panelSub}
+            />
           </Container>
         </section>
       )}
