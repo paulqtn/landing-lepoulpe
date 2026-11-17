@@ -98,6 +98,17 @@ export type UsageBlocks = {
     /** Sous-titre du panneau d'illustrations. */
     panelSub: string;
   };
+  /** Facultatif : une vidéo YouTube intégrée (façade légère, iframe au clic). */
+  video?: {
+    kicker: string;
+    h2: ReactNode;
+    intro: ReactNode;
+    youtubeId: string;
+    /** Démarrage en secondes. */
+    start?: number;
+    /** Titre accessible de la vidéo. */
+    title: string;
+  };
   /** Facultatif : l'argumentaire robustesse — photo en regard, médaillon de détail. */
   durable?: {
     badge: string;
@@ -589,6 +600,19 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
       ],
       panelSub: "Vue sur balcon et détail technique",
+    },
+    video: {
+      kicker: "Pose & installation",
+      h2: "Une pose simple",
+      intro: (
+        <>
+          Rail fixé, vitrage glissé, cales de réglage : la pose d&rsquo;un garde-corps en verre est à la
+          portée d&rsquo;un bon bricoleur. La preuve en images.
+        </>
+      ),
+      youtubeId: "1k9-IwHHs14",
+      start: 18,
+      title: "Pose d’un garde-corps en verre : la vidéo d’installation",
     },
     durable: {
       badge: "Garde-corps en verre",

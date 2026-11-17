@@ -6,6 +6,7 @@ import { ArrowRight, ArrowUpRight, Check, ClipboardList, Lightbulb, ShieldCheck,
 import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
 import { Configurator } from "@/components/Configurator";
 import { FixationPoses } from "@/components/FixationPoses";
+import { YouTubeLite } from "@/components/YouTubeLite";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { PageHero, type PageHeroImage } from "@/components/PageHero";
 import { Container } from "@/components/ui/Container";
@@ -366,6 +367,24 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
             </header>
 
             <FixationPoses poses={blocks.fixations.poses} panelSub={blocks.fixations.panelSub} />
+          </Container>
+        </section>
+      )}
+
+      {/* ---- vidéo : la pose en images, lecteur chargé au clic ---- */}
+      {blocks?.video && (
+        <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
+          <Container>
+            <header className="mx-auto max-w-2xl text-center lg:max-w-3xl">
+              <p className={PISCINE_KICKER}>{blocks.video.kicker}</p>
+              <h2 className={`mt-2 ${PISCINE_H2}`}>{blocks.video.h2}</h2>
+              <p className="mx-auto mt-4 max-w-xl text-pretty leading-relaxed text-neutral-600 lg:max-w-2xl">
+                {blocks.video.intro}
+              </p>
+            </header>
+            <div className="mx-auto mt-8 max-w-4xl sm:mt-12">
+              <YouTubeLite id={blocks.video.youtubeId} start={blocks.video.start} title={blocks.video.title} />
+            </div>
           </Container>
         </section>
       )}
