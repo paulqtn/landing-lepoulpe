@@ -524,8 +524,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           },
           detail: {
             img: {
-              src: "/fixation-pince-hover.png",
-              alt: "Détail d’un sabot de fixation serrant le vitrage sur le dessus de la dalle",
+              src: "/fixation-rail-hover.png",
+              alt: "Détail d’un rail en aluminium posé sur le dessus de la dalle, le vitrage glissé dedans",
             },
             label: "Fixation sur la dalle",
           },
