@@ -17,6 +17,11 @@ export type CatalogEntry = {
   /** Libellé court pour liens et menus. */
   name: string;
   title: string;
+  /** H1 SEO de la page quand il diffère du titre court (title reste utilisé
+      pour le fil d'Ariane et les titres des sections générateur). */
+  h1?: string;
+  /** Sert metaTitle tel quel, sans le suffixe « | Marque » du gabarit global. */
+  metaTitleIsAbsolute?: true;
   metaTitle: string;
   metaDescription: string;
   intro: string;
@@ -188,11 +193,13 @@ export const usages: UsageSeed[] = [
     usage: "balcon",
     name: "Balcon",
     title: "Garde-corps de balcon",
-    metaTitle: "Garde-corps balcon — verre, alu, inox | sur-mesure",
+    h1: "Garde-corps en verre pour balcon sur mesure",
+    metaTitle: "Garde-corps en verre pour balcon sur mesure | Direct usine",
+    metaTitleIsAbsolute: true,
     metaDescription:
-      "Remplacez ou créez votre garde-corps de balcon : verre, aluminium ou inox, pose française ou anglaise. Conforme NF P01-012, devis en 24h.",
+      "Garde-corps en verre pour balcon sur mesure : fixations sur dalle ou en nez de dalle, vue dégagée et estimation gratuite en 1 minute.",
     intro:
-      "Hauteur de chute réelle, intempéries, esthétique côté rue : fixation sur dalle ou nez de dalle, au millimètre.",
+      "Un garde-corps en verre pour balcon sécurise votre espace extérieur sans masquer la vue. Fabriqué sur mesure, il s’adapte aux dimensions de votre balcon et à votre configuration de pose. Profitez d’une protection robuste, de fixations discrètes et d’une esthétique contemporaine, en construction comme en rénovation.",
     benefits: [
       { title: "Sécurité en hauteur", desc: "Dimensionné pour la poussée normative — l’ouvrage qui ne pardonne aucune approximation." },
       { title: "Façade valorisée", desc: "Le garde-corps signe l’esthétique de la façade : verre épuré ou alu graphique." },
@@ -209,6 +216,7 @@ export const usages: UsageSeed[] = [
       { q: "Peut-on remplacer un garde-corps existant ?", a: "Oui, c’est un chantier courant : dépose de l’ancien ouvrage, reprise des fixations et pose du nouveau. En copropriété, l’accord du syndic est nécessaire (aspect de façade)." },
       { q: "Pose française ou anglaise : quelle différence ?", a: "Française : fixé sur le dessus de la dalle. Anglaise : fixé en applique contre le nez de dalle, ce qui libère la surface du balcon et donne une ligne plus fine vue de la rue." },
       { q: "Quel matériau pour un balcon exposé ?", a: "Les trois conviennent : verre feuilleté (vue), aluminium thermolaqué (budget/entretien), inox 316 en bord de mer. Le choix se joue sur l’esthétique et l’exposition." },
+      { q: "Quel prix pour un garde-corps en verre de balcon sur mesure ?", a: "Le prix dépend principalement des dimensions du balcon, de l’épaisseur du vitrage et du système de fixation choisi. Une pose sur dalle ou en nez de dalle peut également influencer le coût du projet. Notre configurateur vous permet d’obtenir une première estimation personnalisée, gratuitement et sans engagement." },
     ],
   },
   {

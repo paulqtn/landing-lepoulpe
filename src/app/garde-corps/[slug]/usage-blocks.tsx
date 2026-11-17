@@ -76,6 +76,8 @@ export type UsageBlocks = {
       | { kind: "image"; src: string; alt: string; caption?: string };
     /** Trois points distincts, sans pictos. */
     points: { t: string; d: string }[];
+    /** Facultatif : courte note éditoriale sous les points, avant le CTA. */
+    footnote?: ReactNode;
     cta: Cta;
   };
   /** Facultatif : trois cartes illustrées (ex. formes d'escalier). */
@@ -539,6 +541,20 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           d: "Posé sur la dalle ou en nez de dalle, le garde-corps est implanté selon la place dont vous disposez.",
         },
       ],
+      footnote: (
+        <>
+          Sur un balcon d&rsquo;appartement, chaque centimètre compte. Un{" "}
+          <Link
+            href="/garde-corps/verre"
+            className="font-semibold text-pine-700 underline decoration-pine-700/30 underline-offset-2 transition hover:decoration-pine-700"
+          >
+            garde-corps vitré
+          </Link>{" "}
+          permet de préserver la luminosité et la sensation d&rsquo;espace, même sur un balcon étroit. Il
+          constitue aussi une solution élégante pour remplacer une ancienne rambarde métallique ou un
+          garde-corps plein, tout en modernisant la façade.
+        </>
+      ),
       cta: { label: "Configurer mon garde-corps de balcon", href: "#estimation" },
     },
     fixations: {

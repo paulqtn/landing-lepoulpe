@@ -68,7 +68,7 @@ const HERO_IMAGES: Record<string, PageHeroImage> = {
   },
   balcon: {
     src: "/hero-usage-balcon.webp",
-    alt: "Balcon avec garde-corps en verre, vue dégagée",
+    alt: "Garde-corps en verre transparent installé sur un balcon d’appartement",
     label: "Verre · balcon",
     title: "Balcon panoramique",
   },
@@ -135,7 +135,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const entry = getEntry(slug);
   if (!entry) return {};
   return {
-    title: entry.metaTitle,
+    title: entry.metaTitleIsAbsolute ? { absolute: entry.metaTitle } : entry.metaTitle,
     description: entry.metaDescription,
     alternates: { canonical: catalogPath(entry.slug) },
     openGraph: {
@@ -217,7 +217,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       {/* hero — même modèle que la homepage, une image fixe */}
       <PageHero
         kicker={kicker}
-        title={entry.title}
+        title={entry.h1 ?? entry.title}
         intro={entry.intro}
         image={heroImage}
         estimerHref={estimerHref}
@@ -299,6 +299,12 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 </li>
               ))}
             </ul>
+
+            {blocks.vue.footnote && (
+              <p className="mx-auto mt-7 max-w-3xl text-pretty text-center text-sm leading-relaxed text-neutral-500 sm:mt-10">
+                {blocks.vue.footnote}
+              </p>
+            )}
 
             <div className="mt-6 text-center sm:mt-12">
               <Link href={blocks.vue.cta.href} className={PISCINE_CTA}>
