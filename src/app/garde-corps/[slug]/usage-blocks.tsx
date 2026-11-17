@@ -58,7 +58,8 @@ export type UsageBlocks = {
     cards: { t: string; d: string; point: string; img: string; alt: string }[];
     cta: Cta;
   };
-  norme: {
+  /** Facultatif : une page peut s'en passer (ex. balcon). */
+  norme?: {
     kicker: string;
     h2: ReactNode;
     intro: ReactNode;
@@ -68,7 +69,8 @@ export type UsageBlocks = {
     photo: Img;
     cta: Cta;
   };
-  matiere: {
+  /** Facultatif : une page peut s'en passer (ex. balcon). */
+  matiere?: {
     kicker: string;
     h2: ReactNode;
     text: ReactNode;
@@ -482,91 +484,6 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
       ],
       cta: { label: "Configurer mon garde-corps de balcon", href: "#estimation" },
-    },
-    norme: {
-      kicker: "Sécurité & réglementation",
-      h2: (
-        <>
-          Ce que la norme <span className={ACCENT}>NF&nbsp;P01-012</span> <br className="sm:hidden" />
-          impose à votre balcon
-        </>
-      ),
-      intro: (
-        <>
-          Dès qu&rsquo;une chute de plus d&rsquo;un mètre est possible, le balcon doit être protégé. La norme
-          NF&nbsp;P01-012 encadre cette protection : hauteur, remplissage et tenue à la poussée.
-        </>
-      ),
-      items: [
-        {
-          icon: Ruler,
-          t: "1,00 m de hauteur minimum",
-          d: "La hauteur se mesure depuis le sol fini du balcon, revêtement compris.",
-        },
-        {
-          icon: PanelBottom,
-          t: "Une zone basse pleine",
-          d: "Sur les 45 premiers centimètres, le remplissage doit rester plein ou très serré : des panneaux vitrés toute hauteur y répondent naturellement.",
-        },
-        {
-          icon: Ban,
-          t: "Aucun appui pour grimper",
-          d: "Une surface vitrée lisse ne laisse ni lisse ni barreau horizontal à escalader.",
-        },
-        {
-          icon: Anchor,
-          t: "Une fixation reprise dans la structure",
-          d: "Les ancrages se font dans la dalle ou le nez de dalle, jamais dans le seul revêtement.",
-        },
-      ],
-      note: NOTE_P01012,
-      photo: {
-        src: provisoire("balcon").norme,
-        alt: "Garde-corps de balcon en verre toute hauteur, fixé en rive de dalle",
-      },
-      cta: { label: "Obtenir mon devis", href: "/generateur?usage=balcon" },
-    },
-    matiere: {
-      kicker: "Résistance & sécurité",
-      h2: (
-        <>
-          Fait pour qu&rsquo;on s&rsquo;y accoude, <br className="hidden sm:block" />
-          <span className={ACCENT}>taillé</span> pour vivre dehors.
-        </>
-      ),
-      text: (
-        <>
-          Un balcon se vit accoudé : le garde-corps doit reprendre l&rsquo;appui de plusieurs personnes sans
-          fléchir. Le verre feuilleté et ses fixations sont dimensionnés en conséquence, d&rsquo;après la
-          configuration de votre balcon.
-        </>
-      ),
-      proof: {
-        stat: STAT_600,
-        highlight: {
-          icon: Layers,
-          t: "Verre feuilleté de sécurité",
-          d: "Deux vitrages assemblés par des films intercalaires : en cas de casse, l’ensemble reste en place.",
-        },
-        features: [
-          {
-            icon: ShieldCheck,
-            t: "Visserie inox 316",
-            d: "Une visserie prévue pour l’exposition permanente d’un balcon : pluie, gel, air marin.",
-          },
-          {
-            icon: Gem,
-            t: "Pose française ou anglaise",
-            d: "Sur la dalle, ou en applique contre le nez de dalle pour libérer la surface.",
-          },
-        ],
-        footnote: FOOTNOTE_EUROCODE,
-      },
-      note: NOTE_EPAISSEURS,
-      photoPaysage: provisoire("balcon").paysage,
-      photoPortrait: provisoire("balcon").portrait,
-      alt: "Détail d’un garde-corps de balcon en verre feuilleté et de sa fixation basse",
-      cta: { label: "Configurer mon garde-corps", href: "/generateur?usage=balcon" },
     },
     faqTitle: "Questions fréquentes sur les garde-corps de balcon en verre",
   },

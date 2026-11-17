@@ -359,7 +359,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       )}
 
       {/* ---- bloc 2 : la norme — repères clairs, photo en regard ---- */}
-      {blocks && (
+      {blocks?.norme && (
         <section className="border-b border-neutral-200 bg-mist/60 py-16 sm:py-24">
           <Container>
             <header className="mx-auto max-w-2xl text-center lg:max-w-3xl">
@@ -418,7 +418,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       )}
 
       {/* ---- bloc 3 : matériaux & durabilité — la photo produit, puis l'essentiel ---- */}
-      {blocks && (
+      {blocks?.matiere && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
             <div
