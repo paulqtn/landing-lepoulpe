@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, ArrowUpRight, Check, ClipboardList, Lightbulb, Wrench } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, ClipboardList, Lightbulb, ShieldCheck, Wrench } from "lucide-react";
 import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
 import { Configurator } from "@/components/Configurator";
 import { FaqAccordion } from "@/components/FaqAccordion";
@@ -432,6 +432,65 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 {blocks.fixations.help.cta.label}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {/* ---- durabilité : l'argumentaire robustesse, photo et médaillon en regard ---- */}
+      {blocks?.durable && (
+        <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
+          <Container>
+            <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
+              <div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-pine-700/10 px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-pine-700">
+                  <ShieldCheck className="h-4 w-4" />
+                  {blocks.durable.badge}
+                </span>
+                <h2 className="mt-5 text-balance text-3xl font-extrabold leading-[1.12] tracking-tight text-inkgreen sm:text-4xl">
+                  {blocks.durable.h2}
+                </h2>
+                <p className="mt-5 max-w-lg text-pretty leading-relaxed text-neutral-600">{blocks.durable.intro}</p>
+
+                <ul className="mt-4 divide-y divide-neutral-200">
+                  {blocks.durable.items.map((item) => (
+                    <li key={item.t} className="flex items-start gap-4 py-5">
+                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-pine-700/10 text-pine-700">
+                        <item.icon className="h-5 w-5" strokeWidth={1.8} />
+                      </span>
+                      <div>
+                        <p className="font-extrabold tracking-tight text-inkgreen">{item.t}</p>
+                        <p className="mt-1 max-w-md text-[15px] leading-relaxed text-neutral-600">{item.d}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <Reveal>
+                <div className="relative">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 lg:aspect-[1.02]">
+                    <Image
+                      src={blocks.durable.photo.src}
+                      alt={blocks.durable.photo.alt}
+                      fill
+                      sizes="(min-width: 1152px) 36rem, 100vw"
+                      className="object-cover"
+                      style={blocks.durable.photo.position ? { objectPosition: blocks.durable.photo.position } : undefined}
+                    />
+                  </div>
+                  {/* le médaillon de détail, en incrustation sur le bord gauche */}
+                  <div className="absolute -left-3 bottom-8 h-32 w-32 overflow-hidden rounded-full shadow-elevated ring-4 ring-white sm:h-40 sm:w-40 lg:-left-7">
+                    <Image
+                      src={blocks.durable.medallion.src}
+                      alt={blocks.durable.medallion.alt}
+                      fill
+                      sizes="10rem"
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
+              </Reveal>
             </div>
           </Container>
         </section>

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import Link from "next/link";
 import {
   Anchor,
@@ -6,6 +6,7 @@ import {
   BrickWall,
   DoorOpen,
   Gem,
+  Hand,
   Layers,
   Lock,
   MoveHorizontal,
@@ -15,6 +16,32 @@ import {
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
+
+/* Pictogramme maison « main courante » : une lisse posée sur deux montants
+   — lucide n'a pas d'équivalent parlant. Même signature que ses icônes. */
+function MainCouranteIcon({
+  className,
+  strokeWidth = 2,
+}: {
+  className?: string;
+  strokeWidth?: number | string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect x="2.5" y="6" width="19" height="4.5" rx="2.25" />
+      <path d="M7 10.5V19M17 10.5V19" />
+    </svg>
+  );
+}
 
 /* ================================================================== */
 /*  Contenu des trois blocs placés sous le générateur sur les pages    */
@@ -72,6 +99,20 @@ export type UsageBlocks = {
       detail: { img: Img; label: string };
     }[];
     help: { title: string; text: string; cta: Cta };
+  };
+  /** Facultatif : l'argumentaire robustesse — photo en regard, médaillon de détail. */
+  durable?: {
+    badge: string;
+    h2: ReactNode;
+    intro: ReactNode;
+    items: {
+      icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
+      t: string;
+      d: ReactNode;
+    }[];
+    photo: Img & { position?: string };
+    /** Le zoom rond incrusté sur la photo. */
+    medallion: Img;
   };
   /** Facultatif : une page peut s'en passer (ex. balcon). */
   norme?: {
@@ -556,6 +597,62 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         title: "Un doute sur la bonne solution ?",
         text: "Notre configurateur vous guide pas à pas vers la fixation la plus adaptée à votre balcon.",
         cta: { label: "Configurer mon garde-corps", href: "/generateur?usage=balcon" },
+      },
+    },
+    durable: {
+      badge: "Garde-corps en verre",
+      h2: (
+        <>
+          Un garde-corps en verre <br className="hidden sm:block" />
+          <span className="relative inline-block whitespace-nowrap">
+            conçu pour durer
+            <svg
+              viewBox="0 0 220 12"
+              preserveAspectRatio="none"
+              fill="none"
+              aria-hidden="true"
+              className="absolute -bottom-1.5 left-0 h-2.5 w-full text-pine-600/70"
+            >
+              <path d="M4 9c62-6 152-6 212-3" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
+            </svg>
+          </span>
+        </>
+      ),
+      intro: (
+        <>
+          Un garde-corps en verre robuste, sûr et durable, qui résiste à l&rsquo;usage quotidien de votre
+          balcon et aux conditions extérieures, saison après saison.
+        </>
+      ),
+      items: [
+        {
+          icon: Hand,
+          t: "Appui confortable",
+          d: "Arêtes et finitions prévues pour éviter une sensation « coupante » au contact.",
+        },
+        {
+          icon: ShieldCheck,
+          t: "Sensation de tenue",
+          d: (
+            <>
+              Un verre épais (88.6 ou plus) avec des fixations robustes, supportant jusqu&rsquo;à
+              500&nbsp;kg.
+            </>
+          ),
+        },
+        {
+          icon: MainCouranteIcon,
+          t: "Option main courante",
+          d: "Possible si vous souhaitez une prise en main plus marquée, sans alourdir visuellement l’ensemble.",
+        },
+      ],
+      photo: {
+        src: "/hero-usage-balcon.webp",
+        alt: "Garde-corps de balcon en verre au quotidien, appui dégagé sur la ville",
+      },
+      medallion: {
+        src: "/usage-balcon-detail-portrait.webp",
+        alt: "Zoom sur la fixation basse du vitrage en rive de dalle",
       },
     },
     faqTitle: "Questions fréquentes sur les garde-corps de balcon en verre",
