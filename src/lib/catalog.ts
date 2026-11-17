@@ -193,13 +193,13 @@ export const usages: UsageSeed[] = [
     usage: "balcon",
     name: "Balcon",
     title: "Garde-corps de balcon",
-    h1: "Garde-corps en verre pour balcon sur mesure",
+    h1: "Garde-corps en verre pour balcon",
     metaTitle: "Garde-corps en verre pour balcon sur mesure | Direct usine",
     metaTitleIsAbsolute: true,
     metaDescription:
       "Garde-corps en verre pour balcon sur mesure : fixations sur dalle ou en nez de dalle, vue dégagée et estimation gratuite en 1 minute.",
     intro:
-      "Un garde-corps en verre pour balcon sécurise votre espace extérieur sans masquer la vue. Fabriqué sur mesure, il s’adapte aux dimensions de votre balcon et à votre configuration de pose. Profitez d’une protection robuste, de fixations discrètes et d’une esthétique contemporaine, en construction comme en rénovation.",
+      "Sécurisez votre balcon sans masquer la vue grâce à un garde-corps en verre sur mesure. Une solution robuste, élégante et adaptée à votre projet, en neuf comme en rénovation.",
     benefits: [
       { title: "Sécurité en hauteur", desc: "Dimensionné pour la poussée normative — l’ouvrage qui ne pardonne aucune approximation." },
       { title: "Façade valorisée", desc: "Le garde-corps signe l’esthétique de la façade : verre épuré ou alu graphique." },

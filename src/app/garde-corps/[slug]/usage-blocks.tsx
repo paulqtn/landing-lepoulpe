@@ -543,16 +543,10 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       ],
       footnote: (
         <>
-          Sur un balcon d&rsquo;appartement, chaque centimètre compte. Un{" "}
-          <Link
-            href="/garde-corps/verre"
-            className="font-semibold text-pine-700 underline decoration-pine-700/30 underline-offset-2 transition hover:decoration-pine-700"
-          >
-            garde-corps vitré
-          </Link>{" "}
-          permet de préserver la luminosité et la sensation d&rsquo;espace, même sur un balcon étroit. Il
-          constitue aussi une solution élégante pour remplacer une ancienne rambarde métallique ou un
-          garde-corps plein, tout en modernisant la façade.
+          Sur un balcon d&rsquo;appartement, chaque centimètre compte. Un garde-corps vitré permet de
+          préserver la luminosité et la sensation d&rsquo;espace, même sur un balcon étroit. Il constitue
+          aussi une solution élégante pour remplacer une ancienne rambarde métallique ou un garde-corps
+          plein, tout en modernisant la façade.
         </>
       ),
       cta: { label: "Configurer mon garde-corps de balcon", href: "#estimation" },
