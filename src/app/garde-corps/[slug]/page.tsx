@@ -365,11 +365,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               </p>
             </header>
 
-            <FixationPoses
-              poses={blocks.fixations.poses}
-              hint={blocks.fixations.hint}
-              panelSub={blocks.fixations.panelSub}
-            />
+            <FixationPoses poses={blocks.fixations.poses} panelSub={blocks.fixations.panelSub} />
           </Container>
         </section>
       )}

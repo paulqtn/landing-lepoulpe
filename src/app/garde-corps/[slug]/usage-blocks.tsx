@@ -95,8 +95,6 @@ export type UsageBlocks = {
     h2: ReactNode;
     intro: ReactNode;
     poses: FixationPose[];
-    /** Note d'usage affichée sous les cartes. */
-    hint: string;
     /** Sous-titre du panneau d'illustrations. */
     panelSub: string;
   };
@@ -598,7 +596,6 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           },
         },
       ],
-      hint: "cliquez sur une carte. Les deux illustrations à droite changent en même temps pour correspondre à la pose sélectionnée.",
       panelSub: "Vue sur balcon et détail technique",
     },
     durable: {

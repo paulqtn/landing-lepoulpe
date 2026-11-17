@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Check, ChevronDown, Image as ImageGlyph, Info, PencilRuler } from "lucide-react";
+import { Check, ChevronDown, Image as ImageGlyph, PencilRuler } from "lucide-react";
 
 /* ================================================================== */
 /*  Sélecteur de pose (française / anglaise) — cartes accordéon à      */
@@ -28,12 +28,9 @@ export type FixationPose = {
 
 export function FixationPoses({
   poses,
-  hint,
   panelSub,
 }: {
   poses: FixationPose[];
-  /** Note d'usage affichée sous les cartes. */
-  hint: string;
   /** Sous-titre du panneau : « Vue sur balcon et détail technique ». */
   panelSub: string;
 }) {
@@ -89,14 +86,6 @@ export function FixationPoses({
             </button>
           );
         })}
-
-        {/* note d'usage */}
-        <div className="flex items-start gap-3 rounded-xl bg-pine-700/[0.06] p-4 ring-1 ring-pine-700/10">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-pine-700" />
-          <p className="text-[13px] leading-relaxed text-neutral-600">
-            <strong className="font-bold text-inkgreen">Interaction&nbsp;:</strong> {hint}
-          </p>
-        </div>
       </div>
 
       {/* panneau d'illustrations synchronisé */}
