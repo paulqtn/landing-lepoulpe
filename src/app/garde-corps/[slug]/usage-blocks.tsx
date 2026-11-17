@@ -58,6 +58,21 @@ export type UsageBlocks = {
     cards: { t: string; d: string; point: string; img: string; alt: string }[];
     cta: Cta;
   };
+  /** Facultatif : deux modes de pose comparés, vignette de détail à l'appui. */
+  fixations?: {
+    kicker: string;
+    h2: ReactNode;
+    intro: ReactNode;
+    cards: {
+      title: string;
+      text: string;
+      points: string[];
+      /** position : cadrage CSS object-position quand le sujet n'est pas centré. */
+      photo: Img & { position?: string };
+      detail: { img: Img; label: string };
+    }[];
+    help: { title: string; text: string; cta: Cta };
+  };
   /** Facultatif : une page peut s'en passer (ex. balcon). */
   norme?: {
     kicker: string;
@@ -484,6 +499,64 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
       ],
       cta: { label: "Configurer mon garde-corps de balcon", href: "#estimation" },
+    },
+    fixations: {
+      kicker: "Fixations",
+      h2: "Une fixation adaptée à votre balcon",
+      intro: (
+        <>
+          Deux solutions de pose pour sécuriser votre balcon, avec un rendu 100&nbsp;% verre et sans
+          profilé.
+        </>
+      ),
+      cards: [
+        {
+          title: "Pose à la française",
+          text: "Le garde-corps est fixé sur le dessus de la dalle du balcon.",
+          points: [
+            "Solution polyvalente et éprouvée",
+            "Mise en œuvre simple",
+            "Adaptée à de nombreux balcons",
+          ],
+          photo: {
+            src: "/usage-balcon-vue.webp",
+            alt: "Garde-corps de balcon en verre posé sur le dessus de la dalle, vue dégagée sur la campagne",
+          },
+          detail: {
+            img: {
+              src: "/fixation-pince-hover.png",
+              alt: "Détail d’un sabot de fixation serrant le vitrage sur le dessus de la dalle",
+            },
+            label: "Fixation sur la dalle",
+          },
+        },
+        {
+          title: "Pose à l’anglaise",
+          text: "Le garde-corps est fixé sur la face extérieure de la dalle.",
+          points: [
+            "Préserve toute la largeur du balcon",
+            "Rendu épuré et contemporain",
+            "Particulièrement apprécié en rénovation",
+          ],
+          photo: {
+            src: "/pose-anglaise-balcon.webp",
+            alt: "Garde-corps en verre fixé contre le nez de dalle d’un balcon, face à la mer",
+            position: "72% 62%",
+          },
+          detail: {
+            img: {
+              src: "/fixation-spider-hover.png",
+              alt: "Détail de points de fixation traversants posés en nez de dalle",
+            },
+            label: "Fixation en nez de dalle",
+          },
+        },
+      ],
+      help: {
+        title: "Un doute sur la bonne solution ?",
+        text: "Notre configurateur vous guide pas à pas vers la fixation la plus adaptée à votre balcon.",
+        cta: { label: "Configurer mon garde-corps", href: "/generateur?usage=balcon" },
+      },
     },
     faqTitle: "Questions fréquentes sur les garde-corps de balcon en verre",
   },
