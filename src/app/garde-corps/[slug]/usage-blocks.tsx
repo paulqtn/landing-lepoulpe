@@ -569,14 +569,13 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
             "Sabots de maintien et ancrages verticaux",
             "Finition extérieure discrète",
           ],
+          /* src volontairement absents : placeholders en attendant les visuels dédiés. */
           vue: {
-            src: "/usage-balcon-vue.webp",
-            alt: "Garde-corps de balcon en verre posé sur le dessus de la dalle, vue dégagée sur la campagne",
+            alt: "Garde-corps de balcon en verre posé sur le dessus de la dalle, vu depuis le balcon",
             chip: "Pose à la française sur rail en butée de dalle",
           },
           detail: {
-            src: "/fixation-rail-hover.png",
-            alt: "Détail technique du rail aluminium fixé verticalement sur le dessus de la dalle",
+            alt: "Schéma technique légendé du rail aluminium fixé verticalement dans la dalle",
           },
         },
         {
@@ -589,14 +588,13 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
             "Rendu épuré et contemporain",
             "Particulièrement apprécié en rénovation",
           ],
+          /* src volontairement absents : placeholders en attendant les visuels dédiés. */
           vue: {
-            src: "/pose-anglaise-balcon.webp",
-            alt: "Garde-corps en verre fixé contre le nez de dalle d’un balcon, face à la mer",
+            alt: "Garde-corps en verre fixé contre le nez de dalle d’un balcon, vu depuis le balcon",
             chip: "Pose à l’anglaise en nez de dalle",
           },
           detail: {
-            src: "/fixation-spider-hover.png",
-            alt: "Détail technique des points de fixation traversants ancrés dans le chant de dalle",
+            alt: "Schéma technique légendé des fixations ancrées dans le chant de dalle",
           },
         },
       ],

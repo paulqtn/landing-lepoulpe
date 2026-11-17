@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Check, ChevronDown, Info } from "lucide-react";
+import { Check, ChevronDown, Image as ImageGlyph, Info, PencilRuler } from "lucide-react";
 
 /* ================================================================== */
 /*  Sélecteur de pose (française / anglaise) — cartes accordéon à      */
@@ -19,10 +19,11 @@ export type FixationPose = {
   /** Description de la carte dépliée. */
   text: string;
   points: string[];
-  /** La photo en situation, et son étiquette posée sur l'image. */
-  vue: { src: string; alt: string; chip: string };
-  /** L'illustration technique du système. */
-  detail: { src: string; alt: string };
+  /** La photo en situation, et son étiquette posée sur l'image.
+      Sans src, un placeholder tient la place en attendant le visuel. */
+  vue: { src?: string; alt: string; chip: string };
+  /** L'illustration technique du système — placeholder tant que src manque. */
+  detail: { src?: string; alt: string };
 };
 
 export function FixationPoses({
@@ -40,7 +41,7 @@ export function FixationPoses({
   const pose = poses[active];
 
   return (
-    <div className="mt-9 grid gap-6 sm:mt-12 lg:grid-cols-[0.62fr_1fr] lg:items-start lg:gap-8">
+    <div className="mt-9 grid gap-6 sm:mt-12 lg:grid-cols-[0.46fr_1fr] lg:items-start lg:gap-8">
       {/* cartes de sélection — la carte active est dépliée */}
       <div className="space-y-4">
         {poses.map((po, i) => {
@@ -51,25 +52,23 @@ export function FixationPoses({
               type="button"
               onClick={() => setActive(i)}
               aria-expanded={open}
-              className={`block w-full rounded-2xl bg-white p-5 text-left ring-1 transition-all sm:p-6 ${
+              className={`block w-full rounded-2xl bg-white p-5 text-left ring-1 transition-all ${
                 open ? "shadow-panel ring-pine-600/30" : "ring-pine-950/10 hover:-translate-y-0.5 hover:ring-pine-600/25"
               }`}
             >
-              <span className="flex items-center gap-3.5">
-                <span
-                  className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl font-mono text-[13px] font-bold transition-colors ${
-                    open ? "bg-pine-700 text-white" : "bg-pine-700/10 text-pine-700"
-                  }`}
-                >
+              <span className="flex items-center gap-3">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-pine-700/10 font-mono text-[13px] font-bold text-pine-700">
                   {po.num}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[17px] font-extrabold tracking-tight text-inkgreen">{po.title}</span>
-                  <span className="mt-0.5 block text-[13px] text-neutral-500">{po.sub}</span>
+                  <span className="block text-[16px] font-extrabold tracking-tight text-inkgreen">{po.title}</span>
+                  <span className="mt-0.5 block text-[12.5px] text-neutral-500">{po.sub}</span>
                 </span>
-                <ChevronDown
-                  className={`h-5 w-5 shrink-0 text-pine-700 transition-transform ${open ? "rotate-180" : ""}`}
-                />
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full ring-1 ring-neutral-200">
+                  <ChevronDown
+                    className={`h-4 w-4 text-pine-700 transition-transform ${open ? "rotate-180" : ""}`}
+                  />
+                </span>
               </span>
 
               {open && (
@@ -115,8 +114,19 @@ export function FixationPoses({
 
         {/* key sur la pose : l'animation d'apparition rejoue à chaque bascule */}
         <div key={pose.title} className="mt-4 grid animate-fade-up gap-3 sm:grid-cols-2">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-pine-950/10 sm:aspect-[1.05]">
-            <Image src={pose.vue.src} alt={pose.vue.alt} fill sizes="(min-width: 1152px) 20rem, 100vw" className="object-cover" />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-pine-950/10 sm:aspect-[1.08]">
+            {pose.vue.src ? (
+              <Image src={pose.vue.src} alt={pose.vue.alt} fill sizes="(min-width: 1152px) 26rem, 100vw" className="object-cover" />
+            ) : (
+              <span className="absolute inset-2 grid place-items-center rounded-lg border-2 border-dashed border-neutral-300 bg-mist">
+                <span className="flex flex-col items-center gap-2 px-6 text-center">
+                  <ImageGlyph className="h-6 w-6 text-neutral-400" strokeWidth={1.6} />
+                  <span className="text-[12px] font-semibold leading-snug text-neutral-500">
+                    Votre photo « vue du balcon » arrive ici
+                  </span>
+                </span>
+              </span>
+            )}
             <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-inkgreen shadow-sm">
               {pose.num} · Vue du balcon
             </span>
@@ -124,8 +134,19 @@ export function FixationPoses({
               {pose.vue.chip}
             </span>
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-mist ring-1 ring-pine-950/10 sm:aspect-[1.05]">
-            <Image src={pose.detail.src} alt={pose.detail.alt} fill sizes="(min-width: 1152px) 20rem, 100vw" className="object-cover" />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-white ring-1 ring-pine-950/10 sm:aspect-[1.08]">
+            {pose.detail.src ? (
+              <Image src={pose.detail.src} alt={pose.detail.alt} fill sizes="(min-width: 1152px) 26rem, 100vw" className="object-cover" />
+            ) : (
+              <span className="absolute inset-2 grid place-items-center rounded-lg border-2 border-dashed border-neutral-300 bg-mist">
+                <span className="flex flex-col items-center gap-2 px-6 text-center">
+                  <PencilRuler className="h-6 w-6 text-neutral-400" strokeWidth={1.6} />
+                  <span className="text-[12px] font-semibold leading-snug text-neutral-500">
+                    Votre schéma technique légendé arrive ici
+                  </span>
+                </span>
+              </span>
+            )}
           </div>
         </div>
 
