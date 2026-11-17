@@ -100,7 +100,7 @@ export function FixationPoses({
         </div>
 
         {/* key sur la pose : l'animation d'apparition rejoue à chaque bascule */}
-        <div key={pose.title} className="relative mt-4 aspect-[16/10] animate-fade-up overflow-hidden rounded-xl ring-1 ring-pine-950/10 sm:aspect-[1.97]">
+        <div key={pose.title} className="relative mt-4 aspect-[1.97] animate-fade-up overflow-hidden rounded-xl ring-1 ring-pine-950/10">
           {pose.image.src ? (
             <Image
               src={pose.image.src}
