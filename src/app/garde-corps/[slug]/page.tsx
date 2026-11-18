@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, ArrowUpRight, Check, ClipboardList, Lightbulb, ShieldCheck, Wrench } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, ChevronDown, ClipboardList, Lightbulb, ShieldCheck, Wrench } from "lucide-react";
 import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
 import { Configurator } from "@/components/Configurator";
 import { FixationPoses } from "@/components/FixationPoses";
@@ -301,6 +301,109 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 {blocks.vue.cta.label}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {/* ---- solidité : accordéon sécurité, photo badgée, normes et CTA ---- */}
+      {blocks?.solidite && (
+        <section className="border-b border-neutral-200 bg-mist/60 py-16 sm:py-24">
+          <Container>
+            <header className="mx-auto max-w-3xl text-center">
+              <p className={`${PISCINE_KICKER} flex items-center justify-center gap-3`}>
+                <span className="h-px w-8 bg-pine-600/40" aria-hidden />
+                {blocks.solidite.kicker}
+                <span className="h-px w-8 bg-pine-600/40" aria-hidden />
+              </p>
+              <h2 className={`mt-2 ${PISCINE_H2}`}>{blocks.solidite.h2}</h2>
+              <p className="mx-auto mt-4 max-w-xl text-pretty leading-relaxed text-neutral-600 lg:max-w-2xl">
+                {blocks.solidite.intro}
+              </p>
+            </header>
+
+            <div className="mt-10 grid gap-8 sm:mt-14 lg:grid-cols-[0.92fr_1fr] lg:items-stretch lg:gap-12">
+              {/* la photo, badge de réassurance posé dessus */}
+              <Reveal>
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 lg:aspect-auto lg:h-full lg:min-h-[30rem]">
+                  <Image
+                    src={blocks.solidite.photo.src}
+                    alt={blocks.solidite.photo.alt}
+                    fill
+                    sizes="(min-width: 1152px) 32rem, 100vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute left-4 top-4 flex max-w-[16rem] items-center gap-3 rounded-2xl bg-white/95 px-4 py-3 shadow-card">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-pine-700 text-white">
+                      <ShieldCheck className="h-5 w-5" />
+                    </span>
+                    <span className="text-[13.5px] font-extrabold leading-snug text-inkgreen">
+                      {blocks.solidite.photo.badge}
+                    </span>
+                  </div>
+                </div>
+              </Reveal>
+
+              {/* accordéon exclusif + normes + CTA */}
+              <div>
+                <div className="space-y-3">
+                  {blocks.solidite.items.map((item, i) => (
+                    <details
+                      key={item.t}
+                      name="solidite"
+                      open={i === 0}
+                      className="group rounded-2xl bg-white ring-1 ring-pine-950/10 transition-colors open:bg-pine-700/[0.06] open:ring-pine-700/15"
+                    >
+                      <summary className="flex cursor-pointer select-none items-center gap-3.5 px-5 py-4 [&::-webkit-details-marker]:hidden">
+                        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-pine-700/10 text-pine-700">
+                          <item.icon className="h-5 w-5" strokeWidth={1.8} />
+                        </span>
+                        <span className="flex-1 text-[15.5px] font-extrabold tracking-tight text-inkgreen sm:text-[16.5px]">
+                          {item.t}
+                        </span>
+                        <ChevronDown className="h-5 w-5 shrink-0 text-pine-700 transition-transform group-open:rotate-180" />
+                      </summary>
+                      <div className="flex items-start gap-5 px-5 pb-5">
+                        <p className="flex-1 text-sm leading-relaxed text-neutral-600">{item.d}</p>
+                        {item.img && (
+                          <div className="relative hidden h-24 w-36 shrink-0 overflow-hidden rounded-lg ring-1 ring-pine-950/10 sm:block">
+                            <Image src={item.img.src} alt={item.img.alt} fill sizes="9rem" className="object-cover" />
+                          </div>
+                        )}
+                      </div>
+                    </details>
+                  ))}
+                </div>
+
+                {/* les repères normatifs */}
+                <div className="mt-7 grid gap-5 border-b border-neutral-200 pb-7 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-neutral-200">
+                  {blocks.solidite.normes.map((n) => (
+                    <div key={n.t} className="flex items-start gap-3 sm:px-5 sm:first:pl-0 sm:last:pr-0">
+                      <n.icon className="mt-0.5 h-6 w-6 shrink-0 text-pine-700" strokeWidth={1.7} />
+                      <div>
+                        <p className="text-[15px] font-extrabold leading-snug text-inkgreen">{n.t}</p>
+                        {n.d && <p className="mt-0.5 text-[13px] leading-snug text-neutral-600">{n.d}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* l'appel au devis, coches de réassurance en regard */}
+                <div className="mt-7 flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+                  <Link href={blocks.solidite.cta.href} className={`${PISCINE_CTA} shrink-0 whitespace-nowrap`}>
+                    {blocks.solidite.cta.label}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                  <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+                    {blocks.solidite.cta.checks.map((c) => (
+                      <li key={c} className="flex items-center gap-1.5 text-sm font-semibold text-neutral-700">
+                        <Check className="h-4 w-4 text-pine-700" strokeWidth={3} />
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           </Container>
         </section>

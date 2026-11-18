@@ -6,8 +6,11 @@ import {
   Ban,
   BrickWall,
   DoorOpen,
+  FileCheck2,
+  FileText,
   Gem,
   Hand,
+  Infinity as InfinityIcon,
   Layers,
   Lock,
   MoveHorizontal,
@@ -97,6 +100,27 @@ export type UsageBlocks = {
     poses: FixationPose[];
     /** Sous-titre du panneau d'illustrations. */
     panelSub: string;
+  };
+  /** Facultatif : l'argumentaire solidité — photo badgée à gauche, accordéon
+      exclusif à droite, rangée des normes et CTA à coches. */
+  solidite?: {
+    kicker: string;
+    h2: ReactNode;
+    intro: ReactNode;
+    photo: Img & { badge: string };
+    items: {
+      icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
+      t: string;
+      d: ReactNode;
+      /** Petit visuel facultatif à droite du texte déplié. */
+      img?: Img;
+    }[];
+    normes: {
+      icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
+      t: string;
+      d?: string;
+    }[];
+    cta: Cta & { checks: string[] };
   };
   /** Facultatif : galerie de réalisations — cards photo à étiquette. */
   realisations?: {
@@ -694,6 +718,54 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
       ],
       cta: { label: "Configurer mon garde-corps de terrasse", href: "#estimation" },
+    },
+    solidite: {
+      kicker: "Solidité & sécurité",
+      h2: (
+        <>
+          Un garde-corps de terrasse en verre <br className="hidden sm:block" />
+          <span className={ACCENT}>conçu pour durer</span>
+        </>
+      ),
+      intro:
+        "Une protection fiable et résistante qui sécurise votre terrasse tout en préservant la vue.",
+      photo: {
+        src: "/balcon-durable.webp",
+        alt: "Un homme accoudé à un garde-corps de terrasse en verre, la vue dégagée devant lui",
+        badge: "Conçu pour résister aux efforts du quotidien",
+      },
+      items: [
+        {
+          icon: Layers,
+          t: "Un verre de sécurité haute résistance",
+          d: "Un vitrage feuilleté trempé spécialement conçu pour les garde-corps. Il résiste aux chocs et, en cas de bris, ses intercalaires maintiennent les fragments de verre pour préserver la sécurité.",
+        },
+        {
+          icon: Anchor,
+          t: "Des fixations robustes et adaptées à votre terrasse",
+          d: "Rail aluminium posé sur la dalle, pinces ou points traversants : la fixation est choisie selon votre support — dalle béton, bois ou acier — et dimensionnée pour reprendre les efforts d’appui.",
+        },
+        {
+          icon: ShieldCheck,
+          t: "Conforme aux normes NF P01-012 et NF P01-013",
+          d: "La NF P01-012 fixe les exigences de dimensions et de résistance, la NF P01-013 décrit les essais qui les valident. Nos garde-corps sont conçus pour y répondre, du vitrage aux fixations.",
+        },
+        {
+          icon: InfinityIcon,
+          t: "Une solution durable, fiable et sans entretien complexe",
+          d: "Verre feuilleté et visserie inox prévus pour l’extérieur : un nettoyage à l’eau suffit, sans peinture ni traitement, saison après saison.",
+        },
+      ],
+      normes: [
+        { icon: FileText, t: "NF P01-012", d: "Exigences de sécurité et de résistance" },
+        { icon: FileCheck2, t: "NF P01-013", d: "Méthodes d’essai et de validation" },
+        { icon: ShieldCheck, t: "Sécurité des personnes et des biens" },
+      ],
+      cta: {
+        label: "Obtenir mon devis gratuit",
+        href: "/generateur?usage=terrasse",
+        checks: ["Sur mesure", "Gratuit", "Sans engagement"],
+      },
     },
     norme: {
       kicker: "Sécurité & réglementation",
