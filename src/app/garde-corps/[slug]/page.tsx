@@ -839,7 +839,9 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 Votre {entry.title.toLowerCase()}, estimé{/^barrière/i.test(entry.title) ? "e" : ""} en 1 minute.
               </h2>
               <p className="mx-auto mt-4 max-w-lg text-pine-100/75">
-                Estimation immédiate, devis détaillé sous 24h — gratuit et sans engagement.
+                Estimation immédiate, devis détaillé sous 24h
+                <br />
+                gratuit et sans engagement.
               </p>
               <div className="mt-8 flex justify-center">
                 <Link
