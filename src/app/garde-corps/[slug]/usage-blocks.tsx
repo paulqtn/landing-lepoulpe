@@ -558,49 +558,6 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       ),
       cta: { label: "Configurer mon garde-corps de balcon", href: "#estimation" },
     },
-    fixations: {
-      kicker: "Systèmes de fixation",
-      h2: "Une fixation adaptée à votre balcon",
-      intro: (
-        <>
-          Choisissez votre type de pose pour découvrir le rendu sur balcon et le détail du système de
-          fixation.
-        </>
-      ),
-      poses: [
-        {
-          num: "01",
-          title: "Pose à la française",
-          sub: "Fixation sur le dessus de la dalle",
-          text: "Les éléments de fixation sont ancrés verticalement dans le béton, au niveau du bord de dalle. Le vitrage est maintenu par des supports et dissimulé par un habillage en aluminium.",
-          points: [
-            "Pose sur la face supérieure de la dalle",
-            "Sabots de maintien et ancrages verticaux",
-            "Finition extérieure discrète",
-          ],
-          image: {
-            src: "/pose-francaise-balcon.webp",
-            alt: "Pose à la française : garde-corps en verre sur rail en butée de dalle, et coupe technique légendée du rail aluminium ancré dans la dalle",
-          },
-        },
-        {
-          num: "02",
-          title: "Pose à l’anglaise",
-          sub: "Fixation sur le chant extérieur de la dalle",
-          text: "Les fixations traversent le vitrage et s’ancrent horizontalement dans le chant de la dalle. Le verre file devant le nez de dalle, sans rien poser sur le sol du balcon.",
-          points: [
-            "Préserve toute la largeur du balcon",
-            "Rendu épuré et contemporain",
-            "Particulièrement apprécié en rénovation",
-          ],
-          /* src volontairement absent : placeholder en attendant le visuel dédié. */
-          image: {
-            alt: "Pose à l’anglaise : garde-corps en verre fixé contre le nez de dalle, et coupe technique légendée des fixations traversantes",
-          },
-        },
-      ],
-      panelSub: "Vue sur balcon et détail technique",
-    },
     video: {
       kicker: "Pose & installation",
       h2: "Une pose simple",
@@ -1245,4 +1202,56 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
     },
     faqTitle: "Questions fréquentes sur les garde-corps extérieurs en verre",
   },
+};
+
+/* ================================================================== */
+/*  ARCHIVES — blocs retirés des pages mais conservés prêts à servir.  */
+/*  Pour réactiver celui-ci : ajouter « fixations: BALCON_FIXATIONS_   */
+/*  ARCHIVE » dans l'entrée balcon ci-dessus. Le composant             */
+/*  (FixationPoses) et le visuel /pose-francaise-balcon.webp restent   */
+/*  dans le repo.                                                      */
+/* ================================================================== */
+
+export const BALCON_FIXATIONS_ARCHIVE: NonNullable<UsageBlocks["fixations"]> = {
+  kicker: "Systèmes de fixation",
+  h2: "Une fixation adaptée à votre balcon",
+  intro: (
+    <>
+      Choisissez votre type de pose pour découvrir le rendu sur balcon et le détail du système de
+      fixation.
+    </>
+  ),
+  poses: [
+    {
+      num: "01",
+      title: "Pose à la française",
+      sub: "Fixation sur le dessus de la dalle",
+      text: "Les éléments de fixation sont ancrés verticalement dans le béton, au niveau du bord de dalle. Le vitrage est maintenu par des supports et dissimulé par un habillage en aluminium.",
+      points: [
+        "Pose sur la face supérieure de la dalle",
+        "Sabots de maintien et ancrages verticaux",
+        "Finition extérieure discrète",
+      ],
+      image: {
+        src: "/pose-francaise-balcon.webp",
+        alt: "Pose à la française : garde-corps en verre sur rail en butée de dalle, et coupe technique légendée du rail aluminium ancré dans la dalle",
+      },
+    },
+    {
+      num: "02",
+      title: "Pose à l’anglaise",
+      sub: "Fixation sur le chant extérieur de la dalle",
+      text: "Les fixations traversent le vitrage et s’ancrent horizontalement dans le chant de la dalle. Le verre file devant le nez de dalle, sans rien poser sur le sol du balcon.",
+      points: [
+        "Préserve toute la largeur du balcon",
+        "Rendu épuré et contemporain",
+        "Particulièrement apprécié en rénovation",
+      ],
+      /* src volontairement absent : placeholder en attendant le visuel dédié. */
+      image: {
+        alt: "Pose à l’anglaise : garde-corps en verre fixé contre le nez de dalle, et coupe technique légendée des fixations traversantes",
+      },
+    },
+  ],
+  panelSub: "Vue sur balcon et détail technique",
 };
