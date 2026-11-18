@@ -650,8 +650,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           t: "Sensation de tenue",
           d: (
             <>
-              Un verre épais (88.6 ou plus) avec des fixations robustes, supportant jusqu&rsquo;à
-              500&nbsp;kg.
+              Un verre épais (88.4 ou plus) avec des fixations robustes, supportant jusqu&rsquo;à
+              500&nbsp;kg par m².
             </>
           ),
         },
