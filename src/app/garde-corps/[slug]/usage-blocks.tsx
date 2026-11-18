@@ -602,7 +602,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
         {
           icon: ShieldCheck,
-          t: "Sensation de tenue",
+          t: "Résistance anti-chute",
           d: (
             <>
               Un verre épais (88.4 ou plus) avec des fixations robustes, supportant jusqu&rsquo;à
