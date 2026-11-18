@@ -730,8 +730,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       intro:
         "Une protection fiable et résistante qui sécurise votre terrasse tout en préservant la vue.",
       photo: {
-        src: "/balcon-durable.webp",
-        alt: "Un homme accoudé à un garde-corps de terrasse en verre, la vue dégagée devant lui",
+        src: "/terrasse-solidite.webp",
+        alt: "Un homme accoudé au garde-corps en verre de sa terrasse, la ville au couchant devant lui",
         badge: "Conçu pour résister aux efforts du quotidien",
       },
       items: [
