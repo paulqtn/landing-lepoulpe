@@ -172,6 +172,8 @@ export type UsageBlocks = {
     kicker: string;
     h2: ReactNode;
     cta: Cta;
+    /** true : le bloc se place juste avant la FAQ au lieu de sa position haute. */
+    beforeFaq?: true;
     items: { src: string; alt: string; tag: string; title: string }[];
   };
   /** Facultatif : une vidéo YouTube intégrée (façade légère, iframe au clic). */
@@ -823,32 +825,31 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       title: "Pose d’un garde-corps en verre : la vidéo d’installation",
       beforeFaq: true,
     },
-    matiere: {
-      kicker: "Pose & durabilité",
-      h2: (
-        <>
-          Une pose pensée pour <br className="hidden lg:block" />
-          <span className={ACCENT}>votre support</span>
-        </>
-      ),
-      text: (
-        <>
-          Dalle béton, terrasse bois ou toiture accessible : la fixation ne se choisit pas au hasard. Nous
-          retenons le système adapté à votre support — rail au sol, pinces ou pose en applique — avec une
-          visserie en inox 316, prévue pour l&rsquo;exposition permanente.
-        </>
-      ),
-      benefits: ["Fixation étudiée selon le support", "Écoulement des eaux respecté", "Visserie inox 316"],
-      note: (
-        <>
-          Sur une terrasse étanchée, la fixation est étudiée pour préserver l&rsquo;étanchéité :
-          précisez-le dans votre demande.
-        </>
-      ),
-      photoPaysage: provisoire("terrasse").paysage,
-      photoPortrait: provisoire("terrasse").portrait,
-      alt: "Détail d’un garde-corps de terrasse en verre et de sa fixation au sol",
-      cta: { label: "Configurer mon garde-corps", href: "/generateur?usage=terrasse" },
+    realisations: {
+      kicker: "Sur le terrain",
+      h2: "Ils ont installé nos garde-corps en verre sur leur terrasse",
+      cta: { label: "Estimer la mienne", href: "/generateur?usage=terrasse" },
+      beforeFaq: true,
+      items: [
+        {
+          src: "/comparateur-terrasse-apres.webp",
+          alt: "Toit-terrasse protégé par un garde-corps en verre, panorama urbain dégagé",
+          tag: "Toit-terrasse",
+          title: "Toit-terrasse sur la ville",
+        },
+        {
+          src: "/comparateur-exterieur-apres.webp",
+          alt: "Terrasse de chalet sécurisée par un garde-corps en verre face aux montagnes",
+          tag: "Terrasse de montagne",
+          title: "Face aux sommets",
+        },
+        {
+          src: "/ancien-heroes-balcon.webp",
+          alt: "Grande terrasse filante bordée d’un garde-corps en verre toute longueur, vue sur la campagne",
+          tag: "Grande longueur",
+          title: "Terrasse filante sur la campagne",
+        },
+      ],
     },
     faqTitle: "Questions fréquentes sur les garde-corps de terrasse en verre",
   },
