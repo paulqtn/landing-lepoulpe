@@ -325,7 +325,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
             <div className="mt-10 grid gap-8 sm:mt-14 lg:grid-cols-[0.92fr_1fr] lg:items-stretch lg:gap-12">
               {/* la photo, badge de réassurance posé dessus */}
               <Reveal>
-                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 lg:aspect-auto lg:h-full lg:min-h-[30rem]">
+                <div className="relative aspect-square overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-[30rem]">
                   <Image
                     src={blocks.solidite.photo.src}
                     alt={blocks.solidite.photo.alt}
@@ -333,11 +333,11 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                     sizes="(min-width: 1152px) 32rem, 100vw"
                     className="object-cover"
                   />
-                  <div className="absolute left-4 top-4 flex max-w-[16rem] items-center gap-3 rounded-2xl bg-white/95 px-4 py-3 shadow-card">
-                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-pine-700 text-white">
-                      <ShieldCheck className="h-5 w-5" />
+                  <div className="absolute left-3 top-3 flex max-w-[13.5rem] items-center gap-2.5 rounded-xl bg-white/95 px-3 py-2.5 shadow-card sm:left-4 sm:top-4 sm:max-w-[16rem] sm:gap-3 sm:rounded-2xl sm:px-4 sm:py-3">
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-pine-700 text-white sm:h-10 sm:w-10 sm:rounded-xl">
+                      <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5" />
                     </span>
-                    <span className="text-[13.5px] font-extrabold leading-snug text-inkgreen">
+                    <span className="text-[12px] font-extrabold leading-snug text-inkgreen sm:text-[13.5px]">
                       {blocks.solidite.photo.badge}
                     </span>
                   </div>
