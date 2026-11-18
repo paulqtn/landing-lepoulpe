@@ -510,8 +510,8 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
-      {/* ---- vidéo : la pose en images, lecteur chargé au clic ---- */}
-      {blocks?.video && (
+      {/* ---- vidéo : la pose en images, lecteur chargé au clic (position haute) ---- */}
+      {blocks?.video && !blocks.video.beforeFaq && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
             <header className="mx-auto max-w-2xl text-center lg:max-w-3xl">
@@ -900,6 +900,24 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   </div>
                 </Link>
               ))}
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {/* ---- vidéo : variante placée juste avant la FAQ ---- */}
+      {blocks?.video?.beforeFaq && (
+        <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
+          <Container>
+            <header className="mx-auto max-w-2xl text-center lg:max-w-3xl">
+              <p className={PISCINE_KICKER}>{blocks.video.kicker}</p>
+              <h2 className={`mt-2 ${PISCINE_H2}`}>{blocks.video.h2}</h2>
+              <p className="mx-auto mt-4 max-w-xl text-pretty leading-relaxed text-neutral-600 lg:max-w-2xl">
+                {blocks.video.intro}
+              </p>
+            </header>
+            <div className="mx-auto mt-8 max-w-4xl sm:mt-12">
+              <YouTubeLite id={blocks.video.youtubeId} start={blocks.video.start} title={blocks.video.title} />
             </div>
           </Container>
         </section>

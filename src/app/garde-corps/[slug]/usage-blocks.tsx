@@ -184,6 +184,8 @@ export type UsageBlocks = {
     start?: number;
     /** Titre accessible de la vidéo. */
     title: string;
+    /** true : le bloc se place juste avant la FAQ au lieu de sa position haute. */
+    beforeFaq?: true;
   };
   /** Facultatif : l'argumentaire robustesse — photo en regard, médaillon de détail. */
   durable?: {
@@ -807,49 +809,19 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         checks: ["Sur mesure", "Gratuit", "Sans engagement"],
       },
     },
-    norme: {
-      kicker: "Sécurité & réglementation",
-      h2: (
-        <>
-          Garde-corps de terrasse <br className="sm:hidden" />
-          en verre et norme <span className={ACCENT}>NF P01-012</span>
-        </>
-      ),
+    video: {
+      kicker: "Pose & installation",
+      h2: "Une pose simple",
       intro: (
         <>
-          Terrasse surélevée, toit-terrasse accessible ou plage dominant le jardin : dès qu&rsquo;une chute de
-          plus d&rsquo;un mètre est possible, une protection s&rsquo;impose. La norme NF&nbsp;P01-012 en fixe
-          les dimensions.
+          Rail fixé, vitrage glissé, cales de réglage : la pose d&rsquo;un garde-corps de terrasse en verre
+          est à la portée d&rsquo;un bon bricoleur. La preuve en images.
         </>
       ),
-      items: [
-        {
-          icon: Ruler,
-          t: "1,00 m de hauteur minimum",
-          d: "Mesurée depuis le sol fini de la terrasse : dalle, carrelage ou lames posées.",
-        },
-        {
-          icon: BrickWall,
-          t: "Muret et acrotère pris en compte",
-          d: "Un muret, un acrotère ou une jardinière en bord de terrasse modifient la hauteur à prévoir : nous l’intégrons à l’étude.",
-        },
-        {
-          icon: PanelBottom,
-          t: "Un remplissage plein",
-          d: "Chaque panneau est plein sur toute sa hauteur, et l’écart entre deux panneaux reste dans la limite fixée par la norme.",
-        },
-        {
-          icon: Anchor,
-          t: "Une fixation adaptée au support",
-          d: "Dalle béton, structure bois ou acier : les ancrages reprennent les efforts dans la structure, pas dans le revêtement.",
-        },
-      ],
-      note: NOTE_P01012,
-      photo: {
-        src: provisoire("terrasse").norme,
-        alt: "Garde-corps de terrasse en verre en bordure d’un toit-terrasse",
-      },
-      cta: { label: "Obtenir mon devis", href: "/generateur?usage=terrasse" },
+      youtubeId: "1k9-IwHHs14",
+      start: 18,
+      title: "Pose d’un garde-corps en verre : la vidéo d’installation",
+      beforeFaq: true,
     },
     matiere: {
       kicker: "Pose & durabilité",
