@@ -851,7 +851,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
       ],
     },
-    faqTitle: "Questions fréquentes sur les garde-corps de terrasse en verre",
+    faqTitle: "Questions fréquentes sur les garde-corps en verre pour terrasse",
   },
 
   /* ------------------------------ MEZZANINE ---------------------------- */
