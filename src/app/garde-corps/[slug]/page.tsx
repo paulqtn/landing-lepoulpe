@@ -375,21 +375,8 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   ))}
                 </div>
 
-                {/* les repères normatifs */}
-                <div className="mt-7 grid gap-5 border-b border-neutral-200 pb-7 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-neutral-200">
-                  {blocks.solidite.normes.map((n) => (
-                    <div key={n.t} className="flex items-start gap-3 sm:px-5 sm:first:pl-0 sm:last:pr-0">
-                      <n.icon className="mt-0.5 h-6 w-6 shrink-0 text-pine-700" strokeWidth={1.7} />
-                      <div>
-                        <p className="text-[15px] font-extrabold leading-snug text-inkgreen">{n.t}</p>
-                        {n.d && <p className="mt-0.5 text-[13px] leading-snug text-neutral-600">{n.d}</p>}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
                 {/* l'appel au devis, coches de réassurance en regard */}
-                <div className="mt-7 flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+                <div className="mt-7 flex flex-col items-center gap-4 border-t border-neutral-200 pt-7 sm:flex-row sm:gap-6">
                   <Link href={blocks.solidite.cta.href} className={`${PISCINE_CTA} shrink-0 whitespace-nowrap`}>
                     {blocks.solidite.cta.label}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

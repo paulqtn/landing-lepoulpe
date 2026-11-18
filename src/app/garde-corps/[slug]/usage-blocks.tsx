@@ -6,8 +6,6 @@ import {
   Ban,
   BrickWall,
   DoorOpen,
-  FileCheck2,
-  FileText,
   Gem,
   Hand,
   Infinity as InfinityIcon,
@@ -114,11 +112,6 @@ export type UsageBlocks = {
       d: ReactNode;
       /** Petit visuel facultatif à droite du texte déplié. */
       img?: Img;
-    }[];
-    normes: {
-      icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
-      t: string;
-      d?: string;
     }[];
     cta: Cta & { checks: string[] };
   };
@@ -755,11 +748,6 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           t: "Une solution durable, fiable et sans entretien complexe",
           d: "Verre feuilleté et visserie inox prévus pour l’extérieur : un nettoyage à l’eau suffit, sans peinture ni traitement, saison après saison.",
         },
-      ],
-      normes: [
-        { icon: FileText, t: "NF P01-012", d: "Exigences de sécurité et de résistance" },
-        { icon: FileCheck2, t: "NF P01-013", d: "Méthodes d’essai et de validation" },
-        { icon: ShieldCheck, t: "Sécurité des personnes et des biens" },
       ],
       cta: {
         label: "Obtenir mon devis gratuit",
