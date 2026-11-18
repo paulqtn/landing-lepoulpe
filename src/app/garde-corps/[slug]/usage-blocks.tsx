@@ -8,7 +8,6 @@ import {
   DoorOpen,
   Gem,
   Hand,
-  Infinity as InfinityIcon,
   Layers,
   Lock,
   MoveHorizontal,
@@ -21,6 +20,59 @@ import {
 
 /* Pictogramme maison « main courante » : une lisse posée sur deux montants
    — lucide n'a pas d'équivalent parlant. Même signature que ses icônes. */
+/* Pictogramme « fixation au sol » : goujon à tête ronde sur sa platine. */
+function FixationSolIcon({
+  className,
+  strokeWidth = 2,
+}: {
+  className?: string;
+  strokeWidth?: number | string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="6.2" r="2.4" />
+      <path d="M12 8.6v5.9" />
+      <rect x="3.8" y="14.5" width="16.4" height="4.2" rx="1.3" />
+      <path d="M7.4 16.6h.01M16.6 16.6h.01" />
+    </svg>
+  );
+}
+
+/* Pictogramme « durable » : bouclier à feuille. */
+function BouclierFeuilleIcon({
+  className,
+  strokeWidth = 2,
+}: {
+  className?: string;
+  strokeWidth?: number | string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M12 3l7 2.8v5.1c0 4.4-2.9 7.6-7 9.1-4.1-1.5-7-4.7-7-9.1V5.8L12 3z" />
+      <path d="M9.1 14.3c.2-3 2.3-4.9 5.8-5-.1 3.1-2.2 5.1-5.8 5z" />
+      <path d="M9.6 13.9l4.3-3.8" />
+    </svg>
+  );
+}
+
 function MainCouranteIcon({
   className,
   strokeWidth = 2,
@@ -734,7 +786,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           d: "Un vitrage feuilleté trempé spécialement conçu pour les garde-corps. Il résiste aux chocs et, en cas de bris, ses intercalaires maintiennent les fragments de verre pour préserver la sécurité.",
         },
         {
-          icon: Anchor,
+          icon: FixationSolIcon,
           t: "Des fixations robustes et adaptées à votre terrasse",
           d: "Rail aluminium posé sur la dalle, pinces ou points traversants : la fixation est choisie selon votre support — dalle béton, bois ou acier — et dimensionnée pour reprendre les efforts d’appui.",
         },
@@ -744,7 +796,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           d: "La NF P01-012 fixe les exigences de dimensions et de résistance, la NF P01-013 décrit les essais qui les valident. Nos garde-corps sont conçus pour y répondre, du vitrage aux fixations.",
         },
         {
-          icon: InfinityIcon,
+          icon: BouclierFeuilleIcon,
           t: "Une solution durable, fiable et sans entretien complexe",
           d: "Verre feuilleté et visserie inox prévus pour l’extérieur : un nettoyage à l’eau suffit, sans peinture ni traitement, saison après saison.",
         },
