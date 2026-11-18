@@ -348,16 +348,6 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                       style={blocks.durable.photo.position ? { objectPosition: blocks.durable.photo.position } : undefined}
                     />
                   </div>
-                  {/* le médaillon de détail, en incrustation sur le bord gauche */}
-                  <div className="absolute -left-3 bottom-8 h-32 w-32 overflow-hidden rounded-full shadow-elevated ring-4 ring-white sm:h-40 sm:w-40 lg:-left-7">
-                    <Image
-                      src={blocks.durable.medallion.src}
-                      alt={blocks.durable.medallion.alt}
-                      fill
-                      sizes="10rem"
-                      className="object-cover"
-                    />
-                  </div>
                 </div>
               </Reveal>
             </div>

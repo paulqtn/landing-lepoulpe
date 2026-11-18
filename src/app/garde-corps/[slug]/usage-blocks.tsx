@@ -120,8 +120,6 @@ export type UsageBlocks = {
       d: ReactNode;
     }[];
     photo: Img & { position?: string };
-    /** Le zoom rond incrusté sur la photo. */
-    medallion: Img;
   };
   /** Facultatif : une page peut s'en passer (ex. balcon). */
   norme?: {
@@ -619,12 +617,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
       ],
       photo: {
-        src: "/hero-usage-balcon.webp",
-        alt: "Garde-corps de balcon en verre au quotidien, appui dégagé sur la ville",
-      },
-      medallion: {
-        src: "/usage-balcon-detail-portrait.webp",
-        alt: "Zoom sur la fixation basse du vitrage en rive de dalle",
+        src: "/balcon-durable.webp",
+        alt: "Un homme accoudé au garde-corps en verre de son balcon, la vue dégagée sur les collines",
       },
     },
     faqTitle: "Questions fréquentes sur les garde-corps de balcon en verre",
