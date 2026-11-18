@@ -98,6 +98,13 @@ export type UsageBlocks = {
     /** Sous-titre du panneau d'illustrations. */
     panelSub: string;
   };
+  /** Facultatif : galerie de réalisations — cards photo à étiquette. */
+  realisations?: {
+    kicker: string;
+    h2: ReactNode;
+    cta: Cta;
+    items: { src: string; alt: string; tag: string; title: string }[];
+  };
   /** Facultatif : une vidéo YouTube intégrée (façade légère, iframe au clic). */
   video?: {
     kicker: string;
@@ -568,6 +575,31 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       youtubeId: "1k9-IwHHs14",
       start: 18,
       title: "Pose d’un garde-corps en verre : la vidéo d’installation",
+    },
+    realisations: {
+      kicker: "Sur le terrain",
+      h2: "Ils ont installé nos garde-corps en verre sur leur balcon",
+      cta: { label: "Estimer le mien", href: "/generateur?usage=balcon" },
+      items: [
+        {
+          src: "/pose-anglaise-balcon.webp",
+          alt: "Garde-corps en verre posé en nez de dalle sur un balcon face à la mer",
+          tag: "Nez de dalle",
+          title: "Balcon face à la mer",
+        },
+        {
+          src: "/usage-balcon-vue.webp",
+          alt: "Garde-corps en verre sur rail posé sur la dalle d’un balcon ouvert sur la campagne",
+          tag: "Pose sur dalle",
+          title: "Balcon sur la campagne",
+        },
+        {
+          src: "/ancien-heroes-balcon.webp",
+          alt: "Grand balcon filant protégé par un garde-corps en verre toute longueur, vue sur les collines",
+          tag: "Grande longueur",
+          title: "Balcon filant sur les collines",
+        },
+      ],
     },
     durable: {
       badge: "Garde-corps en verre",

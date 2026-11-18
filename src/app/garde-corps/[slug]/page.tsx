@@ -438,6 +438,55 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
+      {/* ---- réalisations : la preuve par l'exemple ---- */}
+      {blocks?.realisations && (
+        <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
+          <Container>
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              <div>
+                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
+                  {blocks.realisations.kicker}
+                </p>
+                <h2 className="mt-2 max-w-2xl text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
+                  {blocks.realisations.h2}
+                </h2>
+              </div>
+              <Link
+                href={blocks.realisations.cta.href}
+                className="group inline-flex items-center gap-2 text-sm font-bold text-pine-700 transition-colors hover:text-pine-600"
+              >
+                {blocks.realisations.cta.label}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {blocks.realisations.items.map((r, i) => (
+                <Reveal key={r.src} delay={i * 70}>
+                  <figure className="group relative overflow-hidden rounded-[1.5rem] shadow-card ring-1 ring-pine-950/10">
+                    <div className="relative aspect-[4/3]">
+                      <Image
+                        src={r.src}
+                        alt={r.alt}
+                        fill
+                        sizes="(min-width: 1024px) 24rem, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                      />
+                    </div>
+                    <figcaption className="absolute inset-x-3 bottom-3 rounded-xl border border-white/15 bg-pine-950/45 px-4 py-2.5 backdrop-blur-md">
+                      <span className="block font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-pine-200">
+                        {r.tag}
+                      </span>
+                      <span className="block truncate text-sm font-bold text-white">{r.title}</span>
+                    </figcaption>
+                  </figure>
+                </Reveal>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
+
       {/* ---- bloc 2 : la norme — repères clairs, photo en regard ---- */}
       {blocks?.norme && (
         <section className="border-b border-neutral-200 bg-mist/60 py-16 sm:py-24">
