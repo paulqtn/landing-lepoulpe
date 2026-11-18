@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
 import { catalogPath, usages } from "@/lib/catalog";
-import { guides } from "@/lib/guides";
 import { phoneHref, site } from "@/lib/site";
 
 export function SiteFooter() {
@@ -54,18 +53,31 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-pine-300">Guides &amp; conseils</h3>
+            <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-pine-300">Informations</h3>
             <ul className="mt-4 space-y-2.5 text-sm">
-              {guides.slice(0, 6).map((g) => (
-                <li key={g.slug}>
-                  <Link href={`/guides/${g.slug}`} className="text-pine-100/80 transition hover:text-white">
-                    {g.title.length > 48 ? `${g.title.slice(0, 46)}…` : g.title}
-                  </Link>
-                </li>
-              ))}
               <li>
                 <Link href="/guides" className="font-semibold text-white transition hover:text-green-300">
-                  Tous les guides →
+                  Découvrez nos guides →
+                </Link>
+              </li>
+              <li>
+                <Link href="/mentions-legales" className="text-pine-100/80 transition hover:text-white">
+                  Mentions légales
+                </Link>
+              </li>
+              <li>
+                <Link href="/politique-de-confidentialite" className="text-pine-100/80 transition hover:text-white">
+                  Politique de confidentialité
+                </Link>
+              </li>
+              <li>
+                <Link href="/cgv" className="text-pine-100/80 transition hover:text-white">
+                  CGV
+                </Link>
+              </li>
+              <li>
+                <Link href="/gestion-des-cookies" className="text-pine-100/80 transition hover:text-white">
+                  Gestion des cookies
                 </Link>
               </li>
             </ul>
