@@ -647,8 +647,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           portée d&rsquo;un bon bricoleur. La preuve en images.
         </>
       ),
-      youtubeId: "1k9-IwHHs14",
-      start: 18,
+      youtubeId: "vZreA3Og9dk",
       title: "Pose d’un garde-corps en verre : la vidéo d’installation",
     },
     realisations: {
@@ -822,8 +821,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           est à la portée d&rsquo;un bon bricoleur. La preuve en images.
         </>
       ),
-      youtubeId: "1k9-IwHHs14",
-      start: 18,
+      youtubeId: "vZreA3Og9dk",
       title: "Pose d’un garde-corps en verre : la vidéo d’installation",
       beforeFaq: true,
     },
