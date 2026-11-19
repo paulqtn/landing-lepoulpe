@@ -968,8 +968,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       ),
       intro:
         "Un garde-corps en verre pour mezzanine est un véritable choix architectural. Ses lignes épurées et sa transparence apportent une finition haut de gamme qui modernise votre intérieur et renforce l’attrait de votre bien.",
-      /* src volontairement absent : placeholder en attendant le visuel dédié. */
       photo: {
+        src: "/mezzanine-valorisation.webp",
         alt: "Mezzanine en bois protégée par un garde-corps en verre, lumière traversante sous la verrière",
       },
       cards: [
