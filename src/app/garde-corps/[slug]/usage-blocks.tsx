@@ -894,48 +894,47 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       ],
       cta: { label: "Configurer mon garde-corps de mezzanine", href: "#estimation" },
     },
-    norme: {
-      kicker: "Sécurité & réglementation",
+    solidite: {
+      kicker: "Solidité & sécurité",
       h2: (
         <>
-          Garde-corps de mezzanine <br className="sm:hidden" />
-          en verre et norme <span className={ACCENT}>NF P01-012</span>
+          La sécurité d&rsquo;un <span className={ACCENT}>véritable garde-corps</span>
         </>
       ),
-      intro: (
-        <>
-          La norme NF&nbsp;P01-012 s&rsquo;applique en intérieur comme en extérieur : dès qu&rsquo;une chute de
-          plus d&rsquo;un mètre est possible, la mezzanine doit être protégée sur toute sa rive.
-        </>
-      ),
-      items: [
-        {
-          icon: Ruler,
-          t: "1,00 m de hauteur minimum",
-          d: "Mesurée depuis le sol fini de la mezzanine, parquet ou revêtement compris.",
-        },
-        {
-          icon: PanelBottom,
-          t: "Une zone basse pleine",
-          d: "Le remplissage reste plein en partie basse : des panneaux vitrés toute hauteur y répondent, avec un écart entre panneaux limité par la norme.",
-        },
-        {
-          icon: Ban,
-          t: "Rien à escalader",
-          d: "Ni lisse ni barreau horizontal. Un point à surveiller aussi côté mobilier : lit ou bureau placé contre le garde-corps.",
-        },
-        {
-          icon: Anchor,
-          t: "Une fixation reprise dans la structure",
-          d: "Sur plancher bois, les ancrages se font dans les solives ou la rive de trémie, pas dans le seul parquet.",
-        },
-      ],
-      note: NOTE_P01012,
+      intro:
+        "Sur une mezzanine, la protection contre les chutes est essentielle. Verre de sécurité, résistance à l’appui et fixations robustes : chaque élément est pensé pour sécuriser votre espace en hauteur, sans compromettre sa transparence.",
       photo: {
         src: "/mezzanine-norme.webp",
         alt: "Garde-corps de mezzanine en verre toute hauteur fixé en rive de plancher, vu depuis le séjour en contrebas",
+        badge: "Conçu pour résister aux efforts du quotidien",
       },
-      cta: { label: "Obtenir mon devis", href: "/generateur?usage=mezzanine" },
+      items: [
+        {
+          icon: Layers,
+          t: "Un verre conçu pour résister aux chocs",
+          d: "Le verre feuilleté de sécurité associe plusieurs feuilles de verre à des intercalaires résistants. En cas de bris, ces derniers contribuent à retenir les fragments et à limiter les risques. Une solution adaptée à la protection des espaces en hauteur.",
+        },
+        {
+          icon: Hand,
+          t: "Une résistance pensée pour l’appui",
+          d: "S’accouder au-dessus du séjour, poser les mains sur le vitrage : un garde-corps de mezzanine doit être dimensionné pour supporter les efforts prévus par les normes applicables. Sa résistance dépend de l’ensemble du système, et pas uniquement de l’épaisseur du verre.",
+        },
+        {
+          icon: FixationSolIcon,
+          t: "Des fixations ancrées dans la structure",
+          d: "Sur une mezzanine en bois, béton ou métal, les fixations doivent transmettre les efforts à la structure porteuse. Les ancrages sont adaptés au support pour assurer la stabilité du garde-corps, sans reposer uniquement sur le parquet ou le revêtement de sol.",
+        },
+        {
+          icon: ShieldCheck,
+          t: "Une protection contre les chutes encadrée par les normes",
+          d: "Hauteur de sécurité, résistance mécanique et prévention du franchissement : les exigences de la norme NF P01-012 permettent de définir une protection adaptée. La norme NF P01-013 encadre les méthodes d’essai des garde-corps.",
+        },
+      ],
+      cta: {
+        label: "Obtenir mon devis gratuit",
+        href: "/generateur?usage=mezzanine",
+        checks: ["Sur mesure", "Gratuit", "Sans engagement"],
+      },
     },
     matiere: {
       kicker: "Résistance & sécurité",
