@@ -936,6 +936,32 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         href: "/generateur?usage=mezzanine",
       },
     },
+    realisations: {
+      kicker: "Sur le terrain",
+      h2: "Ils ont installé nos garde-corps en verre sur leur mezzanine",
+      cta: { label: "Estimer le mien", href: "/generateur?usage=mezzanine" },
+      beforeFaq: true,
+      items: [
+        {
+          src: "/usage-mezzanine-vue.webp",
+          alt: "Garde-corps en verre pour mezzanine surplombant un séjour avec cheminée",
+          tag: "Verre toute hauteur",
+          title: "Mezzanine sur le séjour",
+        },
+        {
+          src: "/comparateur-interieur-apres.webp",
+          alt: "Coursive d’étage protégée par un garde-corps de mezzanine en verre, ouverte sur le salon",
+          tag: "Coursive d’étage",
+          title: "Coursive ouverte sur le salon",
+        },
+        {
+          src: "/comparateur-mezzanine-apres.webp",
+          alt: "Ancien muret plein remplacé par un garde-corps en verre sur une mezzanine en rénovation",
+          tag: "Rénovation",
+          title: "Un muret remplacé par le verre",
+        },
+      ],
+    },
     faqTitle: "Questions fréquentes sur les garde-corps de mezzanine en verre",
   },
 
