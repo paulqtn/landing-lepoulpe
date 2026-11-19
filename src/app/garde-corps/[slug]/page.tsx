@@ -461,7 +461,9 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                       alt={blocks.valeur.photo.alt}
                       fill
                       sizes="(min-width: 1152px) 24rem, 100vw"
-                      className="object-cover"
+                      /* mobile : cadrage sur le haut de l'image (la mezzanine),
+                         desktop : l'image entière tient dans le cadre. */
+                      className="object-cover object-[center_30%] lg:object-center"
                     />
                   ) : (
                     <span className="absolute inset-2 grid place-items-center rounded-[1.25rem] border-2 border-dashed border-neutral-300 bg-mist">
