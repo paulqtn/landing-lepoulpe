@@ -408,10 +408,10 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       {blocks?.valeur && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
-            <div className="grid gap-10 lg:grid-cols-[0.62fr_1fr] lg:items-start lg:gap-14">
+            <div className="grid gap-10 lg:grid-cols-[0.52fr_1fr] lg:items-start lg:gap-12">
               {/* la photo — placeholder en pointillés tant que le visuel manque */}
               <Reveal>
-                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-[0.78]">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-[0.72]">
                   {blocks.valeur.photo.src ? (
                     <Image
                       src={blocks.valeur.photo.src}
@@ -445,12 +445,12 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
 
                 <div className="mt-7 grid gap-4 sm:grid-cols-3">
                   {blocks.valeur.cards.map((card) => (
-                    <div key={card.d} className="rounded-2xl bg-mist/70 p-5">
-                      <span className="grid h-11 w-11 place-items-center rounded-xl bg-green-600/10 text-pine-700">
+                    <div key={card.d} className="rounded-2xl bg-mist/70 p-4">
+                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-green-600/10 text-pine-700">
                         <card.icon className="h-5 w-5" strokeWidth={1.8} />
                       </span>
-                      <p className="mt-3.5 font-extrabold leading-snug tracking-tight text-inkgreen">{card.t}</p>
-                      <p className="mt-2 text-sm leading-relaxed text-neutral-600">{card.d}</p>
+                      <p className="mt-3 text-[15px] font-extrabold leading-snug tracking-tight text-inkgreen">{card.t}</p>
+                      <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-600">{card.d}</p>
                     </div>
                   ))}
                 </div>
