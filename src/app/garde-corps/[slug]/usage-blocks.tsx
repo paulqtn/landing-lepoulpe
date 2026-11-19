@@ -938,48 +938,6 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         href: "/generateur?usage=mezzanine",
       },
     },
-    matiere: {
-      kicker: "Résistance & sécurité",
-      h2: (
-        <>
-          Fin en apparence, <br className="hidden sm:block" />
-          <span className={ACCENT}>dimensionné</span> pour l&rsquo;appui.
-        </>
-      ),
-      text: (
-        <>
-          En mezzanine, on s&rsquo;accoude au garde-corps pour regarder en bas. Le verre feuilleté et ses
-          fixations sont dimensionnés pour reprendre cet appui, d&rsquo;après votre trémie et la nature de
-          votre plancher.
-        </>
-      ),
-      proof: {
-        stat: STAT_600,
-        highlight: {
-          icon: Layers,
-          t: "Verre feuilleté de sécurité",
-          d: "En cas de casse, les films intercalaires maintiennent le vitrage en place au-dessus du niveau inférieur.",
-        },
-        features: [
-          {
-            icon: ShieldCheck,
-            t: "Fixation en rive ou sur plancher",
-            d: "En applique contre la trémie pour gagner de la surface, ou posée sur le sol.",
-          },
-          {
-            icon: Gem,
-            t: "Verre clair ou extra-clair",
-            d: "En option, l’extra-clair supprime la légère teinte verte du verre standard.",
-          },
-        ],
-        footnote: FOOTNOTE_EUROCODE,
-      },
-      note: NOTE_EPAISSEURS,
-      photoPaysage: provisoire("mezzanine").paysage,
-      photoPortrait: provisoire("mezzanine").portrait,
-      alt: "Détail d’un garde-corps de mezzanine en verre feuilleté au-dessus d’un séjour",
-      cta: { label: "Configurer mon garde-corps", href: "/generateur?usage=mezzanine" },
-    },
     faqTitle: "Questions fréquentes sur les garde-corps de mezzanine en verre",
   },
 
