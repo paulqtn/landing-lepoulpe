@@ -408,16 +408,27 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       {blocks?.valeur && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
-            <div className="grid gap-10 lg:grid-cols-[0.52fr_1fr] lg:items-start lg:gap-12">
-              {/* la photo — placeholder en pointillés tant que le visuel manque */}
+            {/* en-tête pleine largeur : le titre garde ses deux lignes à toutes les tailles */}
+            <div className="max-w-3xl">
+              <p className={`${PISCINE_KICKER} flex items-center gap-3`}>
+                {blocks.valeur.kicker}
+                <span className="h-px w-10 bg-pine-600/40" aria-hidden />
+              </p>
+              <h2 className={`mt-2 ${PISCINE_H2}`}>{blocks.valeur.h2}</h2>
+              <p className="mt-4 text-pretty leading-relaxed text-neutral-600">{blocks.valeur.intro}</p>
+            </div>
+
+            {/* photo à gauche, cartes + CTA à droite, calés au centre l'un de l'autre.
+                Mobile : titre → photo → cartes → CTA, dans l'ordre naturel. */}
+            <div className="mt-9 grid gap-8 sm:mt-12 lg:grid-cols-[0.5fr_1fr] lg:items-center lg:gap-12">
               <Reveal>
-                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-[0.72]">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-[0.78]">
                   {blocks.valeur.photo.src ? (
                     <Image
                       src={blocks.valeur.photo.src}
                       alt={blocks.valeur.photo.alt}
                       fill
-                      sizes="(min-width: 1152px) 26rem, 100vw"
+                      sizes="(min-width: 1152px) 24rem, 100vw"
                       className="object-cover"
                     />
                   ) : (
@@ -434,16 +445,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               </Reveal>
 
               <div>
-                <p className={`${PISCINE_KICKER} flex items-center gap-3`}>
-                  {blocks.valeur.kicker}
-                  <span className="h-px w-10 bg-pine-600/40" aria-hidden />
-                </p>
-                <h2 className={`mt-2 ${PISCINE_H2}`}>{blocks.valeur.h2}</h2>
-                <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-neutral-600">
-                  {blocks.valeur.intro}
-                </p>
-
-                <div className="mt-7 grid gap-4 sm:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-3">
                   {blocks.valeur.cards.map((card) => (
                     <div key={card.d} className="rounded-2xl bg-mist/70 p-4">
                       <span className="grid h-10 w-10 place-items-center rounded-xl bg-green-600/10 text-pine-700">
@@ -455,7 +457,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   ))}
                 </div>
 
-                <div className="mt-8 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+                <div className="mt-7 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
                   <Link href={blocks.valeur.cta.href} className={`${PISCINE_CTA} shrink-0 whitespace-nowrap`}>
                     {blocks.valeur.cta.label}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -464,7 +466,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                     {blocks.valeur.points.map((pt) => (
                       <li
                         key={pt.label}
-                        className="flex items-center gap-2 border-l border-neutral-200 px-4 text-sm font-semibold text-neutral-700 first:border-0 first:pl-0"
+                        className="flex items-center gap-2 border-l border-neutral-200 px-3.5 text-[13.5px] font-semibold text-neutral-700 first:border-0 first:pl-0"
                       >
                         <pt.icon className="h-4 w-4 shrink-0 text-pine-700" strokeWidth={2} />
                         {pt.label}
