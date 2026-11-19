@@ -167,29 +167,6 @@ export type UsageBlocks = {
     }[];
     cta: Cta & { checks: string[] };
   };
-  /** Facultatif : réassurance solidité — cartes d'arguments à gauche, photo à droite. */
-  fiabilite?: {
-    kicker: string;
-    h2: ReactNode;
-    intro: ReactNode;
-    cards: {
-      icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
-      t: string;
-      d: ReactNode;
-    }[];
-    photo: Img;
-    /** Lien discret vers le configurateur. */
-    cta: Cta;
-  };
-  /** Facultatif : faisabilité — deux modes de fixation illustrés, bandeau structures. */
-  adaptation?: {
-    kicker: string;
-    h2: ReactNode;
-    intro: ReactNode;
-    modes: { t: string; d: ReactNode; chip: string; img: Img }[];
-    structure: { t: string; d: ReactNode; chips: string[] };
-    cta: Cta;
-  };
   /** Facultatif : galerie de réalisations — cards photo à étiquette. */
   realisations?: {
     kicker: string;
@@ -917,64 +894,89 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       ],
       cta: { label: "Configurer mon garde-corps de mezzanine", href: "#estimation" },
     },
-    fiabilite: {
-      kicker: "Solidité & sécurité",
-      h2: "Un garde-corps en verre sur lequel vous pouvez compter.",
-      intro:
-        "Sur une mezzanine, la sécurité est essentielle. Nos solutions associent un verre feuilleté de sécurité à des fixations adaptées à votre structure pour protéger votre espace en hauteur, sans sacrifier la transparence.",
-      cards: [
+    norme: {
+      kicker: "Sécurité & réglementation",
+      h2: (
+        <>
+          Garde-corps de mezzanine <br className="sm:hidden" />
+          en verre et norme <span className={ACCENT}>NF P01-012</span>
+        </>
+      ),
+      intro: (
+        <>
+          La norme NF&nbsp;P01-012 s&rsquo;applique en intérieur comme en extérieur : dès qu&rsquo;une chute de
+          plus d&rsquo;un mètre est possible, la mezzanine doit être protégée sur toute sa rive.
+        </>
+      ),
+      items: [
         {
+          icon: Ruler,
+          t: "1,00 m de hauteur minimum",
+          d: "Mesurée depuis le sol fini de la mezzanine, parquet ou revêtement compris.",
+        },
+        {
+          icon: PanelBottom,
+          t: "Une zone basse pleine",
+          d: "Le remplissage reste plein en partie basse : des panneaux vitrés toute hauteur y répondent, avec un écart entre panneaux limité par la norme.",
+        },
+        {
+          icon: Ban,
+          t: "Rien à escalader",
+          d: "Ni lisse ni barreau horizontal. Un point à surveiller aussi côté mobilier : lit ou bureau placé contre le garde-corps.",
+        },
+        {
+          icon: Anchor,
+          t: "Une fixation reprise dans la structure",
+          d: "Sur plancher bois, les ancrages se font dans les solives ou la rive de trémie, pas dans le seul parquet.",
+        },
+      ],
+      note: NOTE_P01012,
+      photo: {
+        src: provisoire("mezzanine").norme,
+        alt: "Garde-corps de mezzanine en verre toute hauteur, en rive de plancher",
+      },
+      cta: { label: "Obtenir mon devis", href: "/generateur?usage=mezzanine" },
+    },
+    matiere: {
+      kicker: "Résistance & sécurité",
+      h2: (
+        <>
+          Fin en apparence, <br className="hidden sm:block" />
+          <span className={ACCENT}>dimensionné</span> pour l&rsquo;appui.
+        </>
+      ),
+      text: (
+        <>
+          En mezzanine, on s&rsquo;accoude au garde-corps pour regarder en bas. Le verre feuilleté et ses
+          fixations sont dimensionnés pour reprendre cet appui, d&rsquo;après votre trémie et la nature de
+          votre plancher.
+        </>
+      ),
+      proof: {
+        stat: STAT_600,
+        highlight: {
           icon: Layers,
           t: "Verre feuilleté de sécurité",
-          d: "Des intercalaires contribuent à retenir les fragments en cas de bris.",
+          d: "En cas de casse, les films intercalaires maintiennent le vitrage en place au-dessus du niveau inférieur.",
         },
-        {
-          icon: Hand,
-          t: "Résistance pensée pour l’appui",
-          d: "La solidité repose sur l’ensemble : vitrage, fixations et structure porteuse.",
-        },
-        {
-          icon: ShieldCheck,
-          t: "Sécurité encadrée par les normes NF",
-          d: "NF P01-012 pour les exigences de protection, NF P01-013 pour les méthodes d’essai.",
-        },
-      ],
-      photo: {
-        src: "/usage-mezzanine-vue.webp",
-        alt: "Garde-corps en verre pour mezzanine sans poteaux ni main courante, le séjour visible en contrebas",
-      },
-      cta: { label: "Estimer mon garde-corps", href: "#estimation" },
-    },
-    adaptation: {
-      kicker: "Fixations & structure",
-      h2: "Une solution adaptée à la structure de votre mezzanine.",
-      intro:
-        "Plancher bois, dalle béton ou structure métallique : chaque mezzanine est différente. Découvrez les possibilités de fixation pour sécuriser votre espace tout en préservant son esthétique.",
-      modes: [
-        {
-          t: "Fixation en rive de plancher",
-          d: "La fixation du garde-corps de mezzanine en applique latérale, contre la rive, préserve toute la surface utile lorsque la structure le permet.",
-          chip: "Surface préservée",
-          img: {
-            src: "/fixation-spider-hover.png",
-            alt: "Fixation latérale d’un garde-corps de mezzanine : points traversants ancrés dans la rive du plancher",
+        features: [
+          {
+            icon: ShieldCheck,
+            t: "Fixation en rive ou sur plancher",
+            d: "En applique contre la trémie pour gagner de la surface, ou posée sur le sol.",
           },
-        },
-        {
-          t: "Fixation sur le plancher",
-          d: "Installation sur le dessus d’un support porteur adapté, dans un rail discret, pour un rendu épuré.",
-          chip: "Rendu épuré",
-          img: {
-            src: "/fixation-rail-hover.png",
-            alt: "Fixation d’un garde-corps de mezzanine sur le plancher : vitrage maintenu dans un rail aluminium",
+          {
+            icon: Gem,
+            t: "Verre clair ou extra-clair",
+            d: "En option, l’extra-clair supprime la légère teinte verte du verre standard.",
           },
-        },
-      ],
-      structure: {
-        t: "Adapté à votre structure",
-        d: "Garde-corps de mezzanine en bois, sur dalle béton ou structure métallique : les ancrages sont choisis selon les caractéristiques de votre support, sous réserve de validation technique.",
-        chips: ["Bois", "Béton", "Métal"],
+        ],
+        footnote: FOOTNOTE_EUROCODE,
       },
+      note: NOTE_EPAISSEURS,
+      photoPaysage: provisoire("mezzanine").paysage,
+      photoPortrait: provisoire("mezzanine").portrait,
+      alt: "Détail d’un garde-corps de mezzanine en verre feuilleté au-dessus d’un séjour",
       cta: { label: "Configurer mon garde-corps", href: "/generateur?usage=mezzanine" },
     },
     faqTitle: "Questions fréquentes sur les garde-corps de mezzanine en verre",
