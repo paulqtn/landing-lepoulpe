@@ -411,7 +411,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
             {/* Fidèle à la maquette : tout le contenu à gauche, l'image à droite
                 alignée du kicker au CTA (étirée sur la hauteur de la colonne).
                 Typo et colonnes aux proportions de la maquette. */}
-            <div className="grid gap-8 lg:grid-cols-[1fr_0.56fr] lg:items-stretch">
+            <div className="grid gap-8 lg:grid-cols-[0.56fr_1fr] lg:items-stretch">
               <div>
                 <p className={`${PISCINE_KICKER} flex items-center gap-3`}>
                   {blocks.valeur.kicker}
@@ -453,7 +453,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 </div>
               </div>
 
-              <Reveal className="lg:h-full">
+              <Reveal className="lg:order-first lg:h-full">
                 <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-auto lg:h-full">
                   {blocks.valeur.photo.src ? (
                     <Image
