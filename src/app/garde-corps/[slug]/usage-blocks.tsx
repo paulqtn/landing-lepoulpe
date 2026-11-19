@@ -157,6 +157,8 @@ export type UsageBlocks = {
     kicker: string;
     h2: ReactNode;
     intro: ReactNode;
+    /** true : la photo passe à droite du contenu en desktop. */
+    imageRight?: true;
     photo: Img & { badge: string };
     items: {
       icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
@@ -165,7 +167,7 @@ export type UsageBlocks = {
       /** Petit visuel facultatif à droite du texte déplié. */
       img?: Img;
     }[];
-    cta: Cta & { checks: string[] };
+    cta: Cta & { checks?: string[] };
   };
   /** Facultatif : galerie de réalisations — cards photo à étiquette. */
   realisations?: {
@@ -903,6 +905,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       ),
       intro:
         "Sur une mezzanine, la protection contre les chutes est essentielle. Verre de sécurité, résistance à l’appui et fixations robustes : chaque élément est pensé pour sécuriser votre espace en hauteur, sans compromettre sa transparence.",
+      imageRight: true,
       photo: {
         src: "/mezzanine-norme.webp",
         alt: "Garde-corps de mezzanine en verre toute hauteur fixé en rive de plancher, vu depuis le séjour en contrebas",
@@ -933,7 +936,6 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       cta: {
         label: "Obtenir mon devis gratuit",
         href: "/generateur?usage=mezzanine",
-        checks: ["Sur mesure", "Gratuit", "Sans engagement"],
       },
     },
     matiere: {

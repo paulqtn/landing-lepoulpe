@@ -322,10 +322,16 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
               </p>
             </header>
 
-            <div className="mt-10 grid gap-8 sm:mt-14 lg:grid-cols-[0.92fr_1fr] lg:items-stretch lg:gap-12">
+            {/* items-start + ratio figé : la photo garde sa taille quand un
+                accordéon se déplie. imageRight inverse les colonnes en desktop. */}
+            <div
+              className={`mt-10 grid gap-8 sm:mt-14 lg:items-start lg:gap-12 ${
+                blocks.solidite.imageRight ? "lg:grid-cols-[1fr_0.92fr]" : "lg:grid-cols-[0.92fr_1fr]"
+              }`}
+            >
               {/* la photo, badge de réassurance posé dessus */}
-              <Reveal>
-                <div className="relative aspect-square overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-[30rem]">
+              <Reveal className={blocks.solidite.imageRight ? "lg:order-2" : undefined}>
+                <div className="relative aspect-square overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[4/3] lg:aspect-[0.9]">
                   <Image
                     src={blocks.solidite.photo.src}
                     alt={blocks.solidite.photo.alt}
@@ -375,20 +381,22 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   ))}
                 </div>
 
-                {/* l'appel au devis, coches de réassurance en regard */}
+                {/* l'appel au devis, coches de réassurance facultatives en regard */}
                 <div className="mt-7 flex flex-col items-center gap-4 border-t border-neutral-200 pt-7 sm:flex-row sm:gap-6">
                   <Link href={blocks.solidite.cta.href} className={`${PISCINE_CTA} shrink-0 whitespace-nowrap`}>
                     {blocks.solidite.cta.label}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </Link>
-                  <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-                    {blocks.solidite.cta.checks.map((c) => (
-                      <li key={c} className="flex items-center gap-1.5 text-sm font-semibold text-neutral-700">
-                        <Check className="h-4 w-4 text-pine-700" strokeWidth={3} />
-                        {c}
-                      </li>
-                    ))}
-                  </ul>
+                  {blocks.solidite.cta.checks && blocks.solidite.cta.checks.length > 0 && (
+                    <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+                      {blocks.solidite.cta.checks.map((c) => (
+                        <li key={c} className="flex items-center gap-1.5 text-sm font-semibold text-neutral-700">
+                          <Check className="h-4 w-4 text-pine-700" strokeWidth={3} />
+                          {c}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </div>
