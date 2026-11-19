@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, ArrowUpRight, Check, ChevronDown, ClipboardList, Lightbulb, ShieldCheck, Wrench } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, ChevronDown, ClipboardList, Image as ImageGlyph, Lightbulb, ShieldCheck, Wrench } from "lucide-react";
 import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
 import { Configurator } from "@/components/Configurator";
 import { FixationPoses } from "@/components/FixationPoses";
@@ -397,6 +397,80 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                       ))}
                     </ul>
                   )}
+                </div>
+              </div>
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {/* ---- valeur : l'argumentaire valorisation, photo à gauche ---- */}
+      {blocks?.valeur && (
+        <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
+          <Container>
+            <div className="grid gap-10 lg:grid-cols-[0.62fr_1fr] lg:items-start lg:gap-14">
+              {/* la photo — placeholder en pointillés tant que le visuel manque */}
+              <Reveal>
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-[0.78]">
+                  {blocks.valeur.photo.src ? (
+                    <Image
+                      src={blocks.valeur.photo.src}
+                      alt={blocks.valeur.photo.alt}
+                      fill
+                      sizes="(min-width: 1152px) 26rem, 100vw"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span className="absolute inset-2 grid place-items-center rounded-[1.25rem] border-2 border-dashed border-neutral-300 bg-mist">
+                      <span className="flex flex-col items-center gap-2 px-8 text-center">
+                        <ImageGlyph className="h-6 w-6 text-neutral-400" strokeWidth={1.6} />
+                        <span className="text-[12px] font-semibold leading-snug text-neutral-500">
+                          Votre photo de mezzanine arrive ici
+                        </span>
+                      </span>
+                    </span>
+                  )}
+                </div>
+              </Reveal>
+
+              <div>
+                <p className={`${PISCINE_KICKER} flex items-center gap-3`}>
+                  {blocks.valeur.kicker}
+                  <span className="h-px w-10 bg-pine-600/40" aria-hidden />
+                </p>
+                <h2 className={`mt-2 ${PISCINE_H2}`}>{blocks.valeur.h2}</h2>
+                <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-neutral-600">
+                  {blocks.valeur.intro}
+                </p>
+
+                <div className="mt-7 grid gap-4 sm:grid-cols-3">
+                  {blocks.valeur.cards.map((card) => (
+                    <div key={card.d} className="rounded-2xl bg-mist/70 p-5">
+                      <span className="grid h-11 w-11 place-items-center rounded-xl bg-green-600/10 text-pine-700">
+                        <card.icon className="h-5 w-5" strokeWidth={1.8} />
+                      </span>
+                      <p className="mt-3.5 font-extrabold leading-snug tracking-tight text-inkgreen">{card.t}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-neutral-600">{card.d}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+                  <Link href={blocks.valeur.cta.href} className={`${PISCINE_CTA} shrink-0 whitespace-nowrap`}>
+                    {blocks.valeur.cta.label}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                  <ul className="flex flex-wrap items-center gap-y-2">
+                    {blocks.valeur.points.map((pt) => (
+                      <li
+                        key={pt.label}
+                        className="flex items-center gap-2 border-l border-neutral-200 px-4 text-sm font-semibold text-neutral-700 first:border-0 first:pl-0"
+                      >
+                        <pt.icon className="h-4 w-4 shrink-0 text-pine-700" strokeWidth={2} />
+                        {pt.label}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </div>

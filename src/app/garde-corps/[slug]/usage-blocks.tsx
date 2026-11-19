@@ -8,12 +8,15 @@ import {
   DoorOpen,
   Gem,
   Hand,
+  HousePlus,
   Layers,
   Lock,
   MoveHorizontal,
   PanelBottom,
   Ruler,
   ShieldCheck,
+  Sparkles,
+  Tag,
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
@@ -168,6 +171,25 @@ export type UsageBlocks = {
       img?: Img;
     }[];
     cta: Cta & { checks?: string[] };
+  };
+  /** Facultatif : l'argumentaire valorisation — photo à gauche, trois cartes
+      de bénéfices et CTA à points de réassurance. */
+  valeur?: {
+    kicker: string;
+    h2: ReactNode;
+    intro: ReactNode;
+    /** Sans src, un placeholder tient la place en attendant le visuel. */
+    photo: { src?: string; alt: string };
+    cards: {
+      icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
+      t: ReactNode;
+      d: string;
+    }[];
+    cta: Cta;
+    points: {
+      icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
+      label: string;
+    }[];
   };
   /** Facultatif : galerie de réalisations — cards photo à étiquette. */
   realisations?: {
@@ -935,6 +957,59 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         label: "Obtenir mon devis gratuit",
         href: "/generateur?usage=mezzanine",
       },
+    },
+    valeur: {
+      kicker: "Valorisation de votre intérieur",
+      h2: (
+        <>
+          Bien plus qu&rsquo;un garde-corps, <br className="hidden sm:block" />
+          une vraie <span className={ACCENT}>valeur ajoutée</span> pour votre intérieur.
+        </>
+      ),
+      intro:
+        "Un garde-corps en verre pour mezzanine est un véritable choix architectural. Ses lignes épurées et sa transparence apportent une finition haut de gamme qui modernise votre intérieur et renforce l’attrait de votre bien.",
+      /* src volontairement absent : placeholder en attendant le visuel dédié. */
+      photo: {
+        alt: "Mezzanine en bois protégée par un garde-corps en verre, lumière traversante sous la verrière",
+      },
+      cards: [
+        {
+          icon: Gem,
+          t: (
+            <>
+              Un intérieur au <br className="hidden sm:block" />
+              standing plus élevé
+            </>
+          ),
+          d: "Une finition contemporaine et minimaliste qui met en valeur vos matériaux et votre décoration.",
+        },
+        {
+          icon: Sparkles,
+          t: (
+            <>
+              Un design <br className="hidden sm:block" />
+              intemporel et durable
+            </>
+          ),
+          d: "Élégant et facile à entretenir, le verre conserve son aspect soigné au fil des années.",
+        },
+        {
+          icon: HousePlus,
+          t: (
+            <>
+              Un atout pour <br className="hidden sm:block" />
+              l&rsquo;attractivité de votre bien
+            </>
+          ),
+          d: "Une mezzanine bien aménagée et sécurisée valorise votre intérieur, au quotidien comme lors d’une éventuelle revente.",
+        },
+      ],
+      cta: { label: "Valoriser ma mezzanine", href: "/generateur?usage=mezzanine" },
+      points: [
+        { icon: Tag, label: "Estimation gratuite" },
+        { icon: Ruler, label: "Sur mesure" },
+        { icon: ShieldCheck, label: "Sans engagement" },
+      ],
     },
     realisations: {
       kicker: "Sur le terrain",
