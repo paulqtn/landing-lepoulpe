@@ -408,21 +408,53 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       {blocks?.valeur && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
-            {/* en-tête pleine largeur : le titre garde ses deux lignes à toutes les tailles */}
-            <div className="max-w-3xl">
-              <p className={`${PISCINE_KICKER} flex items-center gap-3`}>
-                {blocks.valeur.kicker}
-                <span className="h-px w-10 bg-pine-600/40" aria-hidden />
-              </p>
-              <h2 className={`mt-2 ${PISCINE_H2}`}>{blocks.valeur.h2}</h2>
-              <p className="mt-4 text-pretty leading-relaxed text-neutral-600">{blocks.valeur.intro}</p>
-            </div>
+            {/* Fidèle à la maquette : tout le contenu à gauche, l'image à droite
+                alignée du kicker au CTA (étirée sur la hauteur de la colonne).
+                Typo et colonnes aux proportions de la maquette. */}
+            <div className="grid gap-8 lg:grid-cols-[1fr_0.56fr] lg:items-stretch">
+              <div>
+                <p className={`${PISCINE_KICKER} flex items-center gap-3`}>
+                  {blocks.valeur.kicker}
+                  <span className="h-px w-10 bg-pine-600/40" aria-hidden />
+                </p>
+                <h2 className="mt-3 text-balance text-[1.65rem] font-extrabold leading-[1.15] tracking-tight text-inkgreen sm:text-3xl">
+                  {blocks.valeur.h2}
+                </h2>
+                <p className="mt-4 text-pretty leading-relaxed text-neutral-600">{blocks.valeur.intro}</p>
 
-            {/* photo à gauche, cartes + CTA à droite, calés au centre l'un de l'autre.
-                Mobile : titre → photo → cartes → CTA, dans l'ordre naturel. */}
-            <div className="mt-9 grid gap-8 sm:mt-12 lg:grid-cols-[0.5fr_1fr] lg:items-center lg:gap-12">
-              <Reveal>
-                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-[0.78]">
+                <div className="mt-7 grid gap-4 sm:grid-cols-3">
+                  {blocks.valeur.cards.map((card) => (
+                    <div key={card.d} className="rounded-2xl bg-mist/70 p-4">
+                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-green-600/10 text-pine-700">
+                        <card.icon className="h-5 w-5" strokeWidth={1.8} />
+                      </span>
+                      <p className="mt-3 text-[15px] font-extrabold leading-snug tracking-tight text-inkgreen">{card.t}</p>
+                      <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-600">{card.d}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+                  <Link href={blocks.valeur.cta.href} className={`${PISCINE_CTA} shrink-0 whitespace-nowrap`}>
+                    {blocks.valeur.cta.label}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                  <ul className="flex flex-wrap items-center gap-y-2">
+                    {blocks.valeur.points.map((pt) => (
+                      <li
+                        key={pt.label}
+                        className="flex items-center gap-1.5 whitespace-nowrap border-l border-neutral-200 px-2.5 text-[12.5px] font-semibold text-neutral-700 first:border-0 first:pl-0"
+                      >
+                        <pt.icon className="h-3.5 w-3.5 shrink-0 text-pine-700" strokeWidth={2} />
+                        {pt.label}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <Reveal className="lg:h-full">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-auto lg:h-full">
                   {blocks.valeur.photo.src ? (
                     <Image
                       src={blocks.valeur.photo.src}
@@ -443,38 +475,6 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   )}
                 </div>
               </Reveal>
-
-              <div>
-                <div className="grid gap-4 sm:grid-cols-3">
-                  {blocks.valeur.cards.map((card) => (
-                    <div key={card.d} className="rounded-2xl bg-mist/70 p-4">
-                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-green-600/10 text-pine-700">
-                        <card.icon className="h-5 w-5" strokeWidth={1.8} />
-                      </span>
-                      <p className="mt-3 text-[15px] font-extrabold leading-snug tracking-tight text-inkgreen">{card.t}</p>
-                      <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-600">{card.d}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-7 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
-                  <Link href={blocks.valeur.cta.href} className={`${PISCINE_CTA} shrink-0 whitespace-nowrap`}>
-                    {blocks.valeur.cta.label}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                  <ul className="flex flex-wrap items-center gap-y-2">
-                    {blocks.valeur.points.map((pt) => (
-                      <li
-                        key={pt.label}
-                        className="flex items-center gap-2 border-l border-neutral-200 px-3.5 text-[13.5px] font-semibold text-neutral-700 first:border-0 first:pl-0"
-                      >
-                        <pt.icon className="h-4 w-4 shrink-0 text-pine-700" strokeWidth={2} />
-                        {pt.label}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
             </div>
           </Container>
         </section>
