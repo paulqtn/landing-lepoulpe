@@ -930,7 +930,7 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         {
           icon: ShieldCheck,
           t: "Une protection contre les chutes encadrée par les normes",
-          d: "Hauteur de sécurité, résistance mécanique et prévention du franchissement : les exigences de la norme NF P01-012 permettent de définir une protection adaptée. La norme NF P01-013 encadre les méthodes d’essai des garde-corps.",
+          d: "Nos garde-corps en verre pour mezzanine répondent aux exigences des normes NF P01-012 — hauteur de sécurité, résistance mécanique, prévention du franchissement — et NF P01-013, qui encadre les méthodes d’essai. Ils offrent une résistance allant jusqu’à 500 kg par m².",
         },
       ],
       cta: {
