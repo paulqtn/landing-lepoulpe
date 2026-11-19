@@ -932,8 +932,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
       ],
       note: NOTE_P01012,
       photo: {
-        src: provisoire("mezzanine").norme,
-        alt: "Garde-corps de mezzanine en verre toute hauteur, en rive de plancher",
+        src: "/mezzanine-norme.webp",
+        alt: "Garde-corps de mezzanine en verre toute hauteur fixé en rive de plancher, vu depuis le séjour en contrebas",
       },
       cta: { label: "Obtenir mon devis", href: "/generateur?usage=mezzanine" },
     },
