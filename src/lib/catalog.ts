@@ -260,11 +260,12 @@ export const usages: UsageSeed[] = [
     usage: "mezzanine",
     name: "Mezzanine",
     title: "Garde-corps de mezzanine",
+    h1: "Garde-corps en verre pour mezzanine",
     metaTitle: "Garde-corps mezzanine — verre, inox, alu intérieur",
     metaDescription:
       "Sécurisez votre mezzanine avec style : garde-corps verre, inox ou alu, fixation plancher ou trémie. Conforme NF P01-012, devis en 24h.",
     intro:
-      "Sécuriser la trémie en participant à la déco : verre pour la lumière, inox esprit loft, alu pour la sobriété.",
+      "Préservez la lumière et la sensation de hauteur de votre intérieur avec un garde-corps en verre sur mesure. Une protection discrète pour votre mezzanine, adaptée à la configuration de votre plancher.",
     benefits: [
       { title: "Lumière préservée", desc: "Le verre laisse circuler la lumière entre les niveaux — la mezzanine reste aérienne." },
       { title: "Esprit déco assumé", desc: "Câbles inox esprit loft, verre minimaliste ou alu noir mat architectural." },
