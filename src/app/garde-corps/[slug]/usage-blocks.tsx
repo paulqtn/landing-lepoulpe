@@ -101,75 +101,77 @@ function PiecesIcon({
   );
 }
 
-/* Schéma « pose en tableau » : fenêtre et vitrage en lavis vert, profils à
-   pieds pris dans les côtés hachurés du mur — fidèle à la maquette. */
+/* Schéma « pose en tableau », d'après la maquette : fenêtre haute à deux
+   vantaux entre deux bandes hachurées pleine hauteur, vitrage d'un profil à
+   l'autre sur la moitié basse, pieds des profils tournés vers l'extérieur. */
 function PoseTableauIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 64 56" fill="none" className={className} aria-hidden="true">
-      {/* hachures denses des côtés du mur, sans cadre */}
-      <g stroke="currentColor" strokeWidth="1.1" opacity="0.32" strokeLinecap="round">
-        <path d="M4 9l8-6M4 15l9-7M4 21l9-7M4 27l9-7M4 33l9-7M4 39l9-7M4 45l9-7M4 51l9-7" />
-        <path d="M51 9l8-6M51 15l9-7M51 21l9-7M51 27l9-7M51 33l9-7M51 39l9-7M51 45l9-7M51 51l9-7" />
+    <svg viewBox="0 0 64 64" fill="none" className={className} aria-hidden="true">
+      {/* bandes hachurées du mur, pleine hauteur */}
+      <g stroke="currentColor" strokeWidth="1.1" opacity="0.35" strokeLinecap="round">
+        <path d="M5 13l9-8M5 21l10-8M5 29l10-8M5 37l10-8M5 45l10-8M5 53l10-8M5 61l10-8" />
+        <path d="M49 13l9-8M49 21l10-8M49 29l10-8M49 37l10-8M49 45l10-8M49 53l10-8M49 61l10-8" />
       </g>
-      {/* la fenêtre à deux vantaux, remplie d'un lavis */}
-      <rect x="17" y="4" width="30" height="33" rx="1" fill="currentColor" opacity="0.12" />
-      <g stroke="currentColor" strokeWidth="1.8">
-        <rect x="17" y="4" width="30" height="33" rx="1" />
-        <path d="M32 4v33" />
+      {/* la fenêtre haute à deux vantaux */}
+      <rect x="18" y="5" width="28" height="38" rx="1" fill="currentColor" opacity="0.1" />
+      <g stroke="currentColor" strokeWidth="2">
+        <rect x="18" y="5" width="28" height="38" rx="1" />
+        <path d="M32 5v38" />
       </g>
-      {/* le vitrage devant la baie, lavis plus soutenu et reflet */}
-      <rect x="16" y="25" width="32" height="22" rx="1" fill="currentColor" opacity="0.16" />
-      <g stroke="currentColor" strokeWidth="1.8">
-        <rect x="16" y="25" width="32" height="22" rx="1" />
-        <path d="M21.5 43.5l15-13" opacity="0.45" strokeWidth="1.5" />
+      {/* le vitrage, d'un profil à l'autre, reflet en diagonale */}
+      <rect x="16.5" y="30" width="31" height="24" rx="1" fill="currentColor" opacity="0.18" />
+      <g stroke="currentColor" strokeWidth="2">
+        <rect x="16.5" y="30" width="31" height="24" rx="1" />
+        <path d="M22 50l16-14" opacity="0.5" strokeWidth="1.6" />
       </g>
-      {/* les deux profils à pied, ancrés dans le tableau */}
+      {/* les profils, pieds tournés vers l'extérieur */}
       <g fill="currentColor">
-        <rect x="12.6" y="23" width="3.4" height="27.5" rx="1.2" />
-        <rect x="48" y="23" width="3.4" height="27.5" rx="1.2" />
-        <rect x="10.8" y="50" width="7" height="2.6" rx="1.1" />
-        <rect x="46.2" y="50" width="7" height="2.6" rx="1.1" />
+        <rect x="13" y="28" width="3.4" height="30" rx="1.2" />
+        <rect x="47.6" y="28" width="3.4" height="30" rx="1.2" />
+        <rect x="9.5" y="55.5" width="7" height="3" rx="1.2" />
+        <rect x="47.5" y="55.5" width="7" height="3" rx="1.2" />
       </g>
     </svg>
   );
 }
 
-/* Schéma « pose en façade » : trame de briques pleine largeur, vitrage en
-   applique, platines pleines à quatre vis — fidèle à la maquette. */
+/* Schéma « pose en façade », d'après la maquette : briques de part et
+   d'autre, vitrage d'un bord à l'autre, platines carrées à quatre vis
+   centrées sur le vitrage aux extrémités. */
 function PoseFacadeIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 64 56" fill="none" className={className} aria-hidden="true">
-      {/* l'appareillage de briques, pleine largeur derrière la baie */}
-      <g stroke="currentColor" strokeWidth="1.1" opacity="0.3" strokeLinecap="round">
-        <path d="M2 9h16M46 9h16M2 17h16M46 17h16M2 25h16M46 25h16" />
-        <path d="M10 2.5V9M54 2.5V9M6 9v8M14 9v8M50 9v8M58 9v8M10 17v8M54 17v8" />
+    <svg viewBox="0 0 64 64" fill="none" className={className} aria-hidden="true">
+      {/* l'appareillage de briques de part et d'autre */}
+      <g stroke="currentColor" strokeWidth="1.1" opacity="0.32" strokeLinecap="round">
+        <path d="M3 12h15M46 12h15M3 20h15M46 20h15M3 28h15M46 28h15M3 36h15M46 36h15" />
+        <path d="M10 5v7M54 5v7M6 12v8M14 12v8M50 12v8M58 12v8M10 20v8M54 20v8M6 28v8M14 28v8M50 28v8M58 28v8" />
       </g>
-      {/* la fenêtre à deux vantaux, remplie d'un lavis */}
-      <rect x="18" y="3" width="28" height="26" rx="1" fill="currentColor" opacity="0.12" />
-      <g stroke="currentColor" strokeWidth="1.8">
-        <rect x="18" y="3" width="28" height="26" rx="1" />
-        <path d="M32 3v26" />
+      {/* la fenêtre à deux vantaux */}
+      <rect x="20" y="5" width="24" height="30" rx="1" fill="currentColor" opacity="0.1" />
+      <g stroke="currentColor" strokeWidth="2">
+        <rect x="20" y="5" width="24" height="30" rx="1" />
+        <path d="M32 5v30" />
       </g>
-      {/* le vitrage en applique, plus large que la baie */}
-      <rect x="13" y="27" width="38" height="21" rx="1" fill="currentColor" opacity="0.16" />
-      <g stroke="currentColor" strokeWidth="1.8">
-        <rect x="13" y="27" width="38" height="21" rx="1" />
-        <path d="M19.5 44l16.5-13" opacity="0.45" strokeWidth="1.5" />
+      {/* le vitrage en applique, d'un bord à l'autre */}
+      <rect x="9" y="33" width="46" height="22" rx="1" fill="currentColor" opacity="0.18" />
+      <g stroke="currentColor" strokeWidth="2">
+        <rect x="9" y="33" width="46" height="22" rx="1" />
+        <path d="M22 51l18-14" opacity="0.5" strokeWidth="1.6" />
       </g>
-      {/* les platines pleines vissées sur la face du mur */}
+      {/* les platines carrées, centrées sur le vitrage aux extrémités */}
       <g fill="currentColor">
-        <rect x="2.5" y="31" width="10" height="18" rx="2" />
-        <rect x="51.5" y="31" width="10" height="18" rx="2" />
+        <rect x="2" y="36.5" width="13" height="15" rx="2.2" />
+        <rect x="49" y="36.5" width="13" height="15" rx="2.2" />
       </g>
       <g fill="white">
-        <circle cx="5.6" cy="34.8" r="1.05" />
-        <circle cx="9.4" cy="34.8" r="1.05" />
-        <circle cx="5.6" cy="45.2" r="1.05" />
-        <circle cx="9.4" cy="45.2" r="1.05" />
-        <circle cx="54.6" cy="34.8" r="1.05" />
-        <circle cx="58.4" cy="34.8" r="1.05" />
-        <circle cx="54.6" cy="45.2" r="1.05" />
-        <circle cx="58.4" cy="45.2" r="1.05" />
+        <circle cx="6" cy="40.5" r="1.15" />
+        <circle cx="11" cy="40.5" r="1.15" />
+        <circle cx="6" cy="47.5" r="1.15" />
+        <circle cx="11" cy="47.5" r="1.15" />
+        <circle cx="53" cy="40.5" r="1.15" />
+        <circle cx="58" cy="40.5" r="1.15" />
+        <circle cx="53" cy="47.5" r="1.15" />
+        <circle cx="58" cy="47.5" r="1.15" />
       </g>
     </svg>
   );

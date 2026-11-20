@@ -513,7 +513,10 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 <div className="mt-5 divide-y divide-neutral-200 border-y border-neutral-200">
                   {blocks.systeme.modes.map((mode) => (
                     <div key={mode.t} className="flex items-center gap-5 py-4">
-                      <mode.icon className="h-14 w-16 shrink-0 text-pine-700" />
+                      {/* le schéma dans sa petite carte à bord gris, comme la maquette */}
+                      <span className="grid h-[4.4rem] w-[4.8rem] shrink-0 place-items-center rounded-lg border border-neutral-300/80 bg-neutral-50/60 p-1.5">
+                        <mode.icon className="h-full w-full text-pine-700" />
+                      </span>
                       <span className="h-10 w-[3px] shrink-0 rounded-full bg-amber-500" aria-hidden />
                       <div>
                         <p className="text-[17px] font-extrabold tracking-tight text-inkgreen">{mode.t}</p>
