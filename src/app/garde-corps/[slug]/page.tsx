@@ -482,6 +482,67 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
+      {/* ---- système de fixation : photo à gauche, modes de pose schématisés ---- */}
+      {blocks?.systeme && (
+        <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
+          <Container>
+            <div className="grid gap-8 lg:grid-cols-[0.82fr_1fr] lg:items-stretch lg:gap-14">
+              <Reveal className="lg:h-full">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-auto lg:h-full">
+                  <Image
+                    src={blocks.systeme.photo.src}
+                    alt={blocks.systeme.photo.alt}
+                    fill
+                    sizes="(min-width: 1152px) 28rem, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+              </Reveal>
+
+              <div>
+                <p className={`${PISCINE_KICKER} flex items-center gap-3`}>
+                  {blocks.systeme.kicker}
+                  <span className="h-px flex-1 bg-pine-600/25" aria-hidden />
+                </p>
+                <h2 className="mt-4 text-balance text-3xl font-extrabold leading-[1.08] tracking-tight text-inkgreen sm:text-4xl">
+                  {blocks.systeme.h2}
+                </h2>
+                <p className="mt-4 text-pretty leading-relaxed text-neutral-600">{blocks.systeme.intro}</p>
+
+                {/* les deux modes de pose, schémas à l'appui */}
+                <div className="mt-5 divide-y divide-neutral-200 border-y border-neutral-200">
+                  {blocks.systeme.modes.map((mode) => (
+                    <div key={mode.t} className="flex items-center gap-5 py-4">
+                      <mode.icon className="h-14 w-16 shrink-0 text-pine-700" />
+                      <span className="h-10 w-[3px] shrink-0 rounded-full bg-amber-500" aria-hidden />
+                      <div>
+                        <p className="text-[17px] font-extrabold tracking-tight text-inkgreen">{mode.t}</p>
+                        <p className="mt-0.5 text-[15px] leading-snug text-neutral-600">{mode.d}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* la note sur le support */}
+                <div className="mt-5 flex items-center gap-4 rounded-2xl bg-mist/80 px-4 py-4">
+                  <blocks.systeme.support.icon className="h-8 w-8 shrink-0 text-pine-700" strokeWidth={1.7} />
+                  <span className="h-9 w-[3px] shrink-0 rounded-full bg-amber-500" aria-hidden />
+                  <p className="text-sm leading-relaxed text-neutral-600">{blocks.systeme.support.d}</p>
+                </div>
+
+                <Link
+                  href={blocks.systeme.cta.href}
+                  className={`${PISCINE_CTA} mt-6 w-full justify-center whitespace-nowrap`}
+                >
+                  {blocks.systeme.cta.label}
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </div>
+            </div>
+          </Container>
+        </section>
+      )}
+
       {/* ---- valeur : l'argumentaire valorisation, photo à gauche ---- */}
       {blocks?.valeur && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">

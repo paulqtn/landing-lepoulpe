@@ -101,6 +101,98 @@ function PiecesIcon({
   );
 }
 
+/* Schéma « pose en tableau » : les profils verticaux pris dans les côtés
+   du mur (hachures), le vitrage devant la fenêtre. */
+function PoseTableauIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 56" fill="none" className={className} aria-hidden="true">
+      {/* hachures des côtés du mur */}
+      <g stroke="currentColor" strokeWidth="1.2" opacity="0.3" strokeLinecap="round">
+        <path d="M3 10l7-7M3 18l7-7M3 26l7-7M3 34l7-7M3 42l7-7M3 50l7-7" />
+        <path d="M54 10l7-7M54 18l7-7M54 26l7-7M54 34l7-7M54 42l7-7M54 50l7-7" />
+      </g>
+      {/* la fenêtre à deux vantaux */}
+      <g stroke="currentColor" strokeWidth="1.6">
+        <rect x="18" y="5" width="28" height="27" rx="1" opacity="0.55" />
+        <path d="M32 5v27" opacity="0.55" />
+      </g>
+      {/* les deux profils verticaux, ancrés dans le tableau */}
+      <g fill="currentColor">
+        <rect x="13.2" y="24" width="3.6" height="29" rx="1.4" />
+        <rect x="47.2" y="24" width="3.6" height="29" rx="1.4" />
+      </g>
+      {/* le vitrage et son reflet */}
+      <g stroke="currentColor" strokeWidth="1.6">
+        <rect x="17.5" y="30" width="29" height="20" rx="1" />
+        <path d="M23 46l14-11" opacity="0.5" />
+      </g>
+    </svg>
+  );
+}
+
+/* Schéma « pose en façade » : les platines vissées sur la face du mur
+   (appareillage de briques), le vitrage en applique. */
+function PoseFacadeIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 56" fill="none" className={className} aria-hidden="true">
+      {/* l'appareillage de briques */}
+      <g stroke="currentColor" strokeWidth="1.2" opacity="0.3" strokeLinecap="round">
+        <path d="M2 8h14M48 8h14M2 16h14M48 16h14M2 24h14M48 24h14" />
+        <path d="M9 2v6M55 2v6M5 8v8M59 8v8M12 16v8M52 16v8" />
+      </g>
+      {/* la fenêtre à deux vantaux */}
+      <g stroke="currentColor" strokeWidth="1.6">
+        <rect x="18" y="4" width="28" height="24" rx="1" opacity="0.55" />
+        <path d="M32 4v24" opacity="0.55" />
+      </g>
+      {/* le vitrage en applique, plus large que la baie */}
+      <g stroke="currentColor" strokeWidth="1.6">
+        <rect x="14" y="26" width="36" height="20" rx="1" />
+        <path d="M21 42l16-12" opacity="0.5" />
+      </g>
+      {/* les platines vissées sur la face du mur */}
+      <g>
+        <rect x="3.5" y="32" width="9" height="16" rx="1.6" stroke="currentColor" strokeWidth="1.6" />
+        <rect x="51.5" y="32" width="9" height="16" rx="1.6" stroke="currentColor" strokeWidth="1.6" />
+        <g fill="currentColor">
+          <circle cx="8" cy="36.5" r="1.1" />
+          <circle cx="8" cy="43.5" r="1.1" />
+          <circle cx="56" cy="36.5" r="1.1" />
+          <circle cx="56" cy="43.5" r="1.1" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+/* Pictogramme « briques » : une petite pile appareillée. */
+function BriquesIcon({
+  className,
+  strokeWidth = 1.8,
+}: {
+  className?: string;
+  strokeWidth?: number | string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect x="5" y="6" width="6.4" height="4.6" rx="0.8" />
+      <rect x="12.6" y="6" width="6.4" height="4.6" rx="0.8" />
+      <rect x="1.8" y="12.6" width="6.4" height="4.6" rx="0.8" />
+      <rect x="9.4" y="12.6" width="6.4" height="4.6" rx="0.8" />
+      <rect x="17" y="12.6" width="6.4" height="4.6" rx="0.8" />
+    </svg>
+  );
+}
+
 /* Pictogramme maison « main courante » : une lisse posée sur deux montants
    — lucide n'a pas d'équivalent parlant. Même signature que ses icônes. */
 /* Pictogramme « fixation au sol » : goujon à tête ronde sur sa platine. */
@@ -271,6 +363,24 @@ export type UsageBlocks = {
     }[];
     /** Note en italique à droite du CTA. */
     note: ReactNode;
+  };
+  /** Facultatif : le système de fixation — photo à gauche, deux modes de pose
+      schématisés, note sur le support et CTA. */
+  systeme?: {
+    kicker: string;
+    h2: ReactNode;
+    intro: ReactNode;
+    photo: Img;
+    modes: {
+      icon: ComponentType<{ className?: string }>;
+      t: string;
+      d: string;
+    }[];
+    support: {
+      icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
+      d: ReactNode;
+    };
+    cta: Cta;
   };
   /** Facultatif : l'argumentaire valorisation — photo à gauche, trois cartes
       de bénéfices et CTA à points de réassurance. */
@@ -1230,6 +1340,30 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
           NF&nbsp;P01-012.
         </>
       ),
+    },
+    systeme: {
+      kicker: "Le système de fixation",
+      h2: (
+        <>
+          La sécurité se joue <br className="hidden sm:block" />
+          sur les <span className={ACCENT}>côtés</span>.
+        </>
+      ),
+      intro:
+        "Deux profilés verticaux maintiennent le verre, avec des ancrages dans la maçonnerie — pas dans la menuiserie. Une fixation pensée pour votre ouverture.",
+      photo: {
+        src: "/comparateur-fenetre-apres.webp",
+        alt: "Garde-corps de fenêtre en verre maintenu par deux profils verticaux ancrés dans la maçonnerie",
+      },
+      modes: [
+        { icon: PoseTableauIcon, t: "Pose en tableau", d: "Dans les côtés du mur" },
+        { icon: PoseFacadeIcon, t: "Pose en façade", d: "Sur la face du mur, en applique" },
+      ],
+      support: {
+        icon: BriquesIcon,
+        d: "Le choix des ancrages dépend du support : béton, brique ou pierre. Il est vérifié selon vos photos et vos cotes.",
+      },
+      cta: { label: "Configurer mon garde-corps", href: "/generateur?usage=fenetre" },
     },
     norme: {
       kicker: "Sécurité & réglementation",
