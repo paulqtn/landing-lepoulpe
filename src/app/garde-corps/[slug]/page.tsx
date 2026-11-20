@@ -514,8 +514,8 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                   {blocks.systeme.modes.map((mode) => (
                     <div key={mode.t} className="flex items-center gap-5 py-4">
                       {/* le schéma fourni, posé en fondu sans cadre */}
-                      <span className="relative block h-[4.4rem] w-[4.9rem] shrink-0">
-                        <Image src={mode.img.src} alt={mode.img.alt} fill sizes="5rem" className="object-contain" />
+                      <span className="relative block h-[6.5rem] w-[8rem] shrink-0">
+                        <Image src={mode.img.src} alt={mode.img.alt} fill sizes="8rem" className="object-contain" />
                       </span>
                       <span className="h-10 w-[3px] shrink-0 rounded-full bg-amber-500" aria-hidden />
                       <div>
@@ -528,12 +528,12 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
 
                 {/* la note sur le support */}
                 <div className="mt-5 flex items-center gap-4 rounded-2xl bg-mist/80 px-4 py-4">
-                  <span className="relative block h-11 w-11 shrink-0">
+                  <span className="relative block h-14 w-16 shrink-0">
                     <Image
                       src={blocks.systeme.support.img.src}
                       alt={blocks.systeme.support.img.alt}
                       fill
-                      sizes="3rem"
+                      sizes="4rem"
                       className="object-contain"
                     />
                   </span>
