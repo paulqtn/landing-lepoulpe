@@ -101,77 +101,83 @@ function PiecesIcon({
   );
 }
 
-/* Schéma « pose en tableau », d'après la maquette : fenêtre haute à deux
-   vantaux entre deux bandes hachurées pleine hauteur, vitrage d'un profil à
-   l'autre sur la moitié basse, pieds des profils tournés vers l'extérieur. */
+/* Schéma « pose en tableau », d'après la maquette : seuls la fenêtre, le
+   vitrage et les profils sont verts ; les hachures du mur sont deux fines
+   bandes grises collées à la baie. Dessin aéré, centré dans sa carte. */
 function PoseTableauIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 64 64" fill="none" className={className} aria-hidden="true">
-      {/* bandes hachurées du mur, pleine hauteur */}
-      <g stroke="currentColor" strokeWidth="1.1" opacity="0.35" strokeLinecap="round">
-        <path d="M5 13l9-8M5 21l10-8M5 29l10-8M5 37l10-8M5 45l10-8M5 53l10-8M5 61l10-8" />
-        <path d="M49 13l9-8M49 21l10-8M49 29l10-8M49 37l10-8M49 45l10-8M49 53l10-8M49 61l10-8" />
+      {/* bandes hachurées grises, collées aux côtés de la baie */}
+      <g stroke="#9CA3AF" strokeWidth="1" opacity="0.75" strokeLinecap="round">
+        <path d="M15.5 13l5-5M15.5 19l5-5M15.5 25l5-5M15.5 31l5-5M15.5 37l5-5M15.5 43l5-5M15.5 49l5-5" />
+        <path d="M43.5 13l5-5M43.5 19l5-5M43.5 25l5-5M43.5 31l5-5M43.5 37l5-5M43.5 43l5-5M43.5 49l5-5" />
       </g>
       {/* la fenêtre haute à deux vantaux */}
-      <rect x="18" y="5" width="28" height="38" rx="1" fill="currentColor" opacity="0.1" />
-      <g stroke="currentColor" strokeWidth="2">
-        <rect x="18" y="5" width="28" height="38" rx="1" />
-        <path d="M32 5v38" />
+      <rect x="22" y="8" width="20" height="28" rx="0.8" fill="currentColor" opacity="0.06" />
+      <g stroke="currentColor" strokeWidth="1.8">
+        <rect x="22" y="8" width="20" height="28" rx="0.8" />
+        <path d="M32 8v28" />
       </g>
-      {/* le vitrage, d'un profil à l'autre, reflet en diagonale */}
-      <rect x="16.5" y="30" width="31" height="24" rx="1" fill="currentColor" opacity="0.18" />
-      <g stroke="currentColor" strokeWidth="2">
-        <rect x="16.5" y="30" width="31" height="24" rx="1" />
-        <path d="M22 50l16-14" opacity="0.5" strokeWidth="1.6" />
+      {/* le vitrage sur la moitié basse, reflet en diagonale */}
+      <rect x="20" y="30" width="24" height="18" rx="0.8" fill="currentColor" opacity="0.15" />
+      <g stroke="currentColor" strokeWidth="1.8">
+        <rect x="20" y="30" width="24" height="18" rx="0.8" />
+        <path d="M24.5 45l13-11" opacity="0.5" strokeWidth="1.4" />
       </g>
       {/* les profils, pieds tournés vers l'extérieur */}
       <g fill="currentColor">
-        <rect x="13" y="28" width="3.4" height="30" rx="1.2" />
-        <rect x="47.6" y="28" width="3.4" height="30" rx="1.2" />
-        <rect x="9.5" y="55.5" width="7" height="3" rx="1.2" />
-        <rect x="47.5" y="55.5" width="7" height="3" rx="1.2" />
+        <rect x="17.4" y="28" width="2.8" height="24" rx="1" />
+        <rect x="43.8" y="28" width="2.8" height="24" rx="1" />
+        <rect x="14.8" y="50" width="5.6" height="2.4" rx="1" />
+        <rect x="43.6" y="50" width="5.6" height="2.4" rx="1" />
       </g>
     </svg>
   );
 }
 
-/* Schéma « pose en façade », d'après la maquette : briques de part et
-   d'autre, vitrage d'un bord à l'autre, platines carrées à quatre vis
-   centrées sur le vitrage aux extrémités. */
+/* Schéma « pose en façade », d'après la maquette : l'appareillage de briques
+   gris occupe tout le fond de la carte ; fenêtre, vitrage et platines verts
+   passent devant. */
 function PoseFacadeIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 64 64" fill="none" className={className} aria-hidden="true">
-      {/* l'appareillage de briques de part et d'autre */}
-      <g stroke="currentColor" strokeWidth="1.1" opacity="0.32" strokeLinecap="round">
-        <path d="M3 12h15M46 12h15M3 20h15M46 20h15M3 28h15M46 28h15M3 36h15M46 36h15" />
-        <path d="M10 5v7M54 5v7M6 12v8M14 12v8M50 12v8M58 12v8M10 20v8M54 20v8M6 28v8M14 28v8M50 28v8M58 28v8" />
+      {/* l'appareillage de briques gris, en fond sur toute la carte */}
+      <g stroke="#9CA3AF" strokeWidth="1" opacity="0.7" strokeLinecap="round">
+        <path d="M6 12h52M6 20h52M6 28h52M6 36h52M6 44h52" />
+        <path d="M19 5v7M32 5v7M45 5v7" />
+        <path d="M12.5 12v8M25.5 12v8M38.5 12v8M51.5 12v8" />
+        <path d="M19 20v8M32 20v8M45 20v8" />
+        <path d="M12.5 28v8M25.5 28v8M38.5 28v8M51.5 28v8" />
+        <path d="M19 36v8M32 36v8M45 36v8" />
       </g>
-      {/* la fenêtre à deux vantaux */}
-      <rect x="20" y="5" width="24" height="30" rx="1" fill="currentColor" opacity="0.1" />
-      <g stroke="currentColor" strokeWidth="2">
-        <rect x="20" y="5" width="24" height="30" rx="1" />
-        <path d="M32 5v30" />
+      {/* la fenêtre à deux vantaux, qui masque les briques derrière elle */}
+      <rect x="22" y="8" width="20" height="26" rx="0.8" fill="white" />
+      <rect x="22" y="8" width="20" height="26" rx="0.8" fill="currentColor" opacity="0.06" />
+      <g stroke="currentColor" strokeWidth="1.8">
+        <rect x="22" y="8" width="20" height="26" rx="0.8" />
+        <path d="M32 8v26" />
       </g>
-      {/* le vitrage en applique, d'un bord à l'autre */}
-      <rect x="9" y="33" width="46" height="22" rx="1" fill="currentColor" opacity="0.18" />
-      <g stroke="currentColor" strokeWidth="2">
-        <rect x="9" y="33" width="46" height="22" rx="1" />
-        <path d="M22 51l18-14" opacity="0.5" strokeWidth="1.6" />
+      {/* le vitrage en applique, large, qui masque aussi le fond */}
+      <rect x="13" y="32" width="38" height="17" rx="0.8" fill="white" />
+      <rect x="13" y="32" width="38" height="17" rx="0.8" fill="currentColor" opacity="0.15" />
+      <g stroke="currentColor" strokeWidth="1.8">
+        <rect x="13" y="32" width="38" height="17" rx="0.8" />
+        <path d="M22 46.5l14-11" opacity="0.5" strokeWidth="1.4" />
       </g>
-      {/* les platines carrées, centrées sur le vitrage aux extrémités */}
+      {/* les platines carrées à quatre vis, aux extrémités du vitrage */}
       <g fill="currentColor">
-        <rect x="2" y="36.5" width="13" height="15" rx="2.2" />
-        <rect x="49" y="36.5" width="13" height="15" rx="2.2" />
+        <rect x="6" y="34.5" width="11" height="12.5" rx="1.8" />
+        <rect x="47" y="34.5" width="11" height="12.5" rx="1.8" />
       </g>
       <g fill="white">
-        <circle cx="6" cy="40.5" r="1.15" />
-        <circle cx="11" cy="40.5" r="1.15" />
-        <circle cx="6" cy="47.5" r="1.15" />
-        <circle cx="11" cy="47.5" r="1.15" />
-        <circle cx="53" cy="40.5" r="1.15" />
-        <circle cx="58" cy="40.5" r="1.15" />
-        <circle cx="53" cy="47.5" r="1.15" />
-        <circle cx="58" cy="47.5" r="1.15" />
+        <circle cx="9.4" cy="38" r="1" />
+        <circle cx="13.6" cy="38" r="1" />
+        <circle cx="9.4" cy="43.5" r="1" />
+        <circle cx="13.6" cy="43.5" r="1" />
+        <circle cx="50.4" cy="38" r="1" />
+        <circle cx="54.6" cy="38" r="1" />
+        <circle cx="50.4" cy="43.5" r="1" />
+        <circle cx="54.6" cy="43.5" r="1" />
       </g>
     </svg>
   );
