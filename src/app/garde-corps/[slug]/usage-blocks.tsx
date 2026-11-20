@@ -1215,8 +1215,8 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
       ],
       photo: {
-        src: "/usage-fenetre-vue.webp",
-        alt: "Façade contemporaine dont les fenêtres en étage sont protégées par des garde-corps en verre",
+        src: "/fenetre-dimensions.webp",
+        alt: "Garde-corps de fenêtre en verre d’un mètre de hauteur devant une porte-fenêtre, cote de protection annotée",
       },
       cta: { label: "Obtenir mon devis gratuit", href: "/generateur?usage=fenetre" },
       points: [
