@@ -408,11 +408,11 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
       {blocks?.valeur && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">
           <Container>
-            {/* Fidèle à la maquette : tout le contenu à gauche, l'image à droite
-                alignée du kicker au CTA (étirée sur la hauteur de la colonne).
-                Typo et colonnes aux proportions de la maquette. */}
-            <div className="grid gap-8 lg:grid-cols-[0.56fr_1fr] lg:items-stretch">
-              <div>
+            {/* Fidèle à la maquette en desktop : photo à gauche étirée du kicker
+                au CTA. Sur mobile, la photo se place sous le titre. */}
+            <div className="grid gap-8 lg:grid-cols-[0.56fr_1fr] lg:grid-rows-[auto_1fr] lg:items-stretch lg:gap-y-0">
+              {/* kicker + titre */}
+              <div className="lg:col-start-2 lg:row-start-1">
                 <p className={`${PISCINE_KICKER} flex items-center gap-3`}>
                   {blocks.valeur.kicker}
                   <span className="h-px w-10 bg-pine-600/40" aria-hidden />
@@ -420,7 +420,37 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 <h2 className="mt-3 text-balance text-[1.65rem] font-extrabold leading-[1.15] tracking-tight text-inkgreen sm:text-3xl">
                   {blocks.valeur.h2}
                 </h2>
-                <p className="mt-4 text-pretty leading-relaxed text-neutral-600">{blocks.valeur.intro}</p>
+              </div>
+
+              {/* la photo — sous le titre en mobile, colonne gauche pleine hauteur en desktop */}
+              <Reveal className="lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:h-full">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-auto lg:h-full">
+                  {blocks.valeur.photo.src ? (
+                    <Image
+                      src={blocks.valeur.photo.src}
+                      alt={blocks.valeur.photo.alt}
+                      fill
+                      sizes="(min-width: 1152px) 24rem, 100vw"
+                      /* mobile : cadrage sur le haut de l'image (la mezzanine),
+                         desktop : l'image entière tient dans le cadre. */
+                      className="object-cover object-[center_30%] lg:object-center"
+                    />
+                  ) : (
+                    <span className="absolute inset-2 grid place-items-center rounded-[1.25rem] border-2 border-dashed border-neutral-300 bg-mist">
+                      <span className="flex flex-col items-center gap-2 px-8 text-center">
+                        <ImageGlyph className="h-6 w-6 text-neutral-400" strokeWidth={1.6} />
+                        <span className="text-[12px] font-semibold leading-snug text-neutral-500">
+                          Votre photo de mezzanine arrive ici
+                        </span>
+                      </span>
+                    </span>
+                  )}
+                </div>
+              </Reveal>
+
+              {/* intro, cartes et CTA */}
+              <div className="lg:col-start-2 lg:row-start-2 lg:mt-4">
+                <p className="text-pretty leading-relaxed text-neutral-600">{blocks.valeur.intro}</p>
 
                 <div className="mt-7 grid gap-4 sm:grid-cols-3">
                   {blocks.valeur.cards.map((card) => (
@@ -453,30 +483,6 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 </div>
               </div>
 
-              <Reveal className="lg:order-first lg:h-full">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-auto lg:h-full">
-                  {blocks.valeur.photo.src ? (
-                    <Image
-                      src={blocks.valeur.photo.src}
-                      alt={blocks.valeur.photo.alt}
-                      fill
-                      sizes="(min-width: 1152px) 24rem, 100vw"
-                      /* mobile : cadrage sur le haut de l'image (la mezzanine),
-                         desktop : l'image entière tient dans le cadre. */
-                      className="object-cover object-[center_30%] lg:object-center"
-                    />
-                  ) : (
-                    <span className="absolute inset-2 grid place-items-center rounded-[1.25rem] border-2 border-dashed border-neutral-300 bg-mist">
-                      <span className="flex flex-col items-center gap-2 px-8 text-center">
-                        <ImageGlyph className="h-6 w-6 text-neutral-400" strokeWidth={1.6} />
-                        <span className="text-[12px] font-semibold leading-snug text-neutral-500">
-                          Votre photo de mezzanine arrive ici
-                        </span>
-                      </span>
-                    </span>
-                  )}
-                </div>
-              </Reveal>
             </div>
           </Container>
         </section>
