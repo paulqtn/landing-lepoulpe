@@ -512,10 +512,11 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 {/* les deux modes de pose, schémas à l'appui */}
                 <div className="mt-5 divide-y divide-neutral-200 border-y border-neutral-200">
                   {blocks.systeme.modes.map((mode) => (
-                    <div key={mode.t} className="flex items-center gap-5 py-4">
-                      {/* le schéma fourni, posé en fondu sans cadre */}
-                      <span className="relative block h-[6.5rem] w-[8rem] shrink-0">
-                        <Image src={mode.img.src} alt={mode.img.alt} fill sizes="8rem" className="object-contain" />
+                    <div key={mode.t} className="flex items-center gap-5 py-2.5">
+                      {/* le schéma fourni, posé en fondu sans cadre — grand mais
+                          dans une rangée compacte pour ne pas allonger le bloc */}
+                      <span className="relative block h-20 w-[6.25rem] shrink-0">
+                        <Image src={mode.img.src} alt={mode.img.alt} fill sizes="7rem" className="object-contain" />
                       </span>
                       <span className="h-10 w-[3px] shrink-0 rounded-full bg-amber-500" aria-hidden />
                       <div>
