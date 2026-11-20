@@ -404,6 +404,84 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
         </section>
       )}
 
+      {/* ---- dimensions & pose : accordéon à gauche, photo à droite, note normative ---- */}
+      {blocks?.dimensions && (
+        <section className="border-b border-neutral-200 bg-mist/60 py-16 sm:py-24">
+          <Container>
+            <div className="grid gap-8 lg:grid-cols-[1fr_0.62fr] lg:items-stretch lg:gap-12">
+              <div>
+                <p className={`${PISCINE_KICKER} flex items-center gap-3`}>
+                  {blocks.dimensions.kicker}
+                  <span className="h-px w-10 bg-pine-600/40" aria-hidden />
+                </p>
+                <h2 className="mt-3 text-balance text-[1.65rem] font-extrabold leading-[1.3] tracking-tight text-inkgreen sm:text-3xl">
+                  {blocks.dimensions.h2}
+                </h2>
+                <p className="mt-4 text-pretty leading-relaxed text-neutral-600">{blocks.dimensions.intro}</p>
+
+                <div className="mt-6 space-y-3">
+                  {blocks.dimensions.items.map((item, i) => (
+                    <details
+                      key={item.t}
+                      name="dimensions"
+                      open={i === 0}
+                      className="group rounded-2xl bg-white ring-1 ring-pine-950/10 transition-colors open:bg-green-600/[0.07] open:ring-pine-700/15"
+                    >
+                      <summary className="flex cursor-pointer select-none items-center gap-3.5 px-5 py-4 [&::-webkit-details-marker]:hidden">
+                        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-green-600/10 text-pine-700">
+                          <item.icon className="h-5 w-5" strokeWidth={1.8} />
+                        </span>
+                        <span className="flex-1 text-[15.5px] font-extrabold tracking-tight text-inkgreen sm:text-[16.5px]">
+                          {item.t}
+                        </span>
+                        <ChevronDown className="h-5 w-5 shrink-0 text-pine-700 transition-transform group-open:rotate-180" />
+                      </summary>
+                      <div className="px-5 pb-5">
+                        <p className="text-sm leading-relaxed text-neutral-600">{item.d}</p>
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </div>
+
+              <Reveal className="lg:h-full">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-panel ring-1 ring-pine-950/10 sm:aspect-[16/10] lg:aspect-auto lg:h-full">
+                  <Image
+                    src={blocks.dimensions.photo.src}
+                    alt={blocks.dimensions.photo.alt}
+                    fill
+                    sizes="(min-width: 1152px) 26rem, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+              </Reveal>
+            </div>
+
+            {/* CTA, points de réassurance et note normative */}
+            <div className="mt-8 flex flex-col items-start gap-5 lg:flex-row lg:items-center">
+              <Link href={blocks.dimensions.cta.href} className={`${PISCINE_CTA} shrink-0 whitespace-nowrap`}>
+                {blocks.dimensions.cta.label}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <ul className="flex flex-wrap items-center gap-y-2">
+                {blocks.dimensions.points.map((pt) => (
+                  <li
+                    key={pt.label}
+                    className="flex items-center gap-2 border-l border-neutral-200 px-4 text-sm font-semibold text-neutral-700 first:border-0 first:pl-0 lg:first:pl-4"
+                  >
+                    <pt.icon className="h-4 w-4 shrink-0 text-pine-700" strokeWidth={2} />
+                    {pt.label}
+                  </li>
+                ))}
+              </ul>
+              <p className="max-w-sm text-pretty text-[13px] italic leading-snug text-neutral-500 lg:ml-auto lg:text-right">
+                {blocks.dimensions.note}
+              </p>
+            </div>
+          </Container>
+        </section>
+      )}
+
       {/* ---- valeur : l'argumentaire valorisation, photo à gauche ---- */}
       {blocks?.valeur && (
         <section className="border-b border-neutral-200 bg-white py-16 sm:py-24">

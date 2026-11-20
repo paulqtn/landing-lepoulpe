@@ -14,12 +14,92 @@ import {
   MoveHorizontal,
   PanelBottom,
   Ruler,
+  Scissors,
   ShieldCheck,
+  Sparkle,
   Sparkles,
   Tag,
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
+
+/* Pictogramme « hauteur d'allège » : une cote verticale à double flèche,
+   bornée en haut et en bas — fidèle à la maquette du bloc fenêtre. */
+function HauteurAllegeIcon({
+  className,
+  strokeWidth = 2,
+}: {
+  className?: string;
+  strokeWidth?: number | string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M7 4h10M7 20h10" />
+      <path d="M12 7v10" />
+      <path d="M9.5 9.5L12 7l2.5 2.5M9.5 14.5L12 17l2.5-2.5" />
+    </svg>
+  );
+}
+
+/* Pictogramme « fenêtre » : un cadre à croisillons. */
+function FenetreCroisillonsIcon({
+  className,
+  strokeWidth = 2,
+}: {
+  className?: string;
+  strokeWidth?: number | string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect x="4" y="4" width="16" height="16" rx="1.5" />
+      <path d="M12 4v16M4 12h16" />
+    </svg>
+  );
+}
+
+/* Pictogramme « pièces » : une petite pile de pièces de monnaie. */
+function PiecesIcon({
+  className,
+  strokeWidth = 2,
+}: {
+  className?: string;
+  strokeWidth?: number | string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <ellipse cx="12" cy="6" rx="7" ry="2.6" />
+      <path d="M5 6v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6" />
+      <path d="M5 12v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-6" />
+    </svg>
+  );
+}
 
 /* Pictogramme maison « main courante » : une lisse posée sur deux montants
    — lucide n'a pas d'équivalent parlant. Même signature que ses icônes. */
@@ -171,6 +251,26 @@ export type UsageBlocks = {
       img?: Img;
     }[];
     cta: Cta & { checks?: string[] };
+  };
+  /** Facultatif : dimensions & pose — en-tête aligné à gauche, accordéon
+      exclusif, photo à droite, CTA à points et note normative. */
+  dimensions?: {
+    kicker: string;
+    h2: ReactNode;
+    intro: ReactNode;
+    items: {
+      icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
+      t: string;
+      d: ReactNode;
+    }[];
+    photo: Img;
+    cta: Cta;
+    points: {
+      icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
+      label: string;
+    }[];
+    /** Note en italique à droite du CTA. */
+    note: ReactNode;
   };
   /** Facultatif : l'argumentaire valorisation — photo à gauche, trois cartes
       de bénéfices et CTA à points de réassurance. */
@@ -1079,6 +1179,57 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         },
       ],
       cta: { label: "Configurer mon garde-corps de fenêtre", href: "#estimation" },
+    },
+    dimensions: {
+      kicker: "Dimensions & pose",
+      h2: (
+        <>
+          Une protection discrète, pensée <br className="hidden sm:block" />
+          <span className="rounded-lg bg-green-600/15 px-2 py-0.5 [box-decoration-break:clone]">
+            pour vos fenêtres en étage
+          </span>
+        </>
+      ),
+      intro:
+        "Fenêtre à allège basse ou porte-fenêtre sans balcon : chaque ouverture demande une protection adaptée. Hauteur à atteindre, fonctionnement des ouvrants et type de fixation sont étudiés pour sécuriser la baie sans alourdir la façade.",
+      items: [
+        {
+          icon: HauteurAllegeIcon,
+          t: "Une hauteur de protection calculée selon l’allège",
+          d: "Quand l’allège est inférieure à 90 cm, la protection doit généralement atteindre 1 mètre depuis le sol intérieur. Le vitrage est donc dimensionné en fonction de la hauteur existante sous la fenêtre, afin d’obtenir la protection nécessaire sans surdimensionner l’ensemble.",
+        },
+        {
+          icon: FenetreCroisillonsIcon,
+          t: "Une ouverture de fenêtre préservée",
+          d: "Le garde-corps se fixe devant la baie sans gêner les ouvrants : fenêtre à la française, oscillo-battante ou coulissante continue de s’ouvrir en grand.",
+        },
+        {
+          icon: BrickWall,
+          t: "Une fixation adaptée au support",
+          d: "En façade, en tableau ou au sol selon la configuration : les ancrages sont choisis d’après la nature du mur — béton, brique, pierre ou ossature — et son état.",
+        },
+        {
+          icon: Sparkle,
+          t: "Un rendu discret côté façade",
+          d: "Vitrage sans cadre et fixations fines : vue de la rue, la protection se fait oublier et laisse la menuiserie dessiner la façade.",
+        },
+      ],
+      photo: {
+        src: "/usage-fenetre-vue.webp",
+        alt: "Façade contemporaine dont les fenêtres en étage sont protégées par des garde-corps en verre",
+      },
+      cta: { label: "Obtenir mon devis gratuit", href: "/generateur?usage=fenetre" },
+      points: [
+        { icon: Scissors, label: "Sur mesure" },
+        { icon: PiecesIcon, label: "Gratuit" },
+        { icon: ShieldCheck, label: "Sans engagement" },
+      ],
+      note: (
+        <>
+          Sécurité&nbsp;: conception du garde-corps selon les exigences applicables de la norme
+          NF&nbsp;P01-012.
+        </>
+      ),
     },
     norme: {
       kicker: "Sécurité & réglementation",
