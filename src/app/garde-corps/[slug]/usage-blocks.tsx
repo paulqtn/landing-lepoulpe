@@ -101,116 +101,6 @@ function PiecesIcon({
   );
 }
 
-/* Schéma « pose en tableau », d'après la maquette : seuls la fenêtre, le
-   vitrage et les profils sont verts ; les hachures du mur sont deux fines
-   bandes grises collées à la baie. Dessin aéré, centré dans sa carte. */
-function PoseTableauIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" fill="none" className={className} aria-hidden="true">
-      {/* bandes hachurées grises, collées aux côtés de la baie */}
-      <g stroke="#9CA3AF" strokeWidth="1" opacity="0.75" strokeLinecap="round">
-        <path d="M15.5 13l5-5M15.5 19l5-5M15.5 25l5-5M15.5 31l5-5M15.5 37l5-5M15.5 43l5-5M15.5 49l5-5" />
-        <path d="M43.5 13l5-5M43.5 19l5-5M43.5 25l5-5M43.5 31l5-5M43.5 37l5-5M43.5 43l5-5M43.5 49l5-5" />
-      </g>
-      {/* la fenêtre haute à deux vantaux */}
-      <rect x="22" y="8" width="20" height="28" rx="0.8" fill="currentColor" opacity="0.06" />
-      <g stroke="currentColor" strokeWidth="1.8">
-        <rect x="22" y="8" width="20" height="28" rx="0.8" />
-        <path d="M32 8v28" />
-      </g>
-      {/* le vitrage sur la moitié basse, reflet en diagonale */}
-      <rect x="20" y="30" width="24" height="18" rx="0.8" fill="currentColor" opacity="0.15" />
-      <g stroke="currentColor" strokeWidth="1.8">
-        <rect x="20" y="30" width="24" height="18" rx="0.8" />
-        <path d="M24.5 45l13-11" opacity="0.5" strokeWidth="1.4" />
-      </g>
-      {/* les profils, pieds tournés vers l'extérieur */}
-      <g fill="currentColor">
-        <rect x="17.4" y="28" width="2.8" height="24" rx="1" />
-        <rect x="43.8" y="28" width="2.8" height="24" rx="1" />
-        <rect x="14.8" y="50" width="5.6" height="2.4" rx="1" />
-        <rect x="43.6" y="50" width="5.6" height="2.4" rx="1" />
-      </g>
-    </svg>
-  );
-}
-
-/* Schéma « pose en façade », d'après la maquette : l'appareillage de briques
-   gris occupe tout le fond de la carte ; fenêtre, vitrage et platines verts
-   passent devant. */
-function PoseFacadeIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" fill="none" className={className} aria-hidden="true">
-      {/* l'appareillage de briques gris, en fond sur toute la carte */}
-      <g stroke="#9CA3AF" strokeWidth="1" opacity="0.7" strokeLinecap="round">
-        <path d="M6 12h52M6 20h52M6 28h52M6 36h52M6 44h52" />
-        <path d="M19 5v7M32 5v7M45 5v7" />
-        <path d="M12.5 12v8M25.5 12v8M38.5 12v8M51.5 12v8" />
-        <path d="M19 20v8M32 20v8M45 20v8" />
-        <path d="M12.5 28v8M25.5 28v8M38.5 28v8M51.5 28v8" />
-        <path d="M19 36v8M32 36v8M45 36v8" />
-      </g>
-      {/* la fenêtre à deux vantaux, qui masque les briques derrière elle */}
-      <rect x="22" y="8" width="20" height="26" rx="0.8" fill="white" />
-      <rect x="22" y="8" width="20" height="26" rx="0.8" fill="currentColor" opacity="0.06" />
-      <g stroke="currentColor" strokeWidth="1.8">
-        <rect x="22" y="8" width="20" height="26" rx="0.8" />
-        <path d="M32 8v26" />
-      </g>
-      {/* le vitrage en applique, large, qui masque aussi le fond */}
-      <rect x="13" y="32" width="38" height="17" rx="0.8" fill="white" />
-      <rect x="13" y="32" width="38" height="17" rx="0.8" fill="currentColor" opacity="0.15" />
-      <g stroke="currentColor" strokeWidth="1.8">
-        <rect x="13" y="32" width="38" height="17" rx="0.8" />
-        <path d="M22 46.5l14-11" opacity="0.5" strokeWidth="1.4" />
-      </g>
-      {/* les platines carrées à quatre vis, aux extrémités du vitrage */}
-      <g fill="currentColor">
-        <rect x="6" y="34.5" width="11" height="12.5" rx="1.8" />
-        <rect x="47" y="34.5" width="11" height="12.5" rx="1.8" />
-      </g>
-      <g fill="white">
-        <circle cx="9.4" cy="38" r="1" />
-        <circle cx="13.6" cy="38" r="1" />
-        <circle cx="9.4" cy="43.5" r="1" />
-        <circle cx="13.6" cy="43.5" r="1" />
-        <circle cx="50.4" cy="38" r="1" />
-        <circle cx="54.6" cy="38" r="1" />
-        <circle cx="50.4" cy="43.5" r="1" />
-        <circle cx="54.6" cy="43.5" r="1" />
-      </g>
-    </svg>
-  );
-}
-
-/* Pictogramme « briques » : une petite pile appareillée. */
-function BriquesIcon({
-  className,
-  strokeWidth = 1.8,
-}: {
-  className?: string;
-  strokeWidth?: number | string;
-}) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect x="5" y="6" width="6.4" height="4.6" rx="0.8" />
-      <rect x="12.6" y="6" width="6.4" height="4.6" rx="0.8" />
-      <rect x="1.8" y="12.6" width="6.4" height="4.6" rx="0.8" />
-      <rect x="9.4" y="12.6" width="6.4" height="4.6" rx="0.8" />
-      <rect x="17" y="12.6" width="6.4" height="4.6" rx="0.8" />
-    </svg>
-  );
-}
-
 /* Pictogramme maison « main courante » : une lisse posée sur deux montants
    — lucide n'a pas d'équivalent parlant. Même signature que ses icônes. */
 /* Pictogramme « fixation au sol » : goujon à tête ronde sur sa platine. */
@@ -390,12 +280,14 @@ export type UsageBlocks = {
     intro: ReactNode;
     photo: Img;
     modes: {
-      icon: ComponentType<{ className?: string }>;
+      /** Le schéma fourni en image, affiché dans sa carte à bord gris. */
+      img: Img;
       t: string;
       d: string;
     }[];
     support: {
-      icon: ComponentType<{ className?: string; strokeWidth?: number | string }>;
+      /** L'icône fournie en image, posée sur une tuile blanche. */
+      img: Img;
       d: ReactNode;
     };
     cta: Cta;
@@ -1374,11 +1266,19 @@ export const USAGE_BLOCKS: Record<string, UsageBlocks> = {
         alt: "Garde-corps de fenêtre en verre maintenu par deux profils verticaux ancrés dans la maçonnerie",
       },
       modes: [
-        { icon: PoseTableauIcon, t: "Pose en tableau", d: "Dans les côtés du mur" },
-        { icon: PoseFacadeIcon, t: "Pose en façade", d: "Sur la face du mur, en applique" },
+        {
+          img: { src: "/pose-tableau.webp", alt: "Schéma de la pose en tableau : profils ancrés dans les côtés du mur" },
+          t: "Pose en tableau",
+          d: "Dans les côtés du mur",
+        },
+        {
+          img: { src: "/pose-facade.webp", alt: "Schéma de la pose en façade : platines vissées sur la face du mur" },
+          t: "Pose en façade",
+          d: "Sur la face du mur, en applique",
+        },
       ],
       support: {
-        icon: BriquesIcon,
+        img: { src: "/ancrage.webp", alt: "Pictogramme d’un empilement de briques" },
         d: "Le choix des ancrages dépend du support : béton, brique ou pierre. Il est vérifié selon vos photos et vos cotes.",
       },
       cta: { label: "Configurer mon garde-corps", href: "/generateur?usage=fenetre" },

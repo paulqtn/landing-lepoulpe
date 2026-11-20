@@ -513,9 +513,9 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
                 <div className="mt-5 divide-y divide-neutral-200 border-y border-neutral-200">
                   {blocks.systeme.modes.map((mode) => (
                     <div key={mode.t} className="flex items-center gap-5 py-4">
-                      {/* le schéma dans sa petite carte à bord gris, comme la maquette */}
-                      <span className="grid h-[4.4rem] w-[4.8rem] shrink-0 place-items-center rounded-lg border border-neutral-300/80 bg-neutral-50/60 p-1.5">
-                        <mode.icon className="h-full w-full text-pine-700" />
+                      {/* le schéma fourni, dans sa petite carte à bord gris */}
+                      <span className="relative block h-[4.4rem] w-[4.9rem] shrink-0 overflow-hidden rounded-lg border border-neutral-300/80 bg-white">
+                        <Image src={mode.img.src} alt={mode.img.alt} fill sizes="5rem" className="object-contain" />
                       </span>
                       <span className="h-10 w-[3px] shrink-0 rounded-full bg-amber-500" aria-hidden />
                       <div>
@@ -528,7 +528,15 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
 
                 {/* la note sur le support */}
                 <div className="mt-5 flex items-center gap-4 rounded-2xl bg-mist/80 px-4 py-4">
-                  <blocks.systeme.support.icon className="h-8 w-8 shrink-0 text-pine-700" strokeWidth={1.7} />
+                  <span className="relative block h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-white ring-1 ring-neutral-200">
+                    <Image
+                      src={blocks.systeme.support.img.src}
+                      alt={blocks.systeme.support.img.alt}
+                      fill
+                      sizes="3rem"
+                      className="object-contain p-0.5"
+                    />
+                  </span>
                   <span className="h-9 w-[3px] shrink-0 rounded-full bg-amber-500" aria-hidden />
                   <p className="text-sm leading-relaxed text-neutral-600">{blocks.systeme.support.d}</p>
                 </div>
