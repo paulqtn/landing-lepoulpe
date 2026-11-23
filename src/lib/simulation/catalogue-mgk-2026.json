@@ -1,0 +1,1203 @@
+{
+  "source": "Calculateur_Garde_corps_MGK_IA.xlsx",
+  "sourceBasis": "MGK 2026 — fichier utilisateur; tarifs non vérifiés hors classeur",
+  "glasses": [
+    {
+      "legacyId": 1,
+      "legacyLabel": "1. Verre Clair 88.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 75,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A5:D5"
+    },
+    {
+      "legacyId": 2,
+      "legacyLabel": "2. Verre Clair 88.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 80,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A6:D6"
+    },
+    {
+      "legacyId": 3,
+      "legacyLabel": "3. Verre Clair 88.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 90,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A7:D7"
+    },
+    {
+      "legacyId": 4,
+      "legacyLabel": "4. Verre Extra Clair 88.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 100,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A8:D8"
+    },
+    {
+      "legacyId": 5,
+      "legacyLabel": "5. Verre Extra Clair 88.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 105,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A9:D9"
+    },
+    {
+      "legacyId": 6,
+      "legacyLabel": "6. Verre Extra Clair 88.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 120,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A10:D10"
+    },
+    {
+      "legacyId": 7,
+      "legacyLabel": "7. Verre Une face fumée 88.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 82,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A11:D11"
+    },
+    {
+      "legacyId": 8,
+      "legacyLabel": "8. Verre Une face fumée 88.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 87,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A12:D12"
+    },
+    {
+      "legacyId": 9,
+      "legacyLabel": "9. Verre Une face fumée 88.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 98,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A13:D13"
+    },
+    {
+      "legacyId": 10,
+      "legacyLabel": "10. Verre Double face fumée 88.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 87,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A14:D14"
+    },
+    {
+      "legacyId": 11,
+      "legacyLabel": "11. Verre Double face fumée 88.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 92,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A15:D15"
+    },
+    {
+      "legacyId": 12,
+      "legacyLabel": "12. Verre Double face fumée 88.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 104,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A16:D16"
+    },
+    {
+      "legacyId": 13,
+      "legacyLabel": "13. Verre Clair 66.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 60,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A17:D17"
+    },
+    {
+      "legacyId": 14,
+      "legacyLabel": "14. Verre Clair 66.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 65,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A18:D18"
+    },
+    {
+      "legacyId": 15,
+      "legacyLabel": "15. Verre Clair 66.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 72,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A19:D19"
+    },
+    {
+      "legacyId": 16,
+      "legacyLabel": "16. Verre Extra Clair 66.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 80,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A20:D20"
+    },
+    {
+      "legacyId": 17,
+      "legacyLabel": "17. Verre Extra Clair 66.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 85,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A21:D21"
+    },
+    {
+      "legacyId": 18,
+      "legacyLabel": "18. Verre Extra Clair 66.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 96,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A22:D22"
+    },
+    {
+      "legacyId": 19,
+      "legacyLabel": "19. Verre Une face fumée 66.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 66,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A23:D23"
+    },
+    {
+      "legacyId": 20,
+      "legacyLabel": "20. Verre Une face fumée 66.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 71,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A24:D24"
+    },
+    {
+      "legacyId": 21,
+      "legacyLabel": "21. Verre Une face fumée 66.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 79,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A25:D25"
+    },
+    {
+      "legacyId": 22,
+      "legacyLabel": "22. Verre Double face fumée 66.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 71,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A26:D26"
+    },
+    {
+      "legacyId": 23,
+      "legacyLabel": "23. Verre Double face fumée 66.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 76,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A27:D27"
+    },
+    {
+      "legacyId": 24,
+      "legacyLabel": "24. Verre Double face fumée 66.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "66.4",
+      "purchasePricePerM2": 85,
+      "kgPerM2": 30,
+      "sourceCell": "'Ne pas toucher'!A28:D28"
+    },
+    {
+      "legacyId": 25,
+      "legacyLabel": "25. Verre Clair 1010.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 85,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A29:D29"
+    },
+    {
+      "legacyId": 26,
+      "legacyLabel": "26. Verre Clair 1010.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 90,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A30:D30"
+    },
+    {
+      "legacyId": 27,
+      "legacyLabel": "27. Verre Clair 1010.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 102,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A31:D31"
+    },
+    {
+      "legacyId": 28,
+      "legacyLabel": "28. Verre Extra Clair 1010.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 110,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A32:D32"
+    },
+    {
+      "legacyId": 29,
+      "legacyLabel": "29. Verre Extra Clair 1010.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 115,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A33:D33"
+    },
+    {
+      "legacyId": 30,
+      "legacyLabel": "30. Verre Extra Clair 1010.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 132,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A34:D34"
+    },
+    {
+      "legacyId": 31,
+      "legacyLabel": "31. Verre Une face fumée 1010.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 92,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A35:D35"
+    },
+    {
+      "legacyId": 32,
+      "legacyLabel": "32. Verre Une face fumée 1010.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 98,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A36:D36"
+    },
+    {
+      "legacyId": 33,
+      "legacyLabel": "33. Verre Une face fumée 1010.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 111,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A37:D37"
+    },
+    {
+      "legacyId": 34,
+      "legacyLabel": "34. Verre Double face fumée 1010.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 98,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A38:D38"
+    },
+    {
+      "legacyId": 35,
+      "legacyLabel": "35. Verre Double face fumée 1010.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 103,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A39:D39"
+    },
+    {
+      "legacyId": 36,
+      "legacyLabel": "36. Verre Double face fumée 1010.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "1010.4",
+      "purchasePricePerM2": 117,
+      "kgPerM2": 50,
+      "sourceCell": "'Ne pas toucher'!A40:D40"
+    },
+    {
+      "legacyId": 37,
+      "legacyLabel": "37. Verre Opale 88.4 Feuilleté Trempé Tous bord polis ( DROIT )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 82,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A41:D41"
+    },
+    {
+      "legacyId": 38,
+      "legacyLabel": "38. Verre Opale 88.4 Feuilleté Trempé Tous bord polis ( DROIT AVEC PERÇAGE )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 87,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A42:D42"
+    },
+    {
+      "legacyId": 39,
+      "legacyLabel": "39. Verre Opale 88.4 Feuilleté Trempé Tous bord polis ( EN DECOUPE ET PERÇAGE )",
+      "thickness": "88.4",
+      "purchasePricePerM2": 98,
+      "kgPerM2": 40,
+      "sourceCell": "'Ne pas toucher'!A43:D43"
+    }
+  ],
+  "supports": [
+    {
+      "legacyId": 1,
+      "legacyLabel": "GS-03-G (Rail encastré)",
+      "category": "Rail",
+      "perPanel": null,
+      "perLinearMeter": null,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 290,
+          "sourceCell": "'Ne pas toucher'!E48"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 310,
+          "sourceCell": "'Ne pas toucher'!F48"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "FIXED",
+          "amount": 340,
+          "sourceCell": "'Ne pas toucher'!G48"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Non",
+      "auditNote": "NON AUDITÉ : modèle absent du tarif validé. Prix et règle (barres de 3 m) repris de l'ancien fichier — à reconfirmer avec Yann.",
+      "compatibleGlassThickness": "Tous",
+      "sourceRow": 48
+    },
+    {
+      "legacyId": 2,
+      "legacyLabel": "GS-05 (Grande pince ovale) NF",
+      "category": "Pince",
+      "perPanel": 2,
+      "perLinearMeter": null,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 35.48,
+          "sourceCell": "'Ne pas toucher'!E49"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 40.8,
+          "sourceCell": "'Ne pas toucher'!F49"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 48.96,
+          "sourceCell": "'Ne pas toucher'!G49"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Hypothèse",
+      "auditNote": "Tarif validé. Quantité 2 / vitrage = hypothèse par analogie avec GS-06-A (non confirmée explicitement).",
+      "compatibleGlassThickness": "Tous",
+      "sourceRow": 49
+    },
+    {
+      "legacyId": 3,
+      "legacyLabel": "GS-06 (Grande pince carré) NF",
+      "category": "Pince",
+      "perPanel": 2,
+      "perLinearMeter": null,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 35.48,
+          "sourceCell": "'Ne pas toucher'!E50"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 40.8,
+          "sourceCell": "'Ne pas toucher'!F50"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 48.96,
+          "sourceCell": "'Ne pas toucher'!G50"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Hypothèse",
+      "auditNote": "Tarif validé. Quantité 2 / vitrage = hypothèse par analogie avec GS-06-A (non confirmée explicitement).",
+      "compatibleGlassThickness": "Tous",
+      "sourceRow": 50
+    },
+    {
+      "legacyId": 4,
+      "legacyLabel": "GS-06-A (Grande pince carré réglable) NF",
+      "category": "Pince",
+      "perPanel": 2,
+      "perLinearMeter": null,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 37.84,
+          "sourceCell": "'Ne pas toucher'!E51"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 43.51,
+          "sourceCell": "'Ne pas toucher'!F51"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 52.212,
+          "sourceCell": "'Ne pas toucher'!G51"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Oui",
+      "auditNote": "2 / vitrage — règle validée. 1 seule pince sur un petit vitrage UNIQUEMENT si Yann le valide pour ce projet (forcer la quantité).",
+      "compatibleGlassThickness": "Tous",
+      "sourceRow": 51
+    },
+    {
+      "legacyId": 5,
+      "legacyLabel": "GS-07 (Petite pince ovale)",
+      "category": "Pince",
+      "perPanel": null,
+      "perLinearMeter": 3,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 10.88,
+          "sourceCell": "'Ne pas toucher'!E52"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 12.51,
+          "sourceCell": "'Ne pas toucher'!F52"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 15.012,
+          "sourceCell": "'Ne pas toucher'!G52"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Hypothèse",
+      "auditNote": "Tarif validé. 3 / ml (arrondi sup.) = hypothèse par analogie avec GS-07-A. Pince pour verre 66.4.",
+      "compatibleGlassThickness": "66.4",
+      "sourceRow": 52
+    },
+    {
+      "legacyId": 6,
+      "legacyLabel": "GS-07-A (Petite pince carré)",
+      "category": "Pince",
+      "perPanel": null,
+      "perLinearMeter": 3,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 10.88,
+          "sourceCell": "'Ne pas toucher'!E53"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 12.51,
+          "sourceCell": "'Ne pas toucher'!F53"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 15.012,
+          "sourceCell": "'Ne pas toucher'!G53"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Oui",
+      "auditNote": "3 / ml par tronçon, arrondi supérieur — règle validée sauf instruction contraire de Yann. Pince pour verre 66.4.",
+      "compatibleGlassThickness": "66.4",
+      "sourceRow": 53
+    },
+    {
+      "legacyId": 7,
+      "legacyLabel": "GS-07-B (Moyenne pince ovale)",
+      "category": "Pince",
+      "perPanel": null,
+      "perLinearMeter": 3,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 16.56,
+          "sourceCell": "'Ne pas toucher'!E54"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 19.04,
+          "sourceCell": "'Ne pas toucher'!F54"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 22.848,
+          "sourceCell": "'Ne pas toucher'!G54"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Hypothèse",
+      "auditNote": "Tarif validé. 3 / ml (arrondi sup.) = hypothèse par analogie avec GS-07-C. Pince pour verre 88.4.",
+      "compatibleGlassThickness": "88.4",
+      "sourceRow": 54
+    },
+    {
+      "legacyId": 8,
+      "legacyLabel": "GS-07-C (Moyenne pince Carré) NF",
+      "category": "Pince",
+      "perPanel": null,
+      "perLinearMeter": 3,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 16.56,
+          "sourceCell": "'Ne pas toucher'!E55"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 19.04,
+          "sourceCell": "'Ne pas toucher'!F55"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 22.848,
+          "sourceCell": "'Ne pas toucher'!G55"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Oui",
+      "auditNote": "3 / ml par tronçon, arrondi supérieur — règle standard validée (si Yann impose 3 / vitrage : forcer la quantité). Pince pour verre 88.4.",
+      "compatibleGlassThickness": "88.4",
+      "sourceRow": 55
+    },
+    {
+      "legacyId": 9,
+      "legacyLabel": "GS-10 (Pince à l'anglaise carré)",
+      "category": "Pince",
+      "perPanel": 2,
+      "perLinearMeter": null,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 35,
+          "sourceCell": "'Ne pas toucher'!E56"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 40.25,
+          "sourceCell": "'Ne pas toucher'!F56"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 48.3,
+          "sourceCell": "'Ne pas toucher'!G56"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Oui",
+      "auditNote": "2 / vitrage — règle validée.",
+      "compatibleGlassThickness": "Tous",
+      "sourceRow": 56
+    },
+    {
+      "legacyId": 10,
+      "legacyLabel": "GS-12-L (Rail calles manuelles)",
+      "category": "Rail",
+      "perPanel": null,
+      "perLinearMeter": null,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 192.02,
+          "sourceCell": "'Ne pas toucher'!E57"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 222.75,
+          "sourceCell": "'Ne pas toucher'!F57"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 267.3,
+          "sourceCell": "'Ne pas toucher'!G57"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "À vérifier",
+      "auditNote": "Kit complet validé (anodisé et RAL), barres de 3 m arrondies au sup. Rattaché au « GS12 » du tarif validé : confirmer que GS-12-L = GS12.",
+      "compatibleGlassThickness": "Tous",
+      "sourceRow": 57
+    },
+    {
+      "legacyId": 11,
+      "legacyLabel": "GS-13-E (Rail fin sans Capot)",
+      "category": "Rail",
+      "perPanel": null,
+      "perLinearMeter": null,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 210,
+          "sourceCell": "'Ne pas toucher'!E58"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 255,
+          "sourceCell": "'Ne pas toucher'!F58"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "FIXED",
+          "amount": 306,
+          "sourceCell": "'Ne pas toucher'!G58"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Non",
+      "auditNote": "NON AUDITÉ : modèle absent du tarif validé. Prix et règle (barres de 3 m) repris de l'ancien fichier — à reconfirmer avec Yann.",
+      "compatibleGlassThickness": "Tous",
+      "sourceRow": 58
+    },
+    {
+      "legacyId": 12,
+      "legacyLabel": "GS-16 (Rail à l'anglaise)",
+      "category": "Rail",
+      "perPanel": null,
+      "perLinearMeter": null,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 367.615,
+          "sourceCell": "'Ne pas toucher'!E59"
+        },
+        "RAL_STANDARD": {
+          "mode": "UNAVAILABLE",
+          "amount": null,
+          "sourceCell": "'Ne pas toucher'!F59"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "UNAVAILABLE",
+          "amount": null,
+          "sourceCell": "'Ne pas toucher'!G59"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Anodisé seul",
+      "auditNote": "Kit complet anodisé validé (367,615 € HT / barre). RAL et autre couleur : composants exacts à recalculer, aucun kit RAL inventé.",
+      "compatibleGlassThickness": "Tous",
+      "sourceRow": 59
+    },
+    {
+      "legacyId": 13,
+      "legacyLabel": "GS-17 (Rail avec déport)",
+      "category": "Rail",
+      "perPanel": null,
+      "perLinearMeter": null,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 294.12,
+          "sourceCell": "'Ne pas toucher'!E60"
+        },
+        "RAL_STANDARD": {
+          "mode": "UNAVAILABLE",
+          "amount": null,
+          "sourceCell": "'Ne pas toucher'!F60"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "UNAVAILABLE",
+          "amount": null,
+          "sourceCell": "'Ne pas toucher'!G60"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Anodisé seul",
+      "auditNote": "Kit complet anodisé validé (294,12 € HT / barre). RAL et autre couleur : composants exacts à recalculer, aucun kit RAL inventé.",
+      "compatibleGlassThickness": "Tous",
+      "sourceRow": 60
+    },
+    {
+      "legacyId": 14,
+      "legacyLabel": "GS-19-L (rail Française)",
+      "category": "Rail",
+      "perPanel": null,
+      "perLinearMeter": null,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 287.53,
+          "sourceCell": "'Ne pas toucher'!E61"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 301.51,
+          "sourceCell": "'Ne pas toucher'!F61"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 361.812,
+          "sourceCell": "'Ne pas toucher'!G61"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Oui",
+      "auditNote": "Kit complet validé (anodisé et RAL), barres de 3 m arrondies au sup. par tronçon (chute réutilisable : forcer la quantité si Yann le demande).",
+      "compatibleGlassThickness": "Tous",
+      "sourceRow": 61
+    },
+    {
+      "legacyId": 15,
+      "legacyLabel": "GS-02 (Spider double réglage)",
+      "category": "Pince",
+      "perPanel": 4,
+      "perLinearMeter": null,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 14.19,
+          "sourceCell": "'Ne pas toucher'!E62"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 16.32,
+          "sourceCell": "'Ne pas toucher'!F62"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 19.584,
+          "sourceCell": "'Ne pas toucher'!G62"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0.6,
+      "auditStatus": "Oui",
+      "auditNote": "4 / vitrage — règle validée. Accessoires 0,60 € / fixation = tige filetée 0,30 € + écrou/rondelle 0,30 € (hypothèse : 1 de chaque par fixation). Verre percé obligatoire.",
+      "compatibleGlassThickness": "88.4",
+      "sourceRow": 62
+    },
+    {
+      "legacyId": 16,
+      "legacyLabel": "MC-211",
+      "category": "Pince",
+      "perPanel": null,
+      "perLinearMeter": 4,
+      "pricing": {
+        "ANODISE": {
+          "mode": "FIXED",
+          "amount": 25,
+          "sourceCell": "'Ne pas toucher'!E63"
+        },
+        "RAL_STANDARD": {
+          "mode": "FIXED",
+          "amount": 28.75,
+          "sourceCell": "'Ne pas toucher'!F63"
+        },
+        "AUTRE_COULEUR": {
+          "mode": "MULTIPLIER_RAL",
+          "amount": 34.5,
+          "sourceCell": "'Ne pas toucher'!G63"
+        }
+      },
+      "fixedAccessoriesPerUnit": 0,
+      "auditStatus": "Non",
+      "auditNote": "NON AUDITÉ : modèle absent du tarif validé. Prix et règle (4 / ml) repris de l'ancien fichier — à reconfirmer avec Yann.",
+      "compatibleGlassThickness": "Tous",
+      "sourceRow": 63
+    }
+  ],
+  "parameters": {
+    "P_AutreCouleur": {
+      "value": 1.2,
+      "sourceRange": "'Ne pas toucher'!$B$67"
+    },
+    "P_Barre": {
+      "value": 3,
+      "sourceRange": "'Ne pas toucher'!$B$68"
+    },
+    "P_Caisse": {
+      "value": 100,
+      "sourceRange": "'Ne pas toucher'!$B$69"
+    },
+    "P_Decoupe": {
+      "value": 10,
+      "sourceRange": "'Ne pas toucher'!$B$84"
+    },
+    "P_FC_Base": {
+      "value": 200,
+      "sourceRange": "'Ne pas toucher'!$B$76"
+    },
+    "P_FC_Incr": {
+      "value": 50,
+      "sourceRange": "'Ne pas toucher'!$B$77"
+    },
+    "P_FC_MaxVitrages": {
+      "value": 20,
+      "sourceRange": "'Ne pas toucher'!$B$80"
+    },
+    "P_FC_Rail": {
+      "value": 100,
+      "sourceRange": "'Ne pas toucher'!$B$78"
+    },
+    "P_FC_Tolerance": {
+      "value": 22,
+      "sourceRange": "'Ne pas toucher'!$B$81"
+    },
+    "P_FC_Tranche": {
+      "value": 5,
+      "sourceRange": "'Ne pas toucher'!$B$79"
+    },
+    "P_Pion": {
+      "value": 8.75,
+      "sourceRange": "'Ne pas toucher'!$B$83"
+    },
+    "P_PoidsMax": {
+      "value": 1000,
+      "sourceRange": "'Ne pas toucher'!$B$70"
+    },
+    "P_PoidsSeuil": {
+      "value": 1300,
+      "sourceRange": "'Ne pas toucher'!$B$71"
+    },
+    "P_Portillon": {
+      "value": 625,
+      "sourceRange": "'Ne pas toucher'!$B$82"
+    },
+    "P_ReducRail": {
+      "value": 30,
+      "sourceRange": "'Ne pas toucher'!$B$72"
+    },
+    "P_TF_Franchise": {
+      "value": 5,
+      "sourceRange": "'Ne pas toucher'!$B$73"
+    },
+    "P_TF_Plafond": {
+      "value": 450,
+      "sourceRange": "'Ne pas toucher'!$B$75"
+    },
+    "P_TF_Tarif": {
+      "value": 30,
+      "sourceRange": "'Ne pas toucher'!$B$74"
+    }
+  },
+  "choices": {
+    "colors": [
+      "Anodisé",
+      "Couleur Standard RAL 7016, 9010, 9005",
+      "Autre couleur"
+    ],
+    "shipping": [
+      "Livraison standard",
+      "Enlèvement dépôt MGK",
+      "Livraison Corse (enlèvement dépôt MGK)",
+      "Sans livraison France-France"
+    ],
+    "pricingMethods": [
+      "Coefficient",
+      "Taux de marque"
+    ],
+    "vatRates": [
+      0.1,
+      0.2
+    ],
+    "pins": [
+      "Non",
+      "Oui"
+    ]
+  },
+  "defaultInput": {
+    "lengthMm": 7000,
+    "finishedHeightMm": 1100,
+    "glassLegacyId": 13,
+    "supportLegacyLabel": "GS-07-A (Petite pince carré)",
+    "color": "Anodisé",
+    "shipping": "Livraison standard",
+    "saleMethod": "Coefficient",
+    "saleValue": 1.7,
+    "vatRate": 0.2,
+    "targetPanelWidthMm": 1000,
+    "gapPanelsMm": 15,
+    "gapEndsEachSideMm": 25,
+    "forcedPanels": null,
+    "forcedSupports": null,
+    "forcedCrates": null,
+    "forcedPallets": null,
+    "gateCount": 0,
+    "alignmentPins": false,
+    "specialCuts": 0
+  },
+  "testCases": {
+    "default_excel": {
+      "ml": 7.0,
+      "n_auto": 7,
+      "n": 7,
+      "width": 980.0,
+      "hglass": 1100,
+      "area": 7.546,
+      "weight": 226.38,
+      "caisses": 1,
+      "n_by_c": 7,
+      "palettes": 1,
+      "n_by_p": 7,
+      "support_qty": 21,
+      "glassbuy": 452.76,
+      "supportbuy": 228.48000000000002,
+      "caissesbuy": 100,
+      "turkey": 60,
+      "france": 250,
+      "cutsbuy": 0,
+      "cost": 1091.24,
+      "coefficient": 1.7,
+      "sell_ht_base": 1855.108,
+      "options_ht": 0,
+      "sell_ht_total": 1855.108,
+      "sell_ttc": 2226.1295999999998,
+      "ht_ml": 265.0154285714286
+    },
+    "rail_gs19_7m": {
+      "ml": 7.0,
+      "n_auto": 7,
+      "n": 7,
+      "width": 980.0,
+      "hglass": 1070,
+      "area": 7.3402,
+      "weight": 220.20600000000002,
+      "caisses": 1,
+      "n_by_c": 7,
+      "palettes": 1,
+      "n_by_p": 7,
+      "support_qty": 3,
+      "glassbuy": 440.41200000000003,
+      "supportbuy": 862.5899999999999,
+      "caissesbuy": 100,
+      "turkey": 60,
+      "france": 350,
+      "cutsbuy": 0,
+      "cost": 1813.002,
+      "coefficient": 1.7,
+      "sell_ht_base": 3082.1034,
+      "options_ht": 0,
+      "sell_ht_total": 3082.1034,
+      "sell_ttc": 3698.5240799999997,
+      "ht_ml": 440.3004857142857
+    },
+    "without_france_delivery_plus_options": {
+      "ml": 7.0,
+      "n_auto": 7,
+      "n": 7,
+      "width": 980.0,
+      "hglass": 1100,
+      "area": 7.546,
+      "weight": 226.38,
+      "caisses": 1,
+      "n_by_c": 7,
+      "palettes": 1,
+      "n_by_p": 7,
+      "support_qty": 21,
+      "glassbuy": 452.76,
+      "supportbuy": 228.48000000000002,
+      "caissesbuy": 100,
+      "turkey": 60,
+      "france": 0,
+      "cutsbuy": 0,
+      "cost": 841.24,
+      "coefficient": 1.7,
+      "sell_ht_base": 1430.108,
+      "options_ht": 677.5,
+      "sell_ht_total": 2107.608,
+      "sell_ttc": 2529.1296,
+      "ht_ml": 301.0868571428572
+    },
+    "three_meter": {
+      "ml": 3.0,
+      "n_auto": 3,
+      "n": 3,
+      "width": 973.3333333333334,
+      "hglass": 1100,
+      "area": 3.212,
+      "weight": 96.36,
+      "caisses": 1,
+      "n_by_c": 3,
+      "palettes": 1,
+      "n_by_p": 3,
+      "support_qty": 9,
+      "glassbuy": 192.72,
+      "supportbuy": 97.92,
+      "caissesbuy": 100,
+      "turkey": 0,
+      "france": 200,
+      "cutsbuy": 0,
+      "cost": 590.64,
+      "coefficient": 1.7,
+      "sell_ht_base": 1004.088,
+      "options_ht": 0,
+      "sell_ht_total": 1004.088,
+      "sell_ttc": 1204.9055999999998,
+      "ht_ml": 334.69599999999997
+    },
+    "override_panels_five": {
+      "ml": 7.0,
+      "n_auto": 7,
+      "n": 5,
+      "width": 1378.0,
+      "hglass": 1100,
+      "area": 7.579,
+      "weight": 227.37,
+      "caisses": 1,
+      "n_by_c": 5,
+      "palettes": 1,
+      "n_by_p": 5,
+      "support_qty": 21,
+      "glassbuy": 454.74,
+      "supportbuy": 228.48000000000002,
+      "caissesbuy": 100,
+      "turkey": 0,
+      "france": 200,
+      "cutsbuy": 0,
+      "cost": 983.22,
+      "coefficient": 1.7,
+      "sell_ht_base": 1671.474,
+      "options_ht": 0,
+      "sell_ht_total": 1671.474,
+      "sell_ttc": 2005.7687999999998,
+      "ht_ml": 238.78199999999998
+    },
+    "twenty_three_panels_auto_shipping": {
+      "ml": 23.5,
+      "n_auto": 23,
+      "n": 23,
+      "width": 1005.2173913043479,
+      "hglass": 1100,
+      "area": 25.432,
+      "weight": 762.9599999999999,
+      "caisses": 1,
+      "n_by_c": 23,
+      "palettes": 2,
+      "n_by_p": 12,
+      "support_qty": 71,
+      "glassbuy": 1525.9199999999998,
+      "supportbuy": 772.48,
+      "caissesbuy": 100,
+      "turkey": 450,
+      "france": 600,
+      "cutsbuy": 0,
+      "cost": 3448.3999999999996,
+      "coefficient": 1.7,
+      "sell_ht_base": 5862.279999999999,
+      "options_ht": 0,
+      "sell_ht_total": 5862.279999999999,
+      "sell_ttc": 7034.735999999998,
+      "ht_ml": 249.45872340425527
+    },
+    "twenty_two_panels_tolerance": {
+      "ml": 22.0,
+      "n_auto": 22,
+      "n": 22,
+      "width": 983.4090909090909,
+      "hglass": 1100,
+      "area": 23.7985,
+      "weight": 713.955,
+      "caisses": 1,
+      "n_by_c": 22,
+      "palettes": 1,
+      "n_by_p": 22,
+      "support_qty": 66,
+      "glassbuy": 1427.91,
+      "supportbuy": 718.08,
+      "caissesbuy": 100,
+      "turkey": 450,
+      "france": 350.0,
+      "cutsbuy": 0,
+      "cost": 3045.9900000000002,
+      "coefficient": 1.7,
+      "sell_ht_base": 5178.183,
+      "options_ht": 0,
+      "sell_ht_total": 5178.183,
+      "sell_ttc": 6213.8196,
+      "ht_ml": 235.37195454545454
+    },
+    "target_margin_40pct": {
+      "ml": 7.0,
+      "n_auto": 7,
+      "n": 7,
+      "width": 980.0,
+      "hglass": 1100,
+      "area": 7.546,
+      "weight": 226.38,
+      "caisses": 1,
+      "n_by_c": 7,
+      "palettes": 1,
+      "n_by_p": 7,
+      "support_qty": 21,
+      "glassbuy": 452.76,
+      "supportbuy": 228.48000000000002,
+      "caissesbuy": 100,
+      "turkey": 60,
+      "france": 250,
+      "cutsbuy": 0,
+      "cost": 1091.24,
+      "coefficient": 1.6666666666666667,
+      "sell_ht_base": 1818.7333333333333,
+      "options_ht": 0,
+      "sell_ht_total": 1818.7333333333333,
+      "sell_ttc": 2182.48,
+      "ht_ml": 259.81904761904764
+    },
+    "spider_7m": {
+      "ml": 7.0,
+      "n_auto": 7,
+      "n": 7,
+      "width": 980.0,
+      "hglass": 1100,
+      "area": 7.546,
+      "weight": 301.84000000000003,
+      "caisses": 1,
+      "n_by_c": 7,
+      "palettes": 1,
+      "n_by_p": 7,
+      "support_qty": 28,
+      "glassbuy": 603.6800000000001,
+      "supportbuy": 414.12,
+      "caissesbuy": 100,
+      "turkey": 60,
+      "france": 250,
+      "cutsbuy": 0,
+      "cost": 1427.8000000000002,
+      "coefficient": 1.7,
+      "sell_ht_base": 2427.26,
+      "options_ht": 0,
+      "sell_ht_total": 2427.26,
+      "sell_ttc": 2912.712,
+      "ht_ml": 346.7514285714286
+    },
+    "gs16_ral_unavailable": {
+      "ml": 7.0,
+      "n_auto": 7,
+      "n": 7,
+      "width": 980.0,
+      "hglass": 1070,
+      "area": 7.3402,
+      "weight": 220.20600000000002,
+      "caisses": 1,
+      "n_by_c": 7,
+      "palettes": 1,
+      "n_by_p": 7,
+      "support_qty": 3,
+      "glassbuy": 440.41200000000003,
+      "supportbuy": null,
+      "caissesbuy": 100,
+      "turkey": 60,
+      "france": 350,
+      "cutsbuy": 0,
+      "cost": null,
+      "coefficient": 1.7,
+      "sell_ht_base": null,
+      "options_ht": 0,
+      "sell_ht_total": null,
+      "sell_ttc": null,
+      "ht_ml": null
+    },
+    "gs03g_other_fixed": {
+      "ml": 7.0,
+      "n_auto": 7,
+      "n": 7,
+      "width": 980.0,
+      "hglass": 1070,
+      "area": 7.3402,
+      "weight": 220.20600000000002,
+      "caisses": 1,
+      "n_by_c": 7,
+      "palettes": 1,
+      "n_by_p": 7,
+      "support_qty": 3,
+      "glassbuy": 440.41200000000003,
+      "supportbuy": 1020,
+      "caissesbuy": 100,
+      "turkey": 60,
+      "france": 350,
+      "cutsbuy": 0,
+      "cost": 1970.412,
+      "coefficient": 1.7,
+      "sell_ht_base": 3349.7004,
+      "options_ht": 0,
+      "sell_ht_total": 3349.7004,
+      "sell_ttc": 4019.64048,
+      "ht_ml": 478.5286285714286
+    }
+  }
+}

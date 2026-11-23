@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BellRing, Factory, FileText, Home, KanbanSquare, LogOut, Settings2, Users } from "lucide-react";
+import { BarChart3, BellRing, Calculator, Factory, FileText, Home, KanbanSquare, LogOut, Settings2, Users } from "lucide-react";
 import { AdminLogout } from "@/components/admin/AdminLogout";
 
 /* Navigation de l'espace commercial : sa home et ses sous-catégories. */
@@ -15,6 +15,7 @@ const NAV = [
   { href: "/commercial/pipeline", label: "Pipeline", icon: KanbanSquare, exact: false },
   { href: "/commercial/production", label: "Production", icon: Factory, exact: false },
   { href: "/commercial/stats", label: "Statistiques", icon: BarChart3, exact: false },
+  { href: "/commercial/simulation", label: "Simulation", icon: Calculator, exact: false },
 ];
 
 export function CommercialNav() {
