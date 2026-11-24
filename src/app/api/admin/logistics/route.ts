@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
+import { LOGISTICS_KEYS } from "@/lib/admin/menus";
 import { dbConfigured, getLead, addEvent } from "@/lib/admin/db";
 import {
   advanceOrder,
@@ -13,7 +14,7 @@ import {
 /* Actions du pôle gestion — une seule route, gardée par la session admin.
    En mode démo (pas de base), tout renvoie { demo: true } sans rien écrire. */
 export async function POST(request: Request) {
-  const g = await requireMenuApi(request, ["production", "clients", "etat"]);
+  const g = await requireMenuApi(request, ["production", "clients", "etat", ...LOGISTICS_KEYS]);
   if (g.denied) return g.denied;
   if (!dbConfigured) return NextResponse.json({ ok: false, demo: true });
 

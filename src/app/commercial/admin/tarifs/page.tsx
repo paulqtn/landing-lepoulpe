@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PriceEditor } from "@/components/admin/PriceEditor";
-import { CommissionsForm, SocieteForm } from "@/components/admin/SettingsForms";
+import { CommissionsForm, DelaisForm, SocieteForm } from "@/components/admin/SettingsForms";
+import { DELAIS_LABELS, getDelais } from "@/lib/admin/logistics-tasks";
 import { requireMenu } from "@/lib/admin/auth";
 import { getCompSettings } from "@/lib/admin/compens";
 import { ENGINE_LABELS, currentVersion, describe, listVersions, type Engine } from "@/lib/admin/prices";
@@ -14,7 +15,7 @@ export const dynamic = "force-dynamic";
 const TABS = [
   { key: "site", label: "Tarifs du site" },
   { key: "simulation", label: "Tarifs de la Simulation" },
-  { key: "parametres", label: "Commissions et société" },
+  { key: "parametres", label: "Commissions, délais et société" },
 ] as const;
 
 export default async function TarifsPage({ searchParams }: { searchParams: Promise<{ onglet?: string }> }) {
@@ -67,12 +68,17 @@ async function Tarifs({ engine }: { engine: Engine }) {
 }
 
 async function Parametres() {
-  const [comp, societe] = await Promise.all([getCompSettings(), getSociete()]);
+  const [comp, societe, delais] = await Promise.all([getCompSettings(), getSociete(), getDelais()]);
   return (
     <>
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         <h2 className="mb-4 text-base font-extrabold text-inkgreen">Rémunération des commerciaux</h2>
         <CommissionsForm initial={comp} />
+      </section>
+      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+        <h2 className="text-base font-extrabold text-inkgreen">Délais logistiques</h2>
+        <p className="mb-4 mt-1 text-xs text-neutral-400">Nombre de jours après la validation de l&rsquo;affaire par le commercial. Ils fixent les échéances des tâches du logisticien.</p>
+        <DelaisForm fields={Object.entries(DELAIS_LABELS).map(([key, label]) => ({ key, label }))} initial={delais} />
       </section>
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         <h2 className="text-base font-extrabold text-inkgreen">Société — mentions des devis</h2>

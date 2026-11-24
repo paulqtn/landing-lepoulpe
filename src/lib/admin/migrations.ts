@@ -211,4 +211,12 @@ export const MIGRATIONS: Migration[] = [
     id: "005_menus_par_utilisateur",
     sql: `ALTER TABLE users ADD COLUMN menus JSONB;`,
   },
+  {
+    // Nouveau rôle : logisticien (espace /logistique).
+    id: "006_role_logisticien",
+    sql: `
+      ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
+      ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('superadmin', 'admin', 'commercial', 'logisticien'));
+    `,
+  },
 ];

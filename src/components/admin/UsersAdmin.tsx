@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { Loader2, UserPlus } from "lucide-react";
 import { MENUS, ROLE_MENUS, type MenuKey } from "@/lib/admin/menus";
 
-type Role = "superadmin" | "admin" | "commercial";
+type Role = "superadmin" | "admin" | "commercial" | "logisticien";
 type Row = { id: number; email: string; name: string; role: Role; active: boolean; last_login_at: string | null; menus: MenuKey[]; custom: boolean };
 
-const ROLE_LABELS: Record<Role, string> = { superadmin: "Super-administrateur", admin: "Administrateur", commercial: "Commercial" };
+const ROLE_LABELS: Record<Role, string> = { superadmin: "Super-administrateur", admin: "Administrateur", commercial: "Commercial", logisticien: "Logisticien" };
 const inputCls =
   "w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm font-semibold text-inkgreen outline-none transition focus:border-pine-500 focus:ring-4 focus:ring-pine-500/10";
 const dateFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
@@ -160,7 +160,7 @@ function MenuPicker({ user, disabled, onSave }: { user: Row; disabled: boolean; 
             <label key={m.key} className="flex items-center gap-2 text-sm text-neutral-700">
               <input type="checkbox" className="h-4 w-4 accent-pine-700" checked={sel.includes(m.key)} disabled={disabled} onChange={() => toggle(m.key)} />
               {m.label}
-              {m.group === "administration" && <span className="text-[10px] font-bold uppercase text-amber-600">admin</span>}
+              {m.group !== "commercial" && <span className="text-[10px] font-bold uppercase text-amber-600">{m.group === "administration" ? "admin" : "logistique"}</span>}
             </label>
           ))}
         </div>

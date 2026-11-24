@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { audit, requireMenuApi } from "@/lib/admin/auth";
 import { getCompSettings } from "@/lib/admin/compens";
+import { DELAIS_DEFAUT, getDelais } from "@/lib/admin/logistics-tasks";
 import { getSetting, setSetting } from "@/lib/admin/settings";
 import { SOCIETE_FIELDS } from "@/lib/admin/societe";
 
@@ -24,6 +25,19 @@ export async function POST(req: Request) {
     const before = await getCompSettings();
     await setSetting("commissions", next, g.user.name);
     await audit(g.user.name, "parametres_commissions", "settings", "commissions", before, next);
+    return NextResponse.json({ ok: true });
+  }
+
+  if (body.key === "logistique") {
+    const next: Record<string, number> = {};
+    for (const k of Object.keys(DELAIS_DEFAUT)) {
+      const x = v[k];
+      if (typeof x !== "number" || !Number.isInteger(x) || x < 0 || x > 365) return NextResponse.json({ ok: false, error: "Délais : nombres de jours entiers, de 0 à 365." }, { status: 422 });
+      next[k] = x;
+    }
+    const before = await getDelais();
+    await setSetting("logistique", next, g.user.name);
+    await audit(g.user.name, "parametres_logistique", "settings", "logistique", before, next);
     return NextResponse.json({ ok: true });
   }
 

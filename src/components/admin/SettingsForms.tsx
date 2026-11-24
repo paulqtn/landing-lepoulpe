@@ -82,3 +82,24 @@ export function SocieteForm({ fields, initial }: { fields: { key: string; label:
     </form>
   );
 }
+
+export function DelaisForm({ fields, initial }: { fields: { key: string; label: string }[]; initial: Record<string, number> }) {
+  const [v, setV] = useState<Record<string, string>>(Object.fromEntries(Object.entries(initial).map(([k, x]) => [k, String(x)])));
+  const { busy, msg, save } = useSave();
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); save("logistique", Object.fromEntries(fields.map((f) => [f.key, Number(v[f.key])]))); }}>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {fields.map((f) => (
+          <label key={f.key} className="block">
+            <span className="mb-1.5 block text-xs font-semibold text-neutral-500">{f.label}</span>
+            <span className="flex items-center gap-2">
+              <span className="text-sm font-bold text-neutral-400">J+</span>
+              <input className={inputCls} inputMode="numeric" value={v[f.key] ?? ""} onChange={(e) => setV({ ...v, [f.key]: e.target.value })} />
+            </span>
+          </label>
+        ))}
+      </div>
+      <Footer busy={busy} msg={msg} />
+    </form>
+  );
+}

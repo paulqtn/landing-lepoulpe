@@ -19,12 +19,13 @@ import { adminQuery as q, dbConfigured } from "./db";
 export const ADMIN_COOKIE = "mgk_session";
 export const SESSION_HOURS = 12;
 
-export const ROLES = ["superadmin", "admin", "commercial"] as const;
+export const ROLES = ["superadmin", "admin", "commercial", "logisticien"] as const;
 export type Role = (typeof ROLES)[number];
 export const ROLE_LABELS: Record<Role, string> = {
   superadmin: "Super-administrateur",
   admin: "Administrateur",
   commercial: "Commercial",
+  logisticien: "Logisticien",
 };
 
 export type User = {

@@ -45,6 +45,14 @@ email, relances programmées, suivi commercial.
 - Un devis envoyé est figé ; « Créer une nouvelle version » en fait une copie modifiable.
 - Les relances automatiques ne démarrent qu'après un envoi validé.
 
+## Espace logistique (`/logistique`)
+
+Rôle **Logisticien** : il ne voit que ses menus — Tâches du jour, Commandes atelier, Stock,
+Expéditions — et aucun montant. Les tâches partent de la date à laquelle le commercial a
+validé l'affaire (passage à « Gagné », `leads.won_at`) : lancement J+1, découpe J+3,
+façonnage J+6, prêt J+8, expédition J+10. Délais réglables dans *Tarifs et paramètres →
+Commissions, délais et société*. Menus ajustables compte par compte dans *Utilisateurs*.
+
 ## RGPD
 
 Sur chaque fiche client (rôles admin) : export des données de la personne, et

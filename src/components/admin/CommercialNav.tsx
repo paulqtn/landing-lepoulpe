@@ -3,17 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Activity, BarChart3, BellRing, Calculator, Factory, FileText, Home, KanbanSquare, LogOut, Settings2, SlidersHorizontal, UserCog, UserRound, Users,
+  Activity, BarChart3, BellRing, Boxes, Calculator, ClipboardList, Factory, FileText, Hammer, Home, KanbanSquare, LogOut, Settings2, SlidersHorizontal, Truck, UserCog, UserRound, Users,
 } from "lucide-react";
 import { AdminLogout } from "@/components/admin/AdminLogout";
-import { MENUS, type MenuKey } from "@/lib/admin/menus";
+import { GROUP_LABELS, MENUS, type MenuKey } from "@/lib/admin/menus";
 
 /* Navigation de l'espace commercial : sa home, ses sous-catégories et,
    selon le rôle, la partie administration. */
 
 const ICONS: Record<MenuKey, typeof Home> = {
   etat: Home, devis: FileText, clients: Users, relances: BellRing, pipeline: KanbanSquare, production: Factory,
-  stats: BarChart3, simulation: Calculator, calculateur: Settings2, tarifs: SlidersHorizontal, diagnostic: Activity,
+  stats: BarChart3, simulation: Calculator, calculateur: Settings2,
+  logistique: ClipboardList, commandes: Hammer, stock: Boxes, expeditions: Truck,
+  tarifs: SlidersHorizontal, diagnostic: Activity,
 };
 
 type Item = { href: string; label: string; icon: typeof Home; exact?: boolean };
@@ -23,12 +25,18 @@ export function CommercialNav({ menus, superadmin, compact = false }: { menus: M
   // Seuls les menus ouverts à ce compte sont affichés (le serveur les vérifie aussi).
   const visible = MENUS.filter((m) => menus.includes(m.key));
   const toItem = (m: (typeof MENUS)[number]): Item => ({ href: m.href, label: m.label, icon: ICONS[m.key], exact: m.exact });
-  const NAV = visible.filter((m) => m.group === "commercial").map(toItem);
-  const admin: Item[] = [
-    ...visible.filter((m) => m.group === "administration").map(toItem),
-    ...(superadmin ? [{ href: "/commercial/admin/utilisateurs", label: "Utilisateurs", icon: UserCog }] : []),
-  ];
-  const all: Item[] = [...NAV, ...admin, { href: "/commercial/compte", label: "Mon compte", icon: UserRound }];
+  const groups = (["commercial", "logistique", "administration"] as const)
+    .map((g) => ({
+      key: g,
+      label: GROUP_LABELS[g],
+      items: [
+        ...visible.filter((m) => m.group === g).map(toItem),
+        ...(g === "administration" && superadmin ? [{ href: "/commercial/admin/utilisateurs", label: "Utilisateurs", icon: UserCog }] : []),
+      ],
+    }))
+    .filter((g) => g.items.length > 0);
+  const account: Item = { href: "/commercial/compte", label: "Mon compte", icon: UserRound };
+  const all: Item[] = [...groups.flatMap((g) => g.items), account];
   const isOn = (n: { href: string; exact?: boolean }) => (n.exact ? path === n.href : path.startsWith(n.href));
 
   if (compact) {
@@ -75,15 +83,14 @@ export function CommercialNav({ menus, superadmin, compact = false }: { menus: M
 
   return (
     <>
-      <nav className="space-y-1">{NAV.map(item)}</nav>
-      {admin.length > 0 && (
-        <div className="mt-2 border-t border-neutral-100 pt-2">
-          <p className="px-3 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Administration</p>
-          <nav className="space-y-1">{admin.map(item)}</nav>
+      {groups.map((g, i) => (
+        <div key={g.key} className={i === 0 ? "" : "mt-2 border-t border-neutral-100 pt-2"}>
+          <p className="px-3 pb-1 pt-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">{g.label}</p>
+          <nav className="space-y-1">{g.items.map(item)}</nav>
         </div>
-      )}
+      ))}
       <div className="mt-2 border-t border-neutral-100 pt-2">
-        {item({ href: "/commercial/compte", label: "Mon compte", icon: UserRound })}
+        {item(account)}
         <AdminLogout>
           <span className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-500 transition hover:bg-red-50 hover:text-red-600">
             <LogOut className="h-4 w-4" />
