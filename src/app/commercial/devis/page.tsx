@@ -4,6 +4,7 @@ import { dateFmt, eurFmt, ScoreBadge } from "@/components/admin/ui";
 import { currentRep } from "@/lib/admin/auth";
 import { listLeads } from "@/lib/admin/db";
 import { USAGE_LABELS } from "@/lib/admin/statuts";
+import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,7 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
         <div>
           <h1 className="text-2xl font-extrabold text-inkgreen">Devis à traiter</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            Calepinage au calculateur, envoi du devis depuis la fiche — puis le statut passe à « Devis envoyé ».
+            Chaque demande a son brouillon de devis : relisez-le, ajustez les lignes, puis validez l&rsquo;envoi — le statut passe alors à « Devis envoyé ».
           </p>
         </div>
         {rep && (
@@ -78,12 +79,13 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
                   </Link>
                   <Link
                     href={`/commercial/clients/${l.id}`}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-pine-600"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-3.5 py-2 text-xs font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700"
                   >
                     <FileText className="h-3.5 w-3.5" />
-                    Traiter le devis
+                    Fiche
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
+                  <PrepareQuoteButton leadId={l.id} label="Relire et envoyer le devis" />
                 </li>
               );
             })}

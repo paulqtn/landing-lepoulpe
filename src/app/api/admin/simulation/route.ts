@@ -50,5 +50,6 @@ export async function POST(req: Request) {
   const catalog = await getCatalogueSimulation();
   const result = simulate(input, catalog);
   const comparison = result.geometry ? compareSystems(input, catalog, body.keepForcedSupports !== false) : [];
-  return NextResponse.json({ result, comparison });
+  // La saisie normalisée est renvoyée pour pouvoir être enregistrée telle quelle.
+  return NextResponse.json({ result, comparison, input });
 }

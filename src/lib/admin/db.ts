@@ -137,6 +137,8 @@ export type Lead = {
   devis_views: number;
   last_activity_at: string | null;
   won_at: string | null;
+  consent_at?: string | null;
+  anonymized_at?: string | null;
 };
 
 export type LeadEvent = {

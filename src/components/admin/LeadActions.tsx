@@ -96,11 +96,15 @@ export function LeadActions({
           <button
             type="button"
             disabled={pending || !hasEstimation}
-            onClick={() => call(`/api/admin/leads/${leadId}/send-devis`, { method: "POST" })}
+            onClick={() => {
+              // Double vérification : aucun e-mail ne part sur un simple clic.
+              if (window.confirm("Envoyer maintenant au client l'e-mail d'estimation (prix global + lien vers sa page) ?\n\nPour un devis détaillé en PDF, utilisez plutôt « Préparer un devis »."))
+                call(`/api/admin/leads/${leadId}/send-devis`, { method: "POST" });
+            }}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-500 px-5 py-2.5 text-sm font-bold text-pine-950 transition hover:bg-amber-600 disabled:opacity-40"
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-            {hasEstimation ? "Envoyer / renvoyer le devis" : "Pas d'estimation à envoyer"}
+            {hasEstimation ? "Envoyer l'e-mail d'estimation" : "Pas d'estimation à envoyer"}
           </button>
           <button
             type="button"

@@ -163,4 +163,47 @@ export const MIGRATIONS: Migration[] = [
       CREATE INDEX idx_price_versions_engine ON price_versions(engine, id DESC);
     `,
   },
+  {
+    // Devis détaillés (propositions et lignes) et historique des simulations.
+    id: "004_devis_et_simulations",
+    sql: `
+      CREATE SEQUENCE quote_ref_seq START 1;
+      CREATE TABLE quotes (
+        id SERIAL PRIMARY KEY,
+        ref TEXT UNIQUE NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        lead_id INT REFERENCES leads(id) ON DELETE SET NULL,
+        statut TEXT NOT NULL DEFAULT 'brouillon' CHECK (statut IN ('brouillon', 'envoye', 'annule')),
+        origine TEXT NOT NULL DEFAULT 'manuel',
+        created_by TEXT,
+        updated_by TEXT,
+        client JSONB NOT NULL,
+        options JSONB NOT NULL,
+        total_ht NUMERIC(12,2) NOT NULL DEFAULT 0,
+        total_ttc NUMERIC(12,2) NOT NULL DEFAULT 0,
+        price_version INT,
+        sent_at TIMESTAMPTZ,
+        sent_by TEXT,
+        sent_to TEXT,
+        snapshot JSONB
+      );
+      CREATE INDEX idx_quotes_lead ON quotes(lead_id);
+      CREATE INDEX idx_quotes_statut ON quotes(statut, created_at DESC);
+
+      CREATE TABLE simulations (
+        id SERIAL PRIMARY KEY,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        created_by TEXT,
+        lead_id INT REFERENCES leads(id) ON DELETE SET NULL,
+        label TEXT NOT NULL,
+        input JSONB NOT NULL,
+        result JSONB NOT NULL,
+        price_version INT,
+        total_ht NUMERIC(12,2),
+        total_ttc NUMERIC(12,2)
+      );
+      CREATE INDEX idx_simulations_created ON simulations(created_at DESC);
+    `,
+  },
 ];

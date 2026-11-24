@@ -157,6 +157,27 @@ Composants notables : `BeforeAfterSlider` (cadre 16/9 fixe, clavier, labels),
 - Raph écrit vite : « retitre » peut vouloir dire « retire », demander/annoncer son
   interprétation quand les deux lectures divergent fortement.
 
+## 6 bis. Back office connecté à la base (24 novembre 2026)
+
+Base **Neon PostgreSQL** liée au projet Vercel (prod + preview, branches Neon en preview).
+Détail d'exploitation dans `ADMIN.md`. À retenir :
+
+- **Migrations versionnées** : `src/lib/admin/migrations.ts` (001 socle CRM, 002 comptes /
+  paramètres / journal, 003 versions de tarifs, 004 devis et simulations). On n'édite jamais
+  une migration déployée.
+- **Auth** : comptes en base (`users`, `sessions`), rôles `superadmin` / `admin` /
+  `commercial`. Plus aucun code d'accès dans le dépôt. Premier compte via `ADMIN_SETUP_TOKEN`.
+  `requireAdmin(req)` et `getTeam()` sont **asynchrones**.
+- **Tarifs** : `src/lib/admin/prices.ts` lit la dernière version publiée (cache 60 s, repli
+  sur les valeurs du code). `chiffrer(input, tarifs)` et `simulate(input, catalogue)` reçoivent
+  leurs tarifs en paramètre. Parité vérifiée sur 579 chiffrages + `npm test` (29 tests).
+- **Devis** : `src/lib/admin/quotes.ts`, PDF `quote-pdf.ts` (pdf-lib), éditeur
+  `QuoteEditor.tsx`. Aucun e-mail automatique à la réception d'une demande.
+- **Test local** : Postgres 16 du conteneur (`pg_ctlcluster 16 main start`), puis
+  `POSTGRES_URL=postgres://mgk:mgk@localhost:5432/mgkdb ADMIN_SETUP_TOKEN=… npm run start`.
+- Piège : la base renvoie les dates en objets `Date`, la démo en chaînes — toujours passer
+  par `new Date(x)`.
+
 ## 7. En attente / prochaines étapes probables
 
 - **Raph doit fournir** : textes légaux réels (puis retirer le noindex des 4 pages),

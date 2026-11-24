@@ -20,7 +20,9 @@ export const SEQ_MAX = 3;
 
 type SendResult = { sent: boolean; reason?: string };
 
-async function send(to: string, subject: string, html: string): Promise<SendResult> {
+type Attachment = { filename: string; content: string };
+
+async function send(to: string, subject: string, html: string, attachments?: Attachment[]): Promise<SendResult> {
   if (!mailConfigured) return { sent: false, reason: "RESEND_API_KEY non configurée" };
   // Leads « à rappeler » (assistant du tunnel) : pas d'email — on ne tente rien.
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) return { sent: false, reason: "lead sans email (demande de rappel)" };
@@ -31,7 +33,14 @@ async function send(to: string, subject: string, html: string): Promise<SendResu
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ from: FROM, to: [to], subject, html, ...(REPLY_TO ? { reply_to: REPLY_TO } : {}) }),
+      body: JSON.stringify({
+        from: FROM,
+        to: [to],
+        subject,
+        html,
+        ...(REPLY_TO ? { reply_to: REPLY_TO } : {}),
+        ...(attachments?.length ? { attachments } : {}),
+      }),
     });
     if (!res.ok) return { sent: false, reason: `Resend ${res.status}: ${(await res.text()).slice(0, 200)}` };
     return { sent: true };
@@ -135,6 +144,36 @@ export async function sendDevisEmail(lead: Lead): Promise<SendResult> {
       gratuit et sans engagement. La fabrication sur mesure part ensuite sous 10 jours.
     </p>`);
   return send(lead.email, `Votre devis garde-corps en verre — ${site.name}`, html);
+}
+
+/** Devis détaillé validé dans le back office, PDF en pièce jointe. */
+export async function sendQuoteEmail(input: {
+  to: string;
+  name: string;
+  ref: string;
+  totalTtc: number;
+  nbOptions: number;
+  pdf: Uint8Array;
+  devisUrl?: string;
+}): Promise<SendResult> {
+  const esc = (v: string) => v.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
+  const html = wrap(`
+    <p style="font-size:15px;">Bonjour ${esc(input.name)},</p>
+    <p style="font-size:14px;line-height:1.6;">
+      Votre devis <strong>${esc(input.ref)}</strong> est joint à cet e-mail au format PDF${
+        input.nbOptions > 1 ? ` — il comprend ${input.nbOptions} propositions pour vous laisser le choix` : ""
+      }.
+    </p>
+    <div style="background:#0c2017;border-radius:14px;padding:20px 24px;margin:18px 0;">
+      <span style="color:#f6a723;font-size:11px;letter-spacing:2px;text-transform:uppercase;">${input.nbOptions > 1 ? "À partir de" : "Montant du devis"}</span>
+      <div style="color:#ffffff;font-size:30px;font-weight:bold;margin-top:6px;">${new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(input.totalTtc)} € TTC</div>
+      <span style="color:#cfe0d6;font-size:12px;">Fourniture seule · pose non comprise</span>
+    </div>
+    ${input.devisUrl ? `<p style="text-align:center;margin:18px 0;">${bouton(input.devisUrl, "Voir mon projet en ligne")}</p>` : ""}
+    <p style="font-size:14px;line-height:1.6;">Pour valider ou ajuster ce devis, répondez simplement à cet e-mail.</p>`);
+  return send(input.to, `Votre devis ${input.ref} — ${site.name}`, html, [
+    { filename: `Devis-${input.ref}.pdf`, content: Buffer.from(input.pdf).toString("base64") },
+  ]);
 }
 
 /* ------------------------ Séquence de relances ----------------------- */

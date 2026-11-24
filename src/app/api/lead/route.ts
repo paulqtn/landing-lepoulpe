@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { addEvent, dbConfigured, insertLead } from "@/lib/admin/db";
+import { ensureDraftForLead } from "@/lib/admin/quotes";
 import { computeScore } from "@/lib/admin/scoring";
 
 /**
@@ -59,8 +60,14 @@ export async function POST(request: Request) {
 
     // Aucun envoi automatique : le devis part uniquement après validation
     // manuelle dans le back office, et les relances ne démarrent qu'ensuite.
+    // Le brouillon de devis est préparé tout de suite, pour n'avoir qu'à le relire.
     if (estimation !== null) {
-      await addEvent(lead.id, "info", "Estimation enregistrée — devis à valider avant envoi");
+      try {
+        await ensureDraftForLead(lead, null, "automatique");
+      } catch (e) {
+        console.error("[lead] brouillon de devis non généré :", e);
+        await addEvent(lead.id, "info", "Estimation enregistrée — devis à préparer avant envoi");
+      }
     }
   } catch (e) {
     // Jamais d'échec côté client pour un problème interne.

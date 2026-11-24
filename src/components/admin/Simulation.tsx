@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AlertTriangle, Ban, CheckCircle2, Info, Loader2, RotateCcw } from "lucide-react";
 import type { SimulationOptions } from "@/lib/simulation/catalog";
 import type { ComparisonRow, SimulationResult } from "@/lib/simulation/engine";
@@ -103,8 +104,46 @@ function initialForm(o: SimulationOptions): Form {
   };
 }
 
-export function Simulation({ options }: { options: SimulationOptions }) {
+type Saved = { id: number; label: string; created_at: string; created_by: string | null; total_ht: string | null; input: Record<string, unknown> };
+
+/** Recharge une simulation enregistrée dans le formulaire. */
+function formFromSaved(o: SimulationOptions, input: Record<string, unknown>): Form {
+  const base = initialForm(o);
+  const str = (v: unknown, d: string) => (typeof v === "number" ? String(v).replace(".", ",") : d);
+  const forced = (v: unknown) => (typeof v === "number" ? String(v) : "");
+  const method = input.saleMethod === "Taux de marque" ? "Taux de marque" : "Coefficient";
+  const sale = typeof input.saleValue === "number" ? (method === "Taux de marque" ? input.saleValue * 100 : input.saleValue) : null;
+  return {
+    ...base,
+    lengthMm: str(input.lengthMm, base.lengthMm),
+    finishedHeightMm: str(input.finishedHeightMm, base.finishedHeightMm),
+    glassLegacyId: typeof input.glassLegacyId === "number" ? input.glassLegacyId : base.glassLegacyId,
+    supportLegacyId: typeof input.supportLegacyId === "number" ? input.supportLegacyId : base.supportLegacyId,
+    finish: typeof input.finish === "string" ? input.finish : base.finish,
+    shipping: typeof input.shipping === "string" ? input.shipping : base.shipping,
+    saleMethod: method,
+    saleValue: sale === null ? base.saleValue : String(Math.round(sale * 1e6) / 1e6).replace(".", ","),
+    vatRate: typeof input.vatRate === "number" ? String(input.vatRate) : base.vatRate,
+    targetPanelWidthMm: str(input.targetPanelWidthMm, base.targetPanelWidthMm),
+    gapPanelsMm: str(input.gapPanelsMm, base.gapPanelsMm),
+    gapEndsEachSideMm: str(input.gapEndsEachSideMm, base.gapEndsEachSideMm),
+    forcedPanels: forced(input.forcedPanels),
+    forcedSupports: forced(input.forcedSupports),
+    forcedCrates: forced(input.forcedCrates),
+    forcedPallets: forced(input.forcedPallets),
+    gateCount: str(input.gateCount, base.gateCount),
+    alignmentPins: input.alignmentPins === true,
+    specialCuts: str(input.specialCuts, base.specialCuts),
+  };
+}
+
+export function Simulation({ options, saved = [] }: { options: SimulationOptions; saved?: Saved[] }) {
+  const router = useRouter();
   const [form, setForm] = useState<Form>(() => initialForm(options));
+  const [label, setLabel] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const lastInput = useRef<Record<string, unknown> | null>(null);
   const [keepForced, setKeepForced] = useState(true);
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [comparison, setComparison] = useState<ComparisonRow[]>([]);
@@ -163,6 +202,7 @@ export function Simulation({ options }: { options: SimulationOptions }) {
         if (res.status === 401) throw new Error("Session expirée — rechargez la page pour vous reconnecter.");
         if (!res.ok) throw new Error("Le calcul n'a pas pu être effectué.");
         const data = await res.json();
+        lastInput.current = data.input ?? null;
         setResult(data.result);
         setComparison(data.comparison ?? []);
         setError(null);
@@ -630,6 +670,53 @@ export function Simulation({ options }: { options: SimulationOptions }) {
             </p>
           </div>
         )}
+      </section>
+
+      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+        <h2 className="text-base font-extrabold text-inkgreen">Simulations enregistrées</h2>
+        <form
+          className="mt-3 flex flex-wrap items-center gap-2"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (!lastInput.current) return;
+            setSaving(true);
+            setSaveMsg(null);
+            const res = await fetch("/api/admin/simulations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ label, input: lastInput.current }) }).catch(() => null);
+            const data = res ? await res.json().catch(() => ({})) : {};
+            setSaving(false);
+            if (res?.ok) {
+              setLabel("");
+              setSaveMsg({ ok: true, text: "Simulation enregistrée." });
+              router.refresh();
+            } else setSaveMsg({ ok: false, text: data.error ?? "Enregistrement impossible." });
+          }}
+        >
+          <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Nom (client, chantier…)" className="w-72 max-w-full rounded-xl border border-neutral-200 px-3.5 py-2 text-sm outline-none transition focus:border-pine-500" />
+          <button type="submit" disabled={saving || loading || label.trim().length < 2 || !g} className="flex items-center gap-2 rounded-full bg-pine-700 px-5 py-2 text-sm font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
+            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+            Enregistrer cette simulation
+          </button>
+          {saveMsg && <span role="status" className={`text-sm font-semibold ${saveMsg.ok ? "text-green-700" : "text-red-600"}`}>{saveMsg.text}</span>}
+        </form>
+        {saved.length === 0 ? (
+          <p className="mt-3 text-sm text-neutral-400">Aucune simulation enregistrée pour l&rsquo;instant.</p>
+        ) : (
+          <ul className="mt-3 divide-y divide-neutral-100">
+            {saved.map((x) => (
+              <li key={x.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5">
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-bold text-inkgreen">{x.label}</span>
+                  <span className="block text-xs text-neutral-400">{new Date(x.created_at).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })} · {x.created_by ?? "—"}</span>
+                </span>
+                <span className="text-sm font-extrabold tabular-nums text-pine-700">{x.total_ht === null ? "À confirmer" : eur(Number(x.total_ht))} HT</span>
+                <button type="button" onClick={() => { setForm(formFromSaved(options, x.input)); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="rounded-lg border border-neutral-200 px-2.5 py-1.5 text-xs font-bold text-inkgreen transition hover:border-amber-500 hover:bg-amber-500/15">
+                  Recharger
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="mt-3 text-xs text-neutral-400">« Recharger » recalcule avec les tarifs en vigueur aujourd&rsquo;hui ; le montant affiché dans la liste est celui du jour de l&rsquo;enregistrement.</p>
       </section>
 
       <p className="text-xs text-neutral-400">Tarifs : {options.source}.</p>

@@ -6,6 +6,10 @@ import { CreateOrderButton } from "@/components/admin/LogisticsActions";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { getLead, listEvents } from "@/lib/admin/db";
 import { getTeam } from "@/lib/admin/team";
+import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
+import { RgpdActions } from "@/components/admin/RgpdActions";
+import { canManageSettings, currentUser } from "@/lib/admin/auth";
+import { QUOTE_STATUT_LABELS, quotesForLead } from "@/lib/admin/quotes";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +36,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const lead = await getLead(Number(id));
   if (!lead) notFound();
-  const events = await listEvents(lead.id);
+  const [events, quotes, me] = await Promise.all([listEvents(lead.id), quotesForLead(lead.id), currentUser()]);
   const answers = (lead.answers ?? {}) as Record<string, unknown>;
 
   const champs: [string, unknown][] = [
@@ -114,6 +118,30 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             )}
           </section>
 
+          {/* devis détaillés */}
+          <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Devis détaillés</h2>
+              <PrepareQuoteButton leadId={lead.id} label={quotes.some((x) => x.statut === "brouillon") ? "Ouvrir le brouillon" : "Préparer un devis"} />
+            </div>
+            {quotes.length === 0 ? (
+              <p className="mt-3 text-sm text-neutral-400">Aucun devis pour l&rsquo;instant.</p>
+            ) : (
+              <ul className="mt-3 divide-y divide-neutral-100">
+                {quotes.map((x) => (
+                  <li key={x.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5">
+                    <Link href={`/commercial/devis/${x.id}`} className="text-sm font-bold text-inkgreen hover:text-pine-700">{x.ref}</Link>
+                    <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${x.statut === "brouillon" ? "bg-amber-500/15 text-amber-700" : "bg-green-50 text-green-700"}`}>{QUOTE_STATUT_LABELS[x.statut]}</span>
+                    <span className="flex-1 text-xs text-neutral-400">
+                      {x.sent_at ? `envoyé le ${dateFmt.format(new Date(x.sent_at))}` : `créé le ${dateFmt.format(new Date(x.created_at))}`}
+                    </span>
+                    <span className="text-sm font-extrabold tabular-nums text-pine-700">{eurFmt.format(Number(x.total_ttc))} € TTC</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
           {/* timeline */}
           <section className="rounded-2xl border border-neutral-200 bg-white p-5">
             <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Historique</h2>
@@ -141,6 +169,8 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           team={await getTeam()}
           assignedTo={lead.assigned_to}
         />
+
+        {canManageSettings(me) && <RgpdActions leadId={lead.id} anonymized={Boolean(lead.anonymized_at)} />}
 
         {lead.statut === "gagne" && (
           <div className="rounded-2xl border border-pine-200 bg-pine-50/60 p-4">
