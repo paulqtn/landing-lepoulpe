@@ -5,7 +5,7 @@ import { addEvent, getLead, listEvents, STATUTS, updateLead, type Statut } from 
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(req: Request, { params }: Params) {
-  const guard = requireAdmin(req);
+  const guard = await requireAdmin(req);
   if (guard) return guard;
   const { id } = await params;
   const lead = await getLead(Number(id));
@@ -14,7 +14,7 @@ export async function GET(req: Request, { params }: Params) {
 }
 
 export async function PATCH(req: Request, { params }: Params) {
-  const guard = requireAdmin(req);
+  const guard = await requireAdmin(req);
   if (guard) return guard;
   const { id } = await params;
   const lead = await getLead(Number(id));

@@ -138,7 +138,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           relances={lead.relances}
           nextRelanceAt={lead.next_relance_at}
           hasEstimation={Boolean(lead.estimation_ttc)}
-          team={getTeam()}
+          team={await getTeam()}
           assignedTo={lead.assigned_to}
         />
 

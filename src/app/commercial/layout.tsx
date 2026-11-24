@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { FlaskConical } from "lucide-react";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { CommercialNav } from "@/components/admin/CommercialNav";
-import { currentRep, isAdmin } from "@/lib/admin/auth";
-import { getTeam } from "@/lib/admin/team";
+import { ROLE_LABELS, countUsers, currentUser, setupTokenConfigured } from "@/lib/admin/auth";
 import { dbConfigured } from "@/lib/admin/db";
 import { site } from "@/lib/site";
 
@@ -12,14 +10,23 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function CommercialLayout({ children }: { children: React.ReactNode }) {
-  const rep = await currentRep();
-  if (!(await isAdmin())) {
-    return (
-      <main className="grid min-h-[70vh] place-items-center bg-mist px-5 py-16">
-        <AdminLogin team={getTeam()} />
-      </main>
-    );
+  const gate = (node: React.ReactNode) => <main className="grid min-h-[70vh] place-items-center bg-mist px-5 py-16">{node}</main>;
+
+  if (!dbConfigured) return gate(<AdminLogin mode="nodb" />);
+
+  const user = await currentUser();
+  if (!user) {
+    let users: number;
+    try {
+      users = await countUsers();
+    } catch (e) {
+      return gate(<AdminLogin mode="dberror" detail={e instanceof Error ? e.message : undefined} />);
+    }
+    if (users === 0) return gate(<AdminLogin mode={setupTokenConfigured() ? "setup" : "setup-token-missing"} />);
+    return gate(<AdminLogin mode="login" />);
   }
 
   return (
@@ -30,28 +37,17 @@ export default async function CommercialLayout({ children }: { children: React.R
             <p className="px-3 pb-1 pt-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
               Espace commercial
             </p>
-            {rep && (
-              <p className="mx-3 mb-2 inline-flex items-center gap-1.5 rounded-full bg-pine-50 px-2.5 py-1 text-xs font-bold text-pine-800">
-                <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                {rep}
-              </p>
-            )}
-            <CommercialNav />
+            <p className="mx-3 mb-2 inline-flex items-center gap-1.5 rounded-full bg-pine-50 px-2.5 py-1 text-xs font-bold text-pine-800" title={ROLE_LABELS[user.role]}>
+              <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+              {user.name}
+            </p>
+            <CommercialNav role={user.role} />
           </div>
         </aside>
         <div className="min-w-0 flex-1">
-          {!dbConfigured && (
-            <p className="mb-5 flex items-start gap-2.5 rounded-2xl border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm text-neutral-700">
-              <FlaskConical className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-              <span>
-                <strong className="font-bold text-inkgreen">Mode démo (aucune base connectée).</strong>{" "}
-                Les clients affichés sont fictifs et vos modifications ne sont pas enregistrées.
-                Surtout : <strong className="font-bold text-red-600">les vraies demandes du site ne sont pas conservées</strong> pour
-                l&rsquo;instant. Pour activer le vrai CRM : Vercel → Storage → Create Database → Postgres,
-                puis Redeploy (guide complet dans ADMIN.md).
-              </span>
-            </p>
-          )}
+          <div className="mb-4 md:hidden">
+            <CommercialNav role={user.role} compact />
+          </div>
           {children}
         </div>
       </div>

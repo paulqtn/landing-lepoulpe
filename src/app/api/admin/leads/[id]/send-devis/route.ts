@@ -4,7 +4,7 @@ import { addEvent, getLead, updateLead } from "@/lib/admin/db";
 import { sendDevisEmail } from "@/lib/admin/mail";
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const guard = requireAdmin(req);
+  const guard = await requireAdmin(req);
   if (guard) return guard;
   const { id } = await params;
   const lead = await getLead(Number(id));

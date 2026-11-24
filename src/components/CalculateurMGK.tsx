@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AlertTriangle, Calculator, Check, Copy, Loader2, Lock, Minus, Plus } from "lucide-react";
+import { useState } from "react";
+import { AlertTriangle, Calculator, Check, Copy, Loader2, Minus, Plus } from "lucide-react";
 
 /* ================================================================== */
 /*  Outil interne MGK : formulaire de chiffrage fourniture.            */
@@ -67,8 +67,6 @@ const inputCls =
   "w-full rounded-xl border border-neutral-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-inkgreen outline-none transition focus:border-pine-500 focus:ring-4 focus:ring-pine-500/10";
 
 export function CalculateurMGK() {
-  const [code, setCode] = useState("");
-  const [unlocked, setUnlocked] = useState(false);
 
   const [client, setClient] = useState("");
   const [projet, setProjet] = useState("terrasse");
@@ -91,13 +89,6 @@ export function CalculateurMGK() {
   const [result, setResult] = useState<Result | null>(null);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("mgk-calc-code");
-      if (saved) { setCode(saved); setUnlocked(true); }
-    } catch { /* stockage indisponible */ }
-  }, []);
-
   const aEscalier = troncons.some((t) => t.escalier);
 
   async function calculer() {
@@ -109,7 +100,6 @@ export function CalculateurMGK() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          code,
           input: {
             client, projet, departement,
             troncons: troncons.map((t) => ({ longueur: parseFloat(t.longueur.replace(",", ".")), escalier: t.escalier })),
@@ -125,11 +115,8 @@ export function CalculateurMGK() {
       });
       const data = await res.json();
       if (!res.ok) {
-        if (res.status === 401) { setUnlocked(false); try { localStorage.removeItem("mgk-calc-code"); } catch { /* ignore */ } }
-        throw new Error(data.error ?? "Erreur inconnue.");
+        throw new Error(res.status === 401 ? "Session expirée — reconnectez-vous au back office." : data.error ?? "Erreur inconnue.");
       }
-      try { localStorage.setItem("mgk-calc-code", code); } catch { /* ignore */ }
-      setUnlocked(true);
       setResult(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur réseau.");
@@ -182,17 +169,6 @@ export function CalculateurMGK() {
     <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
       {/* ---------------- formulaire ---------------- */}
       <div className="rounded-3xl border border-neutral-200/80 bg-white p-6 shadow-card sm:p-7">
-        {!unlocked && (
-          <div className="mb-6 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4">
-            <Field label="Code d'accès interne">
-              <div className="flex items-center gap-2">
-                <Lock className="h-4 w-4 shrink-0 text-amber-600" />
-                <input type="password" value={code} onChange={(e) => setCode(e.target.value)} className={inputCls} placeholder="Code MGK" />
-              </div>
-            </Field>
-          </div>
-        )}
-
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Client"><input value={client} onChange={(e) => setClient(e.target.value)} className={inputCls} placeholder="NOM Prénom" /></Field>
           <Field label="Département"><input value={departement} onChange={(e) => setDepartement(e.target.value)} className={inputCls} placeholder="83" maxLength={3} /></Field>

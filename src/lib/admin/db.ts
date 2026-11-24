@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { MIGRATIONS } from "./migrations";
 
 /* ================================================================== */
 /*  Accès base du back office. Fonctionne avec Vercel Postgres / Neon  */
@@ -20,99 +21,85 @@ function getPool(): Pool {
   if (!pool) {
     pool = new Pool({
       connectionString: CONNECTION_URL,
-      max: 1,
-      ssl: /localhost|127\.0\.0\.1/.test(CONNECTION_URL) ? undefined : { rejectUnauthorized: false },
+      max: 3,
+      idleTimeoutMillis: 10_000,
+      connectionTimeoutMillis: 8_000,
+      // TLS vérifié partout sauf en local (Neon présente un certificat public valide).
+      ssl: /localhost|127\.0\.0\.1/.test(CONNECTION_URL) ? undefined : { rejectUnauthorized: true },
     });
   }
   return pool;
 }
 
+/** Applique les migrations manquantes (une fois par instance), sous verrou. */
 async function ensureSchema(): Promise<void> {
   if (!schemaReady) {
     schemaReady = (async () => {
-      await getPool().query(`
-        CREATE TABLE IF NOT EXISTS leads (
-          id SERIAL PRIMARY KEY,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-          name TEXT NOT NULL,
-          email TEXT NOT NULL,
-          phone TEXT NOT NULL,
-          source TEXT,
-          answers JSONB,
-          estimation_ttc NUMERIC,
-          statut TEXT NOT NULL DEFAULT 'nouveau',
-          relances INT NOT NULL DEFAULT 0,
-          next_relance_at TIMESTAMPTZ,
-          assigned_to TEXT
-        );
-        CREATE TABLE IF NOT EXISTS lead_events (
-          id SERIAL PRIMARY KEY,
-          lead_id INT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-          type TEXT NOT NULL,
-          message TEXT
-        );
-        CREATE INDEX IF NOT EXISTS idx_leads_statut ON leads(statut);
-        CREATE INDEX IF NOT EXISTS idx_leads_next_relance ON leads(next_relance_at);
-        CREATE INDEX IF NOT EXISTS idx_events_lead ON lead_events(lead_id);
-        ALTER TABLE leads ADD COLUMN IF NOT EXISTS score TEXT NOT NULL DEFAULT 'C';
-        ALTER TABLE leads ADD COLUMN IF NOT EXISTS score_points INT NOT NULL DEFAULT 0;
-        ALTER TABLE leads ADD COLUMN IF NOT EXISTS token TEXT;
-        ALTER TABLE leads ADD COLUMN IF NOT EXISTS opens INT NOT NULL DEFAULT 0;
-        ALTER TABLE leads ADD COLUMN IF NOT EXISTS clicks INT NOT NULL DEFAULT 0;
-        ALTER TABLE leads ADD COLUMN IF NOT EXISTS devis_views INT NOT NULL DEFAULT 0;
-        ALTER TABLE leads ADD COLUMN IF NOT EXISTS last_activity_at TIMESTAMPTZ;
-        ALTER TABLE leads ADD COLUMN IF NOT EXISTS won_at TIMESTAMPTZ;
-        CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_token ON leads(token);
-
-        -- ---- Pôle gestion : commandes atelier, stock, expéditions ----
-        CREATE TABLE IF NOT EXISTS orders (
-          id SERIAL PRIMARY KEY,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-          updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-          ref TEXT UNIQUE NOT NULL,
-          lead_id INT REFERENCES leads(id) ON DELETE SET NULL,
-          client TEXT NOT NULL,
-          statut TEXT NOT NULL DEFAULT 'a_preparer',
-          ml NUMERIC,
-          nb_verres INT,
-          hauteur TEXT,
-          verre TEXT,
-          systeme TEXT,
-          montant_ttc NUMERIC,
-          departement TEXT,
-          shipment_id INT
-        );
-        CREATE TABLE IF NOT EXISTS stock_items (
-          id SERIAL PRIMARY KEY,
-          sku TEXT UNIQUE NOT NULL,
-          label TEXT NOT NULL,
-          categorie TEXT NOT NULL,
-          unite TEXT NOT NULL,
-          qty NUMERIC NOT NULL DEFAULT 0,
-          seuil NUMERIC NOT NULL DEFAULT 0
-        );
-        CREATE TABLE IF NOT EXISTS stock_moves (
-          id SERIAL PRIMARY KEY,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-          item_id INT NOT NULL REFERENCES stock_items(id) ON DELETE CASCADE,
-          delta NUMERIC NOT NULL,
-          motif TEXT
-        );
-        CREATE TABLE IF NOT EXISTS shipments (
-          id SERIAL PRIMARY KEY,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-          ref TEXT UNIQUE NOT NULL,
-          transporteur TEXT,
-          departement TEXT,
-          date_prevue DATE,
-          statut TEXT NOT NULL DEFAULT 'planifiee'
-        );
-        CREATE INDEX IF NOT EXISTS idx_orders_statut ON orders(statut);
-      `);
-    })();
+      const client = await getPool().connect();
+      try {
+        await client.query(`CREATE TABLE IF NOT EXISTS schema_migrations (
+          id TEXT PRIMARY KEY,
+          applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+        )`);
+        const done = new Set((await client.query(`SELECT id FROM schema_migrations`)).rows.map((r) => r.id as string));
+        if (MIGRATIONS.every((m) => done.has(m.id))) return;
+        // Verrou consultatif : deux instances ne migrent jamais en même temps.
+        await client.query(`SELECT pg_advisory_lock(7421001)`);
+        try {
+          for (const m of MIGRATIONS) {
+            const already = await client.query(`SELECT 1 FROM schema_migrations WHERE id = $1`, [m.id]);
+            if (already.rowCount) continue;
+            await client.query("BEGIN");
+            try {
+              await client.query(m.sql);
+              await client.query(`INSERT INTO schema_migrations (id) VALUES ($1)`, [m.id]);
+              await client.query("COMMIT");
+            } catch (e) {
+              await client.query("ROLLBACK");
+              throw e;
+            }
+          }
+        } finally {
+          await client.query(`SELECT pg_advisory_unlock(7421001)`);
+        }
+      } finally {
+        client.release();
+      }
+    })().catch((e) => {
+      schemaReady = null; // nouvelle tentative au prochain accès
+      throw e;
+    });
   }
   return schemaReady;
+}
+
+/** État réel de la connexion, pour la page de diagnostic. */
+export async function dbHealth(): Promise<{
+  ok: boolean;
+  error?: string;
+  version?: string;
+  database?: string;
+  sizeMb?: number;
+  migrations?: { id: string; applied_at: string }[];
+  tables?: { name: string; rows: number }[];
+}> {
+  if (!dbConfigured) return { ok: false, error: "Aucune variable de connexion (POSTGRES_URL / DATABASE_URL) n'est définie." };
+  try {
+    const [v] = await q<{ version: string; db: string; size: string }>(
+      `SELECT version(), current_database() AS db, pg_database_size(current_database())::text AS size`,
+    );
+    const migrations = await q<{ id: string; applied_at: string }>(`SELECT id, applied_at FROM schema_migrations ORDER BY id`);
+    const names = await q<{ tablename: string }>(`SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename`);
+    const tables: { name: string; rows: number }[] = [];
+    for (const t of names) {
+      if (!/^[a-z_][a-z0-9_]*$/.test(t.tablename)) continue;
+      const [c] = await q<{ n: string }>(`SELECT count(*)::text AS n FROM "${t.tablename}"`);
+      tables.push({ name: t.tablename, rows: Number(c.n) });
+    }
+    return { ok: true, version: v.version.split(" on ")[0], database: v.db, sizeMb: Math.round((Number(v.size) / 1048576) * 10) / 10, migrations, tables };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "erreur inconnue" };
+  }
 }
 
 /** Accès requêtes pour les modules admin voisins (logistics). */

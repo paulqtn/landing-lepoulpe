@@ -11,7 +11,7 @@ const num = (v: unknown): number => (typeof v === "number" ? v : typeof v === "s
 const forced = (v: unknown): number | null => (v === null || v === undefined || v === "" ? null : num(v));
 
 export async function POST(req: Request) {
-  const denied = requireAdmin(req);
+  const denied = await requireAdmin(req);
   if (denied) return denied;
 
   let body: { input?: Record<string, unknown>; keepForcedSupports?: boolean };

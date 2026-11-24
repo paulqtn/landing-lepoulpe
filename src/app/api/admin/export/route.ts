@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 
 /** Export CSV des demandes (filtres statut / q identiques à la liste). */
 export async function GET(req: Request) {
-  const guard = requireAdmin(req);
+  const guard = await requireAdmin(req);
   if (guard) return guard;
   const url = new URL(req.url);
   const leads = await listLeads({

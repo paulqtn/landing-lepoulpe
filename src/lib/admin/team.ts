@@ -1,9 +1,8 @@
-/** Commerciaux (séparés par des virgules dans ADMIN_TEAM, ex. "Alexandre,Sophie").
-    Sans variable, une équipe de démonstration permet de tester le multi-vendeur. */
-export function getTeam(): string[] {
-  const env = (process.env.ADMIN_TEAM ?? "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  return env.length > 0 ? env : ["Sophie", "Karim"];
+import { adminQuery as q, dbConfigured } from "./db";
+
+/** Personnes à qui un client peut être attribué : les comptes actifs du back office. */
+export async function getTeam(): Promise<string[]> {
+  if (!dbConfigured) return [];
+  const rows = await q<{ name: string }>("SELECT name FROM users WHERE active ORDER BY name");
+  return rows.map((r) => r.name);
 }

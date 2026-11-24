@@ -53,7 +53,7 @@ function Panel({ title, children, note }: { title: string; children: React.React
 
 export default async function StatsPage() {
   const [rep, leads, g] = await Promise.all([currentRep(), listLeads({ limit: 1000 }), globalStats()]);
-  const team = getTeam();
+  const team = await getTeam();
   const reps = [...new Set([...team, ...leads.map((l) => l.assigned_to).filter((x): x is string => Boolean(x))])];
   const perReps = reps.map((r) => repStats(leads, r)).sort((a, b) => b.caMois - a.caMois);
   const funnelMax = Math.max(1, ...g.funnel.map((f) => f.n));

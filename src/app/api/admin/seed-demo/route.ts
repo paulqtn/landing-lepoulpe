@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin/auth";
+import { requireRole } from "@/lib/admin/auth";
 import { addEvent, dbConfigured, insertLead, updateLead } from "@/lib/admin/db";
 import { computeScore } from "@/lib/admin/scoring";
 import { chiffrer } from "@/lib/calculateur/engine";
@@ -22,8 +22,12 @@ function prix(troncons: number[], fixation: "GS-19-L" | "GS-07-C" | "GS-02", ver
 }
 
 export async function POST(req: Request) {
-  const guard = requireAdmin(req);
-  if (guard) return guard;
+  const g = await requireRole(req, ["superadmin"]);
+  if (g.denied) return g.denied;
+  // Jamais de clients fictifs dans la base de production.
+  if (process.env.VERCEL_ENV === "production") {
+    return NextResponse.json({ ok: false, error: "désactivé en production" }, { status: 403 });
+  }
   if (!dbConfigured) {
     return NextResponse.json({ ok: false, error: "mode démo — les clients fictifs sont déjà affichés" }, { status: 400 });
   }

@@ -74,7 +74,7 @@ export default async function LeadsPage({
         ))}
       </div>
 
-      <LeadsTable leads={rows} team={getTeam()} />
+      <LeadsTable leads={rows} team={await getTeam()} />
     </div>
   );
 }

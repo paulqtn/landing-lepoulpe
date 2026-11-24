@@ -1,22 +1,20 @@
 import { NextResponse } from "next/server";
 import { chiffrer, type ChiffrageInput } from "@/lib/calculateur/engine";
 import { SYSTEMES } from "@/lib/calculateur/tarifs";
+import { requireAdmin } from "@/lib/admin/auth";
 
 /* Chiffrage interne MGK — le moteur et les tarifs restent côté serveur.
-   Accès protégé par code (variable d'environnement CALC_ACCESS_CODE). */
-
-const CODE = process.env.CALC_ACCESS_CODE ?? "MGK-2026";
+   Accès réservé aux comptes du back office (session). */
 
 export async function POST(req: Request) {
-  let body: { code?: string; input?: Partial<ChiffrageInput> };
+  const guard = await requireAdmin(req);
+  if (guard) return guard;
+
+  let body: { input?: Partial<ChiffrageInput> };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
-  }
-
-  if ((body.code ?? "") !== CODE) {
-    return NextResponse.json({ error: "Code d'accès invalide." }, { status: 401 });
   }
 
   const i = body.input;

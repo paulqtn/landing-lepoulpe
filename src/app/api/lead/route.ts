@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import { addEvent, dbConfigured, insertLead, updateLead } from "@/lib/admin/db";
-import { mailConfigured, sendDevisEmail, SEQ_DELAIS_JOURS } from "@/lib/admin/mail";
+import { addEvent, dbConfigured, insertLead } from "@/lib/admin/db";
 import { computeScore } from "@/lib/admin/scoring";
 
 /**
  * Capture des leads (générateur + fiches produit).
- * Persiste en base, envoie automatiquement l'email de devis quand une
- * estimation est présente, et programme la première relance à J+2.
- * Sans base configurée, on loggue — le site public ne casse jamais.
+ * Persiste en base. Aucun e-mail n'est envoyé automatiquement : le devis
+ * est validé puis envoyé à la main depuis le back office.
+ * Sans base configurée, le site public ne casse jamais.
  */
 export async function POST(request: Request) {
   let body: unknown;
@@ -36,7 +35,7 @@ export async function POST(request: Request) {
   }
 
   if (!dbConfigured) {
-    console.log("[lead] base non configurée — lead loggué :", { name, email, phone, source });
+    console.error("[lead] base non configurée — demande NON enregistrée (source : %s)", typeof source === "string" ? source : "site");
     return NextResponse.json({ ok: true });
   }
 
@@ -58,21 +57,10 @@ export async function POST(request: Request) {
     });
     await addEvent(lead.id, "creation", `Demande reçue (${lead.source ?? "site"}) — score ${score.grade} (${score.points} pts)`);
 
-    // Première relance programmée selon la cadence de la séquence.
-    const nextRelance = new Date(Date.now() + SEQ_DELAIS_JOURS[0] * 86400_000).toISOString();
-
+    // Aucun envoi automatique : le devis part uniquement après validation
+    // manuelle dans le back office, et les relances ne démarrent qu'ensuite.
     if (estimation !== null) {
-      const mail = await sendDevisEmail(lead);
-      if (mail.sent) {
-        await updateLead(lead.id, { statut: "devis_envoye", next_relance_at: nextRelance });
-        await addEvent(lead.id, "devis_envoye", "Email de devis automatique envoyé");
-      } else {
-        await updateLead(lead.id, { next_relance_at: nextRelance });
-        await addEvent(lead.id, "devis_echec", `Envoi auto impossible : ${mail.reason}`);
-      }
-    } else {
-      await updateLead(lead.id, { next_relance_at: nextRelance });
-      if (!mailConfigured) await addEvent(lead.id, "info", "Emails non configurés (RESEND_API_KEY absente)");
+      await addEvent(lead.id, "info", "Estimation enregistrée — devis à valider avant envoi");
     }
   } catch (e) {
     // Jamais d'échec côté client pour un problème interne.

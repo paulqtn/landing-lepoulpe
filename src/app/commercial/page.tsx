@@ -53,7 +53,7 @@ export default async function CommercialHome() {
           <h1 className="text-2xl font-extrabold text-inkgreen">{rep ? `Bonjour ${rep} 👋` : "État des lieux"}</h1>
           <p className="text-sm capitalize text-neutral-400">{dayFmt.format(new Date())}</p>
         </div>
-        {s.total === 0 && <SeedDemo />}
+        {s.total === 0 && process.env.VERCEL_ENV !== "production" && <SeedDemo />}
       </div>
 
       {!rep && (
