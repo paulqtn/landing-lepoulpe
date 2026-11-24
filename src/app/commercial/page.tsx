@@ -4,7 +4,7 @@ import { ClaimButton } from "@/components/admin/ClaimButton";
 import { SeedDemo } from "@/components/admin/SeedDemo";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { currentRep } from "@/lib/admin/auth";
-import { COMMISSION_PCT, OBJECTIF_MENSUEL, PRIME_OBJECTIF, repStats } from "@/lib/admin/compens";
+import { getCompSettings, repStats } from "@/lib/admin/compens";
 import { dueRelances, listLeads, stats, type Lead, listLeadsLight } from "@/lib/admin/db";
 import { listOrders } from "@/lib/admin/logistics";
 import { mailConfigured } from "@/lib/admin/mail";
@@ -34,7 +34,9 @@ export default async function CommercialHome() {
   const aAppeler = nouveauxA.filter((l) => !chauds.some((c) => c.id === l.id));
   const withOrder = new Set(orders.map((o) => o.lead_id).filter(Boolean));
   const aLancer = gagnes.filter((l) => !withOrder.has(l.id));
-  const perso = rep ? repStats(persoLeads, rep) : null;
+  const comp = await getCompSettings();
+  const { commissionPct: COMMISSION_PCT, objectifMensuel: OBJECTIF_MENSUEL, primeObjectif: PRIME_OBJECTIF } = comp;
+  const perso = rep ? repStats(persoLeads, rep, comp) : null;
 
   /* Les tâches, dans l'ordre d'attaque du matin. */
   const taches = [

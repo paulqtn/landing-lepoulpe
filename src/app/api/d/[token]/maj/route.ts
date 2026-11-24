@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { addEvent, getLeadByToken, updateLead } from "@/lib/admin/db";
 import { rescoreLead } from "@/lib/admin/rescore";
 import { chiffrer } from "@/lib/calculateur/engine";
+import { getTarifsSite } from "@/lib/admin/prices";
 
 /** Le client corrige ses cotes : on recalcule le tarif avec le moteur. */
 export async function POST(req: Request, { params }: { params: Promise<{ token: string }> }) {
@@ -54,7 +55,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
     couleur: "anodise",
     departement: typeof a.codePostal === "string" ? a.codePostal.slice(0, 2) : undefined,
     livraison: "livraison",
-  });
+  }, await getTarifsSite());
 
   const ancien = lead.estimation_ttc ? Number(lead.estimation_ttc) : null;
   await updateLead(lead.id, {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/auth";
-import { catalog, DEFAULT_INPUT } from "@/lib/simulation/catalog";
+import { getCatalogueSimulation } from "@/lib/admin/prices";
+import { DEFAULT_INPUT } from "@/lib/simulation/catalog";
 import { compareSystems, simulate, type SimulationInput } from "@/lib/simulation/engine";
 
 /* Simulation MGK — calcul serveur uniquement : le moteur et les tarifs
@@ -46,6 +47,7 @@ export async function POST(req: Request) {
     specialCuts: num(i.specialCuts),
   };
 
+  const catalog = await getCatalogueSimulation();
   const result = simulate(input, catalog);
   const comparison = result.geometry ? compareSystems(input, catalog, body.keepForcedSupports !== false) : [];
   return NextResponse.json({ result, comparison });

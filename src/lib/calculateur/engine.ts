@@ -6,17 +6,12 @@
 /* ================================================================== */
 
 import {
-  COEF_DEFAUT,
-  DEPTS_LOCAUX,
-  PRIX_CAISSE,
-  POIDS_M2,
-  SYSTEMES,
-  TARIFS_VERRE,
-  TVA,
+  TARIFS_DEFAUT,
   franceFrance,
   turquieFrance,
   type Epaisseur,
   type SystemeKey,
+  type TarifsSite,
   type Teinte,
 } from "./tarifs";
 
@@ -91,13 +86,23 @@ function prixComposant(
   prix: [number, number],
   thermolaque: boolean | undefined,
   couleur: ChiffrageInput["couleur"],
+  majoration: number,
 ): number {
   if (couleur === "anodise") return prix[0];
   if (couleur === "ral-standard") return prix[1];
-  return thermolaque ? r2(prix[1] * 1.2) : prix[1];
+  return thermolaque ? r2(prix[1] * majoration) : prix[1];
 }
 
-export function chiffrer(input: ChiffrageInput): ChiffrageResult {
+/**
+ * @param tarifs Jeu de tarifs à appliquer — par défaut les valeurs d'origine ;
+ *               en production, la version publiée depuis le back office.
+ */
+export function chiffrer(input: ChiffrageInput, tarifs: TarifsSite = TARIFS_DEFAUT): ChiffrageResult {
+  const { verre: TARIFS_VERRE, poidsM2: POIDS_M2, systemes: SYSTEMES, prixCaisse: PRIX_CAISSE, tva: TVA } = tarifs;
+  const COEF_DEFAUT = tarifs.coefDefaut;
+  const DEPTS_LOCAUX = tarifs.deptsLocaux;
+  const prixComp = (prix: [number, number], thermolaque: boolean | undefined, c: ChiffrageInput["couleur"]) =>
+    prixComposant(prix, thermolaque, c, tarifs.majorationRalAutre);
   const alertes: string[] = [];
   const coef = input.coefficient && input.coefficient > 0 ? input.coefficient : COEF_DEFAUT;
   const pente = input.penteEscalier && input.penteEscalier > 0 ? input.penteEscalier : 35;
@@ -215,14 +220,14 @@ export function chiffrer(input: ChiffrageInput): ChiffrageResult {
       nbBarres += b;
     });
     const longueurRail = nbBarres * barre;
-    const pRail = prixComposant(sys.rail!.prix, sys.rail!.thermolaque, couleur);
+    const pRail = prixComp(sys.rail!.prix, sys.rail!.thermolaque, couleur);
     coutSupports += nbBarres * pRail;
     lignes.push({ label: sys.rail!.label, detail: `${nbBarres} barre(s) × ${pRail.toFixed(2)} €`, montant: r2(nbBarres * pRail) });
 
     if (sys.habillage) {
       // Enjoliveurs / caches : longueur de rail achetée × 2, en barres de 3 m.
       const nbHab = Math.ceil((longueurRail * 2) / 3 - 1e-9);
-      const pHab = prixComposant(sys.habillage.prix, sys.habillage.thermolaque, couleur);
+      const pHab = prixComp(sys.habillage.prix, sys.habillage.thermolaque, couleur);
       coutSupports += nbHab * pHab;
       lignes.push({ label: sys.habillage.label, detail: `${nbHab} barre(s) (rail ×2) × ${pHab.toFixed(2)} €`, montant: r2(nbHab * pHab) });
     }
@@ -232,7 +237,7 @@ export function chiffrer(input: ChiffrageInput): ChiffrageResult {
     for (const { comp, qte } of sys.parBarre ?? []) {
       const parBarre = comp.label.startsWith("Embout") ? qte : Math.ceil(qte * ratio);
       const q = nbBarres * parBarre;
-      const p = prixComposant(comp.prix, comp.thermolaque, couleur);
+      const p = prixComp(comp.prix, comp.thermolaque, couleur);
       coutSupports += q * p;
       lignes.push({ label: comp.label, detail: `${q} × ${p.toFixed(2)} €`, montant: r2(q * p) });
     }
@@ -255,12 +260,12 @@ export function chiffrer(input: ChiffrageInput): ChiffrageResult {
       // Pinces partagées : N+1 par tronçon.
       totalPieces = panneaux.reduce((acc, g) => acc + g.nb + 1, 0);
     }
-    const pPiece = prixComposant(sys.piece!.prix, sys.piece!.thermolaque, couleur);
+    const pPiece = prixComp(sys.piece!.prix, sys.piece!.thermolaque, couleur);
     coutSupports += totalPieces * pPiece;
     lignes.push({ label: sys.piece!.label, detail: `${totalPieces} × ${pPiece.toFixed(2)} €`, montant: r2(totalPieces * pPiece) });
     for (const { comp, qte } of sys.parPiece ?? []) {
       const q = totalPieces * qte;
-      const p = prixComposant(comp.prix, comp.thermolaque, couleur);
+      const p = prixComp(comp.prix, comp.thermolaque, couleur);
       coutSupports += q * p;
       lignes.push({ label: comp.label, detail: `${q} × ${p.toFixed(2)} €`, montant: r2(q * p) });
     }
@@ -275,7 +280,7 @@ export function chiffrer(input: ChiffrageInput): ChiffrageResult {
   let restants = nbVerres;
   for (let c = 0; c < nbCaisses; c++) {
     const dansCaisse = Math.min(parCaisse, restants);
-    coutTurquie += turquieFrance(dansCaisse);
+    coutTurquie += turquieFrance(dansCaisse, tarifs.transport.turquie);
     restants -= dansCaisse;
   }
 
@@ -289,7 +294,7 @@ export function chiffrer(input: ChiffrageInput): ChiffrageResult {
     livraisonLabel = `Département ${input.departement} (zone locale) — à préciser`;
     alertes.push(`Département ${input.departement} en zone locale MGK : mode livraison/enlèvement à confirmer avant de finaliser (transport non chiffré).`);
   } else {
-    coutFrance = franceFrance(longueurTotale, estRail);
+    coutFrance = franceFrance(longueurTotale, estRail, tarifs.transport.france);
     livraisonLabel = `Livraison dept ${input.departement || "?"} — ${estRail ? "avec" : "sans"} rail`;
   }
 

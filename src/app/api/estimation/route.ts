@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { chiffrer } from "@/lib/calculateur/engine";
-import { DEPTS_LOCAUX } from "@/lib/calculateur/tarifs";
+import { getTarifsSite } from "@/lib/admin/prices";
 
 /* ================================================================== */
 /*  Estimation PUBLIQUE (configurateur du site).                       */
@@ -46,7 +46,9 @@ export async function POST(req: Request) {
 
   const escalier = b.usage === "escalier";
   const departement = (b.cp ?? "").trim().slice(0, 2);
-  const zoneLocale = DEPTS_LOCAUX.includes(departement);
+  // Tarifs en vigueur : dernière version publiée depuis le back office.
+  const tarifs = await getTarifsSite();
+  const zoneLocale = tarifs.deptsLocaux.includes(departement);
 
   const r = chiffrer({
     troncons: cotes.map((longueur) => ({ longueur, escalier })),
@@ -57,7 +59,7 @@ export async function POST(req: Request) {
     couleur: "anodise",
     departement: departement || undefined,
     livraison: "livraison",
-  });
+  }, tarifs);
 
   // Sortie assainie : uniquement ce que le client peut voir.
   return NextResponse.json({

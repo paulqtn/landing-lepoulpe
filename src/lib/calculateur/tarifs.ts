@@ -196,30 +196,71 @@ export const SYSTEMES: Record<SystemeKey, SystemeDef> = {
 /** Caisse bois. */
 export const PRIX_CAISSE = 100;
 
-/** Transport Turquie → France, par caisse selon le nombre de verres. */
-export function turquieFrance(nbVerres: number): number {
-  if (nbVerres <= 5) return 0;
-  return Math.min(450, (nbVerres - 5) * 30);
-}
-
-/** Transport France → France par tranches de 20 ml. */
-export function franceFrance(ml: number, avecRail: boolean): number {
-  const base = avecRail ? 300 : 200;
-  let total = 0;
-  let restant = ml;
-  while (restant > 0) {
-    const tranche = Math.min(20, restant);
-    if (tranche <= 5) total += base;
-    else if (tranche <= 10) total += base + 50;
-    else if (tranche <= 15) total += base + 100;
-    else total += base + 150;
-    restant -= tranche;
-  }
-  return total;
-}
-
 /** Départements en zone locale MGK (livraison à définir au cas par cas). */
 export const DEPTS_LOCAUX = ["83", "06", "13", "04"];
 
 export const COEF_DEFAUT = 1.75;
 export const TVA = 0.2;
+
+/* ------------------------------------------------------------------ */
+/*  Jeu de tarifs complet du moteur. Les valeurs ci-dessus sont les     */
+/*  valeurs d'origine : elles servent de base et de secours. La version */
+/*  publiée depuis le back office (table price_versions) les remplace   */
+/*  à l'exécution, sans redéploiement. Les RÈGLES de calcul, elles,     */
+/*  restent dans engine.ts.                                             */
+/* ------------------------------------------------------------------ */
+
+export type TarifsSite = {
+  verre: typeof TARIFS_VERRE;
+  poidsM2: Record<Epaisseur, number>;
+  systemes: Record<SystemeKey, SystemeDef>;
+  prixCaisse: number;
+  coefDefaut: number;
+  tva: number;
+  /** Majoration du thermolaqué hors RAL standard (1,2 = +20 %). */
+  majorationRalAutre: number;
+  deptsLocaux: string[];
+  transport: {
+    /** Turquie → France, par caisse : verres offerts, prix par verre au-delà, plafond. */
+    turquie: { franchise: number; parVerre: number; plafond: number };
+    /** France → client, par envoi de 20 ml : base, supplément rail, palier par tranche de 5 ml. */
+    france: { base: number; supplementRail: number; palier: number };
+  };
+};
+
+export const TARIFS_DEFAUT: TarifsSite = {
+  verre: TARIFS_VERRE,
+  poidsM2: POIDS_M2,
+  systemes: SYSTEMES,
+  prixCaisse: PRIX_CAISSE,
+  coefDefaut: COEF_DEFAUT,
+  tva: TVA,
+  majorationRalAutre: 1.2,
+  deptsLocaux: DEPTS_LOCAUX,
+  transport: {
+    turquie: { franchise: 5, parVerre: 30, plafond: 450 },
+    france: { base: 200, supplementRail: 100, palier: 50 },
+  },
+};
+
+/** Transport Turquie → France, par caisse selon le nombre de verres. */
+export function turquieFrance(nbVerres: number, t: TarifsSite["transport"]["turquie"] = TARIFS_DEFAUT.transport.turquie): number {
+  if (nbVerres <= t.franchise) return 0;
+  return Math.min(t.plafond, (nbVerres - t.franchise) * t.parVerre);
+}
+
+/** Transport France → France par tranches de 20 ml. */
+export function franceFrance(ml: number, avecRail: boolean, t: TarifsSite["transport"]["france"] = TARIFS_DEFAUT.transport.france): number {
+  const base = t.base + (avecRail ? t.supplementRail : 0);
+  let total = 0;
+  let restant = ml;
+  while (restant > 0) {
+    const tranche = Math.min(20, restant);
+    if (tranche <= 5) total += base;
+    else if (tranche <= 10) total += base + t.palier;
+    else if (tranche <= 15) total += base + 2 * t.palier;
+    else total += base + 3 * t.palier;
+    restant -= tranche;
+  }
+  return total;
+}

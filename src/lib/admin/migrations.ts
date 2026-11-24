@@ -147,4 +147,20 @@ export const MIGRATIONS: Migration[] = [
       CREATE INDEX IF NOT EXISTS idx_events_lead_created ON lead_events(lead_id, created_at DESC);
     `,
   },
+  {
+    // Tarifs et paramètres de calcul, versionnés (une ligne = une version publiée).
+    id: "003_versions_de_tarifs",
+    sql: `
+      CREATE TABLE price_versions (
+        id SERIAL PRIMARY KEY,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        engine TEXT NOT NULL CHECK (engine IN ('site', 'simulation')),
+        created_by TEXT,
+        note TEXT NOT NULL,
+        changes JSONB,
+        data JSONB NOT NULL
+      );
+      CREATE INDEX idx_price_versions_engine ON price_versions(engine, id DESC);
+    `,
+  },
 ];

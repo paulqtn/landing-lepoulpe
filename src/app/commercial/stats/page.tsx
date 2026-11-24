@@ -1,6 +1,6 @@
 import { eurFmt } from "@/components/admin/ui";
 import { currentRep } from "@/lib/admin/auth";
-import { COMMISSION_PCT, OBJECTIF_MENSUEL, repStats } from "@/lib/admin/compens";
+import { getCompSettings, repStats } from "@/lib/admin/compens";
 import { listLeadsLight } from "@/lib/admin/db";
 import { USAGE_LABELS } from "@/lib/admin/statuts";
 import { getTeam } from "@/lib/admin/team";
@@ -55,7 +55,9 @@ export default async function StatsPage() {
   const [rep, leads, g] = await Promise.all([currentRep(), listLeadsLight(), globalStats()]);
   const team = await getTeam();
   const reps = [...new Set([...team, ...leads.map((l) => l.assigned_to).filter((x): x is string => Boolean(x))])];
-  const perReps = reps.map((r) => repStats(leads, r)).sort((a, b) => b.caMois - a.caMois);
+  const comp = await getCompSettings();
+  const { commissionPct: COMMISSION_PCT, objectifMensuel: OBJECTIF_MENSUEL } = comp;
+  const perReps = reps.map((r) => repStats(leads, r, comp)).sort((a, b) => b.caMois - a.caMois);
   const funnelMax = Math.max(1, ...g.funnel.map((f) => f.n));
   const srcMax = Math.max(1, ...g.sources.map((x) => x.n));
   const usgMax = Math.max(1, ...g.usages.map((x) => x.n));

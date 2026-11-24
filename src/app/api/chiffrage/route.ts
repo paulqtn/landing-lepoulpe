@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { chiffrer, type ChiffrageInput } from "@/lib/calculateur/engine";
 import { SYSTEMES } from "@/lib/calculateur/tarifs";
 import { requireAdmin } from "@/lib/admin/auth";
+import { getTarifsSite } from "@/lib/admin/prices";
 
 /* Chiffrage interne MGK — le moteur et les tarifs restent côté serveur.
    Accès réservé aux comptes du back office (session). */
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
       couleur: (i.couleur as ChiffrageInput["couleur"]) ?? "anodise",
       livraison: (i.livraison as ChiffrageInput["livraison"]) ?? "inconnu",
       coefficient: i.coefficient ? Number(i.coefficient) : undefined,
-    });
+    }, await getTarifsSite());
     return NextResponse.json(result);
   } catch (e) {
     return NextResponse.json({ error: `Erreur de calcul : ${e instanceof Error ? e.message : "inconnue"}` }, { status: 500 });
