@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
-import { userFromRequest } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { adminQuery as q } from "@/lib/admin/db";
 import { currentVersion, getCatalogueSimulation } from "@/lib/admin/prices";
 import { simulate, type SimulationInput } from "@/lib/simulation/engine";
 
 /* Enregistre une simulation : le résultat est recalculé ici à partir de la saisie. */
 export async function POST(req: Request) {
-  const user = await userFromRequest(req);
-  if (!user) return NextResponse.json({ error: "non autorisé" }, { status: 401 });
+  const g = await requireMenuApi(req, ["simulation"]);
+  if (g.denied) return g.denied;
+  const user = g.user;
   let body: { label?: unknown; input?: unknown };
   try {
     body = await req.json();

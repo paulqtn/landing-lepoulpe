@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, UserPlus } from "lucide-react";
+import { MENUS, ROLE_MENUS, type MenuKey } from "@/lib/admin/menus";
 
 type Role = "superadmin" | "admin" | "commercial";
-type Row = { id: number; email: string; name: string; role: Role; active: boolean; last_login_at: string | null };
+type Row = { id: number; email: string; name: string; role: Role; active: boolean; last_login_at: string | null; menus: MenuKey[]; custom: boolean };
 
 const ROLE_LABELS: Record<Role, string> = { superadmin: "Super-administrateur", admin: "Administrateur", commercial: "Commercial" };
 const inputCls =
@@ -74,7 +75,7 @@ export function UsersAdmin({ users, me }: { users: Row[]; me: number }) {
           </button>
         </form>
         <p className="mt-3 text-xs text-neutral-400">
-          Super-administrateur : tout, y compris les comptes. Administrateur : tarifs, paramètres et diagnostic. Commercial : clients, devis, simulation.
+          Le rôle donne une sélection de menus de départ, que vous ajustez ensuite compte par compte ci-dessous. Seul le super-administrateur voit tout et gère les comptes.
         </p>
       </section>
 
@@ -82,7 +83,8 @@ export function UsersAdmin({ users, me }: { users: Row[]; me: number }) {
         <h2 className="mb-3 text-base font-extrabold text-inkgreen">Comptes ({users.length})</h2>
         <ul className="divide-y divide-neutral-100">
           {users.map((u) => (
-            <li key={u.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
+            <li key={u.id} className="py-3">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <div className="min-w-0 flex-1">
                 <span className={`block truncate text-sm font-bold ${u.active ? "text-inkgreen" : "text-neutral-400 line-through"}`}>
                   {u.name} {u.id === me && <span className="text-xs font-semibold text-pine-600 no-underline">(vous)</span>}
@@ -98,7 +100,7 @@ export function UsersAdmin({ users, me }: { users: Row[]; me: number }) {
                 disabled={busy !== null}
                 onChange={(e) => {
                   const role = e.target.value;
-                  if (window.confirm(`Passer ${u.name} en « ${ROLE_LABELS[role as Role]} » ? Sa session en cours sera fermée.`))
+                  if (window.confirm(`Passer ${u.name} en « ${ROLE_LABELS[role as Role]} » ? Ses menus reviendront à la sélection de ce rôle et sa session en cours sera fermée.`))
                     call(`role-${u.id}`, `/api/admin/users/${u.id}`, "PATCH", { role }, "Rôle mis à jour.");
                 }}
               >
@@ -128,10 +130,52 @@ export function UsersAdmin({ users, me }: { users: Row[]; me: number }) {
               >
                 {u.active ? "Désactiver" : "Réactiver"}
               </button>
+              </div>
+              <MenuPicker user={u} disabled={busy !== null} onSave={(menus) => call(`menus-${u.id}`, `/api/admin/users/${u.id}`, "PATCH", { menus }, menus === null ? `Menus de ${u.name} : retour à la sélection du rôle.` : `Menus de ${u.name} enregistrés.`)} />
             </li>
           ))}
         </ul>
       </section>
     </div>
+  );
+}
+
+/* Choix des menus ouverts à un compte. */
+function MenuPicker({ user, disabled, onSave }: { user: Row; disabled: boolean; onSave: (menus: MenuKey[] | null) => void }) {
+  const [sel, setSel] = useState<MenuKey[]>(user.menus);
+  if (user.role === "superadmin") {
+    return <p className="mt-2 text-xs text-neutral-400">Accès complet à tous les menus (super-administrateur).</p>;
+  }
+  const changed = sel.length !== user.menus.length || sel.some((k) => !user.menus.includes(k));
+  const toggle = (k: MenuKey) => setSel((cur) => (cur.includes(k) ? cur.filter((x) => x !== k) : [...cur, k]));
+  return (
+    <details className="mt-2 rounded-xl border border-neutral-200">
+      <summary className="cursor-pointer px-3 py-2 text-xs font-bold text-pine-700">
+        Menus accessibles : {user.menus.length} sur {MENUS.length}
+        <span className="ml-2 font-semibold text-neutral-400">{user.custom ? "sélection personnalisée" : "sélection du rôle"}</span>
+      </summary>
+      <div className="border-t border-neutral-100 px-3 py-3">
+        <div className="grid gap-x-6 gap-y-1.5 sm:grid-cols-2 lg:grid-cols-3">
+          {MENUS.map((m) => (
+            <label key={m.key} className="flex items-center gap-2 text-sm text-neutral-700">
+              <input type="checkbox" className="h-4 w-4 accent-pine-700" checked={sel.includes(m.key)} disabled={disabled} onChange={() => toggle(m.key)} />
+              {m.label}
+              {m.group === "administration" && <span className="text-[10px] font-bold uppercase text-amber-600">admin</span>}
+            </label>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-neutral-400">« Mon compte » reste toujours accessible. « Utilisateurs » est réservé au super-administrateur. La modification s&rsquo;applique dès la page suivante de l&rsquo;utilisateur.</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button type="button" disabled={disabled || !changed} onClick={() => onSave(MENUS.map((m) => m.key).filter((k) => sel.includes(k)))} className="rounded-full bg-pine-700 px-4 py-1.5 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
+            Enregistrer les menus
+          </button>
+          {user.custom && (
+            <button type="button" disabled={disabled} onClick={() => { setSel(ROLE_MENUS[user.role]); onSave(null); }} className="rounded-full border border-neutral-200 px-4 py-1.5 text-xs font-bold text-neutral-600 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-40">
+            Revenir à la sélection du rôle
+            </button>
+          )}
+        </div>
+      </div>
+    </details>
   );
 }

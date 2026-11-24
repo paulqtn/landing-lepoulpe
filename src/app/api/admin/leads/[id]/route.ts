@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, getLead, listEvents, STATUTS, updateLead, type Statut } from "@/lib/admin/db";
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(req: Request, { params }: Params) {
-  const guard = await requireAdmin(req);
-  if (guard) return guard;
+  const g = await requireMenuApi(req, ["etat", "devis", "clients", "relances", "pipeline"]);
+  if (g.denied) return g.denied;
   const { id } = await params;
   const lead = await getLead(Number(id));
   if (!lead) return NextResponse.json({ error: "introuvable" }, { status: 404 });
@@ -14,8 +14,8 @@ export async function GET(req: Request, { params }: Params) {
 }
 
 export async function PATCH(req: Request, { params }: Params) {
-  const guard = await requireAdmin(req);
-  if (guard) return guard;
+  const g = await requireMenuApi(req, ["etat", "devis", "clients", "relances", "pipeline"]);
+  if (g.denied) return g.denied;
   const { id } = await params;
   const lead = await getLead(Number(id));
   if (!lead) return NextResponse.json({ error: "introuvable" }, { status: 404 });

@@ -1,5 +1,5 @@
 import { eurFmt } from "@/components/admin/ui";
-import { currentRep } from "@/lib/admin/auth";
+import { currentRep, requireMenu } from "@/lib/admin/auth";
 import { getCompSettings, repStats } from "@/lib/admin/compens";
 import { listLeadsLight } from "@/lib/admin/db";
 import { USAGE_LABELS } from "@/lib/admin/statuts";
@@ -52,6 +52,7 @@ function Panel({ title, children, note }: { title: string; children: React.React
 }
 
 export default async function StatsPage() {
+  await requireMenu("stats");
   const [rep, leads, g] = await Promise.all([currentRep(), listLeadsLight(), globalStats()]);
   const team = await getTeam();
   const reps = [...new Set([...team, ...leads.map((l) => l.assigned_to).filter((x): x is string => Boolean(x))])];

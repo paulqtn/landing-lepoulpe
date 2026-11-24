@@ -8,7 +8,7 @@ import { getLead, listEvents } from "@/lib/admin/db";
 import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
 import { RgpdActions } from "@/components/admin/RgpdActions";
-import { canManageSettings, currentUser } from "@/lib/admin/auth";
+import { canManageSettings, currentUser, requireMenu } from "@/lib/admin/auth";
 import { QUOTE_STATUT_LABELS, quotesForLead } from "@/lib/admin/quotes";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +33,7 @@ const EVENT_LABELS: Record<string, string> = {
 };
 
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireMenu("clients");
   const { id } = await params;
   const lead = await getLead(Number(id));
   if (!lead) notFound();

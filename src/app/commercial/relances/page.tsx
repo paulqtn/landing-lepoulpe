@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BellRing, CalendarClock, MailCheck } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
-import { currentRep } from "@/lib/admin/auth";
+import { currentRep, requireMenu } from "@/lib/admin/auth";
 import { dueRelances, type Lead, relancesAVenir } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
 
@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
    ce qui partira ensuite, et l'engagement constaté sur chaque client. */
 
 export default async function RelancesPage({ searchParams }: { searchParams: Promise<{ qui?: string }> }) {
+  await requireMenu("relances");
   const [{ qui }, rep, duesAll] = await Promise.all([searchParams, currentRep(), dueRelances()]);
   const mine = rep && qui !== "tous";
   const dues = mine ? duesAll.filter((l) => l.assigned_to === rep) : duesAll;

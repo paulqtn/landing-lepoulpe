@@ -1,3 +1,4 @@
+import { requireMenu } from "@/lib/admin/auth";
 import { Simulation } from "@/components/admin/Simulation";
 import { adminQuery } from "@/lib/admin/db";
 import { simulationOptions } from "@/lib/simulation/catalog";
@@ -10,6 +11,7 @@ export const dynamic = "force-dynamic";
 type SavedRow = { id: number; label: string; created_at: string; created_by: string | null; total_ht: string | null; input: Record<string, unknown> };
 
 export default async function SimulationPage() {
+  await requireMenu("simulation");
   const saved = await adminQuery<SavedRow>("SELECT id, label, created_at, created_by, total_ht, input FROM simulations ORDER BY id DESC LIMIT 30");
   return (
     <div className="space-y-6">

@@ -1,12 +1,12 @@
-import { requireAdmin } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { renderQuotePdf } from "@/lib/admin/quote-pdf";
 import { getQuote } from "@/lib/admin/quotes";
 import { getSociete, type Societe } from "@/lib/admin/societe";
 
 /* Téléchargement du PDF. Un devis envoyé est rendu avec les mentions figées à l'envoi. */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const guard = await requireAdmin(req);
-  if (guard) return guard;
+  const g = await requireMenuApi(req, ["devis", "clients"]);
+  if (g.denied) return g.denied;
   const quote = await getQuote(Number((await params).id));
   if (!quote) return Response.json({ error: "introuvable" }, { status: 404 });
   const frozen = (quote.snapshot as { societe?: Societe } | null)?.societe;

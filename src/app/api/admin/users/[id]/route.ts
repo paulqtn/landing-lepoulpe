@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PASSWORD_MIN, ROLES, audit, destroyUserSessions, hashPassword, requireRole, type Role } from "@/lib/admin/auth";
 import { adminQuery as q } from "@/lib/admin/db";
+import { sanitizeMenus } from "@/lib/admin/menus";
 
 /* Modification d'un compte (rôle, activation, mot de passe) — super-administrateur uniquement.
    Un compte n'est jamais supprimé : il est désactivé, pour conserver l'historique. */
@@ -43,6 +44,16 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     passwordChanged = true;
   }
   await q("UPDATE users SET role = $2, active = $3 WHERE id = $1", [id, role, active]);
+  // Menus : sélection explicite, ou retour à la sélection de départ quand le rôle change.
+  let menusChange: unknown = undefined;
+  if (body.menus !== undefined) {
+    const menus = body.menus === null ? null : sanitizeMenus(body.menus);
+    await q("UPDATE users SET menus = $2 WHERE id = $1", [id, menus === null ? null : JSON.stringify(menus)]);
+    menusChange = menus ?? "sélection du rôle";
+  } else if (role !== target.role) {
+    await q("UPDATE users SET menus = NULL WHERE id = $1", [id]);
+    menusChange = "sélection du rôle";
+  }
   // Toute modification sensible ferme les sessions ouvertes du compte concerné.
   if (passwordChanged || !active || role !== target.role) await destroyUserSessions(id);
 
@@ -52,7 +63,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     "user",
     id,
     { role: target.role, active: target.active },
-    { role, active, ...(passwordChanged ? { password: "réinitialisé" } : {}) },
+    { role, active, ...(passwordChanged ? { password: "réinitialisé" } : {}), ...(menusChange !== undefined ? { menus: menusChange } : {}) },
   );
   return NextResponse.json({ ok: true });
 }

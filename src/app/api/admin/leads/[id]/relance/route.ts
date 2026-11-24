@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { getLead } from "@/lib/admin/db";
 import { envoyerRelance } from "@/lib/admin/sequence";
 
 /** Envoie la relance suivante de la séquence immédiatement. */
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const guard = await requireAdmin(req);
-  if (guard) return guard;
+  const g = await requireMenuApi(req, ["etat", "devis", "clients", "relances", "pipeline"]);
+  if (g.denied) return g.denied;
   const { id } = await params;
   const lead = await getLead(Number(id));
   if (!lead) return NextResponse.json({ error: "introuvable" }, { status: 404 });

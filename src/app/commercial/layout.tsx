@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { CommercialNav } from "@/components/admin/CommercialNav";
-import { ROLE_LABELS, countUsers, currentUser, setupTokenConfigured } from "@/lib/admin/auth";
+import { ROLE_LABELS, countUsers, currentUser, setupTokenConfigured, userMenus } from "@/lib/admin/auth";
 import { dbConfigured } from "@/lib/admin/db";
 import { site } from "@/lib/site";
 
@@ -41,12 +41,12 @@ export default async function CommercialLayout({ children }: { children: React.R
               <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
               {user.name}
             </p>
-            <CommercialNav role={user.role} />
+            <CommercialNav menus={userMenus(user)} superadmin={user.role === "superadmin"} />
           </div>
         </aside>
         <div className="min-w-0 flex-1">
           <div className="mb-4 md:hidden">
-            <CommercialNav role={user.role} compact />
+            <CommercialNav menus={userMenus(user)} superadmin={user.role === "superadmin"} compact />
           </div>
           {children}
         </div>

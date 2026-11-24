@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { userFromRequest } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, getLead, updateLead } from "@/lib/admin/db";
 import { mailConfigured, sendQuoteEmail } from "@/lib/admin/mail";
 import { renderQuotePdf } from "@/lib/admin/quote-pdf";
@@ -11,8 +11,9 @@ import { site } from "@/lib/site";
    l'écran doit renvoyer le numéro du devis ET l'adresse du destinataire
    affichés dans la fenêtre de confirmation. */
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const user = await userFromRequest(req);
-  if (!user) return NextResponse.json({ error: "non autorisé" }, { status: 401 });
+  const g = await requireMenuApi(req, ["devis", "clients"]);
+  if (g.denied) return g.denied;
+  const user = g.user;
   let body: { confirmRef?: unknown; confirmEmail?: unknown };
   try {
     body = await req.json();

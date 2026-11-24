@@ -1,11 +1,11 @@
-import { requireAdmin } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { listLeads } from "@/lib/admin/db";
 import { site } from "@/lib/site";
 
 /** Export CSV des demandes (filtres statut / q identiques à la liste). */
 export async function GET(req: Request) {
-  const guard = await requireAdmin(req);
-  if (guard) return guard;
+  const g = await requireMenuApi(req, ["clients"]);
+  if (g.denied) return g.denied;
   const url = new URL(req.url);
   const leads = await listLeads({
     statut: url.searchParams.get("statut") ?? undefined,

@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { userFromRequest } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { duplicateQuote, optionTotals, sanitizeClient, sanitizeOptions, updateQuote } from "@/lib/admin/quotes";
 
 /* Enregistrement d'un brouillon : les totaux sont recalculés ici, jamais repris de l'écran. */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const user = await userFromRequest(req);
-  if (!user) return NextResponse.json({ error: "non autorisé" }, { status: 401 });
+  const g = await requireMenuApi(req, ["devis", "clients"]);
+  if (g.denied) return g.denied;
+  const user = g.user;
   const id = Number((await params).id);
   let body: Record<string, unknown>;
   try {
@@ -24,8 +25,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
 /* Nouvelle version modifiable d'un devis déjà envoyé. */
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const user = await userFromRequest(req);
-  if (!user) return NextResponse.json({ error: "non autorisé" }, { status: 401 });
+  const g = await requireMenuApi(req, ["devis", "clients"]);
+  if (g.denied) return g.denied;
+  const user = g.user;
   const quote = await duplicateQuote(Number((await params).id), user.name);
   if (!quote) return NextResponse.json({ ok: false, error: "Devis introuvable." }, { status: 404 });
   return NextResponse.json({ ok: true, id: quote.id, ref: quote.ref });

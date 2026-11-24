@@ -1,6 +1,5 @@
-import { notFound } from "next/navigation";
 import { CheckCircle2, XCircle } from "lucide-react";
-import { canManageSettings, currentUser } from "@/lib/admin/auth";
+import { requireMenu } from "@/lib/admin/auth";
 import { dbHealth } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
 
@@ -8,8 +7,7 @@ export const dynamic = "force-dynamic";
 
 /* Diagnostic — état réel de la base et des services, lu à l'instant. */
 export default async function DiagnosticPage() {
-  const me = await currentUser();
-  if (!me || !canManageSettings(me)) notFound();
+  await requireMenu("diagnostic");
   const h = await dbHealth();
   const env = process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "inconnu";
   const checks: [string, boolean, string][] = [

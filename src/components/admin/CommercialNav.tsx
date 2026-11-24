@@ -6,34 +6,29 @@ import {
   Activity, BarChart3, BellRing, Calculator, Factory, FileText, Home, KanbanSquare, LogOut, Settings2, SlidersHorizontal, UserCog, UserRound, Users,
 } from "lucide-react";
 import { AdminLogout } from "@/components/admin/AdminLogout";
+import { MENUS, type MenuKey } from "@/lib/admin/menus";
 
 /* Navigation de l'espace commercial : sa home, ses sous-catégories et,
    selon le rôle, la partie administration. */
 
-type Role = "superadmin" | "admin" | "commercial";
+const ICONS: Record<MenuKey, typeof Home> = {
+  etat: Home, devis: FileText, clients: Users, relances: BellRing, pipeline: KanbanSquare, production: Factory,
+  stats: BarChart3, simulation: Calculator, calculateur: Settings2, tarifs: SlidersHorizontal, diagnostic: Activity,
+};
 
-const NAV = [
-  { href: "/commercial", label: "État des lieux", icon: Home, exact: true },
-  { href: "/commercial/devis", label: "Devis à traiter", icon: FileText },
-  { href: "/commercial/clients", label: "Clients", icon: Users },
-  { href: "/commercial/relances", label: "Relances", icon: BellRing },
-  { href: "/commercial/pipeline", label: "Pipeline", icon: KanbanSquare },
-  { href: "/commercial/production", label: "Production", icon: Factory },
-  { href: "/commercial/stats", label: "Statistiques", icon: BarChart3 },
-  { href: "/commercial/simulation", label: "Simulation", icon: Calculator },
-  { href: "/calculateur", label: "Calculateur interne", icon: Settings2 },
-];
+type Item = { href: string; label: string; icon: typeof Home; exact?: boolean };
 
-const ADMIN_NAV = [
-  { href: "/commercial/admin/tarifs", label: "Tarifs et paramètres", icon: SlidersHorizontal, roles: ["superadmin", "admin"] },
-  { href: "/commercial/admin/utilisateurs", label: "Utilisateurs", icon: UserCog, roles: ["superadmin"] },
-  { href: "/commercial/admin/diagnostic", label: "Diagnostic", icon: Activity, roles: ["superadmin", "admin"] },
-];
-
-export function CommercialNav({ role, compact = false }: { role: Role; compact?: boolean }) {
+export function CommercialNav({ menus, superadmin, compact = false }: { menus: MenuKey[]; superadmin: boolean; compact?: boolean }) {
   const path = usePathname();
-  const admin = ADMIN_NAV.filter((n) => n.roles.includes(role));
-  const all = [...NAV, ...admin, { href: "/commercial/compte", label: "Mon compte", icon: UserRound }];
+  // Seuls les menus ouverts à ce compte sont affichés (le serveur les vérifie aussi).
+  const visible = MENUS.filter((m) => menus.includes(m.key));
+  const toItem = (m: (typeof MENUS)[number]): Item => ({ href: m.href, label: m.label, icon: ICONS[m.key], exact: m.exact });
+  const NAV = visible.filter((m) => m.group === "commercial").map(toItem);
+  const admin: Item[] = [
+    ...visible.filter((m) => m.group === "administration").map(toItem),
+    ...(superadmin ? [{ href: "/commercial/admin/utilisateurs", label: "Utilisateurs", icon: UserCog }] : []),
+  ];
+  const all: Item[] = [...NAV, ...admin, { href: "/commercial/compte", label: "Mon compte", icon: UserRound }];
   const isOn = (n: { href: string; exact?: boolean }) => (n.exact ? path === n.href : path.startsWith(n.href));
 
   if (compact) {
@@ -62,7 +57,7 @@ export function CommercialNav({ role, compact = false }: { role: Role; compact?:
     );
   }
 
-  const item = (n: (typeof all)[number]) => {
+  const item = (n: Item) => {
     const on = isOn(n);
     return (
       <Link

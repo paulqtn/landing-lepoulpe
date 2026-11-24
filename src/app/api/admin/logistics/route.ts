@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAdmin } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { dbConfigured, getLead, addEvent } from "@/lib/admin/db";
 import {
   advanceOrder,
@@ -13,7 +13,8 @@ import {
 /* Actions du pôle gestion — une seule route, gardée par la session admin.
    En mode démo (pas de base), tout renvoie { demo: true } sans rien écrire. */
 export async function POST(request: Request) {
-  if (!(await isAdmin())) return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  const g = await requireMenuApi(request, ["production", "clients", "etat"]);
+  if (g.denied) return g.denied;
   if (!dbConfigured) return NextResponse.json({ ok: false, demo: true });
 
   let body: Record<string, unknown>;

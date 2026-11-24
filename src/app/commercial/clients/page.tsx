@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Download } from "lucide-react";
 import { LeadsTable, type LeadRow } from "@/components/admin/LeadsTable";
-import { currentRep } from "@/lib/admin/auth";
+import { currentRep, requireMenu } from "@/lib/admin/auth";
 import { countLeads, listLeads, STATUT_LABELS, STATUTS } from "@/lib/admin/db";
 import { getTeam } from "@/lib/admin/team";
 
@@ -12,6 +12,7 @@ export default async function LeadsPage({
 }: {
   searchParams: Promise<{ statut?: string; q?: string; qui?: string; page?: string }>;
 }) {
+  await requireMenu("clients");
   const { statut, q, qui, page: pageParam } = await searchParams;
   const rep = await currentRep();
   const mode = qui === "tous" || !rep ? "tous" : qui === "libre" ? "libre" : "moi";

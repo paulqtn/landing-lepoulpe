@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { PriceEditor } from "@/components/admin/PriceEditor";
 import { CommissionsForm, SocieteForm } from "@/components/admin/SettingsForms";
-import { canManageSettings, currentUser } from "@/lib/admin/auth";
+import { requireMenu } from "@/lib/admin/auth";
 import { getCompSettings } from "@/lib/admin/compens";
 import { ENGINE_LABELS, currentVersion, describe, listVersions, type Engine } from "@/lib/admin/prices";
 import { referenceScenarios } from "@/lib/admin/prices-ref";
@@ -19,8 +18,7 @@ const TABS = [
 ] as const;
 
 export default async function TarifsPage({ searchParams }: { searchParams: Promise<{ onglet?: string }> }) {
-  const me = await currentUser();
-  if (!me || !canManageSettings(me)) notFound();
+  await requireMenu("tarifs");
   const { onglet } = await searchParams;
   const tab = TABS.find((t) => t.key === onglet)?.key ?? "site";
 

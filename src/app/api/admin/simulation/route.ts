@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { getCatalogueSimulation } from "@/lib/admin/prices";
 import { DEFAULT_INPUT } from "@/lib/simulation/catalog";
 import { compareSystems, simulate, type SimulationInput } from "@/lib/simulation/engine";
@@ -12,8 +12,8 @@ const num = (v: unknown): number => (typeof v === "number" ? v : typeof v === "s
 const forced = (v: unknown): number | null => (v === null || v === undefined || v === "" ? null : num(v));
 
 export async function POST(req: Request) {
-  const denied = await requireAdmin(req);
-  if (denied) return denied;
+  const g = await requireMenuApi(req, ["simulation"]);
+  if (g.denied) return g.denied;
 
   let body: { input?: Record<string, unknown>; keepForcedSupports?: boolean };
   try {

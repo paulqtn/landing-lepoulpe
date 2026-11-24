@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, FileText, Ruler } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge } from "@/components/admin/ui";
-import { currentRep } from "@/lib/admin/auth";
+import { currentRep, requireMenu } from "@/lib/admin/auth";
 import { listLeads } from "@/lib/admin/db";
 import { USAGE_LABELS } from "@/lib/admin/statuts";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
    calepinage au calculateur interne, puis envoi depuis la fiche. */
 
 export default async function DevisPage({ searchParams }: { searchParams: Promise<{ qui?: string }> }) {
+  await requireMenu("devis");
   const [{ qui }, rep, tous] = await Promise.all([searchParams, currentRep(), listLeads({ statut: "nouveau", limit: 1000 })]);
   const mode = qui === "tous" || !rep ? "tous" : "moi";
   const base = tous;

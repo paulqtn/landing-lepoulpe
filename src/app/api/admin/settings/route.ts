@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { audit, requireRole } from "@/lib/admin/auth";
+import { audit, requireMenuApi } from "@/lib/admin/auth";
 import { getCompSettings } from "@/lib/admin/compens";
 import { getSetting, setSetting } from "@/lib/admin/settings";
 import { SOCIETE_FIELDS } from "@/lib/admin/societe";
 
 /* Paramètres généraux (commissions, coordonnées de la société sur les devis). */
 export async function POST(req: Request) {
-  const g = await requireRole(req, ["superadmin", "admin"]);
+  const g = await requireMenuApi(req, ["tarifs"]);
   if (g.denied) return g.denied;
   let body: Record<string, unknown>;
   try {

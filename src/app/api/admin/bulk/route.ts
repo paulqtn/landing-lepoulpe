@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, getLead, STATUTS, updateLead, type Statut } from "@/lib/admin/db";
 import { envoyerRelance } from "@/lib/admin/sequence";
 
 /** Actions en masse sur une sélection de leads. */
 export async function POST(req: Request) {
-  const guard = await requireAdmin(req);
-  if (guard) return guard;
+  const g = await requireMenuApi(req, ["etat", "devis", "clients", "relances", "pipeline"]);
+  if (g.denied) return g.denied;
 
   let body: { ids?: unknown; action?: string; value?: string };
   try {

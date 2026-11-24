@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
 import { chiffrer, type ChiffrageInput } from "@/lib/calculateur/engine";
 import { SYSTEMES } from "@/lib/calculateur/tarifs";
-import { requireAdmin } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { getTarifsSite } from "@/lib/admin/prices";
 
 /* Chiffrage interne MGK — le moteur et les tarifs restent côté serveur.
    Accès réservé aux comptes du back office (session). */
 
 export async function POST(req: Request) {
-  const guard = await requireAdmin(req);
-  if (guard) return guard;
+  const g = await requireMenuApi(req, ["calculateur"]);
+  if (g.denied) return g.denied;
 
   let body: { input?: Partial<ChiffrageInput> };
   try {

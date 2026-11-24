@@ -1,3 +1,4 @@
+import { requireMenu } from "@/lib/admin/auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -9,6 +10,7 @@ import { getSociete, societeManquants } from "@/lib/admin/societe";
 export const dynamic = "force-dynamic";
 
 export default async function QuotePage({ params }: { params: Promise<{ id: string }> }) {
+  await requireMenu("devis");
   const quote = await getQuote(Number((await params).id));
   if (!quote) notFound();
   const manquants = societeManquants(await getSociete());

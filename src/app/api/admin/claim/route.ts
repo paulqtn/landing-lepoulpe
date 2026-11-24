@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { repFromRequest, requireAdmin } from "@/lib/admin/auth";
+import { repFromRequest, requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, dbConfigured, getLead, updateLead } from "@/lib/admin/db";
 
 /* La pioche : un commercial s'attribue un lead entrant. Premier arrivé,
    premier servi — si quelqu'un l'a pris entre-temps, on le dit. */
 export async function POST(req: Request) {
-  const guard = await requireAdmin(req);
-  if (guard) return guard;
+  const g = await requireMenuApi(req, ["etat", "devis", "clients", "relances", "pipeline"]);
+  if (g.denied) return g.denied;
   const rep = await repFromRequest(req);
   if (!rep) return NextResponse.json({ ok: false, error: "no_rep" }, { status: 400 });
   if (!dbConfigured) return NextResponse.json({ ok: false, demo: true });

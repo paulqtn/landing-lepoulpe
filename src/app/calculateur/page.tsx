@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { isAdmin } from "@/lib/admin/auth";
+import { currentUser, hasMenu } from "@/lib/admin/auth";
 import { CalculateurMGK } from "@/components/CalculateurMGK";
 import { Container } from "@/components/ui/Container";
 
@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 export default async function CalculateurPage() {
   // Outil interne : accessible uniquement connecté au back office.
-  if (!(await isAdmin())) redirect("/commercial");
+  if (!hasMenu(await currentUser(), "calculateur")) redirect("/commercial");
   return (
     <main className="bg-mist">
       <Container className="py-12 sm:py-16">

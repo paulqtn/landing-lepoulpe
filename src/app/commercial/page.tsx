@@ -3,7 +3,7 @@ import { AlertTriangle, ArrowRight, BellRing, Euro, FileText, Flame, Hand, Phone
 import { ClaimButton } from "@/components/admin/ClaimButton";
 import { SeedDemo } from "@/components/admin/SeedDemo";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
-import { currentRep } from "@/lib/admin/auth";
+import { currentRep, requireMenu } from "@/lib/admin/auth";
 import { getCompSettings, repStats } from "@/lib/admin/compens";
 import { dueRelances, listLeads, stats, type Lead, listLeadsLight } from "@/lib/admin/db";
 import { listOrders } from "@/lib/admin/logistics";
@@ -14,6 +14,7 @@ export const dynamic = "force-dynamic";
 const dayFmt = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
 
 export default async function CommercialHome() {
+  await requireMenu("etat");
   const rep = await currentRep();
   const mine = rep ?? undefined;
   // Chaque file de travail est une requête ciblée : les compteurs restent

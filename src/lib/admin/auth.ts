@@ -2,6 +2,8 @@ import { createHash, randomBytes, scrypt as scryptCb, timingSafeEqual } from "no
 import { promisify } from "node:util";
 import { cache } from "react";
 import { cookies } from "next/headers";
+import { notFound, redirect } from "next/navigation";
+import { MENUS, effectiveMenus, type MenuKey } from "./menus";
 import { adminQuery as q, dbConfigured } from "./db";
 
 /* ================================================================== */
@@ -33,6 +35,8 @@ export type User = {
   active: boolean;
   created_at: string;
   last_login_at: string | null;
+  /** Sélection personnalisée des menus ; null = sélection de départ du rôle. */
+  menus: MenuKey[] | null;
 };
 
 const scrypt = promisify(scryptCb) as (pwd: string, salt: Buffer, len: number) => Promise<Buffer>;
@@ -83,7 +87,7 @@ async function userFromToken(token: string | undefined): Promise<User | null> {
   if (!token || !/^[0-9a-f]{64}$/.test(token) || !dbConfigured) return null;
   try {
     const rows = await q<User>(
-      `SELECT u.id, u.email, u.name, u.role, u.active, u.created_at, u.last_login_at
+      `SELECT u.id, u.email, u.name, u.role, u.active, u.created_at, u.last_login_at, u.menus
        FROM sessions s JOIN users u ON u.id = s.user_id
        WHERE s.token_hash = $1 AND s.expires_at > now() AND u.active`,
       [hashToken(token)],
@@ -132,7 +136,32 @@ export async function requireRole(req: Request, roles: readonly Role[]): Promise
 }
 
 export const canManageUsers = (u: User | null) => u?.role === "superadmin";
+/** Outils sensibles hors menus (RGPD) : rôles d'administration uniquement. */
 export const canManageSettings = (u: User | null) => u?.role === "superadmin" || u?.role === "admin";
+
+/* ------------------------- Droits par menu ------------------------- */
+
+export const userMenus = (u: User): MenuKey[] => effectiveMenus(u.role, u.menus);
+export const hasMenu = (u: User | null, key: MenuKey): boolean => u !== null && userMenus(u).includes(key);
+
+/** Garde des pages : sans le droit, on est renvoyé vers son premier menu autorisé. */
+export async function requireMenu(key: MenuKey): Promise<User> {
+  const user = await currentUser();
+  if (!user) notFound();
+  if (!hasMenu(user, key)) {
+    const first = MENUS.find((m) => userMenus(user).includes(m.key));
+    redirect(first ? first.href : "/commercial/compte");
+  }
+  return user;
+}
+
+/** Garde des API : l'un des menus cités suffit. */
+export async function requireMenuApi(req: Request, keys: readonly MenuKey[]): Promise<{ user: User; denied?: undefined } | { denied: Response; user?: undefined }> {
+  const user = await userFromRequest(req);
+  if (!user) return { denied: Response.json({ error: "non autorisé" }, { status: 401 }) };
+  if (!keys.some((k) => hasMenu(user, k))) return { denied: Response.json({ error: "Ce menu ne vous est pas ouvert." }, { status: 403 }) };
+  return { user };
+}
 
 /* ----------------------- Identité du commercial ----------------------- */
 

@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
-import { userFromRequest } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { getLead } from "@/lib/admin/db";
 import { ensureDraftForLead } from "@/lib/admin/quotes";
 
 /* Prépare (ou retrouve) le brouillon de devis d'une demande. */
 export async function POST(req: Request) {
-  const user = await userFromRequest(req);
-  if (!user) return NextResponse.json({ error: "non autorisé" }, { status: 401 });
+  const g = await requireMenuApi(req, ["devis", "clients"]);
+  if (g.denied) return g.denied;
+  const user = g.user;
   let body: { leadId?: unknown };
   try {
     body = await req.json();

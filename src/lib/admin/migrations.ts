@@ -206,4 +206,9 @@ export const MIGRATIONS: Migration[] = [
       CREATE INDEX idx_simulations_created ON simulations(created_at DESC);
     `,
   },
+  {
+    // Menus accessibles par utilisateur (NULL = sélection de départ du rôle).
+    id: "005_menus_par_utilisateur",
+    sql: `ALTER TABLE users ADD COLUMN menus JSONB;`,
+  },
 ];

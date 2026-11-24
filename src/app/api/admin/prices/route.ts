@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { requireRole } from "@/lib/admin/auth";
+import { requireMenuApi } from "@/lib/admin/auth";
 import { ENGINES, applyEdits, currentVersion, publish, restore, type Engine, type PriceEdit } from "@/lib/admin/prices";
 import { referenceScenarios } from "@/lib/admin/prices-ref";
 
 /* Tarifs : aperçu d'impact, publication d'une nouvelle version, retour arrière.
    Réservé aux rôles superadmin et admin. */
 export async function POST(req: Request) {
-  const g = await requireRole(req, ["superadmin", "admin"]);
+  const g = await requireMenuApi(req, ["tarifs"]);
   if (g.denied) return g.denied;
 
   let body: Record<string, unknown>;
