@@ -22,7 +22,7 @@ const ORDER_COLORS: Record<OrderStatut, string> = {
 const SYS_LABEL: Record<string, string> = { rail: "Rail", pinces: "Pinces", spider: "Spider", conseil: "À définir" };
 
 export default async function ProductionPage() {
-  const [leads, orders] = await Promise.all([listLeads({ limit: 500 }), listOrders()]);
+  const [leads, orders] = await Promise.all([listLeads({ statut: "gagne", limit: 1000 }), listOrders()]);
   const withOrder = new Set(orders.map((o) => o.lead_id).filter(Boolean));
   const aLancer = leads.filter((l) => l.statut === "gagne" && !withOrder.has(l.id));
 

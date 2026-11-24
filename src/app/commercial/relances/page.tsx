@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BellRing, CalendarClock, MailCheck } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { currentRep } from "@/lib/admin/auth";
-import { dueRelances, listLeads, type Lead } from "@/lib/admin/db";
+import { dueRelances, type Lead, relancesAVenir } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
 
 export const dynamic = "force-dynamic";
@@ -11,20 +11,10 @@ export const dynamic = "force-dynamic";
    ce qui partira ensuite, et l'engagement constaté sur chaque client. */
 
 export default async function RelancesPage({ searchParams }: { searchParams: Promise<{ qui?: string }> }) {
-  const [{ qui }, rep, duesAll, tousAll] = await Promise.all([searchParams, currentRep(), dueRelances(), listLeads({ limit: 500 })]);
+  const [{ qui }, rep, duesAll] = await Promise.all([searchParams, currentRep(), dueRelances()]);
   const mine = rep && qui !== "tous";
   const dues = mine ? duesAll.filter((l) => l.assigned_to === rep) : duesAll;
-  const tous = mine ? tousAll.filter((l) => l.assigned_to === rep) : tousAll;
-  const now = Date.now();
-  const aVenir = tous
-    .filter(
-      (l) =>
-        l.next_relance_at &&
-        Number(new Date(l.next_relance_at)) > now &&
-        !["gagne", "perdu", "a_rappeler"].includes(l.statut),
-    )
-    .sort((a, b) => Number(new Date(a.next_relance_at!)) - Number(new Date(b.next_relance_at!)))
-    .slice(0, 20);
+  const aVenir = await relancesAVenir(mine && rep ? rep : undefined, 20);
 
   return (
     <div className="space-y-6">

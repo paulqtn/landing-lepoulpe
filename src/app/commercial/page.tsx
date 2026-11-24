@@ -5,7 +5,7 @@ import { SeedDemo } from "@/components/admin/SeedDemo";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { currentRep } from "@/lib/admin/auth";
 import { COMMISSION_PCT, OBJECTIF_MENSUEL, PRIME_OBJECTIF, repStats } from "@/lib/admin/compens";
-import { dueRelances, listLeads, stats, type Lead } from "@/lib/admin/db";
+import { dueRelances, listLeads, stats, type Lead, listLeadsLight } from "@/lib/admin/db";
 import { listOrders } from "@/lib/admin/logistics";
 import { mailConfigured } from "@/lib/admin/mail";
 
@@ -14,28 +14,27 @@ export const dynamic = "force-dynamic";
 const dayFmt = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
 
 export default async function CommercialHome() {
-  const [rep, s, tous, dues, orders] = await Promise.all([
-    currentRep(),
+  const rep = await currentRep();
+  const mine = rep ?? undefined;
+  // Chaque file de travail est une requête ciblée : les compteurs restent
+  // justes quelle que soit la taille de la base.
+  const [s, pool, devisATraiter, chauds, nouveauxA, gagnes, dues, orders, persoLeads] = await Promise.all([
     stats(),
-    listLeads({ limit: 500 }),
+    listLeads({ assigned: "__libre", actifs: true, order: "ancien", limit: 500 }),
+    listLeads({ assigned: mine, statut: "nouveau", limit: 500 }),
+    listLeads({ assigned: mine, actifs: true, activeSinceHours: 48, limit: 500 }),
+    listLeads({ assigned: mine, statut: "nouveau", score: "A", limit: 500 }),
+    listLeads({ assigned: mine, statut: "gagne", limit: 500 }),
     dueRelances(),
     listOrders(),
+    rep ? listLeadsLight({ assigned: rep }) : Promise.resolve([]),
   ]);
 
-  const miens = rep ? tous.filter((l) => l.assigned_to === rep) : tous;
-  const pool = tous
-    .filter((l) => !l.assigned_to && !["gagne", "perdu"].includes(l.statut))
-    .sort((a, b) => Number(new Date(a.created_at)) - Number(new Date(b.created_at)));
-  const devisATraiter = miens.filter((l) => l.statut === "nouveau");
-  const fresh = Date.now() - 48 * 3600_000;
-  const chauds = miens.filter(
-    (l) => !["gagne", "perdu"].includes(l.statut) && l.last_activity_at && Number(new Date(l.last_activity_at)) > fresh,
-  );
   const mesDues = rep ? dues.filter((l) => l.assigned_to === rep) : dues;
-  const aAppeler = miens.filter((l) => l.statut === "nouveau" && l.score === "A" && !chauds.some((c) => c.id === l.id));
+  const aAppeler = nouveauxA.filter((l) => !chauds.some((c) => c.id === l.id));
   const withOrder = new Set(orders.map((o) => o.lead_id).filter(Boolean));
-  const aLancer = miens.filter((l) => l.statut === "gagne" && !withOrder.has(l.id));
-  const perso = rep ? repStats(tous, rep) : null;
+  const aLancer = gagnes.filter((l) => !withOrder.has(l.id));
+  const perso = rep ? repStats(persoLeads, rep) : null;
 
   /* Les tâches, dans l'ordre d'attaque du matin. */
   const taches = [

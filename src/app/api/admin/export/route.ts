@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   const leads = await listLeads({
     statut: url.searchParams.get("statut") ?? undefined,
     search: url.searchParams.get("q") ?? undefined,
-    limit: 500,
+    limit: 20000,
   });
 
   const esc = (v: unknown) => `"${String(v ?? "").replaceAll('"', '""')}"`;

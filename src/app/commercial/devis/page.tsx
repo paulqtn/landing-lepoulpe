@@ -11,9 +11,9 @@ export const dynamic = "force-dynamic";
    calepinage au calculateur interne, puis envoi depuis la fiche. */
 
 export default async function DevisPage({ searchParams }: { searchParams: Promise<{ qui?: string }> }) {
-  const [{ qui }, rep, tous] = await Promise.all([searchParams, currentRep(), listLeads({ limit: 500 })]);
+  const [{ qui }, rep, tous] = await Promise.all([searchParams, currentRep(), listLeads({ statut: "nouveau", limit: 1000 })]);
   const mode = qui === "tous" || !rep ? "tous" : "moi";
-  const base = tous.filter((l) => l.statut === "nouveau");
+  const base = tous;
   const list = (mode === "moi" ? base.filter((l) => l.assigned_to === rep) : base).sort(
     (a, b) => Number(new Date(a.created_at)) - Number(new Date(b.created_at)),
   );

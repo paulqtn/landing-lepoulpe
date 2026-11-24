@@ -223,21 +223,58 @@ export async function listEvents(leadId: number): Promise<LeadEvent[]> {
   return q<LeadEvent>(`SELECT * FROM lead_events WHERE lead_id = $1 ORDER BY created_at DESC, id DESC`, [leadId]);
 }
 
-export async function listLeads(opts: { statut?: string; search?: string; limit?: number; assigned?: string } = {}): Promise<Lead[]> {
-  if (!dbConfigured) {
-    const needle = (opts.search ?? "").toLowerCase();
-    return demoLeads().filter(
-      (l) =>
-        (!opts.statut || l.statut === opts.statut) &&
-        (!opts.assigned || (opts.assigned === "__libre" ? !l.assigned_to : l.assigned_to === opts.assigned)) &&
-        (!needle || [l.name, l.email, l.phone].some((v) => v.toLowerCase().includes(needle))),
-    );
-  }
+export type LeadFilter = {
+  statut?: string;
+  /** Plusieurs statuts à la fois. */
+  statuts?: readonly string[];
+  search?: string;
+  limit?: number;
+  offset?: number;
+  /** Nom du commercial, ou "__libre" pour les demandes non attribuées. */
+  assigned?: string;
+  /** Uniquement les demandes ni gagnées ni perdues. */
+  actifs?: boolean;
+  /** Activité (ouverture, clic, consultation) dans les N dernières heures. */
+  activeSinceHours?: number;
+  score?: "A" | "B" | "C";
+  order?: "recent" | "ancien";
+};
+
+function demoFilter(opts: LeadFilter): Lead[] {
+  const needle = (opts.search ?? "").toLowerCase();
+  const list = demoLeads().filter(
+    (l) =>
+      (!opts.statut || l.statut === opts.statut) &&
+      (!opts.statuts || opts.statuts.includes(l.statut)) &&
+      (!opts.actifs || !["gagne", "perdu"].includes(l.statut)) &&
+      (!opts.score || l.score === opts.score) &&
+      (!opts.activeSinceHours ||
+        (l.last_activity_at !== null && Date.now() - Number(new Date(l.last_activity_at)) < opts.activeSinceHours * 3600_000)) &&
+      (!opts.assigned || (opts.assigned === "__libre" ? !l.assigned_to : l.assigned_to === opts.assigned)) &&
+      (!needle || [l.name, l.email, l.phone].some((v) => v.toLowerCase().includes(needle))),
+  );
+  return opts.order === "ancien" ? list.reverse() : list;
+}
+
+function leadWhere(opts: LeadFilter): { sql: string; vals: unknown[] } {
   const where: string[] = [];
   const vals: unknown[] = [];
   if (opts.statut && (STATUTS as readonly string[]).includes(opts.statut)) {
     vals.push(opts.statut);
     where.push(`statut = $${vals.length}`);
+  }
+  if (opts.statuts) {
+    vals.push(opts.statuts.filter((x) => (STATUTS as readonly string[]).includes(x)));
+    where.push(`statut = ANY($${vals.length}::text[])`);
+  }
+  if (opts.actifs) where.push(`statut NOT IN ('gagne', 'perdu')`);
+  if (opts.score) {
+    vals.push(opts.score);
+    where.push(`score = $${vals.length}`);
+  }
+  if (opts.activeSinceHours) {
+    vals.push(String(opts.activeSinceHours));
+    where.push(`last_activity_at > now() - ($${vals.length} || ' hours')::interval`);
   }
   if (opts.search) {
     vals.push(`%${opts.search}%`);
@@ -249,10 +286,87 @@ export async function listLeads(opts: { statut?: string; search?: string; limit?
     vals.push(opts.assigned);
     where.push(`assigned_to = $${vals.length}`);
   }
-  vals.push(Math.min(opts.limit ?? 100, 500));
+  return { sql: where.length ? `WHERE ${where.join(" AND ")}` : "", vals };
+}
+
+export async function listLeads(opts: LeadFilter = {}): Promise<Lead[]> {
+  if (!dbConfigured) return demoFilter(opts);
+  const { sql, vals } = leadWhere(opts);
+  vals.push(Math.min(opts.limit ?? 100, 20000));
+  vals.push(Math.max(0, opts.offset ?? 0));
   return q<Lead>(
-    `SELECT * FROM leads ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
-     ORDER BY created_at DESC LIMIT $${vals.length}`,
+    `SELECT * FROM leads ${sql}
+     ORDER BY created_at ${opts.order === "ancien" ? "ASC" : "DESC"}, id DESC
+     LIMIT $${vals.length - 1} OFFSET $${vals.length}`,
+    vals,
+  );
+}
+
+/** Nombre total de demandes pour un filtre (pagination). */
+export async function countLeads(opts: LeadFilter = {}): Promise<number> {
+  if (!dbConfigured) return demoFilter(opts).length;
+  const { sql, vals } = leadWhere(opts);
+  const rows = await q<{ n: string }>(`SELECT count(*)::text AS n FROM leads ${sql}`, vals);
+  return Number(rows[0]?.n ?? 0);
+}
+
+/**
+ * Projection légère de toutes les demandes (sans le détail des réponses) :
+ * sert aux statistiques, qui doivent porter sur la totalité de la base.
+ */
+export async function listLeadsLight(opts: { assigned?: string } = {}): Promise<Lead[]> {
+  if (!dbConfigured) return demoFilter({ assigned: opts.assigned });
+  const vals: unknown[] = [];
+  let where = "";
+  if (opts.assigned) {
+    vals.push(opts.assigned);
+    where = `WHERE assigned_to = $1`;
+  }
+  return q<Lead>(
+    `SELECT id, created_at, '' AS name, '' AS email, '' AS phone, source,
+            jsonb_build_object('lieu', answers->'lieu') AS answers,
+            estimation_ttc, statut, relances, next_relance_at, assigned_to, score, score_points,
+            NULL::text AS token, opens, clicks, devis_views, last_activity_at, won_at
+     FROM leads ${where} ORDER BY created_at DESC LIMIT 100000`,
+    vals,
+  );
+}
+
+/** Aperçu du pipeline : les N demandes les plus récentes de chaque statut. */
+export async function pipelineApercu(parStatut = 8): Promise<Lead[]> {
+  if (!dbConfigured) return demoLeads();
+  return q<Lead>(
+    `SELECT * FROM (
+       SELECT *, row_number() OVER (PARTITION BY statut ORDER BY created_at DESC, id DESC) AS rn FROM leads
+     ) t WHERE rn <= $1 ORDER BY created_at DESC`,
+    [parStatut],
+  );
+}
+
+/** Relances programmées à venir (hors affaires closes ou à rappeler). */
+export async function relancesAVenir(assigned?: string, limit = 20): Promise<Lead[]> {
+  if (!dbConfigured) {
+    return demoLeads()
+      .filter(
+        (l) =>
+          l.next_relance_at &&
+          Number(new Date(l.next_relance_at)) > Date.now() &&
+          !["gagne", "perdu", "a_rappeler"].includes(l.statut) &&
+          (!assigned || l.assigned_to === assigned),
+      )
+      .sort((a, b) => Number(new Date(a.next_relance_at!)) - Number(new Date(b.next_relance_at!)))
+      .slice(0, limit);
+  }
+  const vals: unknown[] = [limit];
+  let extra = "";
+  if (assigned) {
+    vals.push(assigned);
+    extra = `AND assigned_to = $2`;
+  }
+  return q<Lead>(
+    `SELECT * FROM leads
+     WHERE next_relance_at > now() AND statut NOT IN ('gagne', 'perdu', 'a_rappeler') ${extra}
+     ORDER BY next_relance_at ASC LIMIT $1`,
     vals,
   );
 }
@@ -268,7 +382,7 @@ export async function dueRelances(): Promise<Lead[]> {
     `SELECT * FROM leads
      WHERE next_relance_at IS NOT NULL AND next_relance_at <= now()
        AND statut NOT IN ('gagne', 'perdu')
-     ORDER BY next_relance_at ASC LIMIT 100`,
+     ORDER BY next_relance_at ASC LIMIT 500`,
   );
 }
 

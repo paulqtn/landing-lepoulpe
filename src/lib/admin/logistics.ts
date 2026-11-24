@@ -1,4 +1,4 @@
-import { adminQuery as q, dbConfigured, listLeads, type Lead } from "./db";
+import { adminQuery as q, dbConfigured, listLeads, listLeadsLight, type Lead } from "./db";
 
 /* ================================================================== */
 /*  Pôle GESTION — commandes atelier, stock matière, expéditions.      */
@@ -271,7 +271,7 @@ export type GlobalStats = {
 
 export async function globalStats(): Promise<GlobalStats> {
   const [leads, orders, stock] = await Promise.all([
-    listLeads({ limit: 2000 }),
+    listLeadsLight(),
     listOrders(),
     listStock(),
   ]);
@@ -279,7 +279,11 @@ export async function globalStats(): Promise<GlobalStats> {
   // Volume par jour (30 jours), trous comblés.
   const parJour: { d: string; n: number }[] = [];
   const counts: Record<string, number> = {};
-  for (const l of leads) counts[l.created_at.slice(0, 10)] = (counts[l.created_at.slice(0, 10)] ?? 0) + 1;
+  // La base renvoie des dates (objets), la démo des chaînes : on normalise.
+  for (const l of leads) {
+    const d = new Date(l.created_at).toISOString().slice(0, 10);
+    counts[d] = (counts[d] ?? 0) + 1;
+  }
   for (let i = 29; i >= 0; i--) {
     const d = new Date(Date.now() - i * 24 * h).toISOString().slice(0, 10);
     parJour.push({ d, n: counts[d] ?? 0 });

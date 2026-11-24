@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Download } from "lucide-react";
 import { LeadsTable, type LeadRow } from "@/components/admin/LeadsTable";
 import { currentRep } from "@/lib/admin/auth";
-import { listLeads, STATUT_LABELS, STATUTS } from "@/lib/admin/db";
+import { countLeads, listLeads, STATUT_LABELS, STATUTS } from "@/lib/admin/db";
 import { getTeam } from "@/lib/admin/team";
 
 export const dynamic = "force-dynamic";
@@ -10,13 +10,21 @@ export const dynamic = "force-dynamic";
 export default async function LeadsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ statut?: string; q?: string; qui?: string }>;
+  searchParams: Promise<{ statut?: string; q?: string; qui?: string; page?: string }>;
 }) {
-  const { statut, q, qui } = await searchParams;
+  const { statut, q, qui, page: pageParam } = await searchParams;
   const rep = await currentRep();
   const mode = qui === "tous" || !rep ? "tous" : qui === "libre" ? "libre" : "moi";
   const assigned = mode === "moi" && rep ? rep : mode === "libre" ? "__libre" : undefined;
-  const leads = await listLeads({ statut, search: q, limit: 200, assigned });
+  const PAGE = 50;
+  const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
+  const [leads, total] = await Promise.all([
+    listLeads({ statut, search: q, assigned, limit: PAGE, offset: (page - 1) * PAGE }),
+    countLeads({ statut, search: q, assigned }),
+  ]);
+  const pages = Math.max(1, Math.ceil(total / PAGE));
+  const pageHref = (n: number) =>
+    `/commercial/clients?${new URLSearchParams({ ...(statut ? { statut } : {}), ...(q ? { q } : {}), ...(qui ? { qui } : {}), ...(n > 1 ? { page: String(n) } : {}) })}`;
   const rows: LeadRow[] = leads.map((l) => ({
     id: l.id,
     created_at: String(l.created_at),
@@ -75,6 +83,16 @@ export default async function LeadsPage({
       </div>
 
       <LeadsTable leads={rows} team={await getTeam()} />
+
+      <nav className="flex flex-wrap items-center justify-between gap-3 text-sm text-neutral-500" aria-label="Pagination">
+        <span>
+          {total.toLocaleString("fr-FR")} client{total > 1 ? "s" : ""} · page {Math.min(page, pages)} sur {pages}
+        </span>
+        <span className="flex gap-1.5">
+          {page > 1 && <FilterChip href={pageHref(page - 1)} active={false} label="← Précédente" />}
+          {page < pages && <FilterChip href={pageHref(page + 1)} active={false} label="Suivante →" />}
+        </span>
+      </nav>
     </div>
   );
 }

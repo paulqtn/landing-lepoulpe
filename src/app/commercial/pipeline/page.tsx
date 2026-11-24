@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { dateFmt, eurFmt, ScoreBadge } from "@/components/admin/ui";
-import { listLeads, STATUT_LABELS, STATUTS, type Statut } from "@/lib/admin/db";
+import { STATUT_LABELS, STATUTS, type Statut, pipeline, pipelineApercu } from "@/lib/admin/db";
 
 export const dynamic = "force-dynamic";
 
@@ -18,11 +18,11 @@ const COL_COLORS: Record<Statut, string> = {
 };
 
 export default async function PipelinePage() {
-  const leads = await listLeads({ limit: 500 });
+  // Totaux calculés en base sur toutes les demandes ; seules les cartes affichées sont chargées.
+  const [totaux, leads] = await Promise.all([pipeline(), pipelineApercu(8)]);
   const cols = STATUTS.map((statut) => {
-    const list = leads.filter((l) => l.statut === statut);
-    const total = Math.round(list.reduce((t, l) => t + (l.estimation_ttc ? Number(l.estimation_ttc) : 0), 0));
-    return { statut, list, total };
+    const t = totaux.find((x) => x.statut === statut);
+    return { statut, list: leads.filter((l) => l.statut === statut), n: t?.n ?? 0, total: Math.round(t?.total ?? 0) };
   });
 
   return (
@@ -34,7 +34,7 @@ export default async function PipelinePage() {
             <header className="flex items-baseline justify-between gap-2 px-4 pb-2 pt-3.5">
               <h2 className="text-sm font-extrabold text-inkgreen">{STATUT_LABELS[c.statut]}</h2>
               <p className="text-right">
-                <span className="block text-sm font-extrabold tabular-nums text-inkgreen">{c.list.length}</span>
+                <span className="block text-sm font-extrabold tabular-nums text-inkgreen">{c.n}</span>
                 {c.total > 0 && <span className="block text-[11px] tabular-nums text-neutral-400">{eurFmt.format(c.total)} €</span>}
               </p>
             </header>
@@ -59,10 +59,10 @@ export default async function PipelinePage() {
                 </li>
               ))}
               {c.list.length === 0 && <li className="px-1 pb-2 text-xs text-neutral-300">—</li>}
-              {c.list.length > 8 && (
+              {c.n > c.list.length && (
                 <li>
                   <Link href={`/commercial/clients?statut=${c.statut}`} className="block px-1 text-xs font-bold text-pine-700 hover:underline">
-                    + {c.list.length - 8} autres
+                    + {c.n - c.list.length} autres
                   </Link>
                 </li>
               )}
