@@ -1,5 +1,6 @@
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import { optionTotals, type Quote } from "./quotes";
+import { QUOTE_IMAGES } from "./quote-images";
 import type { Societe } from "./societe";
 
 /* PDF du devis — document client : aucun prix d'achat, aucune marge. */
@@ -47,6 +48,11 @@ export async function renderQuotePdf(quote: Quote, societe: Societe): Promise<Ui
   const font = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
   const W = A4[0] - 2 * M;
+  // Visuels des systèmes de fixation, chargés une seule fois par document.
+  const images = new Map<string, Awaited<ReturnType<typeof pdf.embedJpg>>>();
+  for (const key of new Set(quote.options.flatMap((o) => o.lines.map((l) => l.image)).filter(Boolean) as (keyof typeof QUOTE_IMAGES)[])) {
+    if (QUOTE_IMAGES[key]) images.set(key, await pdf.embedJpg(Buffer.from(QUOTE_IMAGES[key], "base64")));
+  }
   let page: PDFPage = pdf.addPage(A4);
   let y = A4[1] - M;
 
@@ -107,20 +113,32 @@ export async function renderQuotePdf(quote: Quote, societe: Societe): Promise<Ui
     const white = rgb(1, 1, 1);
     text("Désignation", cols.desc, y - 11, 8, bold, white);
     right("Qté", cols.qty, y - 11, 8, bold, white);
-    right("PU HT", cols.pu, y - 11, 8, bold, white);
+    right("Prix unit. HT", cols.pu, y - 11, 8, bold, white);
     right("TVA", cols.tva, y - 11, 8, bold, white);
     right("Total HT", cols.total, y - 11, 8, bold, white);
     y -= 26;
 
     for (const l of o.lines) {
-      const lines = wrap(l.description, font, 9.5, cols.qty - cols.desc - 40);
-      const h = lines.length * 12.5 + 8;
+      const img = l.image ? images.get(l.image) : undefined;
+      const [titre, ...details] = clean(l.description).split("\n");
+      const descW = cols.qty - cols.desc - 30;
+      const titres = wrap(titre, bold, 9.5, descW);
+      // Avec visuel : l'image à gauche, le détail à sa droite (comme une fiche produit).
+      const IMG_W = 114;
+      const IMG_H = 76;
+      const detailX = cols.desc + (img ? IMG_W + 12 : 6);
+      const detailLines = details.flatMap((d) => wrap(d, font, 9, descW - (img ? IMG_W + 12 : 6)).map((t, i) => (img ? t : i === 0 ? `- ${t}` : `  ${t}`)));
+      const detailH = Math.max(img ? IMG_H + 6 : 0, detailLines.length * 12.5);
+      const h = titres.length * 12.5 + (detailLines.length || img ? 4 + detailH : 0) + 8;
       need(h);
-      lines.forEach((t, i) => text(i === 0 ? t : `- ${t}`, cols.desc + (i === 0 ? 0 : 6), y - i * 12.5, i === 0 ? 9.5 : 9, i === 0 ? bold : font, i === 0 ? INK : GREY));
-      right(num(l.qty), cols.qty, y);
+      titres.forEach((t, i) => text(t, cols.desc, y - i * 12.5, 9.5, bold));
+      right(`${num(l.qty)}${l.unit ? ` ${l.unit}` : ""}`, cols.qty, y);
       right(money(l.unitPriceHt), cols.pu, y);
       right(`${num(l.vatRate * 100)} %`, cols.tva, y);
       right(money(Math.round(l.qty * l.unitPriceHt * 100) / 100), cols.total, y, 9.5, bold);
+      const top = y - titres.length * 12.5 - 4;
+      if (img) page.drawImage(img, { x: cols.desc, y: top - IMG_H + 9, width: IMG_W, height: IMG_H });
+      detailLines.forEach((t, i) => text(t, detailX, top - i * 12.5, 9, font, GREY));
       y -= h;
       page.drawLine({ start: { x: M, y: y + 4 }, end: { x: M + W, y: y + 4 }, thickness: 0.6, color: LIGHT });
       y -= 4;

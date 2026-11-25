@@ -13,7 +13,18 @@ import { chiffrer } from "@/lib/calculateur/engine";
 /*  Tous les totaux sont recalculés ici, côté serveur.                 */
 /* ================================================================== */
 
-export type QuoteLine = { description: string; qty: number; unitPriceHt: number; vatRate: number };
+export const QUOTE_IMAGE_KEYS = ["rail", "pinces", "spider"] as const;
+export type QuoteImage = (typeof QUOTE_IMAGE_KEYS)[number];
+export type QuoteLine = {
+  description: string;
+  qty: number;
+  unitPriceHt: number;
+  vatRate: number;
+  /** Unité affichée après la quantité (ex. « ml »). */
+  unit?: string;
+  /** Visuel du système de fixation affiché sur le devis. */
+  image?: QuoteImage | null;
+};
 export type QuoteOption = { label: string; title: string; lines: QuoteLine[] };
 export type QuoteClient = { name: string; email: string; phone: string; address: string };
 export type QuoteStatut = "brouillon" | "envoye" | "annule";
@@ -71,7 +82,9 @@ export function sanitizeOptions(raw: unknown): { options: QuoteOption[]; error?:
       if (!Number.isFinite(qty) || qty <= 0 || qty > 100000) return { options: [], error: `Quantité invalide : « ${description.split("\n")[0]} ».` };
       if (!Number.isFinite(unitPriceHt) || unitPriceHt < 0 || unitPriceHt > 10_000_000) return { options: [], error: `Prix invalide : « ${description.split("\n")[0]} ».` };
       if (!VAT_RATES.includes(vatRate)) return { options: [], error: `TVA invalide : « ${description.split("\n")[0]} ».` };
-      lines.push({ description, qty: r2(qty), unitPriceHt: r2(unitPriceHt), vatRate });
+      const unit = String(l?.unit ?? "").trim().slice(0, 8);
+      const image = QUOTE_IMAGE_KEYS.find((k) => k === l?.image) ?? null;
+      lines.push({ description, qty: r2(qty), unitPriceHt: r2(unitPriceHt), vatRate, ...(unit ? { unit } : {}), ...(image ? { image } : {}) });
     }
     if (lines.length === 0) return { options: [], error: "Chaque proposition doit contenir au moins une ligne." };
     if (lines.length > 40) return { options: [], error: "Quarante lignes au maximum par proposition." };
@@ -129,16 +142,16 @@ export async function draftOptionsFromLead(lead: Lead): Promise<QuoteOption[]> {
   }
   const { r, cotes, lieu, systeme, verre, teinte, parDefaut } = c;
 
-  // Répartition du prix de vente par poste (coût × coefficient) ; la dernière
-  // ligne absorbe l'arrondi pour que le total soit exactement le prix calculé.
-  const coef = r.entree.coefficient;
-  const logistique = r.logistique.turquie + r.logistique.caisses + r.logistique.france;
-  const coutVerre = r.lignes[0]?.montant ?? 0;
-  const venteVerre = r2(coutVerre * coef);
-  const venteFixations = r2((r.coutAchat - coutVerre - logistique) * coef);
-  const venteLivraison = r2(r.prixHT - venteVerre - venteFixations);
+  // Une seule ligne « garde-corps en verre + système de fixation », au prix par
+  // mètre linéaire, livraison comprise : le détail des coûts par poste reste interne.
   const troncons = cotes.map((c) => `${String(c).replace(".", ",")} m`).join(" + ");
-  const fixLabel = systeme === "rail" ? "Rail de sol aluminium" : systeme === "pinces" ? "Pinces de sol" : "Fixations ponctuelles (spider)";
+  const ml = r.longueurTotale;
+  const SYSTEMES = {
+    rail: { titre: "Garde-corps en verre sur rail", fixation: "rail de sol aluminium, finition anodisée", accessoires: "enjoliveurs, joints, embouts et visserie de fixation" },
+    pinces: { titre: "Garde-corps en verre sur pinces", fixation: "pinces de sol aluminium, finition anodisée", accessoires: "visserie de fixation" },
+    spider: { titre: "Garde-corps en verre sur fixations ponctuelles", fixation: "fixations ponctuelles (spider), finition anodisée", accessoires: "tiges filetées, écrous et rondelles" },
+  } as const;
+  const sys = SYSTEMES[systeme];
 
   return [
     {
@@ -146,18 +159,23 @@ export async function draftOptionsFromLead(lead: Lead): Promise<QuoteOption[]> {
       title: `Garde-corps en verre${USAGES[lieu] ? ` — ${USAGES[lieu]}` : ""}`,
       lines: [
         {
-          description: `Vitrage feuilleté trempé ${verre} ${TEINTES[teinte]}, bords polis\n${r.nbVerres} vitrage${r.nbVerres > 1 ? "s" : ""} sur mesure — hauteur du verre ${r.hauteurVerre} cm\nLongueur : ${troncons} (${String(r.longueurTotale).replace(".", ",")} ml)`,
-          qty: 1,
-          unitPriceHt: venteVerre,
+          description: [
+            sys.titre,
+            `Vitrage : verre feuilleté trempé ${verre}, bords polis`,
+            `Couleur du verre : ${TEINTES[teinte]}`,
+            `Fixation : ${sys.fixation}${parDefaut ? " (proposée par défaut, à confirmer avec vous)" : ""}`,
+            `${r.nbVerres} vitrage${r.nbVerres > 1 ? "s" : ""} sur mesure — hauteur du verre ${r.hauteurVerre} cm`,
+            `Longueur : ${troncons}${cotes.length > 1 ? ` (${String(ml).replace(".", ",")} ml)` : ""}`,
+            `Accessoires inclus : ${sys.accessoires}`,
+            "Conditionnement en caisse bois et livraison en France métropolitaine inclus",
+          ].join("\n"),
+          qty: ml,
+          unit: "ml",
+          // Prix au mètre linéaire arrondi au centime : le total peut différer de quelques centimes du prix affiché sur le site.
+          unitPriceHt: r2(r.prixHT / ml),
           vatRate: 0.2,
+          image: systeme,
         },
-        {
-          description: `${fixLabel} — finition anodisée\nQuincaillerie de fixation et joints inclus${parDefaut ? "\nFixation proposée par défaut, à confirmer avec vous" : ""}`,
-          qty: 1,
-          unitPriceHt: venteFixations,
-          vatRate: 0.2,
-        },
-        { description: "Conditionnement et livraison\nCaisse bois sécurisée\nLivraison en France métropolitaine", qty: 1, unitPriceHt: venteLivraison, vatRate: 0.2 },
       ],
     },
   ];

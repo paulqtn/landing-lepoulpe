@@ -8,7 +8,9 @@ import { AlertTriangle, Copy, Download, Eye, Loader2, Plus, Send, Trash2, X } fr
    Les totaux affichés sont indicatifs ; le serveur les recalcule à
    l'enregistrement et à l'envoi. */
 
-type Line = { description: string; qty: string; unitPriceHt: string; vatRate: number };
+type Img = "rail" | "pinces" | "spider";
+type Line = { description: string; qty: string; unitPriceHt: string; vatRate: number; unit?: string; image?: Img | null };
+const IMG_SRC: Record<Img, string> = { rail: "/fixation-rail.png", pinces: "/fixation-pince.png", spider: "/fixation-spider.png" };
 type Option = { label: string; title: string; lines: Line[] };
 type Client = { name: string; email: string; phone: string; address: string };
 
@@ -32,7 +34,7 @@ export function QuoteEditor(props: {
   quoteRef: string;
   statut: "brouillon" | "envoye" | "annule";
   client: Client;
-  options: { label: string; title: string; lines: { description: string; qty: number; unitPriceHt: number; vatRate: number }[] }[];
+  options: { label: string; title: string; lines: { description: string; qty: number; unitPriceHt: number; vatRate: number; unit?: string; image?: Img | null }[] }[];
   sentInfo: string | null;
   blockers: string[];
 }) {
@@ -67,7 +69,7 @@ export function QuoteEditor(props: {
 
   const payload = () => ({
     client,
-    options: options.map((o) => ({ ...o, lines: o.lines.map((l) => ({ description: l.description, qty: n(l.qty), unitPriceHt: n(l.unitPriceHt), vatRate: l.vatRate })) })),
+    options: options.map((o) => ({ ...o, lines: o.lines.map((l) => ({ description: l.description, qty: n(l.qty), unitPriceHt: n(l.unitPriceHt), vatRate: l.vatRate, unit: l.unit ?? "", image: l.image ?? null })) })),
   });
 
   async function save(): Promise<boolean> {
@@ -232,9 +234,22 @@ export function QuoteEditor(props: {
               {o.lines.map((l, j) => (
                 <div key={j} className="rounded-xl bg-mist p-3">
                   <textarea aria-label={`Désignation de la ligne ${j + 1}`} className={inputCls} disabled={!editable} rows={Math.min(9, Math.max(3, l.description.split("\n").length + 1))} value={l.description} onChange={(e) => setLine(i, j, { description: e.target.value })} />
-                  {editable && <p className="mt-1 text-[11px] text-neutral-400">Astuce : retour à la ligne pour ajouter un sous-élément (rendu en tiret dans le PDF).</p>}
+                  {editable && <p className="mt-1 text-[11px] text-neutral-400">Première ligne = titre ; chaque retour à la ligne ajoute un détail en dessous dans le PDF.</p>}
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {l.image && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={IMG_SRC[l.image]} alt="" className="h-12 w-[4.5rem] rounded-lg border border-neutral-200 bg-white object-cover" />
+                    )}
+                    <select aria-label="Visuel affiché sur le devis" className={`${inputCls} !w-44`} disabled={!editable} value={l.image ?? ""} onChange={(e) => setLine(i, j, { image: (e.target.value || null) as Img | null })}>
+                      <option value="">Sans visuel</option>
+                      <option value="rail">Visuel : rail</option>
+                      <option value="pinces">Visuel : pinces</option>
+                      <option value="spider">Visuel : spider</option>
+                    </select>
+                  </div>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <input aria-label="Quantité" inputMode="decimal" className={`${inputCls} !w-16 text-right tabular-nums`} disabled={!editable} value={l.qty} onChange={(e) => setLine(i, j, { qty: e.target.value })} />
+                    <input aria-label="Unité" placeholder="unité" className={`${inputCls} !w-14`} disabled={!editable} value={l.unit ?? ""} onChange={(e) => setLine(i, j, { unit: e.target.value })} />
                     <span className="text-xs text-neutral-400">×</span>
                     <input aria-label="Prix unitaire HT" inputMode="decimal" className={`${inputCls} !w-24 text-right tabular-nums`} disabled={!editable} value={l.unitPriceHt} onChange={(e) => setLine(i, j, { unitPriceHt: e.target.value })} />
                     <span className="text-xs font-semibold text-neutral-400">€ HT</span>
