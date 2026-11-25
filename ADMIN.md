@@ -32,7 +32,12 @@ email, relances programmées, suivi commercial.
   transports du générateur public et de la Simulation. Chaque publication crée une version
   (`price_versions`) avec motif, auteur et détail ; test d'impact avant publication ; retour
   arrière en un clic. Les règles de calcul restent dans le code.
-- **Commissions** et **mentions de la société** (adresse, SIRET, TVA, conditions) reprises
+- **Primes des commerciaux** (par mois civil) : 4 % de la marge brute des affaires gagnées,
+  plus 150 € dès 110 000 € de CA HT puis 150 € par tranche de 10 000 € supplémentaire. Les
+  quatre paramètres sont modifiables. La marge d'une affaire (vente HT − coût d'achat calculé
+  par le moteur) est figée au passage à « Gagné » ; un administrateur peut la corriger sur la
+  fiche client. Règle de calcul : `src/lib/admin/prime.ts` (testée par `npm test`).
+- **Mentions de la société** (adresse, SIRET, TVA, conditions) reprises
   sur les devis.
 
 ## Devis

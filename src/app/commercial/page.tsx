@@ -36,7 +36,6 @@ export default async function CommercialHome() {
   const withOrder = new Set(orders.map((o) => o.lead_id).filter(Boolean));
   const aLancer = gagnes.filter((l) => !withOrder.has(l.id));
   const comp = await getCompSettings();
-  const { commissionPct: COMMISSION_PCT, objectifMensuel: OBJECTIF_MENSUEL, primeObjectif: PRIME_OBJECTIF } = comp;
   const perso = rep ? repStats(persoLeads, rep, comp) : null;
 
   /* Les tâches, dans l'ordre d'attaque du matin. */
@@ -73,25 +72,36 @@ export default async function CommercialHome() {
             <div>
               <p className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-200">
                 <Euro className="h-3.5 w-3.5 text-amber-400" />
-                CA signé ce mois-ci
+                CA HT signé ce mois-ci
               </p>
               <p className="mt-1 text-3xl font-extrabold tabular-nums">{eurFmt.format(perso.caMois)} €</p>
+              <p className="mt-0.5 text-xs text-pine-200">Marge brute : {eurFmt.format(perso.margeMois)} €</p>
             </div>
             <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-200">Commission ({COMMISSION_PCT} %)</p>
-              <p className="mt-1 text-3xl font-extrabold tabular-nums text-amber-400">{eurFmt.format(perso.commissionMois)} €</p>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-200">Votre prime du mois</p>
+              <p className="mt-1 text-3xl font-extrabold tabular-nums text-amber-400">{eurFmt.format(perso.primeMois)} €</p>
+              <p className="mt-0.5 text-xs text-pine-200">
+                {comp.tauxMarge} % de la marge : {eurFmt.format(perso.commissionMois)} €{perso.bonusMois > 0 ? ` + bonus ${eurFmt.format(perso.bonusMois)} €` : ""}
+              </p>
             </div>
             <div className="min-w-56 flex-1">
               <p className="flex items-baseline justify-between font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-200">
-                <span>Prime {eurFmt.format(PRIME_OBJECTIF)} € à {eurFmt.format(OBJECTIF_MENSUEL)} €</span>
+                <span>Bonus +{eurFmt.format(comp.bonusParTranche)} € dès {eurFmt.format(comp.seuilCA)} € HT</span>
                 <span className="text-amber-400">{perso.pctObjectif} %</span>
               </p>
               <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white/15">
                 <div className="h-full rounded-full bg-amber-500 transition-all" style={{ width: `${perso.pctObjectif}%` }} />
               </div>
               <p className="mt-1.5 text-xs text-pine-200">
-                {perso.resteObjectif > 0 ? `Encore ${eurFmt.format(perso.resteObjectif)} € pour décrocher la prime.` : "Objectif atteint — prime débloquée 🎉"}
+                {perso.resteObjectif > 0
+                  ? `Encore ${eurFmt.format(perso.resteObjectif)} € HT pour déclencher le bonus, puis +${eurFmt.format(comp.bonusParTranche)} € tous les ${eurFmt.format(comp.tranche)} €.`
+                  : `Bonus débloqué : ${perso.tranchesBonus} × ${eurFmt.format(comp.bonusParTranche)} €. Encore ${eurFmt.format(perso.resteProchaineTranche)} € HT pour la tranche suivante.`}
               </p>
+              {perso.margesManquantes > 0 && (
+                <p className="mt-1 text-xs font-semibold text-amber-400">
+                  {perso.margesManquantes} affaire{perso.margesManquantes > 1 ? "s" : ""} gagnée{perso.margesManquantes > 1 ? "s" : ""} sans marge enregistrée : non comptée{perso.margesManquantes > 1 ? "s" : ""} dans la commission pour l&rsquo;instant.
+              </p>
+              )}
             </div>
           </div>
           <dl className="mt-4 flex flex-wrap gap-x-7 gap-y-2 border-t border-white/10 pt-3.5 text-xs text-pine-200">

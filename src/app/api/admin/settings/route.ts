@@ -19,8 +19,8 @@ export async function POST(req: Request) {
 
   if (body.key === "commissions") {
     const num = (x: unknown) => (typeof x === "number" && Number.isFinite(x) && x >= 0 && x <= 10_000_000 ? x : null);
-    const next = { commissionPct: num(v.commissionPct), objectifMensuel: num(v.objectifMensuel), primeObjectif: num(v.primeObjectif) };
-    if (Object.values(next).some((x) => x === null) || (next.commissionPct as number) > 100)
+    const next = { tauxMarge: num(v.tauxMarge), seuilCA: num(v.seuilCA), bonusParTranche: num(v.bonusParTranche), tranche: num(v.tranche) };
+    if (Object.values(next).some((x) => x === null) || (next.tauxMarge as number) > 100 || !(next.tranche as number))
       return NextResponse.json({ ok: false, error: "Valeurs invalides." }, { status: 422 });
     const before = await getCompSettings();
     await setSetting("commissions", next, g.user.name);

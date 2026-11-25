@@ -37,18 +37,19 @@ function Footer({ busy, msg }: { busy: boolean; msg: { ok: boolean; text: string
   );
 }
 
-export function CommissionsForm({ initial }: { initial: { commissionPct: number; objectifMensuel: number; primeObjectif: number } }) {
-  const [v, setV] = useState({ commissionPct: String(initial.commissionPct), objectifMensuel: String(initial.objectifMensuel), primeObjectif: String(initial.primeObjectif) });
+export function CommissionsForm({ initial }: { initial: { tauxMarge: number; seuilCA: number; bonusParTranche: number; tranche: number } }) {
+  const [v, setV] = useState({ tauxMarge: String(initial.tauxMarge), seuilCA: String(initial.seuilCA), bonusParTranche: String(initial.bonusParTranche), tranche: String(initial.tranche) });
   const { busy, msg, save } = useSave();
   const n = (s: string) => Number(s.replace(/\s/g, "").replace(",", "."));
   const fields = [
-    ["commissionPct", "Commission (% du CA signé)"],
-    ["objectifMensuel", "Objectif mensuel (€ signés)"],
-    ["primeObjectif", "Prime à l'objectif (€)"],
+    ["tauxMarge", "Commission (% de la marge brute)"],
+    ["seuilCA", "Seuil du bonus (€ de CA HT par mois)"],
+    ["bonusParTranche", "Bonus par tranche (€)"],
+    ["tranche", "Taille d'une tranche (€ de CA HT)"],
   ] as const;
   return (
-    <form onSubmit={(e) => { e.preventDefault(); save("commissions", { commissionPct: n(v.commissionPct), objectifMensuel: n(v.objectifMensuel), primeObjectif: n(v.primeObjectif) }); }}>
-      <div className="grid gap-4 sm:grid-cols-3">
+    <form onSubmit={(e) => { e.preventDefault(); save("commissions", { tauxMarge: n(v.tauxMarge), seuilCA: n(v.seuilCA), bonusParTranche: n(v.bonusParTranche), tranche: n(v.tranche) }); }}>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {fields.map(([k, label]) => (
           <label key={k} className="block">
             <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-500">{label}</span>
@@ -56,6 +57,9 @@ export function CommissionsForm({ initial }: { initial: { commissionPct: number;
           </label>
         ))}
       </div>
+      <p className="mt-3 text-xs text-neutral-400">
+        Exemple avec ces valeurs : {n(v.seuilCA).toLocaleString("fr-FR")} € de CA HT dans le mois → 1 bonus ; {(n(v.seuilCA) + n(v.tranche)).toLocaleString("fr-FR")} € → 2 bonus ; {(n(v.seuilCA) + 2 * n(v.tranche)).toLocaleString("fr-FR")} € → 3 bonus. La commission sur la marge s&rsquo;applique dès le premier euro.
+      </p>
       <Footer busy={busy} msg={msg} />
     </form>
   );

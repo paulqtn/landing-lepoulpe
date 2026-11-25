@@ -139,6 +139,11 @@ export type Lead = {
   won_at: string | null;
   consent_at?: string | null;
   anonymized_at?: string | null;
+  /** Figés au passage à « Gagné » — base des primes. */
+  vente_ht?: string | null;
+  cout_achat?: string | null;
+  marge_brute?: string | null;
+  marge_source?: string | null;
 };
 
 export type LeadEvent = {
@@ -361,7 +366,7 @@ export async function listLeadsLight(opts: { assigned?: string } = {}): Promise<
     `SELECT id, created_at, '' AS name, '' AS email, '' AS phone, source,
             jsonb_build_object('lieu', answers->'lieu') AS answers,
             estimation_ttc, statut, relances, next_relance_at, assigned_to, score, score_points,
-            NULL::text AS token, opens, clicks, devis_views, last_activity_at, won_at
+            NULL::text AS token, opens, clicks, devis_views, last_activity_at, won_at, vente_ht, marge_brute
      FROM leads ${where} ORDER BY created_at DESC LIMIT 100000`,
     vals,
   );

@@ -219,4 +219,14 @@ export const MIGRATIONS: Migration[] = [
       ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('superadmin', 'admin', 'commercial', 'logisticien'));
     `,
   },
+  {
+    // Vente HT, coût d'achat et marge brute figés quand l'affaire est gagnée (base des primes).
+    id: "007_marge_des_affaires",
+    sql: `
+      ALTER TABLE leads ADD COLUMN vente_ht NUMERIC(12,2);
+      ALTER TABLE leads ADD COLUMN cout_achat NUMERIC(12,2);
+      ALTER TABLE leads ADD COLUMN marge_brute NUMERIC(12,2);
+      ALTER TABLE leads ADD COLUMN marge_source TEXT;
+    `,
+  },
 ];

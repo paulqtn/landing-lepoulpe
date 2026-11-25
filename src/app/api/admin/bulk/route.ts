@@ -1,3 +1,4 @@
+import { figerMargeAuGain } from "@/lib/admin/marge";
 import { refusAttribution } from "@/lib/admin/attribution";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
@@ -27,6 +28,7 @@ export async function POST(req: Request) {
       const statut = body.value as Statut;
       await updateLead(id, { statut, ...(statut === "gagne" || statut === "perdu" ? { next_relance_at: null } : {}) });
       await addEvent(id, "statut", `Statut → ${statut} (action groupée)`);
+      if (statut === "gagne") await figerMargeAuGain(id);
       ok++;
     } else if (body.action === "assign" && typeof body.value === "string") {
       const refus = await refusAttribution(g.user, lead, body.value || null);

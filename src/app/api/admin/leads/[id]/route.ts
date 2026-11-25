@@ -1,3 +1,4 @@
+import { figerMargeAuGain } from "@/lib/admin/marge";
 import { refusAttribution } from "@/lib/admin/attribution";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
@@ -44,6 +45,7 @@ export async function PATCH(req: Request, { params }: Params) {
     if (body.statut === "gagne" || body.statut === "perdu") patch.next_relance_at = null;
     await updateLead(lead.id, patch);
     await addEvent(lead.id, "statut", `Statut → ${body.statut}`);
+    if (body.statut === "gagne") await figerMargeAuGain(lead.id);
   }
 
   if (body.next_relance_at !== undefined && body.statut !== "gagne" && body.statut !== "perdu") {

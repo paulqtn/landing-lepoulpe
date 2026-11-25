@@ -57,7 +57,6 @@ export default async function StatsPage() {
   const team = await getTeam();
   const reps = [...new Set([...team, ...leads.map((l) => l.assigned_to).filter((x): x is string => Boolean(x))])];
   const comp = await getCompSettings();
-  const { commissionPct: COMMISSION_PCT, objectifMensuel: OBJECTIF_MENSUEL } = comp;
   const perReps = reps.map((r) => repStats(leads, r, comp)).sort((a, b) => b.caMois - a.caMois);
   const funnelMax = Math.max(1, ...g.funnel.map((f) => f.n));
   const srcMax = Math.max(1, ...g.sources.map((x) => x.n));
@@ -72,7 +71,7 @@ export default async function StatsPage() {
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         <h2 className="text-base font-extrabold text-inkgreen">Performance par commercial</h2>
         <p className="mt-1 text-xs text-neutral-400">
-          Commission {COMMISSION_PCT} % du CA signé · prime à {eurFmt.format(OBJECTIF_MENSUEL)} € signés dans le mois.
+          Prime du mois = {comp.tauxMarge} % de la marge brute + {eurFmt.format(comp.bonusParTranche)} € dès {eurFmt.format(comp.seuilCA)} € de CA HT, puis {eurFmt.format(comp.bonusParTranche)} € par tranche de {eurFmt.format(comp.tranche)} €.
         </p>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full min-w-[46rem] text-left text-sm">
@@ -96,7 +95,7 @@ export default async function StatsPage() {
                     {p.rep === rep && <span className="ml-1.5 rounded-full bg-pine-700 px-1.5 py-0.5 text-[9px] font-bold text-white">vous</span>}
                   </td>
                   <td className="py-3 pr-3 text-right font-extrabold tabular-nums text-inkgreen">{eurFmt.format(p.caMois)} €</td>
-                  <td className="py-3 pr-3 text-right font-extrabold tabular-nums text-amber-600">{eurFmt.format(p.commissionMois)} €</td>
+                  <td className="py-3 pr-3 text-right font-extrabold tabular-nums text-amber-600">{eurFmt.format(p.primeMois)} €{p.margesManquantes > 0 ? " *" : ""}</td>
                   <td className="py-3 pr-3 text-right">
                     <span className="inline-flex items-center gap-2">
                       <span className="h-1.5 w-16 overflow-hidden rounded-full bg-mist">

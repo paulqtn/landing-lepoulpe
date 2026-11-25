@@ -7,6 +7,7 @@ import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui"
 import { getLead, listEvents } from "@/lib/admin/db";
 import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
+import { MargeActions } from "@/components/admin/MargeActions";
 import { RgpdActions } from "@/components/admin/RgpdActions";
 import { canManageSettings, currentUser, requireMenu } from "@/lib/admin/auth";
 import { QUOTE_STATUT_LABELS, quotesForLead } from "@/lib/admin/quotes";
@@ -171,6 +172,9 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           assignedTo={lead.assigned_to}
         />
 
+        {canManageSettings(me) && (
+          <MargeActions leadId={lead.id} venteHt={lead.vente_ht ?? null} coutAchat={lead.cout_achat ?? null} marge={lead.marge_brute ?? null} source={lead.marge_source ?? null} gagne={lead.statut === "gagne"} />
+        )}
         {canManageSettings(me) && <RgpdActions leadId={lead.id} anonymized={Boolean(lead.anonymized_at)} />}
 
         {lead.statut === "gagne" && (
