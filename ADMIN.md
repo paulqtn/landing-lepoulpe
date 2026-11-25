@@ -94,6 +94,14 @@ appel sans réponse laisse la séquence continuer. « Reprendre la séquence » 
 où elle s'était arrêtée. Les clients à rappeler apparaissent dans l'onglet Relances et
 dans les priorités de l'accueil.
 
+## Supprimer un compte
+
+*Administration → Utilisateurs → Supprimer* (super-administrateur). Le compte est retiré
+définitivement ; ses clients sont remis dans la file ou confiés à un autre compte, au choix.
+Aucune fiche, aucun devis ni aucun historique n'est supprimé. On ne peut pas supprimer son
+propre compte ni le dernier super-administrateur. « Désactiver » reste possible pour bloquer
+un accès sans rien retirer.
+
 ## Chiffrage et niveaux de prix d'un devis
 
 Dans l'écran d'un devis (brouillon rattaché à une demande), le bloc **Chiffrage du projet**

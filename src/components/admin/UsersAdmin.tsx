@@ -6,7 +6,7 @@ import { Loader2, UserPlus } from "lucide-react";
 import { MENUS, ROLE_MENUS, type MenuKey } from "@/lib/admin/menus";
 
 type Role = "superadmin" | "admin" | "commercial" | "logisticien";
-type Row = { id: number; email: string; name: string; role: Role; active: boolean; last_login_at: string | null; menus: MenuKey[]; custom: boolean };
+type Row = { id: number; email: string; name: string; role: Role; active: boolean; last_login_at: string | null; menus: MenuKey[]; custom: boolean; clients?: number };
 
 const ROLE_LABELS: Record<Role, string> = { superadmin: "Super-administrateur", admin: "Administrateur", commercial: "Commercial", logisticien: "Logisticien" };
 const inputCls =
@@ -18,6 +18,7 @@ export function UsersAdmin({ users, me }: { users: Row[]; me: number }) {
   const [form, setForm] = useState({ name: "", email: "", role: "commercial" as Role, password: "" });
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [del, setDel] = useState<{ id: number; clients: string } | null>(null);
 
   async function call(key: string, url: string, method: string, body: unknown, okText: string) {
     setBusy(key);
@@ -130,7 +131,35 @@ export function UsersAdmin({ users, me }: { users: Row[]; me: number }) {
               >
                 {u.active ? "Désactiver" : "Réactiver"}
               </button>
+              {u.id !== me && (
+                <button type="button" disabled={busy !== null} onClick={() => setDel(del?.id === u.id ? null : { id: u.id, clients: "" })} className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-50 disabled:opacity-40">
+                  Supprimer
+                </button>
+              )}
               </div>
+              {del?.id === u.id && (
+                <div className="mt-3 w-full rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-900">
+                  <p className="font-bold">Supprimer définitivement le compte de {u.name} ({u.email}) ?</p>
+                  <p className="mt-1 text-xs">Le compte disparaît et ne pourra plus se connecter. Aucune fiche client, aucun devis ni aucun historique n&rsquo;est supprimé.</p>
+                  {(u.clients ?? 0) > 0 && (
+                    <label className="mt-2 block text-xs font-semibold">
+                      Ses {u.clients} client{(u.clients ?? 0) > 1 ? "s" : ""} :
+                      <select value={del.clients} onChange={(e) => setDel({ id: u.id, clients: e.target.value })} className="ml-2 rounded-lg border border-red-200 bg-white px-2 py-1 text-xs font-semibold text-inkgreen">
+                        <option value="">remettre dans la file des demandes</option>
+                        {users.filter((x) => x.id !== u.id && x.active && x.role !== "logisticien").map((x) => (
+                          <option key={x.id} value={x.name}>confier à {x.name}</option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button type="button" disabled={busy !== null} onClick={async () => { if (await call(`del-${u.id}`, `/api/admin/users/${u.id}`, "DELETE", { confirmEmail: u.email, clients: del.clients }, `Compte de ${u.name} supprimé.`)) setDel(null); }} className="rounded-full bg-red-600 px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40">
+                      Supprimer ce compte
+                    </button>
+                    <button type="button" onClick={() => setDel(null)} className="rounded-full border border-red-200 bg-white px-4 py-1.5 text-xs font-bold text-red-700">Annuler</button>
+                  </div>
+                </div>
+              )}
               <MenuPicker user={u} disabled={busy !== null} onSave={(menus) => call(`menus-${u.id}`, `/api/admin/users/${u.id}`, "PATCH", { menus }, menus === null ? `Menus de ${u.name} : retour à la sélection du rôle.` : `Menus de ${u.name} enregistrés.`)} />
             </li>
           ))}

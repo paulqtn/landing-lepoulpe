@@ -4,7 +4,7 @@ import { adminQuery as q } from "@/lib/admin/db";
 import { sanitizeMenus } from "@/lib/admin/menus";
 
 /* Modification d'un compte (rôle, activation, mot de passe) — super-administrateur uniquement.
-   Un compte n'est jamais supprimé : il est désactivé, pour conserver l'historique. */
+   Désactiver un compte conserve tout ; le supprimer (DELETE) retire le compte et redistribue ses clients. */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const g = await requireRole(req, ["superadmin"]);
   if (g.denied) return g.denied;
@@ -66,4 +66,37 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     { role, active, ...(passwordChanged ? { password: "réinitialisé" } : {}), ...(menusChange !== undefined ? { menus: menusChange } : {}) },
   );
   return NextResponse.json({ ok: true });
+}
+
+/* Suppression définitive d'un compte. Ses clients sont remis dans la file ou confiés à un
+   autre compte : aucune fiche, aucun devis ni aucun historique n'est supprimé. */
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const g = await requireRole(req, ["superadmin"]);
+  if (g.denied) return g.denied;
+  const id = Number((await params).id);
+  let body: Record<string, unknown> = {};
+  try {
+    body = await req.json();
+  } catch {}
+  const target = (await q<{ id: number; email: string; name: string; role: Role; active: boolean }>("SELECT id, email, name, role, active FROM users WHERE id = $1", [id]))[0];
+  if (!target) return NextResponse.json({ ok: false, error: "Compte introuvable." }, { status: 404 });
+  if (target.id === g.user.id) return NextResponse.json({ ok: false, error: "Vous ne pouvez pas supprimer votre propre compte." }, { status: 409 });
+  if (body.confirmEmail !== target.email) return NextResponse.json({ ok: false, error: "Confirmation incomplète : rechargez la page." }, { status: 409 });
+  if (target.role === "superadmin" && target.active) {
+    const others = await q("SELECT 1 FROM users WHERE role = 'superadmin' AND active AND id <> $1 LIMIT 1", [id]);
+    if (!others.length) return NextResponse.json({ ok: false, error: "Impossible : c'est le dernier super-administrateur actif." }, { status: 409 });
+  }
+  // Destination de ses clients : la file (null) ou un autre compte actif.
+  let cible: string | null = null;
+  if (typeof body.clients === "string" && body.clients) {
+    const dest = (await q<{ name: string }>("SELECT name FROM users WHERE name = $1 AND active AND id <> $2 AND role <> 'logisticien'", [body.clients, id]))[0];
+    if (!dest) return NextResponse.json({ ok: false, error: "Le compte qui doit reprendre ses clients est introuvable ou inactif." }, { status: 422 });
+    cible = dest.name;
+  }
+  // Un homonyme garde ses propres clients : on ne touche aux fiches que si le nom est unique.
+  const homonyme = (await q("SELECT 1 FROM users WHERE name = $1 AND id <> $2 LIMIT 1", [target.name, id])).length > 0;
+  const deplaces = homonyme ? [] : await q<{ id: number }>("UPDATE leads SET assigned_to = $2 WHERE assigned_to = $1 RETURNING id", [target.name, cible]);
+  await q("DELETE FROM users WHERE id = $1", [id]); // ses sessions partent avec lui
+  await audit(g.user.name, "user_delete", "user", id, { email: target.email, name: target.name, role: target.role }, { clients: deplaces.length, repris_par: cible ?? "file" });
+  return NextResponse.json({ ok: true, clients: deplaces.length });
 }
