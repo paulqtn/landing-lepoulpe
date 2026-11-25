@@ -8,15 +8,15 @@ import { Clock, Eye, Loader2, Mail, Send } from "lucide-react";
    fidèle et un envoi d'essai. Rien ne change tant qu'on n'a pas enregistré. */
 
 type RMail = { sujet: string; corps: string; bouton: string };
-type Value = { active: boolean; delais: number[]; mails: RMail[] };
+type Value = { active: boolean; delais: number[]; heures: number[]; mails: RMail[] };
 
 const inputCls =
   "w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm text-inkgreen outline-none transition focus:border-pine-500 focus:ring-4 focus:ring-pine-500/10";
 const DELAI_LABELS = ["après l'envoi du devis", "après la relance 1", "après la relance 2"];
 
-export function RelancesEditor({ initial, variables, mailConfigured, testTo }: { initial: Value; variables: { cle: string; description: string }[]; mailConfigured: boolean; testTo: string }) {
+export function RelancesEditor({ initial, variables, mailConfigured, testTo, horaire, heureQuotidienne }: { initial: Value; variables: { cle: string; description: string }[]; mailConfigured: boolean; testTo: string; horaire: boolean; heureQuotidienne: string | null }) {
   const router = useRouter();
-  const [v, setV] = useState<{ active: boolean; delais: string[]; mails: RMail[] }>({ active: initial.active, delais: initial.delais.map(String), mails: initial.mails.map((m) => ({ ...m })) });
+  const [v, setV] = useState<{ active: boolean; delais: string[]; heures: number[]; mails: RMail[] }>({ active: initial.active, delais: initial.delais.map(String), heures: [...initial.heures], mails: initial.mails.map((m) => ({ ...m })) });
   const [tab, setTab] = useState(0);
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
@@ -25,7 +25,7 @@ export function RelancesEditor({ initial, variables, mailConfigured, testTo }: {
 
   const touch = () => { setDirty(true); setMsg(null); setPreview(null); };
   const setMail = (patch: Partial<RMail>) => { setV((x) => ({ ...x, mails: x.mails.map((m, i) => (i === tab ? { ...m, ...patch } : m)) })); touch(); };
-  const payload = () => ({ active: v.active, delais: v.delais.map((d) => Number(d.trim())), mails: v.mails });
+  const payload = () => ({ active: v.active, delais: v.delais.map((d) => Number(d.trim())), heures: v.heures, mails: v.mails });
   const cumul = v.delais.reduce<number[]>((acc, d, i) => [...acc, (acc[i - 1] ?? 0) + (Number(d) || 0)], []);
 
   async function call(action: "save" | "preview" | "test") {
@@ -70,7 +70,7 @@ export function RelancesEditor({ initial, variables, mailConfigured, testTo }: {
 
       <h3 className="mt-5 flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
         <Clock className="h-3.5 w-3.5" />
-        Délais
+        Délais et heures d&rsquo;envoi
       </h3>
       <div className="mt-2 grid gap-3 sm:grid-cols-3">
         {v.delais.map((d, i) => (
@@ -80,10 +80,22 @@ export function RelancesEditor({ initial, variables, mailConfigured, testTo }: {
               <input aria-label={`Délai de la relance ${i + 1} en jours`} inputMode="numeric" className={`${inputCls} !w-16 text-right font-bold tabular-nums`} value={d} onChange={(e) => { setV({ ...v, delais: v.delais.map((x, k) => (k === i ? e.target.value : x)) }); touch(); }} />
               <span className="text-xs text-neutral-600">jour{Number(d) > 1 ? "s" : ""} {DELAI_LABELS[i]}</span>
             </span>
-            <span className="mt-1 block text-[11px] text-neutral-400">soit J+{cumul[i]} après le devis</span>
+            <span className="mt-2 flex items-center gap-2">
+              <span className="text-xs text-neutral-600">envoi à</span>
+              <select aria-label={`Heure d'envoi de la relance ${i + 1}`} className={`${inputCls} !w-24 font-bold`} value={v.heures[i]} onChange={(e) => { setV({ ...v, heures: v.heures.map((x, k) => (k === i ? Number(e.target.value) : x)) }); touch(); }}>
+                {Array.from({ length: 24 }, (_, h) => <option key={h} value={h}>{h} h 00</option>)}
+              </select>
+            </span>
+            <span className="mt-1 block text-[11px] text-neutral-400">soit J+{cumul[i]} après le devis, à {v.heures[i]} h (heure de Paris)</span>
           </label>
         ))}
       </div>
+
+      {!horaire && (
+        <p className="mt-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-900">
+          Pour l&rsquo;instant, la tâche d&rsquo;envoi ne passe qu&rsquo;une fois par jour{heureQuotidienne ? `, vers ${heureQuotidienne}` : ""} (limite de l&rsquo;offre gratuite de Vercel) : les relances partent le bon jour, mais à ce passage, pas à l&rsquo;heure choisie. Les heures seront respectées dès que la tâche passera en horaire (offre Pro).
+        </p>
+      )}
 
       <div role="tablist" className="mt-6 flex flex-wrap gap-1.5">
         {v.mails.map((_, i) => (

@@ -1,13 +1,13 @@
 import { addEvent, updateLead, type Lead } from "./db";
 import { SEQ_MAX, sendRelanceEmail } from "./mail";
-import { delaiAvant, getRelanceSettings } from "./relances";
+import { dateRelance, getRelanceSettings } from "./relances";
 
 const JOUR = 86400_000;
 
 /** Date de la première relance, à programmer quand un devis vient d'être envoyé. */
 export async function premiereRelance(): Promise<string> {
-  const s = await getRelanceSettings();
-  return new Date(Date.now() + (delaiAvant(s, 1) ?? 2) * JOUR).toISOString();
+  const d = dateRelance(await getRelanceSettings(), 1);
+  return (d ?? new Date(Date.now() + 2 * JOUR)).toISOString();
 }
 
 /* Avance la séquence de relances d'un lead (envoi n° relances+1). */
@@ -24,9 +24,9 @@ export async function envoyerRelance(
     return { ok: false, numero, reason: mail.reason };
   }
 
-  // Prochaine échéance selon les délais réglés dans l'onglet Relances.
-  const delai = delaiAvant(await getRelanceSettings(), numero + 1);
-  const next = numero >= SEQ_MAX || delai === null ? null : new Date(Date.now() + delai * JOUR).toISOString();
+  // Prochaine échéance selon les délais et heures réglés dans l'onglet Relances.
+  const prochaine = numero >= SEQ_MAX ? null : dateRelance(await getRelanceSettings(), numero + 1);
+  const next = prochaine ? prochaine.toISOString() : null;
   await updateLead(lead.id, {
     relances: numero,
     statut: `relance_${numero}` as Lead["statut"],

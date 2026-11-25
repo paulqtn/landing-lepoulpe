@@ -1,4 +1,7 @@
+import { dateParis } from "./dates-paris";
 import { getSetting } from "./settings";
+
+export { dateParis, finDeJourneeParis } from "./dates-paris";
 
 /* ================================================================== */
 /*  Séquence de relances : 3 e-mails envoyés automatiquement après un  */
@@ -14,6 +17,8 @@ export type RelanceSettings = {
   active: boolean;
   /** Jours d'attente : [devis → relance 1, relance 1 → relance 2, relance 2 → relance 3]. */
   delais: [number, number, number];
+  /** Heure d'envoi de chaque relance (0 à 23, heure de Paris). */
+  heures: [number, number, number];
   mails: [RelanceMail, RelanceMail, RelanceMail];
 };
 
@@ -28,6 +33,7 @@ export const VARIABLES: { cle: string; description: string }[] = [
 export const RELANCES_DEFAUT: RelanceSettings = {
   active: true,
   delais: [2, 3, 5],
+  heures: [9, 9, 9],
   mails: [
     {
       sujet: "Votre devis garde-corps en verre vous attend",
@@ -58,6 +64,10 @@ export function sanitizeRelances(raw: unknown): { value?: RelanceSettings; error
   const delais = Array.isArray(r.delais) ? r.delais.map(Number) : [];
   if (delais.length !== NB_RELANCES || delais.some((d) => !Number.isInteger(d) || d < 1 || d > 90))
     return { error: "Délais : un nombre de jours entier, de 1 à 90, pour chaque relance." };
+  // Heures absentes (séquence enregistrée avant cette option) : 9 h par défaut.
+  const heures = Array.isArray(r.heures) ? r.heures.map(Number) : [9, 9, 9];
+  if (heures.length !== NB_RELANCES || heures.some((h) => !Number.isInteger(h) || h < 0 || h > 23))
+    return { error: "Heure d'envoi : une heure entière, de 0 à 23, pour chaque relance." };
   const mails = Array.isArray(r.mails) ? r.mails : [];
   if (mails.length !== NB_RELANCES) return { error: "Les trois relances doivent être renseignées." };
   const out: RelanceMail[] = [];
@@ -70,13 +80,21 @@ export function sanitizeRelances(raw: unknown): { value?: RelanceSettings; error
     if (inconnues.length) return { error: `Relance ${i + 1} : variable inconnue ${[...new Set(inconnues)].join(", ")}.` };
     out.push(mail);
   }
-  return { value: { active: r.active !== false, delais: delais as [number, number, number], mails: out as [RelanceMail, RelanceMail, RelanceMail] } };
+  return { value: { active: r.active !== false, delais: delais as [number, number, number], heures: heures as [number, number, number], mails: out as [RelanceMail, RelanceMail, RelanceMail] } };
 }
 
 export async function getRelanceSettings(): Promise<RelanceSettings> {
   const stored = await getSetting<unknown>("relances");
   const value = stored ? sanitizeRelances(stored).value : undefined;
   return value ?? RELANCES_DEFAUT;
+}
+
+/* ----------------------------- Dates d'envoi ----------------------------- */
+
+/** Date et heure d'envoi de la relance n° `numero`, comptées à partir de `from`. */
+export function dateRelance(s: RelanceSettings, numero: number, from = new Date()): Date | null {
+  if (numero < 1 || numero > NB_RELANCES) return null;
+  return dateParis(from, s.delais[numero - 1], s.heures[numero - 1]);
 }
 
 /** Délai (en jours) avant la relance n° `numero` (1 à 3). */

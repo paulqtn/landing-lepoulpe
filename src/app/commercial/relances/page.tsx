@@ -3,6 +3,7 @@ import { BellRing, CalendarClock, MailCheck } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { RelancesEditor } from "@/components/admin/RelancesEditor";
 import { canManageSettings, requireMenu } from "@/lib/admin/auth";
+import { CRON_HEURE_UTC, CRON_HORAIRE } from "@/lib/admin/cron-frequence";
 import { VARIABLES, getRelanceSettings } from "@/lib/admin/relances";
 import { dueRelances, type Lead, relancesAVenir } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
@@ -16,6 +17,11 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
   const user = await requireMenu("relances");
   const rep = user.name;
   const [{ qui }, duesAll, seq] = await Promise.all([searchParams, dueRelances(), getRelanceSettings()]);
+  // Heure de Paris du passage quotidien, pour l'expliquer à l'écran.
+  const heureQuotidienne =
+    CRON_HEURE_UTC === null || !Number.isFinite(CRON_HEURE_UTC)
+      ? null
+      : new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", hour: "numeric", minute: "2-digit" }).format(new Date(Date.UTC(2026, new Date().getUTCMonth(), new Date().getUTCDate(), CRON_HEURE_UTC)));
   const jours = seq.delais.reduce<number[]>((acc, d, i) => [...acc, (acc[i - 1] ?? 0) + d], []);
   const mine = rep && qui !== "tous";
   const dues = mine ? duesAll.filter((l) => l.assigned_to === rep) : duesAll;
@@ -27,7 +33,7 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
         <h1 className="text-2xl font-extrabold text-inkgreen">Relances</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Séquence : devis envoyé (J0) → relance 1 à J+{jours[0]} → relance 2 à J+{jours[1]} → relance 3 à J+{jours[2]} ·{" "}
-          {!mailConfigured ? "e-mails non branchés : rien ne part pour l'instant" : seq.active ? "envoi automatique chaque matin" : "envoi automatique désactivé"}
+          {!mailConfigured ? "e-mails non branchés : rien ne part pour l'instant" : !seq.active ? "envoi automatique désactivé" : CRON_HORAIRE ? "envoi automatique à l'heure choisie" : "envoi automatique une fois par jour"}
         </p>
         {rep && (
           <div className="mt-2.5 flex gap-1.5">
@@ -37,7 +43,7 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
         )}
       </div>
 
-      {canManageSettings(user) && <RelancesEditor initial={seq} variables={VARIABLES} mailConfigured={mailConfigured} testTo={user.email} />}
+      {canManageSettings(user) && <RelancesEditor initial={seq} variables={VARIABLES} mailConfigured={mailConfigured} testTo={user.email} horaire={CRON_HORAIRE} heureQuotidienne={heureQuotidienne} />}
 
       <section className="rounded-2xl border border-amber-500/40 bg-white p-5">
         <h2 className="flex items-center gap-2 text-base font-extrabold text-inkgreen">

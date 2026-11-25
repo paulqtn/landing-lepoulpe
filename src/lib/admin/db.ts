@@ -412,17 +412,19 @@ export async function relancesAVenir(assigned?: string, limit = 20): Promise<Lea
 }
 
 /** Relances arrivées à échéance (cron + dashboard). */
-export async function dueRelances(): Promise<Lead[]> {
+export async function dueRelances(jusqua?: Date): Promise<Lead[]> {
+  const limite = (jusqua ?? new Date()).toISOString();
   if (!dbConfigured) {
     return demoLeads().filter(
-      (l) => l.next_relance_at && new Date(l.next_relance_at) <= new Date() && l.statut !== "gagne" && l.statut !== "perdu",
+      (l) => l.next_relance_at && new Date(l.next_relance_at) <= new Date(limite) && l.statut !== "gagne" && l.statut !== "perdu",
     );
   }
   return q<Lead>(
     `SELECT * FROM leads
-     WHERE next_relance_at IS NOT NULL AND next_relance_at <= now()
+     WHERE next_relance_at IS NOT NULL AND next_relance_at <= $1
        AND statut NOT IN ('gagne', 'perdu')
      ORDER BY next_relance_at ASC LIMIT 500`,
+    [limite],
   );
 }
 

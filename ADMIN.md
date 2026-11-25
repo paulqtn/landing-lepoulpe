@@ -74,6 +74,13 @@ d'un aperçu, d'un envoi d'essai et d'un interrupteur général. Variables : `{p
 `{nom}`, `{montant}`, `{telephone}`, `{societe}`. La séquence s'arrête dès que l'affaire est
 gagnée, perdue ou « à rappeler ». Code : `src/lib/admin/relances.ts` et `sequence.ts`.
 
+Chaque relance a aussi une **heure d'envoi** (heure de Paris). Elle n'est tenue que si la
+tâche passe toutes les heures, ce que Vercel réserve à l'offre Pro. Tant que `vercel.json`
+garde un passage quotidien (`0 7 * * *`), les relances partent le bon jour, à ce passage.
+Une fois en Pro : remplacer le planning par `0 * * * *` dans `vercel.json` — le code détecte
+seul le passage en horaire (`src/lib/admin/cron-frequence.ts`). Ne pas le faire en offre
+gratuite : le déploiement échouerait.
+
 ## RGPD
 
 Sur chaque fiche client (rôles admin) : export des données de la personne, et
