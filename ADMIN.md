@@ -81,6 +81,19 @@ Une fois en Pro : remplacer le planning par `0 * * * *` dans `vercel.json` — l
 seul le passage en horaire (`src/lib/admin/cron-frequence.ts`). Ne pas le faire en offre
 gratuite : le déploiement échouerait.
 
+## Arrêt des relances quand le client est joint
+
+Les e-mails automatiques ne partent **que** tant que l'affaire est en « Devis envoyé »,
+« Relancé ×1 » ou « Relancé ×2 ». Tout autre statut les arrête, quel que soit le chemin
+(fiche, action groupée, compte-rendu d'appel, demande de rappel du client).
+
+Nouveaux statuts : **En discussion** (client eu au téléphone, échange en cours),
+**En réflexion** (avec date de rappel), **Devis à modifier**. Sur la fiche client, le
+bouton « J'ai appelé le client » enregistre l'issue de l'appel et règle le statut ; un
+appel sans réponse laisse la séquence continuer. « Reprendre la séquence » la relance là
+où elle s'était arrêtée. Les clients à rappeler apparaissent dans l'onglet Relances et
+dans les priorités de l'accueil.
+
 ## RGPD
 
 Sur chaque fiche client (rôles admin) : export des données de la personne, et

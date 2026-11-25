@@ -114,7 +114,7 @@ async function q<T = Record<string, unknown>>(text: string, params: unknown[] = 
 /* ------------------------------ Types ------------------------------ */
 
 export { STATUTS, STATUT_LABELS, type Statut } from "./statuts";
-import { STATUTS, type Statut } from "./statuts";
+import { STATUTS, sequenceActive, type Statut } from "./statuts";
 
 export type Lead = {
   id: number;
@@ -144,6 +144,8 @@ export type Lead = {
   cout_achat?: string | null;
   marge_brute?: string | null;
   marge_source?: string | null;
+  /** Rappel téléphonique convenu avec le client. */
+  rappel_at?: string | null;
 };
 
 export type LeadEvent = {
@@ -200,7 +202,7 @@ export async function updateLead(
   patch: Partial<
     Pick<
       Lead,
-      "statut" | "relances" | "next_relance_at" | "assigned_to" | "score" | "score_points" | "answers" | "estimation_ttc"
+      "statut" | "relances" | "next_relance_at" | "assigned_to" | "score" | "score_points" | "answers" | "estimation_ttc" | "rappel_at"
     >
   >,
 ): Promise<void> {
@@ -212,6 +214,11 @@ export async function updateLead(
     sets.push(`${k} = $${vals.length}`);
   });
   if (patch.statut === "gagne") sets.push(`won_at = COALESCE(won_at, now())`);
+  // Règle unique, quel que soit le chemin : hors des statuts de séquence, plus aucun
+  // e-mail automatique n'est programmé (appel, discussion, réflexion, gagné, perdu…).
+  if (patch.statut && !sequenceActive(patch.statut) && patch.next_relance_at === undefined) sets.push(`next_relance_at = NULL`);
+  // Une affaire close n'a plus de rappel téléphonique en attente.
+  if ((patch.statut === "gagne" || patch.statut === "perdu") && patch.rappel_at === undefined) sets.push(`rappel_at = NULL`);
   if (!sets.length) return;
   vals.push(id);
   await q(`UPDATE leads SET ${sets.join(", ")} WHERE id = $${vals.length}`, vals);
@@ -383,7 +390,40 @@ export async function pipelineApercu(parStatut = 8): Promise<Lead[]> {
   );
 }
 
-/** Relances programmées à venir (hors affaires closes ou à rappeler). */
+/** Clients à rappeler par téléphone : rappel convenu, ou demande de rappel du client. */
+export async function listRappels(assigned?: string, limit = 200): Promise<Lead[]> {
+  if (!dbConfigured) return demoLeads().filter((l) => l.statut === "a_rappeler" && (!assigned || l.assigned_to === assigned));
+  const vals: unknown[] = [limit];
+  let extra = "";
+  if (assigned) {
+    vals.push(assigned);
+    extra = `AND assigned_to = $2`;
+  }
+  return q<Lead>(
+    `SELECT * FROM leads
+     WHERE statut NOT IN ('gagne', 'perdu') AND (rappel_at IS NOT NULL OR statut = 'a_rappeler') ${extra}
+     ORDER BY COALESCE(rappel_at, created_at) ASC, id ASC LIMIT $1`,
+    vals,
+  );
+}
+
+/** Nombre total de clients à rappeler (la liste affichée peut être tronquée). */
+export async function countRappels(assigned?: string): Promise<number> {
+  if (!dbConfigured) return (await listRappels(assigned)).length;
+  const vals: unknown[] = [];
+  let extra = "";
+  if (assigned) {
+    vals.push(assigned);
+    extra = `AND assigned_to = $1`;
+  }
+  const rows = await q<{ n: string }>(
+    `SELECT count(*)::text AS n FROM leads WHERE statut NOT IN ('gagne', 'perdu') AND (rappel_at IS NOT NULL OR statut = 'a_rappeler') ${extra}`,
+    vals,
+  );
+  return Number(rows[0]?.n ?? 0);
+}
+
+/** Relances programmées à venir (uniquement tant que la séquence tourne). */
 export async function relancesAVenir(assigned?: string, limit = 20): Promise<Lead[]> {
   if (!dbConfigured) {
     return demoLeads()
@@ -405,7 +445,7 @@ export async function relancesAVenir(assigned?: string, limit = 20): Promise<Lea
   }
   return q<Lead>(
     `SELECT * FROM leads
-     WHERE next_relance_at > now() AND statut NOT IN ('gagne', 'perdu', 'a_rappeler') ${extra}
+     WHERE next_relance_at > now() AND statut IN ('devis_envoye', 'relance_1', 'relance_2') ${extra}
      ORDER BY next_relance_at ASC LIMIT $1`,
     vals,
   );
@@ -416,13 +456,13 @@ export async function dueRelances(jusqua?: Date): Promise<Lead[]> {
   const limite = (jusqua ?? new Date()).toISOString();
   if (!dbConfigured) {
     return demoLeads().filter(
-      (l) => l.next_relance_at && new Date(l.next_relance_at) <= new Date(limite) && l.statut !== "gagne" && l.statut !== "perdu",
+      (l) => l.next_relance_at && new Date(l.next_relance_at) <= new Date(limite) && sequenceActive(l.statut),
     );
   }
   return q<Lead>(
     `SELECT * FROM leads
      WHERE next_relance_at IS NOT NULL AND next_relance_at <= $1
-       AND statut NOT IN ('gagne', 'perdu')
+       AND statut IN ('devis_envoye', 'relance_1', 'relance_2')
      ORDER BY next_relance_at ASC LIMIT 500`,
     [limite],
   );

@@ -7,6 +7,9 @@ const COLORS: Record<Statut, string> = {
   relance_2: "bg-violet-100 text-violet-800 ring-violet-300",
   relance_3: "bg-violet-200 text-violet-900 ring-violet-400",
   a_rappeler: "bg-orange-50 text-orange-700 ring-orange-200",
+  en_discussion: "bg-teal-50 text-teal-700 ring-teal-200",
+  en_reflexion: "bg-indigo-50 text-indigo-700 ring-indigo-200",
+  devis_a_modifier: "bg-rose-50 text-rose-700 ring-rose-200",
   gagne: "bg-green-50 text-green-700 ring-green-200",
   perdu: "bg-neutral-100 text-neutral-500 ring-neutral-200",
 };

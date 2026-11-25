@@ -14,6 +14,9 @@ const COL_COLORS: Record<Statut, string> = {
   relance_2: "border-t-violet-500",
   relance_3: "border-t-violet-600",
   a_rappeler: "border-t-orange-500",
+  en_discussion: "border-t-teal-500",
+  en_reflexion: "border-t-indigo-500",
+  devis_a_modifier: "border-t-rose-500",
   gagne: "border-t-green-500",
   perdu: "border-t-neutral-300",
 };

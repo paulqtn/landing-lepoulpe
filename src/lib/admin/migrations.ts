@@ -229,4 +229,12 @@ export const MIGRATIONS: Migration[] = [
       ALTER TABLE leads ADD COLUMN marge_source TEXT;
     `,
   },
+  {
+    // Date de rappel téléphonique convenue avec le client (distincte des relances par e-mail).
+    id: "008_rappel_telephonique",
+    sql: `
+      ALTER TABLE leads ADD COLUMN rappel_at TIMESTAMPTZ;
+      CREATE INDEX idx_leads_rappel ON leads(rappel_at) WHERE rappel_at IS NOT NULL;
+    `,
+  },
 ];

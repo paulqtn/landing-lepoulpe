@@ -5,7 +5,7 @@ import { SeedDemo } from "@/components/admin/SeedDemo";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { currentRep, requireMenu } from "@/lib/admin/auth";
 import { getCompSettings, repStats } from "@/lib/admin/compens";
-import { dueRelances, listLeads, stats, type Lead, listLeadsLight } from "@/lib/admin/db";
+import { dueRelances, listLeads, stats, type Lead, listLeadsLight, listRappels } from "@/lib/admin/db";
 import { listOrders } from "@/lib/admin/logistics";
 import { mailConfigured } from "@/lib/admin/mail";
 
@@ -32,6 +32,8 @@ export default async function CommercialHome() {
   ]);
 
   const mesDues = rep ? dues.filter((l) => l.assigned_to === rep) : dues;
+  const finJour = new Date(); finJour.setHours(23, 59, 59, 999);
+  const rappelsDus = (await listRappels(mine)).filter((l) => !l.rappel_at || new Date(l.rappel_at) <= finJour);
   const aAppeler = nouveauxA.filter((l) => !chauds.some((c) => c.id === l.id));
   const withOrder = new Set(orders.map((o) => o.lead_id).filter(Boolean));
   const aLancer = gagnes.filter((l) => !withOrder.has(l.id));
@@ -43,6 +45,7 @@ export default async function CommercialHome() {
     { n: pool.length, label: "Leads entrants à piocher", sub: "dans l'ordre d'arrivée", href: "#pioche", icon: Hand, hot: pool.length > 0 },
     { n: chauds.length, label: "Signaux chauds à rappeler", sub: "devis consultés ces 48 h", href: "/commercial/clients?qui=moi", icon: Flame, hot: chauds.length > 0 },
     { n: devisATraiter.length, label: "Devis à traiter", sub: "calepinage + envoi", href: "/commercial/devis", icon: FileText, hot: devisATraiter.length > 0 },
+    { n: rappelsDus.length, label: "Clients à rappeler par téléphone", sub: "rappel convenu ou demandé", href: "/commercial/relances", icon: PhoneCall, hot: rappelsDus.length > 0 },
     { n: mesDues.length, label: "Relances échues", sub: "la séquence vous attend", href: "/commercial/relances", icon: BellRing, hot: false },
     { n: aLancer.length, label: "Gagnées à lancer en production", sub: "envoyer à l'atelier", href: "/commercial/production", icon: Trophy, hot: false },
   ];

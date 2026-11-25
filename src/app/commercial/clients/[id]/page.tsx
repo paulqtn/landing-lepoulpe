@@ -31,6 +31,9 @@ const EVENT_LABELS: Record<string, string> = {
   statut: "Changement de statut",
   note: "Note",
   info: "Info",
+  appel: "Appel téléphonique",
+  commande: "Commande atelier",
+  attribution: "Attribution",
 };
 
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
@@ -97,7 +100,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
         <StatutBadge statut={lead.statut} />
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
         <div className="space-y-5">
           {/* projet + estimation */}
           <section className="rounded-2xl border border-neutral-200 bg-white p-5">
@@ -153,7 +156,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-pine-400" />
                   <div>
                     <p className="text-sm font-bold text-inkgreen">{EVENT_LABELS[e.type] ?? e.type}</p>
-                    {e.message && <p className="text-xs text-neutral-500">{e.message}</p>}
+                    {e.message && <p className="whitespace-pre-line text-xs text-neutral-500">{e.message}</p>}
                     <p className="text-[11px] text-neutral-400">{dateFmt.format(new Date(e.created_at))}</p>
                   </div>
                 </li>
@@ -170,6 +173,8 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           hasEstimation={Boolean(lead.estimation_ttc)}
           team={await getTeam()}
           assignedTo={lead.assigned_to}
+          rappelAt={lead.rappel_at ? new Date(lead.rappel_at).toISOString() : null}
+          devisEnvoye={quotes.some((x) => x.statut === "envoye") || events.some((e) => e.type === "devis_envoye")}
         />
 
         {canManageSettings(me) && (
