@@ -18,17 +18,20 @@ export function ClaimButton({ leadId }: { leadId: number }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ leadId }),
       });
-      const j = (await r.json()) as { ok: boolean; demo?: boolean; error?: string; by?: string };
+      const j = (await r.json()) as { ok: boolean; demo?: boolean; error?: string; by?: string; first?: string | null };
       if (j.ok) {
         router.refresh();
         return;
       }
-      setNote(j.demo ? "Mode démo : écritures désactivées" : j.error === "taken" ? `Déjà pris par ${j.by}` : j.error === "no_rep" ? "Reconnectez-vous en choisissant votre nom" : "Échec — réessayez");
+      setNote(j.demo ? "Mode démo : écritures désactivées" : j.error === "taken" ? `Déjà pris par ${j.by}` : j.error === "not_first" ? `Prenez d'abord la demande la plus ancienne${j.first ? ` (${j.first})` : ""}` : j.error === "no_rep" ? "Reconnectez-vous en choisissant votre nom" : "Échec — réessayez");
     } catch {
       setNote("Échec — réessayez");
     }
     setState("note");
-    setTimeout(() => setState("idle"), 3500);
+    setTimeout(() => {
+      setState("idle");
+      router.refresh(); // la file a changé : on la réaffiche à jour
+    }, 3500);
   }
 
   if (state === "note") return <span className="text-[11px] font-semibold text-amber-700">{note}</span>;

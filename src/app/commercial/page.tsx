@@ -41,7 +41,7 @@ export default async function CommercialHome() {
 
   /* Les tâches, dans l'ordre d'attaque du matin. */
   const taches = [
-    { n: pool.length, label: "Leads entrants à piocher", sub: "premier arrivé, premier servi", href: "#pioche", icon: Hand, hot: pool.length > 0 },
+    { n: pool.length, label: "Leads entrants à piocher", sub: "dans l'ordre d'arrivée", href: "#pioche", icon: Hand, hot: pool.length > 0 },
     { n: chauds.length, label: "Signaux chauds à rappeler", sub: "devis consultés ces 48 h", href: "/commercial/clients?qui=moi", icon: Flame, hot: chauds.length > 0 },
     { n: devisATraiter.length, label: "Devis à traiter", sub: "calepinage + envoi", href: "/commercial/devis", icon: FileText, hot: devisATraiter.length > 0 },
     { n: mesDues.length, label: "Relances échues", sub: "la séquence vous attend", href: "/commercial/relances", icon: BellRing, hot: false },
@@ -137,13 +137,16 @@ export default async function CommercialHome() {
           Leads entrants — à piocher
           <span className="ml-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-amber-700">{pool.length}</span>
         </h2>
-        <p className="mt-1 text-xs text-neutral-400">Par ordre d&rsquo;arrivée — « Je le prends » vous l&rsquo;attribue, il rejoint vos clients.</p>
+        <p className="mt-1 text-xs text-neutral-400">Par ordre d&rsquo;arrivée, le plus ancien en premier. Seule la première demande peut être prise : les suivantes se débloquent une à une.</p>
         {pool.length === 0 ? (
           <p className="mt-3 text-sm text-neutral-400">File vide — tous les entrants sont attribués.</p>
         ) : (
           <ul className="mt-3 divide-y divide-neutral-100">
-            {pool.slice(0, 8).map((l) => (
-              <li key={l.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
+            {pool.slice(0, 8).map((l, rang) => (
+              <li key={l.id} className={`flex flex-wrap items-center gap-x-4 gap-y-2 py-3 ${rang === 0 ? "" : "opacity-60"}`}>
+                <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-extrabold tabular-nums ${rang === 0 ? "bg-amber-500 text-pine-950" : "bg-neutral-100 text-neutral-500"}`} title={`Rang ${rang + 1} dans la file`}>
+                  {rang + 1}
+                </span>
                 <ScoreBadge score={l.score} points={l.score_points} />
                 <Link href={`/commercial/clients/${l.id}`} className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-bold text-inkgreen hover:text-pine-700">{l.name}</span>
@@ -154,7 +157,11 @@ export default async function CommercialHome() {
                 {l.estimation_ttc && (
                   <span className="text-sm font-extrabold tabular-nums text-pine-700">{eurFmt.format(Number(l.estimation_ttc))} €</span>
                 )}
-                <ClaimButton leadId={l.id} />
+                {rang === 0 ? (
+                  <ClaimButton leadId={l.id} />
+                ) : (
+                  <span className="rounded-full border border-neutral-200 px-3 py-1.5 text-[11px] font-bold text-neutral-400">En attente du n°{rang}</span>
+                )}
               </li>
             ))}
           </ul>

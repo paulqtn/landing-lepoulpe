@@ -1,3 +1,4 @@
+import { refusAttribution } from "@/lib/admin/attribution";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, getLead, STATUTS, updateLead, type Statut } from "@/lib/admin/db";
@@ -28,6 +29,11 @@ export async function POST(req: Request) {
       await addEvent(id, "statut", `Statut → ${statut} (action groupée)`);
       ok++;
     } else if (body.action === "assign" && typeof body.value === "string") {
+      const refus = await refusAttribution(g.user, lead, body.value || null);
+      if (refus) {
+        erreurs.push(`#${id}: ${refus}`);
+        continue;
+      }
       await updateLead(id, { assigned_to: body.value || null });
       await addEvent(id, "info", body.value ? `Assigné à ${body.value}` : "Assignation retirée");
       ok++;

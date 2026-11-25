@@ -1,3 +1,4 @@
+import { refusAttribution } from "@/lib/admin/attribution";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, getLead, listEvents, STATUTS, updateLead, type Statut } from "@/lib/admin/db";
@@ -28,6 +29,8 @@ export async function PATCH(req: Request, { params }: Params) {
   }
 
   if (body.assigned_to !== undefined) {
+    const refus = await refusAttribution(g.user, lead, body.assigned_to || null);
+    if (refus) return NextResponse.json({ error: refus }, { status: 409 });
     await updateLead(lead.id, { assigned_to: body.assigned_to || null });
     await addEvent(lead.id, "info", body.assigned_to ? `Assigné à ${body.assigned_to}` : "Assignation retirée");
   }

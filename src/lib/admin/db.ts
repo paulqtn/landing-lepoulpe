@@ -298,10 +298,43 @@ export async function listLeads(opts: LeadFilter = {}): Promise<Lead[]> {
   vals.push(Math.max(0, opts.offset ?? 0));
   return q<Lead>(
     `SELECT * FROM leads ${sql}
-     ORDER BY created_at ${opts.order === "ancien" ? "ASC" : "DESC"}, id DESC
+     ORDER BY created_at ${opts.order === "ancien" ? "ASC, id ASC" : "DESC, id DESC"}
      LIMIT $${vals.length - 1} OFFSET $${vals.length}`,
     vals,
   );
+}
+
+/* ----------------------- File des demandes entrantes ----------------------- */
+
+/** Condition SQL : la demande est dans la file (non attribuée, ni gagnée ni perdue). */
+const EN_FILE = `assigned_to IS NULL AND statut NOT IN ('gagne', 'perdu')`;
+
+/** La plus ancienne demande de la file — la seule qui peut être prise. */
+export async function oldestPoolLead(): Promise<{ id: number; name: string } | null> {
+  if (!dbConfigured) return null;
+  const rows = await q<{ id: number; name: string }>(`SELECT id, name FROM leads WHERE ${EN_FILE} ORDER BY created_at ASC, id ASC LIMIT 1`);
+  return rows[0] ?? null;
+}
+
+/**
+ * Attribution d'une demande de la file, dans l'ordre d'arrivée : elle n'aboutit
+ * que si la demande est encore libre ET qu'aucune plus ancienne n'attend.
+ * Une seule requête : deux commerciaux ne peuvent pas se doubler.
+ */
+export async function claimInOrder(id: number, rep: string): Promise<boolean> {
+  if (!dbConfigured) return false;
+  const rows = await q<{ id: number }>(
+    `UPDATE leads AS l SET assigned_to = $2
+     WHERE l.id = $1 AND l.assigned_to IS NULL AND l.statut NOT IN ('gagne', 'perdu')
+       AND NOT EXISTS (
+         SELECT 1 FROM leads o
+         WHERE o.assigned_to IS NULL AND o.statut NOT IN ('gagne', 'perdu')
+           AND (o.created_at < l.created_at OR (o.created_at = l.created_at AND o.id < l.id))
+       )
+     RETURNING l.id`,
+    [id, rep],
+  );
+  return rows.length > 0;
 }
 
 /** Nombre total de demandes pour un filtre (pagination). */
