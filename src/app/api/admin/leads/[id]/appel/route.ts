@@ -2,6 +2,7 @@ import { refusAction } from "@/lib/admin/attribution";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, adminQuery as q, getLead, updateLead } from "@/lib/admin/db";
+import { controleStatut } from "@/lib/admin/statut-regles";
 import { figerMargeAuGain } from "@/lib/admin/marge";
 import { dateRelance, getRelanceSettings } from "@/lib/admin/relances";
 import type { Statut } from "@/lib/admin/statuts";
@@ -63,9 +64,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     rappel = d.toISOString();
   }
 
+  let complement = "";
   if (issue.statut) {
+    const ctl = await controleStatut(g.user, lead, issue.statut, body);
+    if (ctl.error) return NextResponse.json({ ok: false, error: ctl.error }, { status: 409 });
+    complement = ctl.detail ? ` — ${ctl.detail}` : "";
     // Le changement de statut arrête de lui-même la séquence d'e-mails (voir updateLead).
-    await updateLead(lead.id, { statut: issue.statut, rappel_at: rappel });
+    await updateLead(lead.id, { statut: issue.statut, rappel_at: rappel, motif_perte: ctl.motif ?? null });
     if (issue.statut === "gagne") await figerMargeAuGain(lead.id);
   }
   const suite =
@@ -76,6 +81,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         : issue.statut && issue.statut !== "gagne" && issue.statut !== "perdu"
           ? " — e-mails arrêtés"
           : "";
-  await addEvent(lead.id, "appel", `${issue.label}${suite} (${g.user.name})${note ? `\n${note}` : ""}`);
+  await addEvent(lead.id, "appel", `${issue.label}${suite}${complement} (${g.user.name})${note ? `\n${note}` : ""}`);
   return NextResponse.json({ ok: true });
 }

@@ -94,6 +94,23 @@ appel sans réponse laisse la séquence continuer. « Reprendre la séquence » 
 où elle s'était arrêtée. Les clients à rappeler apparaissent dans l'onglet Relances et
 dans les priorités de l'accueil.
 
+## Règles de vente (prix plancher, envoi, signature)
+
+- **Prix plancher** (`refusPlancher`, `src/lib/admin/quotes.ts`) : contrôlé sur chaque proposition,
+  au mètre (toute ligne en « ml » vaut au moins le plancher au mètre de sa fixation) et au total
+  (au moins le projet complet au plancher). Les administrateurs ne sont pas limités. Limite connue :
+  une ligne saisie sans l'unité « ml » n'est contrôlée que par le total.
+- **Un seul envoi de prix** : le devis validé. Le bouton « e-mail d'estimation » a été retiré.
+- **Envoyer un devis** passe toujours le client en « Devis envoyé », remet le compteur de relances
+  à zéro et programme la première relance (sauf affaire déjà close).
+- **Signé** : confirmation obligatoire ; il faut un devis envoyé (le dernier est retenu pour le
+  chiffre et la prime), sauf pour un administrateur. **Non signé** : motif obligatoire
+  (`MOTIFS_PERTE`, `leads.motif_perte`). Ni l'un ni l'autre en action groupée.
+- **Relancé ×1/×2/×3** : posés uniquement par l'envoi d'une relance, jamais à la main.
+- **Nouveau prospect** : si le client existe déjà dans la file ou chez un collègue, seul un
+  administrateur peut créer une seconde fiche.
+- Une validation du devis en ligne s'affiche en bandeau sur la fiche et dans la liste des rappels.
+
 ## Alertes, prospects saisis à la main, fichiers
 
 - **Alertes** : le back office interroge le serveur toutes les 30 secondes (onglet visible) et

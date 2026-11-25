@@ -1,5 +1,6 @@
 import { figerMargeAuGain } from "@/lib/admin/marge";
 import { refusAction, refusAttribution } from "@/lib/admin/attribution";
+import { controleStatut } from "@/lib/admin/statut-regles";
 import { majCoordonnees } from "@/lib/admin/contact";
 import { STATUT_LABELS } from "@/lib/admin/statuts";
 import { NextResponse } from "next/server";
@@ -25,7 +26,7 @@ export async function PATCH(req: Request, { params }: Params) {
   const lead = await getLead(Number(id));
   if (!lead) return NextResponse.json({ error: "introuvable" }, { status: 404 });
 
-  let body: { statut?: string; note?: string; next_relance_at?: string | null; assigned_to?: string | null; niveau?: number | null; contact?: unknown };
+  let body: { statut?: string; note?: string; next_relance_at?: string | null; assigned_to?: string | null; niveau?: number | null; contact?: unknown; motif?: unknown; precision?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -65,11 +66,13 @@ export async function PATCH(req: Request, { params }: Params) {
     await addEvent(lead.id, "note", body.note.trim());
   }
 
-  if (typeof body.statut === "string" && (STATUTS as readonly string[]).includes(body.statut)) {
-    const patch: { statut: Statut; next_relance_at?: string | null } = { statut: body.statut as Statut };
+  if (typeof body.statut === "string" && (STATUTS as readonly string[]).includes(body.statut) && body.statut !== fiche.statut) {
+    const ctl = await controleStatut(g.user, fiche, body.statut, body);
+    if (ctl.error) return NextResponse.json({ error: ctl.error }, { status: 409 });
+    const patch: { statut: Statut; next_relance_at?: string | null; motif_perte?: string | null } = { statut: body.statut as Statut, motif_perte: ctl.motif ?? null };
     if (body.statut === "gagne" || body.statut === "perdu") patch.next_relance_at = null;
     await updateLead(lead.id, patch);
-    await addEvent(lead.id, "statut", `Statut → ${STATUT_LABELS[body.statut as Statut]} (${g.user.name})`);
+    await addEvent(lead.id, "statut", `Statut → ${STATUT_LABELS[body.statut as Statut]} (${g.user.name})${ctl.detail ? ` — ${ctl.detail}` : ""}`);
     if (body.statut === "gagne") await figerMargeAuGain(lead.id);
   }
 

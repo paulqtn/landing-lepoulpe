@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, FileText, Ruler } from "lucide-react";
+import { ArrowRight, FileText } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge } from "@/components/admin/ui";
 import { currentRep, requireMenu } from "@/lib/admin/auth";
 import { listLeads } from "@/lib/admin/db";
@@ -71,13 +71,6 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
                   ) : (
                     <span className="rounded-full bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold text-amber-700">sans estimation</span>
                   )}
-                  <Link
-                    href="/commercial/simulation"
-                    className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-3.5 py-2 text-xs font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700"
-                  >
-                    <Ruler className="h-3.5 w-3.5" />
-                    Simulation
-                  </Link>
                   <Link
                     href={`/commercial/clients/${l.id}`}
                     className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-3.5 py-2 text-xs font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700"

@@ -19,7 +19,7 @@ export function ProspectForm() {
   const [f, setF] = useState({ name: "", phone: "", email: "", origine: "appel", lieu: "", systeme: "", cotes: "", hauteur: "", teinte: "", codePostal: "", note: "" });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [doublon, setDoublon] = useState<{ id: number; name: string } | null>(null);
+  const [doublon, setDoublon] = useState<{ id: number; name: string; forcable?: boolean } | null>(null);
   const set = (patch: Partial<typeof f>) => { setF({ ...f, ...patch }); setErr(null); setDoublon(null); };
   const select = (k: keyof typeof f, label: string, opts: string[][]) => (
     <label className="block">
@@ -80,7 +80,7 @@ export function ProspectForm() {
           {doublon && (
             <span className="mt-2 flex flex-wrap gap-2">
               <Link href={`/commercial/clients/${doublon.id}`} className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-inkgreen ring-1 ring-red-200">Ouvrir la fiche existante</Link>
-              <button type="button" disabled={busy} onClick={() => creer(true)} className="rounded-full bg-red-600 px-3 py-1.5 text-xs font-bold text-white">Créer quand même une nouvelle fiche</button>
+              {doublon.forcable && <button type="button" disabled={busy} onClick={() => creer(true)} className="rounded-full bg-red-600 px-3 py-1.5 text-xs font-bold text-white">Créer quand même une nouvelle fiche</button>}
             </span>
           )}
         </div>

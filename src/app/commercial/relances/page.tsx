@@ -66,7 +66,7 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
                     <span className="block text-xs text-neutral-400">{l.phone}{mine ? "" : l.assigned_to ? ` · ${l.assigned_to}` : " · non attribué"}</span>
                   </Link>
                   <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${retard ? "bg-amber-500/15 text-amber-700 ring-amber-500/30" : "bg-neutral-50 text-neutral-500 ring-neutral-200"}`}>
-                    {l.rappel_at ? `${retard ? "à rappeler depuis le" : "rappel le"} ${new Date(l.rappel_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short" })}` : "rappel demandé par le client"}
+                    {l.rappel_at ? `${retard ? "à rappeler depuis le" : "rappel le"} ${new Date(l.rappel_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short" })}` : l.a_valide ? "a validé son devis en ligne" : "rappel demandé par le client"}
                   </span>
                   <StatutBadge statut={l.statut} />
                 </li>

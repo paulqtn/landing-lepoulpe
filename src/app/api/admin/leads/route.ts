@@ -51,15 +51,33 @@ export async function POST(req: Request) {
   const cp = s(b.codePostal, 5);
   if (cp) { if (!/^\d{5}$/.test(cp)) return refus("Code postal invalide (5 chiffres)."); answers.codePostal = cp; }
 
-  // Doublon : la même adresse e-mail ou le même numéro existe déjà.
-  if (b.forcer !== true) {
+  // Doublon : la même adresse e-mail ou le même numéro existe déjà. Si ce client attend dans la
+  // file ou est suivi par un collègue, seul un administrateur peut créer une seconde fiche :
+  // sinon la création à la main servirait à sortir un client de la file.
+  {
     const chiffres = phone.replace(/\D/g, "");
-    const deja = await q<{ id: number; name: string; assigned_to: string | null }>(
-      `SELECT id, name, assigned_to FROM leads WHERE anonymized_at IS NULL AND (($1 <> '' AND lower(email) = $1) OR ($2 <> '' AND regexp_replace(phone, '\\D', '', 'g') = $2)) ORDER BY id DESC LIMIT 1`,
-      [email, chiffres.length >= 8 ? chiffres : ""],
-    );
-    if (deja[0])
-      return NextResponse.json({ ok: false, doublon: { id: deja[0].id, name: deja[0].name, suiviPar: deja[0].assigned_to }, error: `Une fiche existe déjà avec ces coordonnées : ${deja[0].name}${deja[0].assigned_to ? ` (suivi par ${deja[0].assigned_to})` : ""}.` }, { status: 409 });
+    const deja = (await q<{ id: number; name: string; assigned_to: string | null }>(
+      `SELECT id, name, assigned_to FROM leads WHERE anonymized_at IS NULL AND (($1 <> '' AND lower(email) = $1) OR ($2 <> '' AND regexp_replace(phone, '\\D', '', 'g') = $2)) ORDER BY (assigned_to IS DISTINCT FROM $3) DESC, id DESC LIMIT 1`,
+      [email, chiffres.length >= 8 ? chiffres : "", g.user.name],
+    ))[0];
+    if (deja) {
+      const admin = g.user.role === "superadmin" || g.user.role === "admin";
+      const aMoi = deja.assigned_to === g.user.name;
+      const forcable = admin || aMoi;
+      if (b.forcer !== true || !forcable)
+        return NextResponse.json(
+          {
+            ok: false,
+            doublon: { id: deja.id, name: deja.name, suiviPar: deja.assigned_to, forcable },
+            error: aMoi
+              ? `Vous suivez déjà ce client : ${deja.name}.`
+              : deja.assigned_to
+                ? `Ce client est déjà suivi par ${deja.assigned_to} (${deja.name}). Seul un administrateur peut créer une seconde fiche.`
+                : `Ce client attend déjà dans la file des demandes (${deja.name}) : il se prend dans l'ordre d'arrivée. Seul un administrateur peut créer une seconde fiche.`,
+          },
+          { status: 409 },
+        );
+    }
   }
 
   const source = `manuel-${origine}`;

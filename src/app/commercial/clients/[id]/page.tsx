@@ -11,6 +11,7 @@ import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
 import { requireMenu } from "@/lib/admin/auth";
 import { refusAction } from "@/lib/admin/attribution";
+import { MOTIFS_PERTE } from "@/lib/admin/cloture";
 import { STATUT_LABELS, type Statut } from "@/lib/admin/statuts";
 import { QUOTE_STATUT_LABELS, quotesForLead } from "@/lib/admin/quotes";
 
@@ -48,6 +49,9 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
     quotesForLead(lead.id),
     adminQuery<{ id: number; name: string; bytes: number; created_by: string | null; created_at: string }>("SELECT id, name, bytes, created_by, created_at FROM lead_files WHERE lead_id = $1 AND complete ORDER BY id DESC", [lead.id]),
   ]);
+  const devisSigne = quotes.filter((x) => x.statut === "envoye").sort((a, b) => Number(new Date(b.sent_at ?? 0)) - Number(new Date(a.sent_at ?? 0)))[0] ?? null;
+  // Validation du devis en ligne par le client : l'information la plus chaude de la fiche.
+  const validation = lead.statut !== "gagne" && lead.statut !== "perdu" ? events.find((e) => e.type === "devis_accepte") : undefined;
   const devisRapide = quotes.find((x) => x.statut === "brouillon") ?? quotes[0] ?? null;
   const niveau = niveauInfo(lead.niveau);
   const lectureSeule = refusAction(me, lead);
@@ -115,6 +119,12 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           <StatutBadge statut={lead.statut} />
         </div>
       </div>
+
+      {validation && (
+        <p className="rounded-2xl border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-900">
+          <strong>Le client a validé son devis en ligne</strong> le {dateFmt.format(new Date(validation.created_at))}. Appelez-le pour confirmer les cotes et conclure.
+        </p>
+      )}
 
       {/* actions rapides : sous l'en-tête sur ordinateur, barre fixe en bas sur téléphone */}
       {!lectureSeule && (
@@ -220,6 +230,8 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           <LeadActions
               leadId={lead.id}
               contact={{ name: lead.name, email: lead.email, phone: lead.phone }}
+            devisRetenu={devisSigne ? { ref: devisSigne.ref, ht: devisSigne.total_ht } : null}
+            admin={me.role === "superadmin" || me.role === "admin"}
               statut={lead.statut}
               relances={lead.relances}
               hasEstimation={Boolean(lead.estimation_ttc)}
@@ -233,6 +245,9 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             />
           )}
 
+          {lead.statut === "perdu" && lead.motif_perte && (
+            <p className="rounded-2xl border border-neutral-200 bg-white p-4 text-sm text-neutral-700">Non signé — motif : <strong className="text-inkgreen">{MOTIFS_PERTE[lead.motif_perte] ?? lead.motif_perte}</strong></p>
+          )}
           {lead.statut === "gagne" && (
             <div className="rounded-2xl border border-pine-200 bg-pine-50/60 p-4">
               <p className="text-sm font-bold text-inkgreen">Client signé 🎉</p>

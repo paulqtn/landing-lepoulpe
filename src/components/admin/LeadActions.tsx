@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { BellPlus, CalendarClock, Gauge, Loader2, MailX, Pause, PhoneCall, Play, Send, StickyNote, Trash2, UserPen } from "lucide-react";
 import { NIVEAUX } from "@/lib/admin/niveaux";
+import { MOTIFS_PERTE, statutAutomatique } from "@/lib/admin/cloture";
 import { STATUT_AIDE, STATUT_LABELS, STATUTS, sequenceActive, type Statut } from "@/lib/admin/statuts";
 
 /* Panneau d'actions commercial sur une fiche lead. */
@@ -21,6 +22,8 @@ export function LeadActions({
   niveau = null,
   pauseAt = null,
   contact,
+  devisRetenu = null,
+  admin = false,
 }: {
   leadId: number;
   statut: Statut;
@@ -39,6 +42,9 @@ export function LeadActions({
   pauseAt?: string | null;
   /** Coordonnées actuelles du client, modifiables depuis la fiche. */
   contact?: { name: string; email: string; phone: string };
+  /** Dernier devis envoyé : c'est lui qui est retenu à la signature. */
+  devisRetenu?: { ref: string; ht: string } | null;
+  admin?: boolean;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -49,6 +55,10 @@ export function LeadActions({
   const [issue, setIssue] = useState("discussion");
   const [appelNote, setAppelNote] = useState("");
   const [rappelLe, setRappelLe] = useState("");
+  const [cloture, setCloture] = useState<"gagne" | "perdu" | null>(null);
+  const [motif, setMotif] = useState("");
+  const [precision, setPrecision] = useState("");
+  const [okSigne, setOkSigne] = useState(false);
   const [coord, setCoord] = useState(contact ?? { name: "", email: "", phone: "" });
   const coordChange = Boolean(contact) && (coord.name !== contact!.name || coord.email !== contact!.email || coord.phone !== contact!.phone);
 
@@ -128,6 +138,16 @@ export function LeadActions({
                   </label>
                 ))}
               </fieldset>
+              {issue === "perdu" && (
+                <label className="block text-xs font-semibold text-neutral-600">
+                  Pourquoi ?
+                  <select value={motif} onChange={(e) => setMotif(e.target.value)} className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-pine-500">
+                    <option value="">Choisir un motif…</option>
+                    {Object.entries(MOTIFS_PERTE).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+                  </select>
+                </label>
+              )}
+              {issue === "gagne" && !devisRetenu && !admin && <p className="rounded-xl bg-amber-500/15 px-3 py-2 text-xs font-semibold text-neutral-800">Aucun devis envoyé : envoyez d&rsquo;abord le devis signé.</p>}
               {issue === "reflexion" && (
                 <label className="block text-xs font-semibold text-neutral-600">
                   Le rappeler le
@@ -138,9 +158,9 @@ export function LeadActions({
               <div className="flex gap-2">
                 <button
                   type="button"
-                  disabled={pending || (issue === "reflexion" && !rappelLe)}
+                  disabled={pending || (issue === "reflexion" && !rappelLe) || (issue === "perdu" && !motif) || (issue === "gagne" && !devisRetenu && !admin)}
                   onClick={() => {
-                    appelApi({ issue, note: appelNote, ...(issue === "reflexion" ? { rappelLe: new Date(`${rappelLe}T09:00:00`).toISOString() } : {}) });
+                    appelApi({ issue, note: appelNote, ...(issue === "perdu" ? { motif } : {}), ...(issue === "reflexion" ? { rappelLe: new Date(`${rappelLe}T09:00:00`).toISOString() } : {}) });
                     setAppel(false);
                     setAppelNote("");
                   }}
@@ -212,23 +232,73 @@ export function LeadActions({
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Statut</h2>
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {STATUTS.map((s) => (
-            <button
-              key={s}
-              type="button"
-              disabled={pending}
-              title={STATUT_AIDE[s]}
-              onClick={() => patch({ statut: s })}
-              className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${
-                statut === s
-                  ? "bg-pine-700 text-white"
-                  : "border border-neutral-200 bg-white text-neutral-600 hover:border-pine-300 hover:text-pine-700"
-              }`}
-            >
-              {STATUT_LABELS[s]}
-            </button>
-          ))}
+          {STATUTS.map((s) => {
+            const auto = statutAutomatique(s);
+            return (
+              <button
+                key={s}
+                type="button"
+                disabled={pending || (auto && statut !== s)}
+                title={auto ? "Posé automatiquement à l'envoi d'une relance" : STATUT_AIDE[s]}
+                onClick={() => {
+                  if (s === statut) return;
+                  // Signature et non-signature passent par une confirmation.
+                  if (s === "gagne" || s === "perdu") { setCloture(s); setOkSigne(false); setMsg(null); } else { setCloture(null); patch({ statut: s }); }
+                }}
+                className={`rounded-full px-3 py-1.5 text-xs font-bold transition disabled:cursor-not-allowed ${
+                  statut === s
+                    ? "bg-pine-700 text-white"
+                    : auto
+                      ? "border border-dashed border-neutral-200 bg-white text-neutral-300"
+                      : "border border-neutral-200 bg-white text-neutral-600 hover:border-pine-300 hover:text-pine-700"
+                }`}
+              >
+                {STATUT_LABELS[s]}
+              </button>
+            );
+          })}
         </div>
+        <p className="mt-2 text-xs text-neutral-400">Les statuts « Relancé » se posent tout seuls à l&rsquo;envoi d&rsquo;une relance.</p>
+
+        {cloture === "gagne" && (
+          <div className="mt-3 rounded-xl border border-pine-200 bg-pine-50/60 p-3 text-sm">
+            <p className="font-bold text-inkgreen">Passer l&rsquo;affaire en « Signé » ?</p>
+            {devisRetenu ? (
+              <p className="mt-1 text-neutral-700">Devis retenu : <strong>{devisRetenu.ref}</strong>, <strong className="tabular-nums">{Number(devisRetenu.ht).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € HT</strong>. Ce montant sert au chiffre signé et à la prime.</p>
+            ) : (
+              <p className="mt-1 text-neutral-700">{admin ? "Aucun devis n'a été envoyé : le montant retenu sera l'estimation de la fiche." : "Aucun devis n'a été envoyé à ce client : envoyez d'abord le devis signé."}</p>
+            )}
+            {(devisRetenu || admin) && (
+              <label className="mt-2 flex items-start gap-2 text-xs text-neutral-700">
+                <input type="checkbox" className="mt-0.5 h-4 w-4 accent-pine-700" checked={okSigne} onChange={(e) => setOkSigne(e.target.checked)} />
+                <span>Le client a donné son accord sur ce devis.</span>
+              </label>
+            )}
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button type="button" disabled={pending || !okSigne || (!devisRetenu && !admin)} onClick={() => { patch({ statut: "gagne" }); setCloture(null); }} className="rounded-full bg-pine-700 px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40">Confirmer la signature</button>
+              <button type="button" onClick={() => setCloture(null)} className="rounded-full border border-neutral-200 bg-white px-4 py-1.5 text-xs font-bold text-neutral-600">Annuler</button>
+            </div>
+          </div>
+        )}
+        {cloture === "perdu" && (
+          <div className="mt-3 rounded-xl border border-neutral-200 bg-mist p-3 text-sm">
+            <p className="font-bold text-inkgreen">Pourquoi l&rsquo;affaire n&rsquo;est pas signée ?</p>
+            <div className="mt-2 grid gap-1.5 sm:grid-cols-2">
+              {Object.entries(MOTIFS_PERTE).map(([k, l]) => (
+                <label key={k} className={`flex cursor-pointer items-center gap-2 rounded-lg border bg-white px-2.5 py-1.5 text-xs font-semibold ${motif === k ? "border-amber-500 text-inkgreen" : "border-neutral-200 text-neutral-600"}`}>
+                  <input type="radio" name="motif-perte" className="accent-pine-700" checked={motif === k} onChange={() => setMotif(k)} />
+                  {l}
+                </label>
+              ))}
+            </div>
+            <input value={precision} onChange={(e) => setPrecision(e.target.value)} maxLength={300} placeholder="Précision (facultatif) : nom du concurrent, prix annoncé…" className="mt-2 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm outline-none focus:border-pine-500" />
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button type="button" disabled={pending || !motif} onClick={() => { patch({ statut: "perdu", motif, precision }); setCloture(null); }} className="rounded-full bg-pine-700 px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40">Confirmer « Non signé »</button>
+              <button type="button" onClick={() => setCloture(null)} className="rounded-full border border-neutral-200 bg-white px-4 py-1.5 text-xs font-bold text-neutral-600">Annuler</button>
+            </div>
+          </div>
+        )}
+        {msg && <p className="mt-2 text-xs font-semibold text-red-600">{msg}</p>}
       </section>
 
       {/* relances automatiques : pause, suppression, déclenchement */}
@@ -298,29 +368,17 @@ export function LeadActions({
 
       {/* emails */}
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Emails</h2>
+        <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Relance immédiate</h2>
         <div className="mt-3 space-y-2.5">
           <button
             type="button"
-            disabled={pending || !hasEstimation}
-            onClick={() => {
-              // Double vérification : aucun e-mail ne part sur un simple clic.
-              if (window.confirm("Envoyer maintenant au client l'e-mail d'estimation (prix global + lien vers sa page) ?\n\nPour un devis détaillé en PDF, utilisez plutôt « Préparer un devis »."))
-                call(`/api/admin/leads/${leadId}/send-devis`, { method: "POST" });
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-500 px-5 py-2.5 text-sm font-bold text-pine-950 transition hover:bg-amber-600 disabled:opacity-40"
-          >
-            {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-            {hasEstimation ? "Envoyer l'e-mail d'estimation" : "Pas d'estimation à envoyer"}
-          </button>
-          <button
-            type="button"
-            disabled={pending || relances >= 3}
-            onClick={() => call(`/api/admin/leads/${leadId}/relance`, { method: "POST" })}
+            disabled={pending || relances >= 3 || !devisEnvoye}
+            title={devisEnvoye ? undefined : "Envoyez d'abord le devis"}
+            onClick={() => { if (window.confirm(`Envoyer maintenant la relance ${relances + 1} à ce client ?`)) call(`/api/admin/leads/${leadId}/relance`, { method: "POST" }); }}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"
           >
             <BellPlus className="h-4 w-4" />
-            {relances >= 3 ? "Séquence terminée (3 relances)" : `Envoyer la relance ${relances + 1} maintenant`}
+            {relances >= 3 ? "Séquence terminée (3 relances)" : !devisEnvoye ? "Relance possible après l'envoi du devis" : `Envoyer la relance ${relances + 1} maintenant`}
           </button>
           {msg && <p className="text-xs font-semibold text-red-600">{msg}</p>}
         </div>

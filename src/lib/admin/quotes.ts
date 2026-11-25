@@ -235,18 +235,44 @@ export async function plancherHt(lead: Lead): Promise<number | null> {
   return c ? c.r.prixHT : null;
 }
 
+const SYSTEMES_PLANCHER = ["rail", "pinces", "spider"] as const;
+
 /**
- * Refus si la proposition principale d'un devis passe sous le prix plancher du projet.
- * Les administrateurs ne sont pas limités.
+ * Refus si un devis passe sous le prix plancher du projet. Deux contrôles, sur CHAQUE proposition :
+ *  1. au mètre : toute ligne exprimée en mètres linéaires doit valoir au moins le plancher au mètre
+ *     de sa fixation (réduire le projet puis regonfler la quantité à la main ne sert à rien) ;
+ *  2. au total : la proposition ne peut pas valoir moins que le projet complet au plancher.
+ * Le plancher d'une proposition est celui de sa fixation ; sans fixation reconnaissable, le moins
+ * cher des trois systèmes. Les administrateurs ne sont pas limités.
  */
 export async function refusPlancher(lead: Lead | null, options: QuoteOption[], admin: boolean): Promise<string | null> {
   if (admin || !lead || options.length === 0) return null;
-  const plancher = await plancherHt(lead);
-  if (plancher === null) return null;
-  const ht = optionTotals(options[0]).ht;
-  if (ht >= plancher - 0.5) return null;
+  const a = (lead.answers ?? {}) as Record<string, unknown>;
+  const planchers: Partial<Record<(typeof SYSTEMES_PLANCHER)[number], { total: number; auMetre: number }>> = {};
+  for (const sys of SYSTEMES_PLANCHER) {
+    const c = await chiffrageDepuisLead({ ...lead, answers: { ...a, systeme: sys } }, COEF_PLANCHER);
+    if (c && c.r.longueurTotale > 0) planchers[sys] = { total: c.r.prixHT, auMetre: c.r.prixHT / c.r.longueurTotale };
+  }
+  const connus = Object.values(planchers);
+  if (connus.length === 0) return null; // projet incomplet : aucun plancher calculable
+  const moinsCher = connus.reduce((m, p) => (p.total < m.total ? p : m));
   const f = (x: number) => x.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return `Prix sous le plancher : ${f(ht)} € HT pour un minimum de ${f(plancher)} € HT (remise exceptionnelle ×${String(COEF_PLANCHER).replace(".", ",")}). Si le projet a changé, corrigez-le dans « Chiffrage » ; sinon demandez à un administrateur.`;
+  const aide = `(remise exceptionnelle ×${String(COEF_PLANCHER).replace(".", ",")}). Si le projet a changé, corrigez-le dans « Chiffrage » ; sinon demandez à un administrateur.`;
+
+  for (const [i, o] of options.entries()) {
+    const nom = options.length > 1 ? `Proposition ${i + 1} : ` : "";
+    const lignesMl = o.lines.filter((l) => (l.unit ?? "").trim().toLowerCase() === "ml");
+    const sysOption = lignesMl.map((l) => l.image).find((x): x is (typeof SYSTEMES_PLANCHER)[number] => SYSTEMES_PLANCHER.includes(x as never));
+    const ref = (sysOption && planchers[sysOption]) || moinsCher;
+    for (const l of lignesMl) {
+      const p = (l.image && planchers[l.image as (typeof SYSTEMES_PLANCHER)[number]]) || ref;
+      const mini = r2(p.auMetre * l.qty);
+      if (lineTotal(l) < mini - 0.5) return `${nom}prix sous le plancher : ${f(lineTotal(l))} € HT pour ${String(l.qty).replace(".", ",")} ml, minimum ${f(mini)} € HT ${aide}`;
+    }
+    const ht = optionTotals(o).ht;
+    if (ht < ref.total - 0.5) return `${nom}prix sous le plancher : ${f(ht)} € HT pour un minimum de ${f(ref.total)} € HT ${aide}`;
+  }
+  return null;
 }
 
 /* ------------------------------ Accès base ------------------------------ */
@@ -322,6 +348,7 @@ export async function duplicateQuote(id: number, actor: string): Promise<Quote |
   const cur = await getQuote(id);
   if (!cur) return null;
   const quote = await insertQuote({ leadId: cur.lead_id, client: cur.client, options: cur.options, origine: `copie de ${cur.ref}`, actor });
+  if (cur.coef) await q("UPDATE quotes SET coef = $2 WHERE id = $1", [quote.id, cur.coef]);
   if (cur.lead_id) await addEvent(cur.lead_id, "info", `Nouvelle version de devis ${quote.ref} créée à partir de ${cur.ref}`);
   return quote;
 }

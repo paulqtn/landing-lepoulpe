@@ -65,10 +65,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   await markSent(quote.id, user.name, to, { societe, options: quote.options, client: quote.client, totals });
   if (lead) {
+    // Tout envoi de devis (re)lance la séquence : statut « Devis envoyé », compteur de relances à zéro.
+    // Une affaire déjà close garde son statut et ne reçoit aucune relance.
+    const clos = lead.statut === "gagne" || lead.statut === "perdu";
     await updateLead(lead.id, {
-      statut: lead.statut === "nouveau" ? "devis_envoye" : lead.statut,
       estimation_ttc: String(totals[0].ttc),
-      next_relance_at: await premiereRelance(),
+      ...(clos ? {} : { statut: "devis_envoye" as const, relances: 0, next_relance_at: await premiereRelance(), rappel_at: null }),
     });
     await addEvent(lead.id, "devis_envoye", `Devis ${quote.ref} validé et envoyé par ${user.name} à ${to}`);
   }

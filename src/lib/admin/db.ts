@@ -148,6 +148,10 @@ export type Lead = {
   rappel_at?: string | null;
   /** Score du prospect, de 1 (froid) à 5 (prêt à signer), posé par le commercial. */
   niveau?: number | null;
+  /** Le client a validé son devis en ligne (renseigné par certaines listes seulement). */
+  a_valide?: boolean;
+  /** Motif d'une affaire non signée (clé de MOTIFS_PERTE). */
+  motif_perte?: string | null;
   /** Relances automatiques mises en pause à cette date (aucun e-mail ne part). */
   sequence_pause_at?: string | null;
 };
@@ -206,7 +210,7 @@ export async function updateLead(
   patch: Partial<
     Pick<
       Lead,
-      "statut" | "relances" | "next_relance_at" | "assigned_to" | "score" | "score_points" | "answers" | "estimation_ttc" | "rappel_at" | "niveau" | "sequence_pause_at"
+      "statut" | "relances" | "next_relance_at" | "assigned_to" | "score" | "score_points" | "answers" | "estimation_ttc" | "rappel_at" | "niveau" | "sequence_pause_at" | "motif_perte"
     >
   >,
 ): Promise<void> {
@@ -406,7 +410,8 @@ export async function listRappels(assigned?: string, limit = 200): Promise<Lead[
     extra = `AND assigned_to = $2`;
   }
   return q<Lead>(
-    `SELECT * FROM leads
+    `SELECT l.*, EXISTS (SELECT 1 FROM lead_events e WHERE e.lead_id = l.id AND e.type = 'devis_accepte') AS a_valide
+     FROM leads l
      WHERE statut NOT IN ('gagne', 'perdu') AND (rappel_at IS NOT NULL OR statut = 'a_rappeler') ${extra}
      ORDER BY COALESCE(rappel_at, created_at) ASC, id ASC LIMIT $1`,
     vals,

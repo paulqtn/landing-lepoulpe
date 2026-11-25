@@ -318,4 +318,9 @@ export const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    // Motif d'une affaire non signée (choisi dans une liste fermée).
+    id: "014_motif_de_non_signature",
+    sql: `ALTER TABLE leads ADD COLUMN motif_perte TEXT;`,
+  },
 ];

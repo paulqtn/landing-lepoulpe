@@ -67,6 +67,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const r = await updateQuote(id, quote.client, options, g.user.name);
   if (!r.ok) return NextResponse.json(r, { status: 409 });
   await q("UPDATE quotes SET coef = $2 WHERE id = $1", [id, body.coef]);
+  // Une fiche sans estimation (prospect saisi à la main) prend le montant chiffré : elle compte alors dans le portefeuille.
+  if (!lead.estimation_ttc) await updateLead(lead.id, { estimation_ttc: String(optionTotals(options[0]).ttc) });
   const n = niveaux.find((x) => x.coef === body.coef)!;
   await addEvent(lead.id, "info", `Devis ${quote.ref} chiffré au niveau « ${n.label} » (×${String(n.coef).replace(".", ",")}) par ${g.user.name}`);
   return NextResponse.json({ ok: true, options, totals: options.map(optionTotals), niveaux, coef: body.coef });

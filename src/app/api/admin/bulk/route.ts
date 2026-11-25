@@ -1,6 +1,6 @@
-import { figerMargeAuGain } from "@/lib/admin/marge";
 import { refusAction, refusAttribution } from "@/lib/admin/attribution";
 import { STATUT_LABELS } from "@/lib/admin/statuts";
+import { statutAutomatique } from "@/lib/admin/cloture";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, getLead, STATUTS, updateLead, type Statut } from "@/lib/admin/db";
@@ -34,9 +34,12 @@ export async function POST(req: Request) {
     }
     if (body.action === "statut" && typeof body.value === "string" && (STATUTS as readonly string[]).includes(body.value)) {
       const statut = body.value as Statut;
-      await updateLead(id, { statut, ...(statut === "gagne" || statut === "perdu" ? { next_relance_at: null } : {}) });
+      if (statut === "gagne" || statut === "perdu" || statutAutomatique(statut)) {
+        erreurs.push(`#${id}: ce statut se pose depuis la fiche du client.`);
+        continue;
+      }
+      await updateLead(id, { statut });
       await addEvent(id, "statut", `Statut → ${STATUT_LABELS[statut]} (action groupée, ${g.user.name})`);
-      if (statut === "gagne") await figerMargeAuGain(id);
       ok++;
     } else if (body.action === "assign" && typeof body.value === "string") {
       const refus = await refusAttribution(g.user, lead, body.value || null);
