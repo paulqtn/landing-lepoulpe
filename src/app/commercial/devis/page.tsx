@@ -9,7 +9,7 @@ import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
 export const dynamic = "force-dynamic";
 
 /* Devis à traiter — les demandes qui attendent leur chiffrage :
-   calepinage au calculateur interne, puis envoi depuis la fiche. */
+   relecture du brouillon généré, puis envoi après validation. */
 
 export default async function DevisPage({ searchParams }: { searchParams: Promise<{ qui?: string }> }) {
   await requireMenu("devis");
@@ -72,11 +72,11 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
                     <span className="rounded-full bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold text-amber-700">sans estimation</span>
                   )}
                   <Link
-                    href="/calculateur"
+                    href="/commercial/simulation"
                     className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-3.5 py-2 text-xs font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700"
                   >
                     <Ruler className="h-3.5 w-3.5" />
-                    Calepinage
+                    Simulation
                   </Link>
                   <Link
                     href={`/commercial/clients/${l.id}`}

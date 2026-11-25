@@ -175,6 +175,9 @@ Détail d'exploitation dans `ADMIN.md`. À retenir :
   `QuoteEditor.tsx`. Aucun e-mail automatique à la réception d'une demande.
 - **Test local** : Postgres 16 du conteneur (`pg_ctlcluster 16 main start`), puis
   `POSTGRES_URL=postgres://mgk:mgk@localhost:5432/mgkdb ADMIN_SETUP_TOKEN=… npm run start`.
+- **Calculateur interne retiré** (25 nov.) : page `/calculateur`, composant et route
+  `/api/chiffrage` supprimés ; `/calculateur` redirige vers la Simulation. Le moteur
+  `src/lib/calculateur/` reste : il chiffre le générateur public et les devis automatiques.
 - Piège : la base renvoie les dates en objets `Date`, la démo en chaînes — toujours passer
   par `new Date(x)`.
 

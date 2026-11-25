@@ -8,7 +8,7 @@
 /* ================================================================== */
 
 export const MENU_KEYS = [
-  "etat", "devis", "clients", "relances", "pipeline", "production", "stats", "simulation", "calculateur",
+  "etat", "devis", "clients", "relances", "pipeline", "production", "stats", "simulation",
   "logistique", "commandes", "stock", "expeditions",
   "tarifs", "diagnostic",
 ] as const;
@@ -23,7 +23,6 @@ export const MENUS: { key: MenuKey; label: string; href: string; group: "commerc
   { key: "production", label: "Production", href: "/commercial/production", group: "commercial" },
   { key: "stats", label: "Statistiques", href: "/commercial/stats", group: "commercial" },
   { key: "simulation", label: "Simulation", href: "/commercial/simulation", group: "commercial" },
-  { key: "calculateur", label: "Calculateur interne", href: "/calculateur", group: "commercial" },
   { key: "logistique", label: "Tâches du jour", href: "/logistique", group: "logistique", exact: true },
   { key: "commandes", label: "Commandes atelier", href: "/logistique/commandes", group: "logistique" },
   { key: "stock", label: "Stock", href: "/logistique/stock", group: "logistique" },
@@ -35,7 +34,7 @@ export const MENUS: { key: MenuKey; label: string; href: string; group: "commerc
 type Role = "superadmin" | "admin" | "commercial" | "logisticien";
 
 const LOGISTIQUE: MenuKey[] = ["logistique", "commandes", "stock", "expeditions"];
-const COMMERCIAL: MenuKey[] = ["etat", "devis", "clients", "relances", "pipeline", "production", "stats", "simulation", "calculateur"];
+const COMMERCIAL: MenuKey[] = ["etat", "devis", "clients", "relances", "pipeline", "production", "stats", "simulation"];
 
 /** Sélection de départ selon le rôle, tant que rien n'a été personnalisé. */
 export const ROLE_MENUS: Record<Role, MenuKey[]> = {

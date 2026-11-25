@@ -15,7 +15,7 @@ import type { Catalog } from "@/lib/simulation/engine";
 export type Engine = "site" | "simulation";
 export const ENGINES: Engine[] = ["site", "simulation"];
 export const ENGINE_LABELS: Record<Engine, string> = {
-  site: "Générateur du site et calculateur interne",
+  site: "Générateur du site et devis automatiques",
   simulation: "Simulation (calculateur MGK 2026)",
 };
 
@@ -58,7 +58,7 @@ async function load(engine: Engine): Promise<{ data: Data; version: number | nul
   return entry;
 }
 
-/** Tarifs en vigueur du générateur public et du calculateur interne. */
+/** Tarifs en vigueur du générateur public et des devis automatiques. */
 export async function getTarifsSite(): Promise<TarifsSite> {
   return (await load("site")).data as unknown as TarifsSite;
 }

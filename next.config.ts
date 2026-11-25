@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
      l'ancienne y redirige définitivement. */
   async redirects() {
     return [
+      // Ancien calculateur interne, retiré : la Simulation le remplace.
+      { source: "/calculateur", destination: "/commercial/simulation", permanent: false },
       { source: "/garde-corps/piscine", destination: "/barriere-piscine-verre", permanent: true },
       // Catalogue recentré sur le verre : pages matériaux et combinaisons dépubliées.
       { source: "/garde-corps/verre", destination: "/garde-corps", permanent: true },
