@@ -208,3 +208,41 @@ export async function sendRelanceTest(to: string, mail: RelanceMail): Promise<Se
   const { sujet, html } = buildRelanceEmail(mail, { name: "Camille Dupont", estimation_ttc: "4850", token: "apercu" });
   return send(to, `[TEST] ${sujet}`, html);
 }
+
+/* ------------------------------ Newsletter ----------------------------- */
+
+/** Objet + HTML d'une newsletter pour un destinataire, avec son lien de désinscription. */
+export function buildNewsletterEmail(
+  contenu: { sujet: string; corps: string; bouton: string; lien: string },
+  dest: { name: string; token: string | null },
+): { sujet: string; html: string } {
+  const r = renderRelance({ sujet: contenu.sujet, corps: contenu.corps, bouton: contenu.bouton }, relanceVars({ name: dest.name, estimation_ttc: null }));
+  const cta = r.bouton && /^https:\/\//.test(contenu.lien) ? `<p style="text-align:center;margin:18px 0;">${bouton(contenu.lien.replace(/["<>]/g, ""), r.bouton.replace(/[<>&"]/g, ""))}</p>` : "";
+  const stop = dest.token
+    ? `<p style="font-size:11px;color:#9aa8a0;margin-top:10px;">Vous recevez cet e-mail car vous avez demandé un devis sur ${site.name}. <a href="${site.url}/desabonnement/${dest.token}" style="color:#5a6b61;">Se désinscrire</a>.</p>`
+    : "";
+  return { sujet: r.sujet, html: `${wrap(`${r.corpsHtml}${cta}`)}${stop}` };
+}
+
+/** Envoi groupé (jusqu'à 100 e-mails par appel) via l'API « batch » de Resend. */
+export async function sendBatch(items: { to: string; subject: string; html: string }[]): Promise<SendResult> {
+  if (!mailConfigured) return { sent: false, reason: "RESEND_API_KEY non configurée" };
+  if (items.length === 0) return { sent: true };
+  try {
+    const res = await fetch("https://api.resend.com/emails/batch", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify(items.map((m) => ({ from: FROM, to: [m.to], subject: m.subject, html: m.html, ...(REPLY_TO ? { reply_to: REPLY_TO } : {}) }))),
+    });
+    if (!res.ok) return { sent: false, reason: `Resend ${res.status}: ${(await res.text()).slice(0, 200)}` };
+    return { sent: true };
+  } catch (e) {
+    return { sent: false, reason: e instanceof Error ? e.message : "erreur réseau" };
+  }
+}
+
+/** Envoi d'essai d'une newsletter à la personne connectée. */
+export async function sendNewsletterTest(to: string, contenu: { sujet: string; corps: string; bouton: string; lien: string }): Promise<SendResult> {
+  const { sujet, html } = buildNewsletterEmail(contenu, { name: "Camille Dupont", token: null });
+  return send(to, `[TEST] ${sujet}`, html);
+}

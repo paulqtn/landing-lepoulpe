@@ -94,6 +94,15 @@ appel sans réponse laisse la séquence continuer. « Reprendre la séquence » 
 où elle s'était arrêtée. Les clients à rappeler apparaissent dans l'onglet Relances et
 dans les priorités de l'accueil.
 
+## Newsletter (super-administrateur uniquement)
+
+*Administration → Newsletter* : un e-mail envoyé aux clients des états cochés. Toujours
+exclus : clients anonymisés, désinscrits, sans e-mail valide ; une adresse ne reçoit
+l'e-mail qu'une fois. Chaque e-mail porte un lien de désinscription (`/desabonnement/…`,
+effectif au clic de confirmation). Envoi par lots de 50 à partir d'une file en base
+(`newsletters`, `newsletter_envois`) : il peut être mis en pause et repris sans doublon.
+L'envoi exige une confirmation, et le serveur revérifie le nombre de destinataires.
+
 ## RGPD
 
 Sur chaque fiche client (rôles admin) : export des données de la personne, et

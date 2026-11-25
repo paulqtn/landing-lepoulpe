@@ -237,4 +237,33 @@ export const MIGRATIONS: Migration[] = [
       CREATE INDEX idx_leads_rappel ON leads(rappel_at) WHERE rappel_at IS NOT NULL;
     `,
   },
+  {
+    // Newsletter : campagnes, file d'envoi par destinataire, désinscription.
+    id: "009_newsletter",
+    sql: `
+      ALTER TABLE leads ADD COLUMN newsletter_optout_at TIMESTAMPTZ;
+      CREATE TABLE newsletters (
+        id SERIAL PRIMARY KEY,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        created_by TEXT,
+        sujet TEXT NOT NULL,
+        corps TEXT NOT NULL,
+        bouton TEXT NOT NULL DEFAULT '',
+        lien TEXT NOT NULL DEFAULT '',
+        statuts JSONB NOT NULL,
+        total INT NOT NULL DEFAULT 0,
+        termine_at TIMESTAMPTZ
+      );
+      CREATE TABLE newsletter_envois (
+        newsletter_id INT NOT NULL REFERENCES newsletters(id) ON DELETE CASCADE,
+        lead_id INT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
+        email TEXT NOT NULL,
+        etat TEXT NOT NULL DEFAULT 'attente' CHECK (etat IN ('attente', 'en_envoi', 'envoye', 'echec')),
+        erreur TEXT,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (newsletter_id, lead_id)
+      );
+      CREATE INDEX idx_newsletter_envois_etat ON newsletter_envois(newsletter_id, etat);
+    `,
+  },
 ];

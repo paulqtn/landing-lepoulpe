@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Activity, BarChart3, BellRing, Boxes, Calculator, ClipboardList, Factory, FileText, Hammer, Home, KanbanSquare, LogOut, SlidersHorizontal, Truck, UserCog, UserRound, Users,
+  Activity, BarChart3, BellRing, Boxes, Calculator, ClipboardList, Factory, FileText, Hammer, Home, KanbanSquare, LogOut, Megaphone, SlidersHorizontal, Truck, UserCog, UserRound, Users,
 } from "lucide-react";
 import { AdminLogout } from "@/components/admin/AdminLogout";
 import { GROUP_LABELS, MENUS, type MenuKey } from "@/lib/admin/menus";
@@ -31,7 +31,12 @@ export function CommercialNav({ menus, superadmin, compact = false }: { menus: M
       label: GROUP_LABELS[g],
       items: [
         ...visible.filter((m) => m.group === g).map(toItem),
-        ...(g === "administration" && superadmin ? [{ href: "/commercial/admin/utilisateurs", label: "Utilisateurs", icon: UserCog }] : []),
+        ...(g === "administration" && superadmin
+          ? [
+              { href: "/commercial/admin/newsletter", label: "Newsletter", icon: Megaphone },
+              { href: "/commercial/admin/utilisateurs", label: "Utilisateurs", icon: UserCog },
+            ]
+          : []),
       ],
     }))
     .filter((g) => g.items.length > 0);
