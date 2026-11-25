@@ -103,6 +103,13 @@ effectif au clic de confirmation). Envoi par lots de 50 à partir d'une file en 
 (`newsletters`, `newsletter_envois`) : il peut être mis en pause et repris sans doublon.
 L'envoi exige une confirmation, et le serveur revérifie le nombre de destinataires.
 
+Le message se rédige dans un éditeur mis en forme : styles (titre, sous-titre), taille, gras,
+italique, souligné, couleur, alignement, listes, liens, images. Une image s'ajoute par
+glisser-déposer, collage ou sélection ; elle est réduite à 1 200 px de large dans le navigateur,
+enregistrée en base (`newsletter_images`) et servie par `/api/nl-image/<jeton>`. Le HTML est
+toujours nettoyé par le serveur (`src/lib/admin/newsletter-html.ts`) : liste fermée de balises
+et de styles, aucune image externe, aucun script. Un texte collé perd sa mise en forme d'origine.
+
 ## RGPD
 
 Sur chaque fiche client (rôles admin) : export des données de la personne, et

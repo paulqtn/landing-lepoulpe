@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Eye, Loader2, Megaphone, Send, X } from "lucide-react";
+import { RichText } from "./RichText";
 
 /* Newsletter : on coche les états, on rédige, on prévisualise, on s'envoie un
    essai, puis on confirme l'envoi dans une fenêtre dédiée. L'envoi part par
@@ -12,6 +13,7 @@ type StatutRow = { key: string; label: string; n: number };
 type Progression = { id: number; total: number; envoyes: number; echecs: number; restants: number; termine: boolean; derniereErreur: string | null };
 type Campagne = { id: number; created_at: string; created_by: string | null; sujet: string; statuts: string[]; total: number; envoyes: number; echecs: number; restants: number };
 
+const CORPS_DEPART = "<p>Bonjour {prenom},</p><p><br></p>";
 const inputCls =
   "w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm text-inkgreen outline-none transition focus:border-pine-500 focus:ring-4 focus:ring-pine-500/10";
 const dateFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
@@ -29,7 +31,7 @@ export function NewsletterEditor(props: {
   const [sel, setSel] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
   const [counting, setCounting] = useState(false);
-  const [c, setC] = useState({ sujet: "", corps: "Bonjour {prenom},\n\n", bouton: "", lien: props.siteUrl });
+  const [c, setC] = useState({ sujet: "", corps: CORPS_DEPART, bouton: "", lien: props.siteUrl });
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [preview, setPreview] = useState<{ sujet: string; html: string } | null>(null);
@@ -64,7 +66,7 @@ export function NewsletterEditor(props: {
   }, [confirm]);
 
   const toggle = (k: string) => setSel((cur) => (cur.includes(k) ? cur.filter((x) => x !== k) : [...cur, k]));
-  const set = (patch: Partial<typeof c>) => { setC({ ...c, ...patch }); setPreview(null); setMsg(null); };
+  const set = (patch: Partial<typeof c>) => { setC((cur) => ({ ...cur, ...patch })); setPreview(null); setMsg(null); };
 
   async function act(action: "preview" | "test") {
     setBusy(action);
@@ -107,7 +109,7 @@ export function NewsletterEditor(props: {
     await poursuivre(data.id as number, data.progression as Progression);
   }
 
-  const pret = sel.length > 0 && total > 0 && c.sujet.trim().length >= 3 && c.corps.trim().length >= 20;
+  const pret = sel.length > 0 && total > 0 && c.sujet.trim().length >= 3 && (c.corps.replace(/<[^>]+>/g, "").trim().length >= 20 || c.corps.includes("<img"));
   const enCours = busy === "envoyer" || busy === "reprise";
 
   return (
@@ -167,10 +169,10 @@ export function NewsletterEditor(props: {
               <span className="mb-1 block text-xs font-semibold text-neutral-500">Objet de l&rsquo;e-mail</span>
               <input className={`${inputCls} font-semibold`} value={c.sujet} maxLength={150} onChange={(e) => set({ sujet: e.target.value })} />
             </label>
-            <label className="block">
-              <span className="mb-1 block text-xs font-semibold text-neutral-500">Texte</span>
-              <textarea className={inputCls} rows={12} value={c.corps} maxLength={6000} onChange={(e) => set({ corps: e.target.value })} />
-            </label>
+            <div>
+              <span className="mb-1 block text-xs font-semibold text-neutral-500">Message</span>
+              <RichText initial={CORPS_DEPART} variables={props.variables} onChange={(corps) => set({ corps })} onError={(text) => setMsg({ ok: false, text })} />
+            </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block">
                 <span className="mb-1 block text-xs font-semibold text-neutral-500">Texte du bouton (facultatif)</span>
@@ -181,15 +183,7 @@ export function NewsletterEditor(props: {
                 <input className={inputCls} value={c.lien} maxLength={300} placeholder="https://…" onChange={(e) => set({ lien: e.target.value })} />
               </label>
             </div>
-            <p className="text-xs text-neutral-500">
-              Variables :{" "}
-              {props.variables.map((x, i) => (
-                <span key={x.cle}>
-                  <button type="button" title={`Insérer ${x.cle} à la fin du texte`} onClick={() => set({ corps: `${c.corps}${x.cle}` })} className="rounded bg-mist px-1.5 py-0.5 font-mono text-[11px] font-bold text-pine-700 hover:bg-amber-500/15">{x.cle}</button> {x.description}{i < props.variables.length - 1 ? " · " : "."}
-                </span>
-              ))}
-            </p>
-            <p className="text-xs text-neutral-400">Une ligne vide sépare deux paragraphes. L&rsquo;en-tête, la signature et le lien de désinscription sont ajoutés automatiquement.</p>
+            <p className="text-xs text-neutral-400">L&rsquo;en-tête, la signature et le lien de désinscription sont ajoutés automatiquement.</p>
           </div>
           <div>
             <div className="flex flex-wrap gap-2">

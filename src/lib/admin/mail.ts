@@ -1,6 +1,7 @@
 import type { Lead } from "./db";
 import { fichesPourLead, videoPourLead } from "./assets";
 import { site } from "@/lib/site";
+import { rendreCorps } from "./newsletter-html";
 import { NB_RELANCES, getRelanceSettings, renderRelance, type RelanceMail, type RelanceVars } from "./relances";
 
 /* ================================================================== */
@@ -211,17 +212,29 @@ export async function sendRelanceTest(to: string, mail: RelanceMail): Promise<Se
 
 /* ------------------------------ Newsletter ----------------------------- */
 
-/** Objet + HTML d'une newsletter pour un destinataire, avec son lien de désinscription. */
+type NewsletterContenu = { sujet: string; corps: string; bouton: string; lien: string; format?: "html" | "texte" };
+const escHtml = (v: string) => v.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
+
+/**
+ * Objet + HTML d'une newsletter pour un destinataire, avec son lien de désinscription.
+ * `imageBase` : origine des images hébergées (adresse du site dans un e-mail, vide pour l'aperçu).
+ */
 export function buildNewsletterEmail(
-  contenu: { sujet: string; corps: string; bouton: string; lien: string },
+  contenu: NewsletterContenu,
   dest: { name: string; token: string | null },
+  imageBase: string = site.url,
 ): { sujet: string; html: string } {
-  const r = renderRelance({ sujet: contenu.sujet, corps: contenu.corps, bouton: contenu.bouton }, relanceVars({ name: dest.name, estimation_ttc: null }));
+  const vars = relanceVars({ name: dest.name, estimation_ttc: null });
+  const html = contenu.format === "html";
+  const r = renderRelance({ sujet: contenu.sujet, corps: html ? "" : contenu.corps, bouton: contenu.bouton }, vars);
+  const corps = html
+    ? rendreCorps(contenu.corps, imageBase).replace(/\{(prenom|nom|telephone|societe)\}/g, (_, k: keyof RelanceVars) => escHtml(vars[k]))
+    : r.corpsHtml;
   const cta = r.bouton && /^https:\/\//.test(contenu.lien) ? `<p style="text-align:center;margin:18px 0;">${bouton(contenu.lien.replace(/["<>]/g, ""), r.bouton.replace(/[<>&"]/g, ""))}</p>` : "";
   const stop = dest.token
     ? `<p style="font-size:11px;color:#9aa8a0;margin-top:10px;">Vous recevez cet e-mail car vous avez demandé un devis sur ${site.name}. <a href="${site.url}/desabonnement/${dest.token}" style="color:#5a6b61;">Se désinscrire</a>.</p>`
     : "";
-  return { sujet: r.sujet, html: `${wrap(`${r.corpsHtml}${cta}`)}${stop}` };
+  return { sujet: r.sujet, html: `${wrap(`${corps}${cta}`)}${stop}` };
 }
 
 /** Envoi groupé (jusqu'à 100 e-mails par appel) via l'API « batch » de Resend. */
@@ -242,7 +255,7 @@ export async function sendBatch(items: { to: string; subject: string; html: stri
 }
 
 /** Envoi d'essai d'une newsletter à la personne connectée. */
-export async function sendNewsletterTest(to: string, contenu: { sujet: string; corps: string; bouton: string; lien: string }): Promise<SendResult> {
+export async function sendNewsletterTest(to: string, contenu: NewsletterContenu): Promise<SendResult> {
   const { sujet, html } = buildNewsletterEmail(contenu, { name: "Camille Dupont", token: null });
   return send(to, `[TEST] ${sujet}`, html);
 }

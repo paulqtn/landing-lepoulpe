@@ -1,6 +1,7 @@
 import { adminQuery as q } from "./db";
 import { buildNewsletterEmail, sendBatch } from "./mail";
 import { STATUTS, type Statut } from "./statuts";
+import { CORPS_MAX, sanitizeCorps, texteBrut } from "./newsletter-html";
 
 /* ================================================================== */
 /*  Newsletter : un e-mail envoyé aux clients choisis par statut.      */
@@ -20,7 +21,8 @@ export const NEWSLETTER_VARIABLES = [
   { cle: "{societe}", description: "nom de la société" },
 ];
 
-export type Contenu = { sujet: string; corps: string; bouton: string; lien: string };
+/** `corps` est du HTML déjà nettoyé (format « html ») ; les campagnes d'avant la mise en forme sont en « texte ». */
+export type Contenu = { sujet: string; corps: string; bouton: string; lien: string; format?: "html" | "texte" };
 
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.replace(/\r\n/g, "\n").trim().slice(0, max) : "");
 
@@ -30,11 +32,13 @@ export function sanitizeStatuts(raw: unknown): Statut[] {
 
 export function sanitizeContenu(raw: unknown): { value?: Contenu; error?: string } {
   const r = (raw ?? {}) as Record<string, unknown>;
-  const c = { sujet: str(r.sujet, 150).replace(/\n/g, " "), corps: str(r.corps, 6000), bouton: str(r.bouton, 40).replace(/\n/g, " "), lien: str(r.lien, 300) };
+  if (typeof r.corps === "string" && r.corps.length > CORPS_MAX) return { error: "Le message est trop long : raccourcissez le texte." };
+  const c: Contenu = { sujet: str(r.sujet, 150).replace(/\n/g, " "), corps: sanitizeCorps(typeof r.corps === "string" ? r.corps : ""), bouton: str(r.bouton, 40).replace(/\n/g, " "), lien: str(r.lien, 300), format: "html" };
+  const texte = texteBrut(c.corps);
   if (c.sujet.length < 3) return { error: "L'objet de l'e-mail est obligatoire." };
-  if (c.corps.length < 20) return { error: "Le texte de l'e-mail est trop court." };
+  if (texte.length < 20 && !c.corps.includes("<img")) return { error: "Le texte de l'e-mail est trop court." };
   if (c.bouton && !/^https:\/\/[^\s"<>]+$/.test(c.lien)) return { error: "Le bouton doit pointer vers une adresse complète commençant par https://" };
-  const inconnues = [...`${c.sujet} ${c.corps}`.matchAll(/\{[a-zA-Zéèê_]+\}/g)].map((x) => x[0]).filter((v) => !NEWSLETTER_VARIABLES.some((k) => k.cle === v));
+  const inconnues = [...`${c.sujet} ${texte}`.matchAll(/\{[a-zA-Zéèê_]+\}/g)].map((x) => x[0]).filter((v) => !NEWSLETTER_VARIABLES.some((k) => k.cle === v));
   if (inconnues.length) return { error: `Variable inconnue : ${[...new Set(inconnues)].join(", ")}.` };
   return { value: c };
 }
@@ -66,7 +70,7 @@ export async function compterDestinataires(statuts: Statut[]): Promise<number> {
 /** Crée la campagne et fige la liste des destinataires. */
 export async function creerCampagne(contenu: Contenu, statuts: Statut[], actor: string): Promise<{ id: number; total: number }> {
   const rows = await q<{ id: number }>(
-    "INSERT INTO newsletters (created_by, sujet, corps, bouton, lien, statuts) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+    "INSERT INTO newsletters (created_by, sujet, corps, bouton, lien, statuts, format) VALUES ($1, $2, $3, $4, $5, $6, 'html') RETURNING id",
     [actor, contenu.sujet, contenu.corps, contenu.bouton, contenu.lien, JSON.stringify(statuts)],
   );
   const id = rows[0].id;
@@ -99,7 +103,7 @@ export async function progression(id: number): Promise<Progression | null> {
  * (« en_envoi ») : deux appels simultanés ne peuvent pas écrire au même client.
  */
 export async function envoyerLot(id: number): Promise<Progression | null> {
-  const camp = (await q<Contenu & { id: number }>("SELECT id, sujet, corps, bouton, lien FROM newsletters WHERE id = $1", [id]))[0];
+  const camp = (await q<Contenu & { id: number }>("SELECT id, sujet, corps, bouton, lien, format FROM newsletters WHERE id = $1", [id]))[0];
   if (!camp) return null;
   // Un lot resté « en_envoi » plus de 5 minutes (appel interrompu) n'est PAS renvoyé : on ne sait pas
   // s'il est parti. Il est compté en échec, à relancer volontairement.

@@ -42,7 +42,8 @@ export async function POST(req: Request) {
   if (!contenu) return NextResponse.json({ ok: false, error }, { status: 422 });
 
   if (action === "preview") {
-    const { sujet, html } = buildNewsletterEmail(contenu, { name: "Camille Dupont", token: "apercu" });
+    // Images en adresse relative : l'aperçu les charge depuis ce back office.
+    const { sujet, html } = buildNewsletterEmail(contenu, { name: "Camille Dupont", token: "apercu" }, "");
     return NextResponse.json({ ok: true, sujet, html });
   }
   if (action === "test") {

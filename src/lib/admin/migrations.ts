@@ -266,4 +266,20 @@ export const MIGRATIONS: Migration[] = [
       CREATE INDEX idx_newsletter_envois_etat ON newsletter_envois(newsletter_id, etat);
     `,
   },
+  {
+    // Newsletter mise en forme : corps en HTML (les anciennes campagnes restent en texte) et images hébergées.
+    id: "010_newsletter_mise_en_forme",
+    sql: `
+      ALTER TABLE newsletters ADD COLUMN format TEXT NOT NULL DEFAULT 'texte' CHECK (format IN ('texte', 'html'));
+      CREATE TABLE newsletter_images (
+        id SERIAL PRIMARY KEY,
+        token TEXT NOT NULL UNIQUE,
+        mime TEXT NOT NULL,
+        data BYTEA NOT NULL,
+        bytes INT NOT NULL,
+        created_by TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];
