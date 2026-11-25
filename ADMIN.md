@@ -40,6 +40,13 @@ email, relances programmées, suivi commercial.
 - **Mentions de la société** (adresse, SIRET, TVA, conditions) reprises
   sur les devis.
 
+## Référence chiffrée selon le choix du client
+
+Règle unique (`src/lib/calculateur/correspondance.ts`, testée par `npm test`) pour le prix
+du site, le devis automatique et la marge : pinces → GS-07-C, rail → GS-19-L, spider →
+GS-02, « à me conseiller » → rail GS-19-L par défaut. L'épaisseur et la teinte du verre
+choisies sont toujours prises en compte.
+
 ## Devis
 
 - Une demande du site **n'envoie plus aucun e-mail automatiquement**. Elle crée un

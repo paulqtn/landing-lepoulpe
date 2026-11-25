@@ -298,9 +298,9 @@ export function Configurator({
     }
     setStatus("loading");
 
-    // 1. Tarif exact calculé côté serveur (sauf parcours « à me conseiller »).
+    // 1. Tarif exact calculé côté serveur (« à me conseiller » est chiffré en rail par défaut).
     let estimation: Estimation | null = null;
-    if (state.systeme && state.systeme !== "conseil" && cotesNum.length > 0 && state.hauteur) {
+    if (state.systeme && cotesNum.length > 0 && state.hauteur) {
       try {
         const res = await fetch("/api/estimation", {
           method: "POST",
@@ -598,6 +598,11 @@ export function Configurator({
                           soit {fmt.format(result.ttcMl)} €/ml · {result.nbVerres} panneaux de verre sur-mesure ·
                           livraison incluse · pose non comprise
                         </p>
+                        {state.systeme === "conseil" && (
+                          <p className="mt-2 text-xs text-pine-100/70">
+                            Tarif calculé avec une fixation par rail, à confirmer avec votre conseiller.
+                          </p>
+                        )}
                       </div>
                     </div>
                     <h3 className="mt-7 text-xl font-extrabold text-inkgreen">Votre devis détaillé arrive par email</h3>

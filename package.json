@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --experimental-strip-types --test src/lib/simulation/engine.test.mjs src/lib/admin/prime.test.mjs"
+    "test": "node --experimental-strip-types --test src/lib/simulation/engine.test.mjs src/lib/admin/prime.test.mjs src/lib/calculateur/correspondance.test.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.18.0",

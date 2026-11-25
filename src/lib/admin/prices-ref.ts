@@ -12,12 +12,12 @@ export type RefScenario = { label: string; achat: number | null; venteHT: number
 export function referenceScenarios(engine: Engine, data: unknown): RefScenario[] {
   if (engine === "site") {
     const t = data as TarifsSite;
-    const run = (label: string, fixation: "GS-07-A" | "GS-19-L" | "GS-02", verre: "66.4" | "88.4", longueur: number) => {
+    const run = (label: string, fixation: "GS-07-C" | "GS-19-L" | "GS-02", verre: "66.4" | "88.4", longueur: number) => {
       const r = chiffrer({ troncons: [{ longueur }], fixation, verre, teinte: "clair", hauteurFinie: 110, couleur: "anodise", livraison: "livraison" }, t);
       return { label, achat: r.coutAchat, venteHT: r.prixHT, venteTTC: r.prixTTC };
     };
     return [
-      run("Piscine 7 m — pinces GS-07-A, verre 66.4 clair", "GS-07-A", "66.4", 7),
+      run("Piscine 7 m — pinces GS-07-C, verre 66.4 clair", "GS-07-C", "66.4", 7),
       run("Terrasse 5 m — rail GS-19-L, verre 88.4 clair", "GS-19-L", "88.4", 5),
       run("Balcon 4 m — spider GS-02, verre 88.4 clair", "GS-02", "88.4", 4),
     ];

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { addEvent, getLeadByToken, updateLead } from "@/lib/admin/db";
 import { rescoreLead } from "@/lib/admin/rescore";
+import { correspondance } from "@/lib/calculateur/correspondance";
 import { chiffrer } from "@/lib/calculateur/engine";
 import { getTarifsSite } from "@/lib/admin/prices";
 
@@ -27,24 +28,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
   }
 
   const a = (lead.answers ?? {}) as Record<string, unknown>;
-  const systeme = String(a.systeme ?? "rail");
-  const piscine = String(a.lieu ?? a.usage ?? "").includes("piscine");
-  const verre =
-    typeof a.verre === "string" && ["66.4", "88.4", "1010.4"].includes(a.verre)
-      ? (a.verre as "66.4" | "88.4" | "1010.4")
-      : typeof a.epaisseur === "string" && ["66.4", "88.4", "1010.4"].includes(a.epaisseur)
-        ? (a.epaisseur as "66.4" | "88.4" | "1010.4")
-        : piscine
-          ? ("66.4" as const)
-          : ("88.4" as const);
-  const fixation =
-    systeme === "spider" ? ("GS-02" as const)
-    : systeme === "pinces" ? (verre === "66.4" ? ("GS-07-A" as const) : ("GS-07-C" as const))
-    : ("GS-19-L" as const);
-  const teinte =
-    typeof a.teinte === "string" && ["clair", "extra-clair", "fume-1f", "fume-2f"].includes(a.teinte)
-      ? (a.teinte as "clair" | "extra-clair" | "fume-1f" | "fume-2f")
-      : ("clair" as const);
+  // Même correspondance que le générateur (systeme absent = rail, comme avant).
+  const c = correspondance({ systeme: a.systeme ?? "rail", verre: a.verre, epaisseur: a.epaisseur, lieu: a.lieu ?? a.usage, teinte: a.teinte }) ??
+    correspondance({ systeme: "rail", verre: a.verre, epaisseur: a.epaisseur, lieu: a.lieu ?? a.usage, teinte: a.teinte })!;
+  const { fixation, verre, teinte } = c;
 
   const r = chiffrer({
     troncons: cotes.map((longueur) => ({ longueur, escalier: String(a.lieu ?? "") === "escalier" })),

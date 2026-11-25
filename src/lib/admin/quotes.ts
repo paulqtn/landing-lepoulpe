@@ -1,6 +1,7 @@
 import { adminQuery as q, addEvent, type Lead } from "./db";
 import { audit } from "./auth";
 import { currentVersion, getTarifsSite } from "./prices";
+import { correspondance } from "@/lib/calculateur/correspondance";
 import { chiffrer } from "@/lib/calculateur/engine";
 
 /* ================================================================== */
@@ -97,14 +98,10 @@ export async function chiffrageDepuisLead(lead: Lead) {
   const a = (lead.answers ?? {}) as Record<string, unknown>;
   const cotes = (Array.isArray(a.cotes) ? a.cotes : []).map(Number).filter((n) => Number.isFinite(n) && n > 0 && n <= 200).slice(0, 6);
   const hauteur = Number(a.hauteur);
-  const systeme = String(a.systeme ?? "");
   const lieu = String(a.lieu ?? a.usage ?? "");
-  if (cotes.length === 0 || !Number.isFinite(hauteur) || hauteur <= 0 || !["rail", "pinces", "spider"].includes(systeme)) return null;
-
-  const isVerre = (v: unknown): v is "66.4" | "88.4" | "1010.4" => typeof v === "string" && ["66.4", "88.4", "1010.4"].includes(v);
-  const verre = isVerre(a.verre) ? a.verre : isVerre(a.epaisseur) ? a.epaisseur : lieu.includes("piscine") ? "66.4" : "88.4";
-  const fixation = systeme === "spider" ? "GS-02" : systeme === "pinces" ? (verre === "66.4" ? "GS-07-A" : "GS-07-C") : "GS-19-L";
-  const teinte = typeof a.teinte === "string" && a.teinte in TEINTES ? (a.teinte as "clair" | "extra-clair" | "fume-1f" | "fume-2f") : "clair";
+  const c = correspondance({ systeme: a.systeme, verre: a.verre, epaisseur: a.epaisseur, lieu, teinte: a.teinte });
+  if (cotes.length === 0 || !Number.isFinite(hauteur) || hauteur <= 0 || !c) return null;
+  const { fixation, verre, teinte, systeme } = c;
 
   const r = chiffrer(
     {
@@ -119,7 +116,7 @@ export async function chiffrageDepuisLead(lead: Lead) {
     },
     await getTarifsSite(),
   );
-  return { r, cotes, lieu, systeme, verre, teinte };
+  return { r, cotes, lieu, systeme, verre, teinte, parDefaut: c.parDefaut };
 }
 
 /** Même correspondance que le générateur public, avec les tarifs en vigueur. */
@@ -130,7 +127,7 @@ export async function draftOptionsFromLead(lead: Lead): Promise<QuoteOption[]> {
     const ttc = lead.estimation_ttc ? Number(lead.estimation_ttc) : 0;
     return [{ label: "Notre proposition", title: "Garde-corps en verre sur mesure", lines: [{ description: "Garde-corps en verre sur mesure\nÀ préciser avec le client", qty: 1, unitPriceHt: r2(ttc / 1.2), vatRate: 0.2 }] }];
   }
-  const { r, cotes, lieu, systeme, verre, teinte } = c;
+  const { r, cotes, lieu, systeme, verre, teinte, parDefaut } = c;
 
   // Répartition du prix de vente par poste (coût × coefficient) ; la dernière
   // ligne absorbe l'arrondi pour que le total soit exactement le prix calculé.
@@ -154,7 +151,12 @@ export async function draftOptionsFromLead(lead: Lead): Promise<QuoteOption[]> {
           unitPriceHt: venteVerre,
           vatRate: 0.2,
         },
-        { description: `${fixLabel} — finition anodisée\nQuincaillerie de fixation et joints inclus`, qty: 1, unitPriceHt: venteFixations, vatRate: 0.2 },
+        {
+          description: `${fixLabel} — finition anodisée\nQuincaillerie de fixation et joints inclus${parDefaut ? "\nFixation proposée par défaut, à confirmer avec vous" : ""}`,
+          qty: 1,
+          unitPriceHt: venteFixations,
+          vatRate: 0.2,
+        },
         { description: "Conditionnement et livraison\nCaisse bois sécurisée\nLivraison en France métropolitaine", qty: 1, unitPriceHt: venteLivraison, vatRate: 0.2 },
       ],
     },

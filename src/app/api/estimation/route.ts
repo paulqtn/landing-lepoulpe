@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { correspondance, isSystemeDemande } from "@/lib/calculateur/correspondance";
 import { chiffrer } from "@/lib/calculateur/engine";
 import { getTarifsSite } from "@/lib/admin/prices";
 
@@ -10,7 +11,7 @@ import { getTarifsSite } from "@/lib/admin/prices";
 
 type Body = {
   usage?: string;
-  systeme?: "rail" | "pinces" | "spider";
+  systeme?: "rail" | "pinces" | "spider" | "conseil";
   cotes?: number[];
   hauteur?: number;
   teinte?: "clair" | "extra-clair" | "fume-1f" | "fume-2f";
@@ -29,20 +30,13 @@ export async function POST(req: Request) {
 
   const cotes = (b.cotes ?? []).map(Number).filter((n) => Number.isFinite(n) && n > 0 && n <= 200);
   const hauteur = Number(b.hauteur);
-  if (!b.systeme || !["rail", "pinces", "spider"].includes(b.systeme) || cotes.length === 0 || ![90, 100, 110].includes(hauteur)) {
+  if (!isSystemeDemande(b.systeme) || cotes.length === 0 || ![90, 100, 110].includes(hauteur)) {
     return NextResponse.json({ error: "Paramètres incomplets." }, { status: 400 });
   }
 
-  // Correspondances automatiques internes — l'épaisseur explicite prime.
-  const piscine = (b.usage ?? "").includes("piscine");
-  const verre =
-    b.verre && ["66.4", "88.4", "1010.4"].includes(b.verre)
-      ? b.verre
-      : piscine ? ("66.4" as const) : ("88.4" as const);
-  const fixation =
-    b.systeme === "rail" ? ("GS-19-L" as const)
-    : b.systeme === "spider" ? ("GS-02" as const)
-    : verre === "66.4" ? ("GS-07-A" as const) : ("GS-07-C" as const);
+  // Correspondance unique choix du client → référence chiffrée (voir correspondance.ts).
+  const c = correspondance({ systeme: b.systeme, verre: b.verre, lieu: b.usage, teinte: b.teinte })!;
+  const { verre, fixation } = c;
 
   const escalier = b.usage === "escalier";
   const departement = (b.cp ?? "").trim().slice(0, 2);
@@ -54,7 +48,7 @@ export async function POST(req: Request) {
     troncons: cotes.map((longueur) => ({ longueur, escalier })),
     fixation,
     verre,
-    teinte: b.teinte && ["clair", "extra-clair", "fume-1f", "fume-2f"].includes(b.teinte) ? b.teinte : "clair",
+    teinte: c.teinte,
     hauteurFinie: hauteur,
     couleur: "anodise",
     departement: departement || undefined,
