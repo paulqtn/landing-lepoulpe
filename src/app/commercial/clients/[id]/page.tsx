@@ -5,6 +5,7 @@ import { LeadActions } from "@/components/admin/LeadActions";
 import { CreateOrderButton } from "@/components/admin/LogisticsActions";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { getLead, listEvents } from "@/lib/admin/db";
+import { niveauInfo } from "@/lib/admin/niveaux";
 import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
 import { MargeActions } from "@/components/admin/MargeActions";
@@ -42,6 +43,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
   const lead = await getLead(Number(id));
   if (!lead) notFound();
   const [events, quotes, me] = await Promise.all([listEvents(lead.id), quotesForLead(lead.id), currentUser()]);
+  const niveau = niveauInfo(lead.niveau);
   const answers = (lead.answers ?? {}) as Record<string, unknown>;
 
   const champs: [string, unknown][] = [
@@ -97,7 +99,10 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             )}
           </p>
         </div>
-        <StatutBadge statut={lead.statut} />
+        <div className="flex flex-wrap items-center gap-2">
+          {niveau && <span title={niveau.description} className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${niveau.cls}`}>{niveau.n} · {niveau.label}</span>}
+          <StatutBadge statut={lead.statut} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
@@ -169,10 +174,12 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           leadId={lead.id}
           statut={lead.statut}
           relances={lead.relances}
-          nextRelanceAt={lead.next_relance_at}
           hasEstimation={Boolean(lead.estimation_ttc)}
           team={await getTeam()}
           assignedTo={lead.assigned_to}
+          niveau={lead.niveau ?? null}
+          pauseAt={lead.sequence_pause_at ? new Date(lead.sequence_pause_at).toISOString() : null}
+          nextRelanceAt={lead.next_relance_at ? new Date(lead.next_relance_at).toISOString() : null}
           rappelAt={lead.rappel_at ? new Date(lead.rappel_at).toISOString() : null}
           devisEnvoye={quotes.some((x) => x.statut === "envoye") || events.some((e) => e.type === "devis_envoye")}
         />

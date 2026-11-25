@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { BellPlus, CalendarClock, Loader2, MailX, PhoneCall, Play, Send, StickyNote } from "lucide-react";
+import { BellPlus, CalendarClock, Gauge, Loader2, MailX, Pause, PhoneCall, Play, Send, StickyNote, Trash2 } from "lucide-react";
+import { NIVEAUX } from "@/lib/admin/niveaux";
 import { STATUT_AIDE, STATUT_LABELS, STATUTS, sequenceActive, type Statut } from "@/lib/admin/statuts";
 
 /* Panneau d'actions commercial sur une fiche lead. */
@@ -17,6 +18,8 @@ export function LeadActions({
   assignedTo,
   rappelAt = null,
   devisEnvoye = false,
+  niveau = null,
+  pauseAt = null,
 }: {
   leadId: number;
   statut: Statut;
@@ -29,6 +32,10 @@ export function LeadActions({
   rappelAt?: string | null;
   /** Un devis (ou l'e-mail d'estimation) est déjà parti chez le client. */
   devisEnvoye?: boolean;
+  /** Score du prospect (1 à 5), posé par le commercial. */
+  niveau?: number | null;
+  /** Relances automatiques en pause depuis cette date. */
+  pauseAt?: string | null;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -50,6 +57,10 @@ export function LeadActions({
     ["gagne", "C'est signé", "Statut « Signé »"],
     ["perdu", "Il ne donne pas suite", "Statut « Non signé »"],
   ];
+  const enPause = !clos && Boolean(pauseAt) && !seqOn;
+  const quand = (iso: string) => new Date(iso).toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+  const sequence = (body: Record<string, unknown>) =>
+    call(`/api/admin/leads/${leadId}/sequence`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   const appelApi = (body: Record<string, unknown>) =>
     call(`/api/admin/leads/${leadId}/appel`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 
@@ -81,6 +92,8 @@ export function LeadActions({
             <span>
               {seqOn
                 ? `Séquence d'e-mails en cours : relance ${Math.min(relances + 1, 3)} prévue le ${new Date(nextRelanceAt!).toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}.`
+                : enPause
+                  ? `Séquence d'e-mails en pause depuis le ${quand(pauseAt!)} : aucun e-mail automatique ne part.`
                 : relances >= 3
                   ? "Séquence d'e-mails terminée : les 3 relances sont parties."
                   : !devisEnvoye
@@ -95,17 +108,6 @@ export function LeadActions({
                 <PhoneCall className="h-4 w-4" />
                 J&rsquo;ai appelé le client
               </button>
-              {!seqOn && devisEnvoye && relances < 3 && (
-                <button
-                  type="button"
-                  disabled={pending}
-                  onClick={() => { if (window.confirm(`Reprendre les e-mails automatiques ? La relance ${relances + 1} sera programmée selon le délai de la séquence.`)) appelApi({ action: "reprendre" }); }}
-                  className="flex w-full items-center justify-center gap-2 rounded-full border border-neutral-200 px-5 py-2 text-xs font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-40"
-                >
-                  <Play className="h-3.5 w-3.5" />
-                  Reprendre la séquence d&rsquo;e-mails
-                </button>
-              )}
             </div>
           ) : (
             <div className="mt-3 space-y-2">
@@ -220,43 +222,95 @@ export function LeadActions({
         </div>
       </section>
 
-      {/* relance programmée */}
+      {/* relances automatiques : pause, suppression, déclenchement */}
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
           <CalendarClock className="h-3.5 w-3.5" />
-          Relance automatique
+          Relances automatiques
         </h2>
-        <p className="mt-2 text-xs text-neutral-500">
-          {nextRelanceAt
-            ? `Prochaine relance prévue le ${new Date(nextRelanceAt).toLocaleDateString("fr-FR")}.`
-            : "Aucune relance programmée."}
+        <p className={`mt-3 rounded-xl px-3 py-2 text-xs font-semibold ${seqOn ? "bg-sky-50 text-sky-900" : enPause ? "bg-amber-500/15 text-neutral-800" : "bg-mist text-neutral-600"}`}>
+          {clos
+            ? "Affaire close : aucune relance."
+            : seqOn
+              ? `En cours — relance ${Math.min(relances + 1, 3)} sur 3 prévue le ${quand(nextRelanceAt!)}.`
+              : enPause
+                ? `En pause depuis le ${quand(pauseAt!)} — aucun e-mail ne part.`
+                : relances >= 3
+                  ? "Terminées : les 3 relances sont parties."
+                  : "Aucune relance prévue."}
         </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <input
-            type="date"
-            value={relanceDate}
-            onChange={(e) => setRelanceDate(e.target.value)}
-            className="min-w-0 flex-1 basis-40 rounded-xl border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-pine-500"
-          />
-          <button
-            type="button"
-            disabled={pending || !relanceDate}
-            onClick={() => patch({ next_relance_at: new Date(`${relanceDate}T08:00:00`).toISOString() })}
-            className="rounded-full border border-neutral-200 px-4 py-2 text-xs font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-40"
-          >
-            Programmer
-          </button>
-          {nextRelanceAt && (
+        {!clos && relances < 3 && (
+          <>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {seqOn && (
+                <button type="button" disabled={pending} onClick={() => sequence({ action: "pause" })} className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2 text-xs font-bold text-neutral-700 transition hover:border-amber-500 hover:bg-amber-500/15 disabled:opacity-40">
+                  <Pause className="h-3.5 w-3.5" /> Mettre en pause
+                </button>
+              )}
+              {!seqOn && (
+                <button
+                  type="button"
+                  disabled={pending || !devisEnvoye}
+                  title={devisEnvoye ? undefined : "Envoyez d'abord un devis à ce client"}
+                  onClick={() => { if (enPause || window.confirm(`Déclencher les relances automatiques ? La relance ${relances + 1} partira selon le délai réglé dans l'onglet Relances.`)) sequence({ action: "declencher" }); }}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"
+                >
+                  <Play className="h-3.5 w-3.5" /> {enPause ? "Reprendre les relances" : "Déclencher la séquence"}
+                </button>
+              )}
+              {(seqOn || enPause) && (
+                <button type="button" disabled={pending} onClick={() => { if (window.confirm("Supprimer les relances automatiques prévues pour ce client ? Vous pourrez les déclencher de nouveau plus tard.")) sequence({ action: "supprimer" }); }} className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2 text-xs font-bold text-neutral-600 transition hover:border-red-300 hover:text-red-600 disabled:opacity-40">
+                  <Trash2 className="h-3.5 w-3.5" /> Supprimer les relances
+                </button>
+              )}
+            </div>
+            {devisEnvoye ? (
+              <div className="mt-3 flex flex-wrap items-end gap-2 border-t border-neutral-100 pt-3">
+                <label className="min-w-0 flex-1 basis-40 text-xs font-semibold text-neutral-500">
+                  {seqOn ? "Changer la date de la prochaine relance" : "Ou choisir la date de la prochaine relance"}
+                  <input type="date" value={relanceDate} onChange={(e) => setRelanceDate(e.target.value)} className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm text-inkgreen outline-none focus:border-pine-500" />
+                </label>
+                <button
+                  type="button"
+                  disabled={pending || !relanceDate}
+                  onClick={() => { sequence({ action: "declencher", date: new Date(`${relanceDate}T09:00:00`).toISOString() }); setRelanceDate(""); }}
+                  className="rounded-full border border-neutral-200 px-4 py-2 text-xs font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-40"
+                >
+                  Programmer
+                </button>
+              </div>
+            ) : (
+              <p className="mt-2 text-xs text-neutral-400">Les relances se déclenchent une fois un devis envoyé au client.</p>
+            )}
+          </>
+        )}
+        {msg && <p className="mt-2 text-xs font-semibold text-red-600">{msg}</p>}
+      </section>
+
+      {/* score du prospect */}
+      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+        <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+          <Gauge className="h-3.5 w-3.5" />
+          Score du prospect
+        </h2>
+        <div className="mt-3 space-y-1.5" role="radiogroup" aria-label="Score du prospect">
+          {NIVEAUX.map((x) => (
             <button
+              key={x.n}
               type="button"
+              role="radio"
+              aria-checked={niveau === x.n}
               disabled={pending}
-              onClick={() => patch({ next_relance_at: null })}
-              className="rounded-full border border-neutral-200 px-4 py-2 text-xs font-bold text-neutral-500 transition hover:border-red-300 hover:text-red-600"
+              onClick={() => patch({ niveau: niveau === x.n ? null : x.n })}
+              className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition disabled:opacity-60 ${niveau === x.n ? "border-amber-500 bg-amber-500/10" : "border-neutral-200 hover:bg-amber-500/15"}`}
             >
-              Annuler
+              <span className="w-3 text-sm font-extrabold tabular-nums text-neutral-400">{x.n}</span>
+              <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${x.cls}`}>{x.label}</span>
+              <span className="min-w-0 flex-1 text-xs text-neutral-500">{x.description}</span>
             </button>
-          )}
+          ))}
         </div>
+        <p className="mt-2 text-xs text-neutral-400">{niveau ? "Cliquez de nouveau sur le score choisi pour le retirer." : "Aucun score pour l'instant."}</p>
       </section>
 
       {/* note */}

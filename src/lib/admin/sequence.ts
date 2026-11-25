@@ -25,7 +25,8 @@ export async function envoyerRelance(
   }
 
   // Prochaine échéance selon les délais et heures réglés dans l'onglet Relances.
-  const prochaine = numero >= SEQ_MAX ? null : dateRelance(await getRelanceSettings(), numero + 1);
+  // Séquence en pause : un envoi à la main ne reprogramme pas la suite.
+  const prochaine = numero >= SEQ_MAX || lead.sequence_pause_at ? null : dateRelance(await getRelanceSettings(), numero + 1);
   const next = prochaine ? prochaine.toISOString() : null;
   await updateLead(lead.id, {
     relances: numero,

@@ -282,4 +282,12 @@ export const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    // Score du prospect (1 à 5) posé par le commercial ; pause des relances automatiques.
+    id: "011_score_prospect_et_pause_relances",
+    sql: `
+      ALTER TABLE leads ADD COLUMN niveau SMALLINT CHECK (niveau BETWEEN 1 AND 5);
+      ALTER TABLE leads ADD COLUMN sequence_pause_at TIMESTAMPTZ;
+    `,
+  },
 ];

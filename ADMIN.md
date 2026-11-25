@@ -94,6 +94,17 @@ appel sans réponse laisse la séquence continuer. « Reprendre la séquence » 
 où elle s'était arrêtée. Les clients à rappeler apparaissent dans l'onglet Relances et
 dans les priorités de l'accueil.
 
+## Fiche client : score du prospect et relances automatiques
+
+- **Score du prospect** (au-dessus de la note commerciale) : niveau de 1 à 5 posé à la main —
+  froid, tiède, qualifié, chaud, prêt à signer (`leads.niveau`, libellés dans
+  `src/lib/admin/niveaux.ts`). Chaque changement est inscrit à l'historique. Il est distinct
+  de la note A/B/C calculée automatiquement à l'arrivée de la demande.
+- **Relances automatiques** : *Mettre en pause* (aucun e-mail ne part, `leads.sequence_pause_at`),
+  *Reprendre*, *Supprimer les relances*, *Déclencher la séquence* (délais de l'onglet Relances)
+  ou choisir la date de la prochaine relance. Le déclenchement exige qu'un devis ait été envoyé.
+  API : `/api/admin/leads/[id]/sequence`.
+
 ## Newsletter (super-administrateur uniquement)
 
 *Administration → Newsletter* : un e-mail envoyé aux clients des états cochés. Toujours

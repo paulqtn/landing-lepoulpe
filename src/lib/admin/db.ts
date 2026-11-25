@@ -146,6 +146,10 @@ export type Lead = {
   marge_source?: string | null;
   /** Rappel téléphonique convenu avec le client. */
   rappel_at?: string | null;
+  /** Score du prospect, de 1 (froid) à 5 (prêt à signer), posé par le commercial. */
+  niveau?: number | null;
+  /** Relances automatiques mises en pause à cette date (aucun e-mail ne part). */
+  sequence_pause_at?: string | null;
 };
 
 export type LeadEvent = {
@@ -202,7 +206,7 @@ export async function updateLead(
   patch: Partial<
     Pick<
       Lead,
-      "statut" | "relances" | "next_relance_at" | "assigned_to" | "score" | "score_points" | "answers" | "estimation_ttc" | "rappel_at"
+      "statut" | "relances" | "next_relance_at" | "assigned_to" | "score" | "score_points" | "answers" | "estimation_ttc" | "rappel_at" | "niveau" | "sequence_pause_at"
     >
   >,
 ): Promise<void> {
@@ -217,6 +221,8 @@ export async function updateLead(
   // Règle unique, quel que soit le chemin : hors des statuts de séquence, plus aucun
   // e-mail automatique n'est programmé (appel, discussion, réflexion, gagné, perdu…).
   if (patch.statut && !sequenceActive(patch.statut) && patch.next_relance_at === undefined) sets.push(`next_relance_at = NULL`);
+  // Une pause se lève dès qu'une relance est reprogrammée ou que la séquence s'arrête pour de bon.
+  if (patch.sequence_pause_at === undefined && (patch.next_relance_at || (patch.statut && !sequenceActive(patch.statut)))) sets.push(`sequence_pause_at = NULL`);
   // Une affaire close n'a plus de rappel téléphonique en attente.
   if ((patch.statut === "gagne" || patch.statut === "perdu") && patch.rappel_at === undefined) sets.push(`rappel_at = NULL`);
   if (!sets.length) return;
