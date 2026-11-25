@@ -1,4 +1,4 @@
-import { requireMenu } from "@/lib/admin/auth";
+import { requireMenu, voitTout } from "@/lib/admin/auth";
 import Link from "next/link";
 import { dateFmt, eurFmt, ScoreBadge } from "@/components/admin/ui";
 import { STATUT_LABELS, STATUTS, type Statut, pipeline, pipelineApercu } from "@/lib/admin/db";
@@ -22,9 +22,10 @@ const COL_COLORS: Record<Statut, string> = {
 };
 
 export default async function PipelinePage() {
-  await requireMenu("pipeline");
+  const me = await requireMenu("pipeline");
+  const moi = voitTout(me) ? undefined : me.name; // un commercial ne voit que ses affaires
   // Totaux calculés en base sur toutes les demandes ; seules les cartes affichées sont chargées.
-  const [totaux, leads] = await Promise.all([pipeline(), pipelineApercu(8)]);
+  const [totaux, leads] = await Promise.all([pipeline(moi), pipelineApercu(8, moi)]);
   const cols = STATUTS.map((statut) => {
     const t = totaux.find((x) => x.statut === statut);
     return { statut, list: leads.filter((l) => l.statut === statut), n: t?.n ?? 0, total: Math.round(t?.total ?? 0) };

@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
 import { refusAction } from "@/lib/admin/attribution";
 import { addEvent, adminQuery as q, getLead, updateLead } from "@/lib/admin/db";
-import { coefAutorise } from "@/lib/admin/niveaux-prix";
+import { niveauxDepuis } from "@/lib/admin/niveaux-prix";
+import { getCoefsPrix } from "@/lib/admin/niveaux-prix-serveur";
 import { draftOptionsFromLead, getQuote, optionTotals, prixParNiveau, updateQuote } from "@/lib/admin/quotes";
 
 /* Chiffrage d'un devis depuis l'écran du devis : le commercial corrige au besoin le projet
@@ -44,7 +45,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (!lead) return NextResponse.json({ ok: false, error: "Ce devis n'est rattaché à aucune demande : le chiffrage automatique n'est pas possible." }, { status: 409 });
   const refus = refusAction(g.user, lead);
   if (refus) return NextResponse.json({ ok: false, error: refus }, { status: 403 });
-  if (!coefAutorise(body.coef)) return NextResponse.json({ ok: false, error: "Choisissez un niveau de prix." }, { status: 422 });
+  const grille = niveauxDepuis(await getCoefsPrix());
+  if (typeof body.coef !== "number" || !grille.some((n) => n.coef === body.coef)) return NextResponse.json({ ok: false, error: "Choisissez un niveau de prix." }, { status: 422 });
 
   if (body.projet !== undefined) {
     const { value, error } = lireProjet(body.projet);

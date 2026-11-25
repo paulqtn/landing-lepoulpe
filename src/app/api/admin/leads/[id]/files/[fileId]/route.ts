@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { requireMenuApi } from "@/lib/admin/auth";
+import { peutVoirFiche, requireMenuApi } from "@/lib/admin/auth";
 import { refusAction } from "@/lib/admin/attribution";
 import { addEvent, adminQuery as q, getLead } from "@/lib/admin/db";
 import { MORCEAU } from "@/lib/admin/fichiers";
 
 /* Un fichier d'une fiche : envoi par morceaux (PUT), validation (POST), téléchargement (GET),
-   suppression (DELETE). Lire est ouvert à qui voit les fiches ; ajouter et supprimer est
+   suppression (DELETE). Lire est ouvert à qui peut voir la fiche (son commercial, les administrateurs) ; ajouter et supprimer est
    réservé au commercial du client et aux administrateurs. */
 
 type P = { params: Promise<{ id: string; fileId: string }> };
@@ -18,7 +18,7 @@ async function charger(req: Request, params: P["params"], ecriture: boolean) {
   const { id, fileId } = await params;
   const lead = await getLead(Number(id));
   const file = (await q<Fichier>("SELECT id, lead_id, name, mime, bytes, complete FROM lead_files WHERE id = $1", [Number(fileId) || 0]))[0];
-  if (!lead || !file || file.lead_id !== lead.id) return { denied: NextResponse.json({ ok: false, error: "Fichier introuvable." }, { status: 404 }) };
+  if (!lead || !file || file.lead_id !== lead.id || !peutVoirFiche(g.user, lead)) return { denied: NextResponse.json({ ok: false, error: "Fichier introuvable." }, { status: 404 }) };
   if (ecriture) {
     const refus = refusAction(g.user, lead);
     if (refus) return { denied: NextResponse.json({ ok: false, error: refus }, { status: 403 }) };

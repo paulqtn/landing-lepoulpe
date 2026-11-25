@@ -5,7 +5,7 @@ import { majCoordonnees } from "@/lib/admin/contact";
 import { STATUT_LABELS } from "@/lib/admin/statuts";
 import { NextResponse } from "next/server";
 import { niveauInfo } from "@/lib/admin/niveaux";
-import { requireMenuApi } from "@/lib/admin/auth";
+import { peutVoirFiche, requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, getLead, listEvents, STATUTS, updateLead, type Statut } from "@/lib/admin/db";
 
 type Params = { params: Promise<{ id: string }> };
@@ -15,7 +15,7 @@ export async function GET(req: Request, { params }: Params) {
   if (g.denied) return g.denied;
   const { id } = await params;
   const lead = await getLead(Number(id));
-  if (!lead) return NextResponse.json({ error: "introuvable" }, { status: 404 });
+  if (!lead || !peutVoirFiche(g.user, lead)) return NextResponse.json({ error: "introuvable" }, { status: 404 });
   return NextResponse.json({ lead, events: await listEvents(lead.id) });
 }
 

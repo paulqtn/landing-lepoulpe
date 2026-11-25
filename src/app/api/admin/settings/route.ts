@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { audit, requireMenuApi } from "@/lib/admin/auth";
 import { getCompSettings } from "@/lib/admin/compens";
 import { DELAIS_DEFAUT, getDelais } from "@/lib/admin/logistics-tasks";
+import { validerCoefs } from "@/lib/admin/niveaux-prix";
+import { getCoefsPrix } from "@/lib/admin/niveaux-prix-serveur";
 import { getSetting, setSetting } from "@/lib/admin/settings";
 import { SOCIETE_FIELDS } from "@/lib/admin/societe";
 
@@ -25,6 +27,15 @@ export async function POST(req: Request) {
     const before = await getCompSettings();
     await setSetting("commissions", next, g.user.name);
     await audit(g.user.name, "parametres_commissions", "settings", "commissions", before, next);
+    return NextResponse.json({ ok: true });
+  }
+
+  if (body.key === "niveaux_prix") {
+    const { value: next, error } = validerCoefs(v);
+    if (!next) return NextResponse.json({ ok: false, error }, { status: 422 });
+    const before = await getCoefsPrix();
+    await setSetting("niveaux_prix", next, g.user.name);
+    await audit(g.user.name, "parametres_niveaux_prix", "settings", "niveaux_prix", before, next);
     return NextResponse.json({ ok: true });
   }
 

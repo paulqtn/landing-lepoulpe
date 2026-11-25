@@ -9,7 +9,7 @@ import { LeadFiles } from "@/components/admin/LeadFiles";
 import { niveauInfo } from "@/lib/admin/niveaux";
 import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
-import { requireMenu } from "@/lib/admin/auth";
+import { peutVoirFiche, requireMenu } from "@/lib/admin/auth";
 import { refusAction } from "@/lib/admin/attribution";
 import { MOTIFS_PERTE } from "@/lib/admin/cloture";
 import { STATUT_LABELS, type Statut } from "@/lib/admin/statuts";
@@ -43,7 +43,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
   const me = await requireMenu("clients");
   const { id } = await params;
   const lead = await getLead(Number(id));
-  if (!lead) notFound();
+  if (!lead || !peutVoirFiche(me, lead)) notFound(); // la fiche d'un collègue n'existe pas pour un commercial
   const [events, quotes, files] = await Promise.all([
     listEvents(lead.id),
     quotesForLead(lead.id),

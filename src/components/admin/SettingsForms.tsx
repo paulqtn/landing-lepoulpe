@@ -65,6 +65,39 @@ export function CommissionsForm({ initial }: { initial: { tauxMarge: number; seu
   );
 }
 
+export function NiveauxPrixForm({ initial, coefSite }: { initial: { plein: number; remise: number; exceptionnelle: number }; coefSite: number }) {
+  const [v, setV] = useState({ plein: String(initial.plein).replace(".", ","), remise: String(initial.remise).replace(".", ","), exceptionnelle: String(initial.exceptionnelle).replace(".", ",") });
+  const { busy, msg, save } = useSave();
+  const n = (s: string) => Number(s.replace(/\s/g, "").replace(",", "."));
+  const fields = [
+    ["plein", "Plein tarif", "prix normal d'un devis"],
+    ["remise", "Remise", "geste commercial"],
+    ["exceptionnelle", "Remise exceptionnelle", "prix plancher : rien ne part en dessous"],
+  ] as const;
+  const ecart = Number.isFinite(n(v.plein)) && n(v.plein) > 0 ? Math.round((coefSite / n(v.plein) - 1) * 1000) / 10 : 0;
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); save("niveaux_prix", { plein: n(v.plein), remise: n(v.remise), exceptionnelle: n(v.exceptionnelle) }); }}>
+      <div className="grid gap-4 sm:grid-cols-3">
+        {fields.map(([k, label, aide]) => (
+          <label key={k} className="block">
+            <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-500">{label}</span>
+            <span className="flex items-center gap-2">
+              <span className="text-sm font-bold text-neutral-400">×</span>
+              <input className={inputCls} inputMode="decimal" value={v[k]} onChange={(e) => setV({ ...v, [k]: e.target.value })} />
+            </span>
+            <span className="mt-1 block text-xs text-neutral-400">{aide}</span>
+          </label>
+        ))}
+      </div>
+      <p className="mt-3 text-xs text-neutral-500">
+        Prix de vente = coût d&rsquo;achat × coefficient. Le site public affiche ses prix au coefficient <strong>×{String(coefSite).replace(".", ",")}</strong>
+        {ecart !== 0 && <> ({ecart > 0 ? `${String(ecart).replace(".", ",")} % au-dessus` : `${String(-ecart).replace(".", ",")} % en dessous`} du plein tarif)</>} : il se règle dans l&rsquo;onglet « Générateur du site », ligne du coefficient.
+      </p>
+      <Footer busy={busy} msg={msg} />
+    </form>
+  );
+}
+
 export function SocieteForm({ fields, initial }: { fields: { key: string; label: string; multiline: boolean }[]; initial: Record<string, string> }) {
   const [v, setV] = useState(initial);
   const { busy, msg, save } = useSave();

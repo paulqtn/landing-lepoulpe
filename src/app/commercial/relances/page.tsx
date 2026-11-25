@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BellRing, CalendarClock, MailCheck, PhoneCall } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { RelancesEditor } from "@/components/admin/RelancesEditor";
-import { canManageSettings, requireMenu } from "@/lib/admin/auth";
+import { canManageSettings, requireMenu, voitTout } from "@/lib/admin/auth";
 import { CRON_HEURE_UTC, CRON_HORAIRE } from "@/lib/admin/cron-frequence";
 import { VARIABLES, getRelanceSettings } from "@/lib/admin/relances";
 import { countRappels, dueRelances, type Lead, listRappels, relancesAVenir } from "@/lib/admin/db";
@@ -23,7 +23,8 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
       ? null
       : new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", hour: "numeric", minute: "2-digit" }).format(new Date(Date.UTC(2026, new Date().getUTCMonth(), new Date().getUTCDate(), CRON_HEURE_UTC)));
   const jours = seq.delais.reduce<number[]>((acc, d, i) => [...acc, (acc[i - 1] ?? 0) + d], []);
-  const mine = rep && qui !== "tous";
+  const equipe = voitTout(user);
+  const mine = Boolean(rep) && (!equipe || qui !== "tous");
   const dues = mine ? duesAll.filter((l) => l.assigned_to === rep) : duesAll;
   const qui_ = mine && rep ? rep : undefined;
   const [aVenir, rappels, nbRappels] = await Promise.all([relancesAVenir(qui_, 20), listRappels(qui_, 100), countRappels(qui_)]);
@@ -36,7 +37,7 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
           Séquence : devis envoyé (J0) → relance 1 à J+{jours[0]} → relance 2 à J+{jours[1]} → relance 3 à J+{jours[2]} ·{" "}
           {!mailConfigured ? "e-mails non branchés : rien ne part pour l'instant" : !seq.active ? "envoi automatique désactivé" : CRON_HORAIRE ? "envoi automatique à l'heure choisie" : "envoi automatique une fois par jour"}
         </p>
-        {rep && (
+        {rep && equipe && (
           <div className="mt-2.5 flex gap-1.5">
             <Chip href="/commercial/relances" active={mine === true} label="Les miennes" />
             <Chip href="/commercial/relances?qui=tous" active={!mine} label="Toute l'équipe" />

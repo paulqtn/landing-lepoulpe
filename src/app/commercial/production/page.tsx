@@ -1,4 +1,4 @@
-import { requireMenu } from "@/lib/admin/auth";
+import { requireMenu, voitTout } from "@/lib/admin/auth";
 import Link from "next/link";
 import { Factory, PackageCheck, Trophy } from "lucide-react";
 import { CreateOrderButton } from "@/components/admin/LogisticsActions";
@@ -23,8 +23,13 @@ const ORDER_COLORS: Record<OrderStatut, string> = {
 const SYS_LABEL: Record<string, string> = { rail: "Rail", pinces: "Pinces", spider: "Spider", conseil: "À définir" };
 
 export default async function ProductionPage() {
-  await requireMenu("production");
-  const [leads, orders] = await Promise.all([listLeads({ statut: "gagne", limit: 1000 }), listOrders()]);
+  const me = await requireMenu("production");
+  const [tousLeads, toutesCommandes] = await Promise.all([listLeads({ statut: "gagne", limit: 1000 }), listOrders()]);
+  // Un commercial ne voit que ses affaires signées et leurs commandes.
+  const equipe = voitTout(me);
+  const leads = equipe ? tousLeads : tousLeads.filter((l) => l.assigned_to === me.name);
+  const miens = new Set(leads.map((l) => l.id));
+  const orders = equipe ? toutesCommandes : toutesCommandes.filter((o) => o.lead_id !== null && miens.has(o.lead_id));
   const withOrder = new Set(orders.map((o) => o.lead_id).filter(Boolean));
   const aLancer = leads.filter((l) => l.statut === "gagne" && !withOrder.has(l.id));
 

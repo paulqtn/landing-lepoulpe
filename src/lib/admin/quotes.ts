@@ -1,7 +1,8 @@
 import { adminQuery as q, addEvent, type Lead } from "./db";
 import { audit } from "./auth";
 import { currentVersion, getTarifsSite } from "./prices";
-import { COEF_PLANCHER, COEF_PLEIN, NIVEAUX_PRIX } from "./niveaux-prix";
+import { niveauxDepuis } from "./niveaux-prix";
+import { getCoefsPrix } from "./niveaux-prix-serveur";
 import { correspondance } from "@/lib/calculateur/correspondance";
 import { chiffrer } from "@/lib/calculateur/engine";
 
@@ -168,7 +169,8 @@ export async function chiffrageDepuisLead(lead: Lead, coefficient?: number) {
 export async function draftOptionsFromLead(lead: Lead, coefficient?: number): Promise<QuoteOption[]> {
   const c = await chiffrageDepuisLead(lead, coefficient);
   // Remise affichée au client : écart avec le plein tarif.
-  const plein = coefficient && coefficient < COEF_PLEIN ? await chiffrageDepuisLead(lead, COEF_PLEIN) : null;
+  const coefPlein = (await getCoefsPrix()).plein;
+  const plein = coefficient && coefficient < coefPlein ? await chiffrageDepuisLead(lead, coefPlein) : null;
   const remise = c && plein ? r2(plein.r.prixHT - c.r.prixHT) : 0;
   if (!c) {
     // Demande incomplète : une ligne à compléter, reprise de l'estimation s'il y en a une.
@@ -221,7 +223,7 @@ export async function draftOptionsFromLead(lead: Lead, coefficient?: number): Pr
 /** Prix du projet d'une demande à chacun des niveaux autorisés ; null si la demande est incomplète. */
 export async function prixParNiveau(lead: Lead): Promise<{ coef: number; label: string; aide: string; ht: number; ttc: number }[] | null> {
   const out = [];
-  for (const n of NIVEAUX_PRIX) {
+  for (const n of niveauxDepuis(await getCoefsPrix())) {
     const c = await chiffrageDepuisLead(lead, n.coef);
     if (!c) return null;
     out.push({ ...n, ht: c.r.prixHT, ttc: c.r.prixTTC });
@@ -231,7 +233,7 @@ export async function prixParNiveau(lead: Lead): Promise<{ coef: number; label: 
 
 /** Prix plancher HT du projet (coefficient le plus bas autorisé) ; null si la demande est incomplète. */
 export async function plancherHt(lead: Lead): Promise<number | null> {
-  const c = await chiffrageDepuisLead(lead, COEF_PLANCHER);
+  const c = await chiffrageDepuisLead(lead, (await getCoefsPrix()).exceptionnelle);
   return c ? c.r.prixHT : null;
 }
 
@@ -248,6 +250,7 @@ const SYSTEMES_PLANCHER = ["rail", "pinces", "spider"] as const;
 export async function refusPlancher(lead: Lead | null, options: QuoteOption[], admin: boolean): Promise<string | null> {
   if (admin || !lead || options.length === 0) return null;
   const a = (lead.answers ?? {}) as Record<string, unknown>;
+  const COEF_PLANCHER = (await getCoefsPrix()).exceptionnelle;
   const planchers: Partial<Record<(typeof SYSTEMES_PLANCHER)[number], { total: number; auMetre: number }>> = {};
   for (const sys of SYSTEMES_PLANCHER) {
     const c = await chiffrageDepuisLead({ ...lead, answers: { ...a, systeme: sys } }, COEF_PLANCHER);

@@ -1,4 +1,4 @@
-import { requireMenu } from "@/lib/admin/auth";
+import { peutVoirFiche, requireMenu } from "@/lib/admin/auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -8,6 +8,8 @@ import { getLead } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
 import { QUOTE_STATUT_LABELS, chiffrageDepuisLead, getQuote, prixParNiveau } from "@/lib/admin/quotes";
 import { getTarifsSite } from "@/lib/admin/prices";
+import { niveauxDepuis } from "@/lib/admin/niveaux-prix";
+import { getCoefsPrix } from "@/lib/admin/niveaux-prix-serveur";
 import { getSociete, societeManquants } from "@/lib/admin/societe";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +19,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
   const quote = await getQuote(Number((await params).id));
   if (!quote) notFound();
   const fiche = quote.lead_id ? await getLead(quote.lead_id) : null;
+  if (fiche && !peutVoirFiche(me, fiche)) notFound();
   const lectureSeule = fiche ? refusAction(me, fiche) : null;
   // Chiffrage intégré au devis : projet de la demande, prix aux trois niveaux autorisés.
   let chiffrage = null;
@@ -25,6 +28,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
     const c = await chiffrageDepuisLead(fiche);
     chiffrage = {
       niveaux: await prixParNiveau(fiche),
+      grille: niveauxDepuis(await getCoefsPrix()),
       coef: quote.coef ? Number(quote.coef) : null,
       coefSite: (await getTarifsSite()).coefDefaut,
       projet: {

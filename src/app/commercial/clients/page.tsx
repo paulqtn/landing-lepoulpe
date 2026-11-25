@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Download, UserPlus } from "lucide-react";
 import { LeadsTable, type LeadRow } from "@/components/admin/LeadsTable";
-import { currentRep, requireMenu } from "@/lib/admin/auth";
+import { currentRep, requireMenu, voitTout } from "@/lib/admin/auth";
 import { countLeads, listLeads, STATUT_LABELS, STATUTS } from "@/lib/admin/db";
 import { getTeam } from "@/lib/admin/team";
 
@@ -12,10 +12,11 @@ export default async function LeadsPage({
 }: {
   searchParams: Promise<{ statut?: string; q?: string; qui?: string; page?: string }>;
 }) {
-  await requireMenu("clients");
+  const me = await requireMenu("clients");
   const { statut, q, qui, page: pageParam } = await searchParams;
   const rep = await currentRep();
-  const mode = qui === "tous" || !rep ? "tous" : qui === "libre" ? "libre" : "moi";
+  const equipe = voitTout(me); // un commercial ne voit que ses clients et la file
+  const mode = qui === "libre" ? "libre" : equipe && (qui === "tous" || !rep) ? "tous" : "moi";
   const assigned = mode === "moi" && rep ? rep : mode === "libre" ? "__libre" : undefined;
   const PAGE = 50;
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
@@ -75,7 +76,7 @@ export default async function LeadsPage({
       {rep && (
         <div className="flex flex-wrap gap-1.5">
           <FilterChip href={`/commercial/clients${statut ? `?statut=${statut}` : ""}`} active={mode === "moi"} label={`Mes clients`} />
-          <FilterChip href={`/commercial/clients?qui=tous${statut ? `&statut=${statut}` : ""}`} active={mode === "tous"} label="Toute l'équipe" />
+          {equipe && <FilterChip href={`/commercial/clients?qui=tous${statut ? `&statut=${statut}` : ""}`} active={mode === "tous"} label="Toute l'équipe" />}
           <FilterChip href={`/commercial/clients?qui=libre${statut ? `&statut=${statut}` : ""}`} active={mode === "libre"} label="À piocher" />
         </div>
       )}

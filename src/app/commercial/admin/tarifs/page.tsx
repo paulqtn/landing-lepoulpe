@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { PriceEditor } from "@/components/admin/PriceEditor";
-import { CommissionsForm, DelaisForm, SocieteForm } from "@/components/admin/SettingsForms";
+import { CommissionsForm, DelaisForm, NiveauxPrixForm, SocieteForm } from "@/components/admin/SettingsForms";
+import { getCoefsPrix } from "@/lib/admin/niveaux-prix-serveur";
 import { DELAIS_LABELS, getDelais } from "@/lib/admin/logistics-tasks";
 import { requireMenu } from "@/lib/admin/auth";
 import { getCompSettings } from "@/lib/admin/compens";
-import { ENGINE_LABELS, currentVersion, describe, listVersions, type Engine } from "@/lib/admin/prices";
+import { ENGINE_LABELS, currentVersion, describe, getTarifsSite, listVersions, type Engine } from "@/lib/admin/prices";
 import { referenceScenarios } from "@/lib/admin/prices-ref";
 import { SOCIETE_FIELDS, getSociete } from "@/lib/admin/societe";
 
@@ -68,9 +69,15 @@ async function Tarifs({ engine }: { engine: Engine }) {
 }
 
 async function Parametres() {
-  const [comp, societe, delais] = await Promise.all([getCompSettings(), getSociete(), getDelais()]);
+  const [comp, societe, delais, coefs, tarifsSite] = await Promise.all([getCompSettings(), getSociete(), getDelais(), getCoefsPrix(), getTarifsSite()]);
+  const coefSite = tarifsSite.coefDefaut;
   return (
     <>
+      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+        <h2 className="text-base font-extrabold text-inkgreen">Niveaux de prix des devis</h2>
+        <p className="mb-4 mt-1 text-xs text-neutral-400">Les trois prix qu&rsquo;un commercial peut choisir dans un devis. Un devis déjà envoyé ne change pas.</p>
+        <NiveauxPrixForm initial={coefs} coefSite={coefSite} />
+      </section>
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         <h2 className="mb-4 text-base font-extrabold text-inkgreen">Rémunération des commerciaux</h2>
         <CommissionsForm initial={comp} />

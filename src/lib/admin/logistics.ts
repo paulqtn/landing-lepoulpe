@@ -269,12 +269,15 @@ export type GlobalStats = {
   stockAlertes: number;
 };
 
-export async function globalStats(): Promise<GlobalStats> {
-  const [leads, orders, stock] = await Promise.all([
-    listLeadsLight(),
+/** `assigned` : limite les statistiques aux affaires d'un commercial (ses commandes comprises). */
+export async function globalStats(assigned?: string): Promise<GlobalStats> {
+  const [leads, toutes, stock] = await Promise.all([
+    listLeadsLight(assigned ? { assigned } : {}),
     listOrders(),
     listStock(),
   ]);
+  const miens = new Set(leads.map((l) => l.id));
+  const orders = assigned ? toutes.filter((o) => o.lead_id !== null && miens.has(o.lead_id)) : toutes;
 
   // Volume par jour (30 jours), trous comblés.
   const parJour: { d: string; n: number }[] = [];

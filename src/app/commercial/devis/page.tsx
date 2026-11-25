@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, FileText } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge } from "@/components/admin/ui";
-import { currentRep, requireMenu } from "@/lib/admin/auth";
+import { currentRep, requireMenu, voitTout } from "@/lib/admin/auth";
 import { listLeads } from "@/lib/admin/db";
 import { USAGE_LABELS } from "@/lib/admin/statuts";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
@@ -12,9 +12,10 @@ export const dynamic = "force-dynamic";
    relecture du brouillon généré, puis envoi après validation. */
 
 export default async function DevisPage({ searchParams }: { searchParams: Promise<{ qui?: string }> }) {
-  await requireMenu("devis");
+  const me = await requireMenu("devis");
   const [{ qui }, rep, tous] = await Promise.all([searchParams, currentRep(), listLeads({ statut: "nouveau", limit: 1000 })]);
-  const mode = qui === "tous" || !rep ? "tous" : "moi";
+  const equipe = voitTout(me);
+  const mode = equipe && (qui === "tous" || !rep) ? "tous" : "moi";
   const base = tous;
   const list = (mode === "moi" ? base.filter((l) => l.assigned_to === rep) : base).sort(
     (a, b) => Number(new Date(a.created_at)) - Number(new Date(b.created_at)),
@@ -34,7 +35,7 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
             Chaque demande a son brouillon de devis : relisez-le, ajustez les lignes, puis validez l&rsquo;envoi — le statut passe alors à « Devis envoyé ».
           </p>
         </div>
-        {rep && (
+        {rep && equipe && (
           <div className="flex gap-1.5">
             <Chip href="/commercial/devis" active={mode === "moi"} label="Les miens" />
             <Chip href="/commercial/devis?qui=tous" active={mode === "tous"} label="Toute l'équipe" />

@@ -1,5 +1,5 @@
 import { eurFmt } from "@/components/admin/ui";
-import { currentRep, requireMenu } from "@/lib/admin/auth";
+import { currentRep, requireMenu, voitTout } from "@/lib/admin/auth";
 import { getCompSettings, repStats } from "@/lib/admin/compens";
 import { listLeadsLight } from "@/lib/admin/db";
 import { USAGE_LABELS } from "@/lib/admin/statuts";
@@ -52,10 +52,12 @@ function Panel({ title, children, note }: { title: string; children: React.React
 }
 
 export default async function StatsPage() {
-  await requireMenu("stats");
-  const [rep, leads, g] = await Promise.all([currentRep(), listLeadsLight(), globalStats()]);
-  const team = await getTeam();
-  const reps = [...new Set([...team, ...leads.map((l) => l.assigned_to).filter((x): x is string => Boolean(x))])];
+  const me = await requireMenu("stats");
+  // Un commercial ne voit que ses propres chiffres ; les administrateurs voient toute l'équipe.
+  const moi = voitTout(me) ? undefined : me.name;
+  const [rep, leads, g] = await Promise.all([currentRep(), listLeadsLight(moi ? { assigned: moi } : {}), globalStats(moi)]);
+  const team = moi ? [moi] : await getTeam();
+  const reps = moi ? [moi] : [...new Set([...team, ...leads.map((l) => l.assigned_to).filter((x): x is string => Boolean(x))])];
   const comp = await getCompSettings();
   const perReps = reps.map((r) => repStats(leads, r, comp)).sort((a, b) => b.caMois - a.caMois);
   const funnelMax = Math.max(1, ...g.funnel.map((f) => f.n));

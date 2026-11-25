@@ -94,6 +94,22 @@ appel sans réponse laisse la séquence continuer. « Reprendre la séquence » 
 où elle s'était arrêtée. Les clients à rappeler apparaissent dans l'onglet Relances et
 dans les priorités de l'accueil.
 
+## Niveaux de prix réglables, et ce que voit chaque commercial
+
+- **Niveaux de prix** : *Tarifs et paramètres → Commissions, délais et société → Niveaux de prix
+  des devis*. Trois coefficients (plein tarif, remise, remise exceptionnelle = plancher), réservés
+  aux administrateurs, contrôlés (décroissants, supérieurs à 1) et inscrits au journal. Paramètre
+  `niveaux_prix`, valeurs de départ 1,7 / 1,6 / 1,5 (`src/lib/admin/niveaux-prix.ts`). Le coefficient
+  du site public reste dans l'onglet « Tarifs du site ». Un devis déjà envoyé ne change pas.
+- **Chacun ses vues** : un commercial ne voit que ses clients, ses devis, ses relances, ses
+  affaires dans la vue Kanban et la production, et ses propres statistiques. Les fiches, devis,
+  PDF et fichiers d'un collègue lui renvoient « introuvable » (`peutVoirFiche`, `voitTout` dans
+  `src/lib/admin/auth.ts`). La file des demandes reste commune (lecture seule tant que la demande
+  n'est pas prise). Les administrateurs voient toute l'équipe.
+- **Primes** : tout ce qui est facturé sur le devis retenu compte dans la marge (4 % de la marge
+  brute), lignes ajoutées à la main comprises.
+- **File** : ordre d'arrivée strict, sans exception pour un client qui valide en ligne.
+
 ## Règles de vente (prix plancher, envoi, signature)
 
 - **Prix plancher** (`refusPlancher`, `src/lib/admin/quotes.ts`) : contrôlé sur chaque proposition,

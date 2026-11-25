@@ -16,7 +16,7 @@ type Client = { name: string; email: string; phone: string; address: string };
 
 type Niveau = { coef: number; label: string; aide: string; ht: number; ttc: number };
 type Projet = { systeme: string; cotes: number[]; hauteur: number; verre: string; verreRetenu: string; teinte: string; codePostal: string };
-type Chiffrage = { niveaux: Niveau[] | null; coef: number | null; coefSite: number; projet: Projet };
+type Chiffrage = { niveaux: Niveau[] | null; grille: { coef: number; label: string }[]; coef: number | null; coefSite: number; projet: Projet };
 const SYSTEMES: [string, string][] = [["rail", "Rail"], ["pinces", "Pinces"], ["spider", "Fixations ponctuelles (spider)"]];
 const TEINTES: [string, string][] = [["clair", "Clair"], ["extra-clair", "Extra clair"], ["fume-1f", "Fumé une face"], ["fume-2f", "Fumé deux faces"]];
 const coefTxt = (c: number) => `×${String(c).replace(".", ",")}`;
@@ -283,7 +283,7 @@ export function QuoteEditor(props: {
           <fieldset className="mt-4">
             <legend className="mb-2 text-xs font-bold text-inkgreen">Niveau de prix</legend>
             <div className="grid gap-2 sm:grid-cols-3">
-              {(niveaux ?? [1.7, 1.6, 1.5].map((c) => ({ coef: c, label: c === 1.7 ? "Plein tarif" : c === 1.6 ? "Remise" : "Remise exceptionnelle", aide: "", ht: 0, ttc: 0 }))).map((x) => (
+              {(niveaux ?? ch.grille.map((g) => ({ ...g, aide: "", ht: 0, ttc: 0 }))).map((x) => (
                 <label key={x.coef} className={`flex cursor-pointer items-start gap-2.5 rounded-xl border px-3 py-2.5 transition ${coef === x.coef ? "border-amber-500 bg-amber-500/10" : "border-neutral-200 hover:bg-amber-500/15"}`}>
                   <input type="radio" name="niveau-prix" className="mt-1 accent-pine-700" checked={coef === x.coef} onChange={() => setCoef(x.coef)} />
                   <span className="min-w-0">

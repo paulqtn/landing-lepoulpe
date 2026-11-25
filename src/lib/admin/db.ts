@@ -390,13 +390,14 @@ export async function listLeadsLight(opts: { assigned?: string } = {}): Promise<
 }
 
 /** Aperçu du pipeline : les N demandes les plus récentes de chaque statut. */
-export async function pipelineApercu(parStatut = 8): Promise<Lead[]> {
-  if (!dbConfigured) return demoLeads();
+export async function pipelineApercu(parStatut = 8, assigned?: string): Promise<Lead[]> {
+  if (!dbConfigured) return demoLeads().filter((l) => !assigned || l.assigned_to === assigned);
   return q<Lead>(
     `SELECT * FROM (
        SELECT *, row_number() OVER (PARTITION BY statut ORDER BY created_at DESC, id DESC) AS rn FROM leads
+       WHERE ($2::text IS NULL OR assigned_to = $2)
      ) t WHERE rn <= $1 ORDER BY created_at DESC`,
-    [parStatut],
+    [parStatut, assigned ?? null],
   );
 }
 
@@ -594,10 +595,10 @@ export async function leadsJour(): Promise<{ aAppeler: Lead[]; chauds: Lead[] }>
 }
 
 /** Pipeline : volume et CA estimé par statut. */
-export async function pipeline(): Promise<{ statut: Statut; n: number; total: number }[]> {
+export async function pipeline(assigned?: string): Promise<{ statut: Statut; n: number; total: number }[]> {
   if (!dbConfigured) {
     const by = new Map<Statut, { n: number; total: number }>();
-    for (const l of demoLeads()) {
+    for (const l of demoLeads().filter((x) => !assigned || x.assigned_to === assigned)) {
       const cur = by.get(l.statut) ?? { n: 0, total: 0 };
       cur.n += 1;
       cur.total += l.estimation_ttc ? Number(l.estimation_ttc) : 0;
@@ -610,7 +611,8 @@ export async function pipeline(): Promise<{ statut: Statut; n: number; total: nu
   }
   const rows = await q<{ statut: Statut; n: string; total: string }>(
     `SELECT statut, count(*)::int AS n, COALESCE(sum(estimation_ttc), 0)::float AS total
-     FROM leads GROUP BY statut`,
+     FROM leads WHERE ($1::text IS NULL OR assigned_to = $1) GROUP BY statut`,
+    [assigned ?? null],
   );
   const order = STATUTS as readonly string[];
   return rows

@@ -140,6 +140,13 @@ export const canManageUsers = (u: User | null) => u?.role === "superadmin";
 /** Outils sensibles hors menus (RGPD) : rôles d'administration uniquement. */
 export const canManageSettings = (u: User | null) => u?.role === "superadmin" || u?.role === "admin";
 
+/* ----------------------- Ce que chacun peut voir ---------------------- */
+
+/** Les rôles d'administration voient toute l'équipe ; un commercial ne voit que ses propres clients et chiffres. */
+export const voitTout = (u: User | null) => u?.role === "superadmin" || u?.role === "admin";
+/** Une fiche se voit par son commercial, par les administrateurs, et par tous tant qu'elle attend dans la file. */
+export const peutVoirFiche = (u: User, lead: { assigned_to: string | null }) => voitTout(u) || !lead.assigned_to || lead.assigned_to === u.name;
+
 /* ------------------------- Droits par menu ------------------------- */
 
 export const userMenus = (u: User): MenuKey[] => effectiveMenus(u.role, u.menus);
