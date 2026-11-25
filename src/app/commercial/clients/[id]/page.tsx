@@ -8,9 +8,7 @@ import { getLead, listEvents } from "@/lib/admin/db";
 import { niveauInfo } from "@/lib/admin/niveaux";
 import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
-import { MargeActions } from "@/components/admin/MargeActions";
-import { RgpdActions } from "@/components/admin/RgpdActions";
-import { canManageSettings, currentUser, requireMenu } from "@/lib/admin/auth";
+import { requireMenu } from "@/lib/admin/auth";
 import { QUOTE_STATUT_LABELS, quotesForLead } from "@/lib/admin/quotes";
 
 export const dynamic = "force-dynamic";
@@ -42,7 +40,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const lead = await getLead(Number(id));
   if (!lead) notFound();
-  const [events, quotes, me] = await Promise.all([listEvents(lead.id), quotesForLead(lead.id), currentUser()]);
+  const [events, quotes] = await Promise.all([listEvents(lead.id), quotesForLead(lead.id)]);
   const niveau = niveauInfo(lead.niveau);
   const answers = (lead.answers ?? {}) as Record<string, unknown>;
 
@@ -183,11 +181,6 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           rappelAt={lead.rappel_at ? new Date(lead.rappel_at).toISOString() : null}
           devisEnvoye={quotes.some((x) => x.statut === "envoye") || events.some((e) => e.type === "devis_envoye")}
         />
-
-        {canManageSettings(me) && (
-          <MargeActions leadId={lead.id} venteHt={lead.vente_ht ?? null} coutAchat={lead.cout_achat ?? null} marge={lead.marge_brute ?? null} source={lead.marge_source ?? null} gagne={lead.statut === "gagne"} />
-        )}
-        {canManageSettings(me) && <RgpdActions leadId={lead.id} anonymized={Boolean(lead.anonymized_at)} />}
 
         {lead.statut === "gagne" && (
           <div className="rounded-2xl border border-pine-200 bg-pine-50/60 p-4">

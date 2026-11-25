@@ -35,8 +35,8 @@ email, relances programmées, suivi commercial.
 - **Primes des commerciaux** (par mois civil) : 4 % de la marge brute des affaires signées,
   plus 150 € dès 110 000 € de CA HT puis 150 € par tranche de 10 000 € supplémentaire. Les
   quatre paramètres sont modifiables. La marge d'une affaire (vente HT − coût d'achat calculé
-  par le moteur) est figée au passage à « Signé » ; un administrateur peut la corriger sur la
-  fiche client. Règle de calcul : `src/lib/admin/prime.ts` (testée par `npm test`).
+  par le moteur) est figée au passage à « Signé ». Le bloc de correction manuelle a été retiré
+  de la fiche client (l'API `/api/admin/leads/[id]/marge` existe toujours). Règle de calcul : `src/lib/admin/prime.ts` (testée par `npm test`).
 - **Mentions de la société** (adresse, SIRET, TVA, conditions) reprises
   sur les devis.
 
@@ -123,8 +123,9 @@ et de styles, aucune image externe, aucun script. Un texte collé perd sa mise e
 
 ## RGPD
 
-Sur chaque fiche client (rôles admin) : export des données de la personne, et
-anonymisation définitive (les montants et statuts sont conservés pour les statistiques).
+Le bloc « Données personnelles » a été retiré de la fiche client. L'export et l'anonymisation
+définitive restent disponibles côté serveur (`/api/admin/leads/[id]/rgpd`, rôles admin) pour
+répondre à une demande d'un client ; le composant `RgpdActions` peut être remis sur la fiche.
 
 ## Fonctionnement
 
