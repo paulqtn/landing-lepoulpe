@@ -65,6 +65,15 @@ validé l'affaire (passage à « Gagné », `leads.won_at`) : lancement J+1, dé
 façonnage J+6, prêt J+8, expédition J+10. Délais réglables dans *Tarifs et paramètres →
 Commissions, délais et société*. Menus ajustables compte par compte dans *Utilisateurs*.
 
+## Relances automatiques
+
+Trois e-mails de relance partent après un devis **validé et envoyé** (jamais avant), par la
+tâche quotidienne de `vercel.json`. Dans l'onglet *Relances*, les rôles d'administration
+modifient l'objet, le texte et le bouton de chaque relance, les trois délais, et disposent
+d'un aperçu, d'un envoi d'essai et d'un interrupteur général. Variables : `{prenom}`,
+`{nom}`, `{montant}`, `{telephone}`, `{societe}`. La séquence s'arrête dès que l'affaire est
+gagnée, perdue ou « à rappeler ». Code : `src/lib/admin/relances.ts` et `sequence.ts`.
+
 ## RGPD
 
 Sur chaque fiche client (rôles admin) : export des données de la personne, et

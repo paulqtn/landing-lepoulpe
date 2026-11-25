@@ -197,7 +197,7 @@ export default async function CommercialHome() {
       {!mailConfigured && (
         <p className="flex items-start gap-2.5 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-neutral-700">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-          Emails automatiques inactifs : ajoutez RESEND_API_KEY et EMAIL_FROM dans Vercel (voir ADMIN.md).
+          Envoi d&rsquo;e-mails non branché : les devis et les relances ne partent pas. Ajoutez RESEND_API_KEY et EMAIL_FROM dans Vercel (voir ADMIN.md).
         </p>
       )}
     </div>

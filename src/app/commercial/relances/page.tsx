@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { BellRing, CalendarClock, MailCheck } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
-import { currentRep, requireMenu } from "@/lib/admin/auth";
+import { RelancesEditor } from "@/components/admin/RelancesEditor";
+import { canManageSettings, requireMenu } from "@/lib/admin/auth";
+import { VARIABLES, getRelanceSettings } from "@/lib/admin/relances";
 import { dueRelances, type Lead, relancesAVenir } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
 
@@ -11,8 +13,10 @@ export const dynamic = "force-dynamic";
    ce qui partira ensuite, et l'engagement constaté sur chaque client. */
 
 export default async function RelancesPage({ searchParams }: { searchParams: Promise<{ qui?: string }> }) {
-  await requireMenu("relances");
-  const [{ qui }, rep, duesAll] = await Promise.all([searchParams, currentRep(), dueRelances()]);
+  const user = await requireMenu("relances");
+  const rep = user.name;
+  const [{ qui }, duesAll, seq] = await Promise.all([searchParams, dueRelances(), getRelanceSettings()]);
+  const jours = seq.delais.reduce<number[]>((acc, d, i) => [...acc, (acc[i - 1] ?? 0) + d], []);
   const mine = rep && qui !== "tous";
   const dues = mine ? duesAll.filter((l) => l.assigned_to === rep) : duesAll;
   const aVenir = await relancesAVenir(mine && rep ? rep : undefined, 20);
@@ -22,8 +26,8 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
       <div>
         <h1 className="text-2xl font-extrabold text-inkgreen">Relances</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          Séquence automatique J0 → J+2 → J+5 → J+10 ·{" "}
-          {mailConfigured ? "envoi chaque matin par le robot" : "emails non configurés : relancez depuis chaque fiche"}
+          Séquence : devis envoyé (J0) → relance 1 à J+{jours[0]} → relance 2 à J+{jours[1]} → relance 3 à J+{jours[2]} ·{" "}
+          {!mailConfigured ? "e-mails non branchés : rien ne part pour l'instant" : seq.active ? "envoi automatique chaque matin" : "envoi automatique désactivé"}
         </p>
         {rep && (
           <div className="mt-2.5 flex gap-1.5">
@@ -32,6 +36,8 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
           </div>
         )}
       </div>
+
+      {canManageSettings(user) && <RelancesEditor initial={seq} variables={VARIABLES} mailConfigured={mailConfigured} testTo={user.email} />}
 
       <section className="rounded-2xl border border-amber-500/40 bg-white p-5">
         <h2 className="flex items-center gap-2 text-base font-extrabold text-inkgreen">
@@ -68,7 +74,7 @@ function Liste({ leads, vide, mode }: { leads: Lead[]; vide: string; mode: "due"
           <Link href={`/commercial/clients/${l.id}`} className="min-w-0 flex-1">
             <span className="block truncate text-sm font-bold text-inkgreen hover:text-pine-700">{l.name}</span>
             <span className="block text-xs text-neutral-400">
-              relance {l.relances + 1}/4 · {mode === "due" ? "prévue le" : "partira le"}{" "}
+              relance {Math.min(l.relances + 1, 3)}/3 · {mode === "due" ? "prévue le" : "partira le"}{" "}
               {l.next_relance_at ? dateFmt.format(new Date(l.next_relance_at)) : "—"}
               {l.opens > 0 && ` · ${l.opens} ouverture${l.opens > 1 ? "s" : ""}`}
               {l.devis_views > 0 && ` · devis consulté`}

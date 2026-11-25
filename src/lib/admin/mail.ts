@@ -1,6 +1,7 @@
 import type { Lead } from "./db";
 import { fichesPourLead, videoPourLead } from "./assets";
 import { site } from "@/lib/site";
+import { NB_RELANCES, getRelanceSettings, renderRelance, type RelanceMail, type RelanceVars } from "./relances";
 
 /* ================================================================== */
 /*  Emails (devis automatique + séquence de relances) via Resend.      */
@@ -14,8 +15,7 @@ const FROM = process.env.EMAIL_FROM ?? `${site.name} <devis@example.com>`;
 const REPLY_TO = process.env.EMAIL_REPLY_TO;
 const eur = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 
-/** Cadence de la séquence : jours à attendre APRÈS chaque envoi (devis, r1, r2). */
-export const SEQ_DELAIS_JOURS = [2, 3, 5];
+/** Nombre de relances de la séquence (textes et délais : voir relances.ts). */
 export const SEQ_MAX = 3;
 
 type SendResult = { sent: boolean; reason?: string };
@@ -178,47 +178,33 @@ export async function sendQuoteEmail(input: {
 
 /* ------------------------ Séquence de relances ----------------------- */
 
-function relanceUsage(lead: Lead): string {
-  const a = (lead.answers ?? {}) as Record<string, unknown>;
-  const lieu = String(a.lieu ?? a.usage ?? "");
-  if (lieu === "piscine")
-    return `Pour une piscine, le garde-corps n'est pas qu'esthétique : la loi impose une barrière de
-      protection conforme. Votre configuration respecte la norme NF P90-306 côté hauteur — et votre
-      tarif est toujours valable.`;
-  if (lieu === "balcon" || lieu === "fenetre" || lieu === "mezzanine")
-    return `Dès 1 m de hauteur de chute, le garde-corps conforme NF P01-012 est obligatoire. Votre
-      configuration est dimensionnée pour — et votre tarif est toujours valable.`;
-  return `Votre tarif est toujours valable et vos cotes sont prêtes pour le devis détaillé — il ne
-      manque qu'une validation par notre technicien.`;
+function relanceVars(lead: Pick<Lead, "name" | "estimation_ttc">): RelanceVars {
+  const nom = lead.name.trim();
+  return {
+    prenom: nom.split(/\s+/)[0] ?? nom,
+    nom,
+    montant: lead.estimation_ttc ? `${eur.format(Number(lead.estimation_ttc))} € TTC` : "votre devis",
+    telephone: site.phone,
+    societe: site.name,
+  };
+}
+
+/** Objet + HTML complet d'une relance (sert à l'envoi, à l'aperçu et au test). */
+export function buildRelanceEmail(mail: RelanceMail, lead: Pick<Lead, "name" | "estimation_ttc" | "token">): { sujet: string; html: string } {
+  const r = renderRelance(mail, relanceVars(lead));
+  const cta = lead.token && r.bouton ? `<p style="text-align:center;margin:18px 0;">${bouton(devisUrl(lead as Lead), r.bouton.replace(/[<>&"]/g, ""))}</p>` : "";
+  return { sujet: r.sujet, html: wrap(`${r.corpsHtml}${cta}`) };
 }
 
 export async function sendRelanceEmail(lead: Lead, numero: number): Promise<SendResult> {
-  const sujets = [
-    "Votre devis garde-corps en verre vous attend",
-    "Ils ont choisi le verre — votre projet aussi mérite la vue",
-    "Dernier rappel : votre devis expire bientôt",
-  ];
-  const corps =
-    numero <= 1
-      ? `<p style="font-size:14px;line-height:1.6;">${relanceUsage(lead)}</p>
-         <p style="text-align:center;margin:16px 0;">${bouton(devisUrl(lead), "Revoir mon devis en ligne")}</p>`
-      : numero === 2
-        ? `<p style="font-size:14px;line-height:1.6;">
-             Chaque semaine, nous livrons des garde-corps en verre partout en France — piscines à
-             débordement, balcons face à la mer, terrasses panoramiques. Le point commun : un tarif
-             direct usine et une découpe au millimètre. Le vôtre est prêt :
-           </p>
-           <p style="text-align:center;margin:16px 0;">${bouton(devisUrl(lead), "Revoir mon devis en ligne")}</p>
-           <p style="font-size:13px;line-height:1.6;color:#5a6b61;">
-             Envie de voir nos réalisations ? <a href="${site.url}" style="color:#175a3b;font-weight:bold;">Elles défilent sur notre page d'accueil.</a>
-           </p>`
-        : `<p style="font-size:14px;line-height:1.6;">
-             Dernier message de notre part : notre planning de fabrication sous 10 jours se remplit,
-             et nous classerons votre demande cette semaine. Un simple « rappelez-moi » en réponse
-             suffit pour la réactiver — ou validez directement en ligne :
-           </p>
-           <p style="text-align:center;margin:16px 0;">${bouton(devisUrl(lead), "Voir mon devis avant qu'il expire")}</p>`;
+  const settings = await getRelanceSettings();
+  const mail = settings.mails[Math.min(Math.max(numero, 1), NB_RELANCES) - 1];
+  const { sujet, html } = buildRelanceEmail(mail, lead);
+  return send(lead.email, sujet, html);
+}
 
-  const html = wrap(`<p style="font-size:15px;">Bonjour ${lead.name},</p>${corps}${numero <= 1 ? recap(lead) : ""}`);
-  return send(lead.email, sujets[Math.min(numero - 1, sujets.length - 1)], html);
+/** Envoi d'essai d'une relance à l'adresse de la personne connectée. */
+export async function sendRelanceTest(to: string, mail: RelanceMail): Promise<SendResult> {
+  const { sujet, html } = buildRelanceEmail(mail, { name: "Camille Dupont", estimation_ttc: "4850", token: "apercu" });
+  return send(to, `[TEST] ${sujet}`, html);
 }

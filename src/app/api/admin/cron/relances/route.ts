@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { dueRelances, updateLead } from "@/lib/admin/db";
 import { mailConfigured, SEQ_MAX } from "@/lib/admin/mail";
+import { getRelanceSettings } from "@/lib/admin/relances";
 import { envoyerRelance } from "@/lib/admin/sequence";
 
 /**
@@ -14,6 +15,10 @@ export async function GET(req: Request) {
   }
   if (!mailConfigured) {
     return NextResponse.json({ ok: true, traitees: 0, info: "emails non configurés — relances à faire à la main" });
+  }
+
+  if (!(await getRelanceSettings()).active) {
+    return NextResponse.json({ ok: true, traitees: 0, info: "envoi automatique désactivé dans l'onglet Relances" });
   }
 
   const dues = await dueRelances();

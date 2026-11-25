@@ -1,3 +1,4 @@
+import { premiereRelance } from "@/lib/admin/sequence";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, getLead, updateLead } from "@/lib/admin/db";
@@ -61,7 +62,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     await updateLead(lead.id, {
       statut: lead.statut === "nouveau" ? "devis_envoye" : lead.statut,
       estimation_ttc: String(totals[0].ttc),
-      next_relance_at: new Date(Date.now() + 2 * 86400_000).toISOString(),
+      next_relance_at: await premiereRelance(),
     });
     await addEvent(lead.id, "devis_envoye", `Devis ${quote.ref} validé et envoyé par ${user.name} à ${to}`);
   }
