@@ -1,5 +1,5 @@
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "pdf-lib";
-import { optionTotals, type Quote } from "./quotes";
+import { lineTotal, optionTotals, type Quote } from "./quotes";
 import { QUOTE_IMAGES } from "./quote-images";
 import type { Societe } from "./societe";
 
@@ -135,7 +135,7 @@ export async function renderQuotePdf(quote: Quote, societe: Societe): Promise<Ui
       right(`${num(l.qty)}${l.unit ? ` ${l.unit}` : ""}`, cols.qty, y);
       right(money(l.unitPriceHt), cols.pu, y);
       right(`${num(l.vatRate * 100)} %`, cols.tva, y);
-      right(money(Math.round(l.qty * l.unitPriceHt * 100) / 100), cols.total, y, 9.5, bold);
+      right(money(lineTotal(l)), cols.total, y, 9.5, bold);
       const top = y - titres.length * 12.5 - 4;
       if (img) page.drawImage(img, { x: cols.desc, y: top - IMG_H + 9, width: IMG_W, height: IMG_H });
       detailLines.forEach((t, i) => text(t, detailX, top - i * 12.5, 9, font, GREY));
@@ -145,9 +145,18 @@ export async function renderQuotePdf(quote: Quote, societe: Societe): Promise<Ui
     }
 
     const t = optionTotals(o);
-    need(30 + t.tva.length * 14 + 30);
+    need(30 + t.tva.length * 14 + 30 + (t.remise > 0 ? 28 : 0));
     y -= 6;
     const lx = M + W - 210;
+    if (t.remise > 0) {
+      // La remise est montrée au client : prix normal, puis le geste accordé.
+      text("Prix normal HT", lx, y, 9.5, font, GREY);
+      right(money(t.ht + t.remise), cols.total, y, 9.5, font, GREY);
+      y -= 14;
+      text("Remise commerciale", lx, y, 9.5, bold, rgb(0.09, 0.353, 0.231));
+      right(`- ${money(t.remise)}`, cols.total, y, 9.5, bold, rgb(0.09, 0.353, 0.231));
+      y -= 14;
+    }
     text("Total HT", lx, y);
     right(money(t.ht), cols.total, y, 9.5, bold);
     y -= 14;

@@ -9,7 +9,7 @@ import { AlertTriangle, Calculator, Copy, Download, Eye, Loader2, Plus, Send, Tr
    l'enregistrement et à l'envoi. */
 
 type Img = "rail" | "pinces" | "spider";
-type Line = { description: string; qty: string; unitPriceHt: string; vatRate: number; unit?: string; image?: Img | null };
+type Line = { description: string; qty: string; unitPriceHt: string; vatRate: number; unit?: string; image?: Img | null; totalHt?: number; normalHt?: number };
 const IMG_SRC: Record<Img, string> = { rail: "/fixation-rail.png", pinces: "/fixation-pince.png", spider: "/fixation-spider.png" };
 type Option = { label: string; title: string; lines: Line[] };
 type Client = { name: string; email: string; phone: string; address: string };
@@ -28,12 +28,18 @@ const eur = (x: number) => `${x.toLocaleString("fr-FR", { minimumFractionDigits:
 const inputCls =
   "w-full rounded-lg border border-neutral-200 bg-white px-2.5 py-1.5 text-sm text-inkgreen outline-none transition focus:border-pine-500 focus:ring-4 focus:ring-pine-500/10";
 
+/* Mêmes règles que le serveur : le total exact d'une ligne chiffrée tient tant qu'elle n'est pas modifiée. */
+function lineTotal(l: Line) {
+  const calcule = r2((n(l.qty) || 0) * (n(l.unitPriceHt) || 0));
+  return typeof l.totalHt === "number" && Math.abs(l.totalHt - calcule) <= 0.005 * (n(l.qty) || 0) + 0.011 ? r2(l.totalHt) : calcule;
+}
 function totals(o: Option) {
   const by = new Map<number, number>();
-  for (const l of o.lines) by.set(l.vatRate, r2((by.get(l.vatRate) ?? 0) + r2((n(l.qty) || 0) * (n(l.unitPriceHt) || 0))));
+  for (const l of o.lines) by.set(l.vatRate, r2((by.get(l.vatRate) ?? 0) + lineTotal(l)));
   const ht = r2([...by.values()].reduce((s, v) => s + v, 0));
   const tva = r2([...by.entries()].reduce((s, [rate, base]) => s + r2(base * rate), 0));
-  return { ht, tva, ttc: r2(ht + tva) };
+  const remise = r2(o.lines.reduce((s, l) => s + (typeof l.totalHt === "number" && typeof l.normalHt === "number" && lineTotal(l) === r2(l.totalHt) ? Math.max(0, l.normalHt - l.totalHt) : 0), 0));
+  return { ht, tva, ttc: r2(ht + tva), remise };
 }
 
 export function QuoteEditor(props: {
@@ -41,7 +47,7 @@ export function QuoteEditor(props: {
   quoteRef: string;
   statut: "brouillon" | "envoye" | "annule";
   client: Client;
-  options: { label: string; title: string; lines: { description: string; qty: number; unitPriceHt: number; vatRate: number; unit?: string; image?: Img | null }[] }[];
+  options: { label: string; title: string; lines: { description: string; qty: number; unitPriceHt: number; vatRate: number; unit?: string; image?: Img | null; totalHt?: number; normalHt?: number }[] }[];
   sentInfo: string | null;
   blockers: string[];
   chiffrage?: Chiffrage | null;
@@ -376,10 +382,10 @@ export function QuoteEditor(props: {
                     </select>
                   </div>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <input aria-label="Quantité" inputMode="decimal" className={`${inputCls} !w-16 text-right tabular-nums`} disabled={!editable} value={l.qty} onChange={(e) => setLine(i, j, { qty: e.target.value })} />
+                    <input aria-label="Quantité" inputMode="decimal" className={`${inputCls} !w-16 text-right tabular-nums`} disabled={!editable} value={l.qty} onChange={(e) => setLine(i, j, { qty: e.target.value, totalHt: undefined, normalHt: undefined })} />
                     <input aria-label="Unité" placeholder="unité" className={`${inputCls} !w-14`} disabled={!editable} value={l.unit ?? ""} onChange={(e) => setLine(i, j, { unit: e.target.value })} />
                     <span className="text-xs text-neutral-400">×</span>
-                    <input aria-label="Prix unitaire HT" inputMode="decimal" className={`${inputCls} !w-24 text-right tabular-nums`} disabled={!editable} value={l.unitPriceHt} onChange={(e) => setLine(i, j, { unitPriceHt: e.target.value })} />
+                    <input aria-label="Prix unitaire HT" inputMode="decimal" className={`${inputCls} !w-24 text-right tabular-nums`} disabled={!editable} value={l.unitPriceHt} onChange={(e) => setLine(i, j, { unitPriceHt: e.target.value, totalHt: undefined, normalHt: undefined })} />
                     <span className="text-xs font-semibold text-neutral-400">€ HT</span>
                     <select aria-label="TVA" className={`${inputCls} !w-[7.25rem]`} disabled={!editable} value={l.vatRate} onChange={(e) => setLine(i, j, { vatRate: Number(e.target.value) })}>
                       {VAT.map((v) => <option key={v} value={v}>TVA {String(v * 100).replace(".", ",")} %</option>)}
@@ -402,6 +408,12 @@ export function QuoteEditor(props: {
             </div>
 
             <footer className="space-y-1 border-t border-neutral-100 p-4 text-sm">
+              {all[i].remise > 0 && (
+                <>
+                  <div className="flex justify-between text-neutral-500"><span>Prix normal HT</span><span className="tabular-nums">{eur(all[i].ht + all[i].remise)}</span></div>
+                  <div className="flex justify-between font-bold text-pine-700"><span>Remise commerciale (affichée au client)</span><span className="tabular-nums">− {eur(all[i].remise)}</span></div>
+                </>
+              )}
               <div className="flex justify-between text-neutral-500"><span>Total HT</span><span className="tabular-nums">{eur(all[i].ht)}</span></div>
               <div className="flex justify-between text-neutral-500"><span>TVA</span><span className="tabular-nums">{eur(all[i].tva)}</span></div>
               <div className="flex justify-between text-base font-extrabold text-inkgreen"><span>Total TTC</span><span className="tabular-nums text-pine-700">{eur(all[i].ttc)}</span></div>

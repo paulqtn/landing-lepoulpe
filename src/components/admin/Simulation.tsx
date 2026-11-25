@@ -383,7 +383,7 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
         </div>
 
         {/* ============================ RÉSULTAT ============================ */}
-        <aside className="order-first space-y-4 lg:sticky lg:top-24 lg:order-none lg:self-start">
+        <aside className="order-first space-y-4 lg:sticky lg:top-6 lg:order-none lg:self-start">
           <div className="rounded-2xl border border-neutral-200 bg-white p-5" aria-live="polite">
             <div className="flex items-center justify-between gap-2">
               {st ? (

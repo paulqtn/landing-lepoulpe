@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { HorsBackOffice } from "@/components/SiteChrome";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -48,9 +49,13 @@ export default function RootLayout({
   return (
     <html lang="fr" className={inter.variable}>
       <body>
-        <SiteHeader />
+        <HorsBackOffice>
+          <SiteHeader />
+        </HorsBackOffice>
         {children}
-        <SiteFooter />
+        <HorsBackOffice>
+          <SiteFooter />
+        </HorsBackOffice>
       </body>
     </html>
   );

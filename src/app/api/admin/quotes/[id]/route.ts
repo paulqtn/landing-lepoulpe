@@ -27,7 +27,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
   const droit = await refusDevis(user, id);
   if (droit.refus) return NextResponse.json({ ok: false, error: droit.refus }, { status: 403 });
-  const { options, error } = sanitizeOptions(body.options);
+  const { options, error } = sanitizeOptions(body.options, (await getQuote(id))?.options ?? []);
   if (error) return NextResponse.json({ ok: false, error }, { status: 422 });
   const plancher = await refusPlancher(droit.leadId ? await getLead(droit.leadId) : null, options, user.role === "superadmin" || user.role === "admin");
   if (plancher) return NextResponse.json({ ok: false, error: plancher }, { status: 422 });

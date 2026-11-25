@@ -295,4 +295,27 @@ export const MIGRATIONS: Migration[] = [
     id: "012_niveau_de_prix_du_devis",
     sql: `ALTER TABLE quotes ADD COLUMN coef NUMERIC(4,2);`,
   },
+  {
+    // Fichiers joints à une fiche client (plans, photos) : envoyés et stockés par morceaux.
+    id: "013_fichiers_des_fiches",
+    sql: `
+      CREATE TABLE lead_files (
+        id SERIAL PRIMARY KEY,
+        lead_id INT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
+        name TEXT NOT NULL,
+        mime TEXT NOT NULL,
+        bytes INT NOT NULL,
+        complete BOOLEAN NOT NULL DEFAULT false,
+        created_by TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+      CREATE INDEX idx_lead_files_lead ON lead_files(lead_id);
+      CREATE TABLE lead_file_chunks (
+        file_id INT NOT NULL REFERENCES lead_files(id) ON DELETE CASCADE,
+        idx INT NOT NULL,
+        data BYTEA NOT NULL,
+        PRIMARY KEY (file_id, idx)
+      );
+    `,
+  },
 ];

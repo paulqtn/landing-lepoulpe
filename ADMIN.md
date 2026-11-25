@@ -94,6 +94,27 @@ appel sans réponse laisse la séquence continuer. « Reprendre la séquence » 
 où elle s'était arrêtée. Les clients à rappeler apparaissent dans l'onglet Relances et
 dans les priorités de l'accueil.
 
+## Alertes, prospects saisis à la main, fichiers
+
+- **Alertes** : le back office interroge le serveur toutes les 30 secondes (onglet visible) et
+  affiche un message avec un son de cloche quand une demande arrive dans la file, ou quand un
+  client valide son devis en ligne ou demande un rappel (son commercial et les administrateurs).
+  Le bouton « Cloche » en haut coupe ou remet le son. `src/components/admin/Alertes.tsx`,
+  `/api/admin/alerts`. Le navigateur n'autorise le son qu'après un premier clic sur la page.
+- **Nouveau prospect** (*Clients → Nouveau prospect*) : pour un appel direct. Nom + téléphone ou
+  e-mail suffisent ; la fiche est attribuée à celui qui la crée et ne passe pas par la file. Si
+  fixation, longueurs et hauteur sont saisies, le projet est chiffré et le brouillon de devis créé.
+  Un doublon (même e-mail ou téléphone) est signalé avant création.
+- **Fichiers d'une fiche** : plans, photos, documents (PDF, images, DWG, DXF, Word, Excel), 10 Mo
+  par fichier, 30 par fiche. Stockés en base par morceaux de 2 Mo (`lead_files`,
+  `lead_file_chunks`) ; toujours servis en téléchargement. Ajout et suppression : commercial du
+  client ou administrateur.
+- **Remise et arrondis** : le chiffrage pose sur la ligne son total exact (`totalHt`) et le total
+  au plein tarif (`normalHt`). Le devis vaut donc l'estimation du site au centime, et la remise
+  apparaît à l'écran et sur le PDF (« Prix normal HT », « Remise commerciale »). Une ligne retouchée
+  à la main perd ces deux valeurs.
+- L'en-tête et le pied du site public ne s'affichent plus dans le back office.
+
 ## Supprimer un compte
 
 *Administration → Utilisateurs → Supprimer* (super-administrateur). Le compte est retiré

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Download } from "lucide-react";
+import { Download, UserPlus } from "lucide-react";
 import { LeadsTable, type LeadRow } from "@/components/admin/LeadsTable";
 import { currentRep, requireMenu } from "@/lib/admin/auth";
 import { countLeads, listLeads, STATUT_LABELS, STATUTS } from "@/lib/admin/db";
@@ -47,7 +47,7 @@ export default async function LeadsPage({
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-extrabold text-inkgreen">Clients</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <form className="flex gap-2" action="/commercial/clients">
             {statut && <input type="hidden" name="statut" value={statut} />}
             {qui && <input type="hidden" name="qui" value={qui} />}
@@ -58,6 +58,10 @@ export default async function LeadsPage({
               className="w-56 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm outline-none transition focus:border-pine-500"
             />
           </form>
+          <Link href="/commercial/clients/nouveau" className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-amber-500 px-4 py-2 text-xs font-bold text-pine-950 transition hover:bg-amber-600">
+            <UserPlus className="h-3.5 w-3.5" />
+            Nouveau prospect
+          </Link>
           <a
             href={exportHref}
             className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700"

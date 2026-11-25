@@ -156,6 +156,58 @@ export function LeadActions({
         </section>
       )}
 
+      {/* score du prospect */}
+      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+        <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+          <Gauge className="h-3.5 w-3.5" />
+          Score du prospect
+        </h2>
+        <div className="mt-3 space-y-1.5" role="radiogroup" aria-label="Score du prospect">
+          {NIVEAUX.map((x) => (
+            <button
+              key={x.n}
+              type="button"
+              role="radio"
+              aria-checked={niveau === x.n}
+              disabled={pending}
+              onClick={() => patch({ niveau: niveau === x.n ? null : x.n })}
+              className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition disabled:opacity-60 ${niveau === x.n ? "border-amber-500 bg-amber-500/10" : "border-neutral-200 hover:bg-amber-500/15"}`}
+            >
+              <span className="w-3 text-sm font-extrabold tabular-nums text-neutral-400">{x.n}</span>
+              <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${x.cls}`}>{x.label}</span>
+              <span className="min-w-0 flex-1 text-xs text-neutral-500">{x.description}</span>
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-neutral-400">{niveau ? "Cliquez de nouveau sur le score choisi pour le retirer." : "Aucun score pour l'instant."}</p>
+      </section>
+
+      {/* note */}
+      <section id="note" className="scroll-mt-4 rounded-2xl border border-neutral-200 bg-white p-5">
+        <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+          <StickyNote className="h-3.5 w-3.5" />
+          Note commerciale
+        </h2>
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          rows={3}
+          placeholder="Compte-rendu d'appel, contexte, objection…"
+          className="mt-3 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-pine-500"
+        />
+        <button
+          type="button"
+          disabled={pending || !note.trim()}
+          onClick={() => {
+            patch({ note });
+            setNote("");
+          }}
+          className="mt-2 rounded-full bg-pine-700 px-5 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"
+        >
+          Ajouter la note
+        </button>
+      </section>
+
       {/* statut */}
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Statut</h2>
@@ -176,76 +228,6 @@ export function LeadActions({
               {STATUT_LABELS[s]}
             </button>
           ))}
-        </div>
-      </section>
-
-      {/* assignation */}
-      {team.length > 0 && (
-        <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-          <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Commercial</h2>
-          <select
-            defaultValue={assignedTo ?? ""}
-            disabled={pending}
-            onChange={(e) => patch({ assigned_to: e.target.value })}
-            className="mt-3 w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm font-semibold text-inkgreen outline-none focus:border-pine-500"
-          >
-            <option value="">Non assigné</option>
-            {team.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </section>
-      )}
-
-      {/* coordonnées */}
-      {contact && (
-        <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-          <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-            <UserPen className="h-3.5 w-3.5" />
-            Coordonnées
-          </h2>
-          <div className="mt-3 grid gap-2">
-            {([["name", "Nom", "text"], ["email", "E-mail", "email"], ["phone", "Téléphone", "tel"]] as const).map(([k, label, type]) => (
-              <label key={k} className="block text-xs font-semibold text-neutral-500">
-                {label}
-                <input type={type} value={coord[k]} onChange={(e) => setCoord({ ...coord, [k]: e.target.value })} className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm text-inkgreen outline-none focus:border-pine-500" />
-              </label>
-            ))}
-          </div>
-          <button type="button" disabled={pending || !coordChange} onClick={() => patch({ contact: coord })} className="mt-3 rounded-full bg-pine-700 px-5 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
-            Enregistrer les coordonnées
-          </button>
-          <p className="mt-2 text-xs text-neutral-400">Les relances et les devis partent à cette adresse.</p>
-        </section>
-      )}
-
-      {/* emails */}
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Emails</h2>
-        <div className="mt-3 space-y-2.5">
-          <button
-            type="button"
-            disabled={pending || !hasEstimation}
-            onClick={() => {
-              // Double vérification : aucun e-mail ne part sur un simple clic.
-              if (window.confirm("Envoyer maintenant au client l'e-mail d'estimation (prix global + lien vers sa page) ?\n\nPour un devis détaillé en PDF, utilisez plutôt « Préparer un devis »."))
-                call(`/api/admin/leads/${leadId}/send-devis`, { method: "POST" });
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-500 px-5 py-2.5 text-sm font-bold text-pine-950 transition hover:bg-amber-600 disabled:opacity-40"
-          >
-            {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-            {hasEstimation ? "Envoyer l'e-mail d'estimation" : "Pas d'estimation à envoyer"}
-          </button>
-          <button
-            type="button"
-            disabled={pending || relances >= 3}
-            onClick={() => call(`/api/admin/leads/${leadId}/relance`, { method: "POST" })}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"
-          >
-            <BellPlus className="h-4 w-4" />
-            {relances >= 3 ? "Séquence terminée (3 relances)" : `Envoyer la relance ${relances + 1} maintenant`}
-          </button>
-          {msg && <p className="text-xs font-semibold text-red-600">{msg}</p>}
         </div>
       </section>
 
@@ -314,57 +296,75 @@ export function LeadActions({
         {msg && <p className="mt-2 text-xs font-semibold text-red-600">{msg}</p>}
       </section>
 
-      {/* score du prospect */}
+      {/* emails */}
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-          <Gauge className="h-3.5 w-3.5" />
-          Score du prospect
-        </h2>
-        <div className="mt-3 space-y-1.5" role="radiogroup" aria-label="Score du prospect">
-          {NIVEAUX.map((x) => (
-            <button
-              key={x.n}
-              type="button"
-              role="radio"
-              aria-checked={niveau === x.n}
-              disabled={pending}
-              onClick={() => patch({ niveau: niveau === x.n ? null : x.n })}
-              className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition disabled:opacity-60 ${niveau === x.n ? "border-amber-500 bg-amber-500/10" : "border-neutral-200 hover:bg-amber-500/15"}`}
-            >
-              <span className="w-3 text-sm font-extrabold tabular-nums text-neutral-400">{x.n}</span>
-              <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${x.cls}`}>{x.label}</span>
-              <span className="min-w-0 flex-1 text-xs text-neutral-500">{x.description}</span>
-            </button>
-          ))}
+        <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Emails</h2>
+        <div className="mt-3 space-y-2.5">
+          <button
+            type="button"
+            disabled={pending || !hasEstimation}
+            onClick={() => {
+              // Double vérification : aucun e-mail ne part sur un simple clic.
+              if (window.confirm("Envoyer maintenant au client l'e-mail d'estimation (prix global + lien vers sa page) ?\n\nPour un devis détaillé en PDF, utilisez plutôt « Préparer un devis »."))
+                call(`/api/admin/leads/${leadId}/send-devis`, { method: "POST" });
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-500 px-5 py-2.5 text-sm font-bold text-pine-950 transition hover:bg-amber-600 disabled:opacity-40"
+          >
+            {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            {hasEstimation ? "Envoyer l'e-mail d'estimation" : "Pas d'estimation à envoyer"}
+          </button>
+          <button
+            type="button"
+            disabled={pending || relances >= 3}
+            onClick={() => call(`/api/admin/leads/${leadId}/relance`, { method: "POST" })}
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"
+          >
+            <BellPlus className="h-4 w-4" />
+            {relances >= 3 ? "Séquence terminée (3 relances)" : `Envoyer la relance ${relances + 1} maintenant`}
+          </button>
+          {msg && <p className="text-xs font-semibold text-red-600">{msg}</p>}
         </div>
-        <p className="mt-2 text-xs text-neutral-400">{niveau ? "Cliquez de nouveau sur le score choisi pour le retirer." : "Aucun score pour l'instant."}</p>
       </section>
 
-      {/* note */}
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-          <StickyNote className="h-3.5 w-3.5" />
-          Note commerciale
-        </h2>
-        <textarea
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          rows={3}
-          placeholder="Compte-rendu d'appel, contexte, objection…"
-          className="mt-3 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-pine-500"
-        />
-        <button
-          type="button"
-          disabled={pending || !note.trim()}
-          onClick={() => {
-            patch({ note });
-            setNote("");
-          }}
-          className="mt-2 rounded-full bg-pine-700 px-5 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"
-        >
-          Ajouter la note
-        </button>
-      </section>
+      {/* coordonnées */}
+      {contact && (
+        <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+          <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+            <UserPen className="h-3.5 w-3.5" />
+            Coordonnées
+          </h2>
+          <div className="mt-3 grid gap-2">
+            {([["name", "Nom", "text"], ["email", "E-mail", "email"], ["phone", "Téléphone", "tel"]] as const).map(([k, label, type]) => (
+              <label key={k} className="block text-xs font-semibold text-neutral-500">
+                {label}
+                <input type={type} value={coord[k]} onChange={(e) => setCoord({ ...coord, [k]: e.target.value })} className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm text-inkgreen outline-none focus:border-pine-500" />
+              </label>
+            ))}
+          </div>
+          <button type="button" disabled={pending || !coordChange} onClick={() => patch({ contact: coord })} className="mt-3 rounded-full bg-pine-700 px-5 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
+            Enregistrer les coordonnées
+          </button>
+          <p className="mt-2 text-xs text-neutral-400">Les relances et les devis partent à cette adresse.</p>
+        </section>
+      )}
+
+      {/* assignation */}
+      {team.length > 0 && (
+        <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+          <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Commercial</h2>
+          <select
+            defaultValue={assignedTo ?? ""}
+            disabled={pending}
+            onChange={(e) => patch({ assigned_to: e.target.value })}
+            className="mt-3 w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm font-semibold text-inkgreen outline-none focus:border-pine-500"
+          >
+            <option value="">Non assigné</option>
+            {team.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </section>
+      )}
     </div>
   );
 }

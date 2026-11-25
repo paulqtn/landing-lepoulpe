@@ -25,6 +25,10 @@ export type QuoteLine = {
   unit?: string;
   /** Visuel du système de fixation affiché sur le devis. */
   image?: QuoteImage | null;
+  /** Total HT exact de la ligne, posé par le chiffrage (évite l'écart d'arrondi quantité × prix au mètre). */
+  totalHt?: number;
+  /** Total HT de la même ligne au plein tarif : l'écart est la remise affichée au client. */
+  normalHt?: number;
 };
 export type QuoteOption = { label: string; title: string; lines: QuoteLine[] };
 export type QuoteClient = { name: string; email: string; phone: string; address: string };
@@ -58,19 +62,37 @@ export const QUOTE_STATUT_LABELS: Record<QuoteStatut, string> = { brouillon: "À
 
 const r2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
 
-export type OptionTotals = { ht: number; tva: { rate: number; base: number; amount: number }[]; tvaTotal: number; ttc: number };
+export type OptionTotals = { ht: number; tva: { rate: number; base: number; amount: number }[]; tvaTotal: number; ttc: number; remise: number };
+
+/**
+ * Total HT d'une ligne. Le total exact posé par le chiffrage n'est retenu que s'il correspond
+ * bien à quantité × prix unitaire, au centime d'arrondi près : modifier la ligne l'annule.
+ */
+export function lineTotal(l: QuoteLine): number {
+  const calcule = r2(l.qty * l.unitPriceHt);
+  return typeof l.totalHt === "number" && Math.abs(l.totalHt - calcule) <= 0.005 * l.qty + 0.011 ? r2(l.totalHt) : calcule;
+}
+/** Remise d'une ligne par rapport au plein tarif (0 si aucune, ou si la ligne a été modifiée). */
+export function lineRemise(l: QuoteLine): number {
+  if (typeof l.totalHt !== "number" || typeof l.normalHt !== "number" || lineTotal(l) !== r2(l.totalHt)) return 0;
+  return Math.max(0, r2(l.normalHt - lineTotal(l)));
+}
 
 export function optionTotals(o: QuoteOption): OptionTotals {
   const byRate = new Map<number, number>();
-  for (const l of o.lines) byRate.set(l.vatRate, r2((byRate.get(l.vatRate) ?? 0) + r2(l.qty * l.unitPriceHt)));
+  for (const l of o.lines) byRate.set(l.vatRate, r2((byRate.get(l.vatRate) ?? 0) + lineTotal(l)));
   const tva = [...byRate.entries()].sort((a, b) => b[0] - a[0]).map(([rate, base]) => ({ rate, base, amount: r2(base * rate) }));
   const ht = r2(tva.reduce((s, t) => s + t.base, 0));
   const tvaTotal = r2(tva.reduce((s, t) => s + t.amount, 0));
-  return { ht, tva, tvaTotal, ttc: r2(ht + tvaTotal) };
+  return { ht, tva, tvaTotal, ttc: r2(ht + tvaTotal), remise: r2(o.lines.reduce((s, l) => s + lineRemise(l), 0)) };
 }
 
 /** Nettoie et borne ce qui vient de l'écran — aucun total n'est repris du navigateur. */
-export function sanitizeOptions(raw: unknown): { options: QuoteOption[]; error?: string } {
+/**
+ * `ref` : propositions déjà enregistrées. Le total exact et le plein tarif d'une ligne ne viennent
+ * jamais de l'écran ; ils sont repris de la ligne enregistrée tant que quantité et prix sont inchangés.
+ */
+export function sanitizeOptions(raw: unknown, ref: QuoteOption[] = []): { options: QuoteOption[]; error?: string } {
   if (!Array.isArray(raw) || raw.length === 0) return { options: [], error: "Le devis doit contenir au moins une proposition." };
   if (raw.length > 6) return { options: [], error: "Six propositions au maximum." };
   const options: QuoteOption[] = [];
@@ -87,7 +109,13 @@ export function sanitizeOptions(raw: unknown): { options: QuoteOption[]; error?:
       if (!VAT_RATES.includes(vatRate)) return { options: [], error: `TVA invalide : « ${description.split("\n")[0]} ».` };
       const unit = String(l?.unit ?? "").trim().slice(0, 8);
       const image = QUOTE_IMAGE_KEYS.find((k) => k === l?.image) ?? null;
-      lines.push({ description, qty: r2(qty), unitPriceHt: r2(unitPriceHt), vatRate, ...(unit ? { unit } : {}), ...(image ? { image } : {}) });
+      const garde = ref[options.length]?.lines[lines.length];
+      const inchange = garde && garde.qty === r2(qty) && garde.unitPriceHt === r2(unitPriceHt);
+      lines.push({
+        description, qty: r2(qty), unitPriceHt: r2(unitPriceHt), vatRate, ...(unit ? { unit } : {}), ...(image ? { image } : {}),
+        ...(inchange && typeof garde.totalHt === "number" ? { totalHt: garde.totalHt } : {}),
+        ...(inchange && typeof garde.normalHt === "number" ? { normalHt: garde.normalHt } : {}),
+      });
     }
     if (lines.length === 0) return { options: [], error: "Chaque proposition doit contenir au moins une ligne." };
     if (lines.length > 40) return { options: [], error: "Quarante lignes au maximum par proposition." };
@@ -175,12 +203,13 @@ export async function draftOptionsFromLead(lead: Lead, coefficient?: number): Pr
             `Longueur : ${troncons}${cotes.length > 1 ? ` (${String(ml).replace(".", ",")} ml)` : ""}`,
             `Accessoires inclus : ${sys.accessoires}`,
             "Conditionnement en caisse bois et livraison en France métropolitaine inclus",
-            ...(remise > 0 ? [`Remise commerciale incluse : − ${remise.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € HT`] : []),
           ].join("\n"),
           qty: ml,
           unit: "ml",
-          // Prix au mètre linéaire arrondi au centime : le total peut différer de quelques centimes du prix affiché sur le site.
+          // Prix au mètre arrondi au centime ; le total de la ligne est celui du moteur, au centime près.
           unitPriceHt: r2(r.prixHT / ml),
+          totalHt: r.prixHT,
+          ...(remise > 0 && plein ? { normalHt: plein.r.prixHT } : {}),
           vatRate: 0.2,
           image: systeme,
         },
