@@ -19,7 +19,7 @@ export const MENUS: { key: MenuKey; label: string; href: string; group: "commerc
   { key: "devis", label: "Devis à traiter", href: "/commercial/devis", group: "commercial" },
   { key: "clients", label: "Clients", href: "/commercial/clients", group: "commercial" },
   { key: "relances", label: "Relances", href: "/commercial/relances", group: "commercial" },
-  { key: "pipeline", label: "Pipeline", href: "/commercial/pipeline", group: "commercial" },
+  { key: "pipeline", label: "Vue Kanban", href: "/commercial/pipeline", group: "commercial" },
   { key: "production", label: "Production", href: "/commercial/production", group: "commercial" },
   { key: "stats", label: "Statistiques", href: "/commercial/stats", group: "commercial" },
   { key: "simulation", label: "Simulation", href: "/commercial/simulation", group: "commercial" },

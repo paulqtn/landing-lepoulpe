@@ -5,7 +5,7 @@ import { STATUT_LABELS, STATUTS, type Statut, pipeline, pipelineApercu } from "@
 
 export const dynamic = "force-dynamic";
 
-/* Pipeline — toutes les affaires, colonne par colonne, montants en tête. */
+/* Vue Kanban — toutes les affaires, colonne par colonne, montants en tête. */
 
 const COL_COLORS: Record<Statut, string> = {
   nouveau: "border-t-amber-500",
@@ -32,7 +32,7 @@ export default async function PipelinePage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-extrabold text-inkgreen">Pipeline</h1>
+      <h1 className="text-2xl font-extrabold text-inkgreen">Vue Kanban</h1>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cols.map((c) => (
           <section key={c.statut} className={`rounded-2xl border border-neutral-200 border-t-4 bg-white ${COL_COLORS[c.statut]}`}>
