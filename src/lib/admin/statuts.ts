@@ -17,8 +17,8 @@ export const STATUT_LABELS: Record<Statut, string> = {
   en_discussion: "En discussion",
   en_reflexion: "En réflexion",
   devis_a_modifier: "Devis à modifier",
-  gagne: "Gagné",
-  perdu: "Perdu",
+  gagne: "Signé",
+  perdu: "Non signé",
 };
 
 /** Ce que chaque statut veut dire, affiché en aide dans le back office. */
@@ -33,7 +33,7 @@ export const STATUT_AIDE: Record<Statut, string> = {
   en_reflexion: "Le client réfléchit, à rappeler à une date convenue — e-mails arrêtés.",
   devis_a_modifier: "Le client veut un devis modifié — e-mails arrêtés.",
   gagne: "Affaire signée.",
-  perdu: "Affaire perdue.",
+  perdu: "Affaire non signée.",
 };
 
 /**

@@ -104,7 +104,7 @@ export default async function StatsPage() {
                       <span className="w-9 text-right text-xs font-bold tabular-nums text-neutral-500">{p.pctObjectif} %</span>
                     </span>
                   </td>
-                  <td className="py-3 pr-3 text-right tabular-nums">{p.signees} <span className="text-neutral-300">/ {p.perdues}p</span></td>
+                  <td className="py-3 pr-3 text-right tabular-nums">{p.signees} <span className="text-neutral-300">/ {p.perdues} non signées</span></td>
                   <td className="py-3 pr-3 text-right font-bold tabular-nums">{p.tauxSignature !== null ? `${p.tauxSignature} %` : "—"}</td>
                   <td className="py-3 pr-3 text-right tabular-nums text-neutral-600">{eurFmt.format(p.enCoursTTC)} €</td>
                   <td className="py-3 text-right tabular-nums text-neutral-600">{eurFmt.format(p.panierMoyen)} €</td>
@@ -147,7 +147,7 @@ export default async function StatsPage() {
         <Panel title="Meilleures sources" note="D'où viennent les demandes — et lesquelles signent.">
           <div className="space-y-2.5">
             {g.sources.map((x) => (
-              <HBar key={x.source} label={`${x.source}${x.gagnes ? ` · ${x.gagnes} gagnée${x.gagnes > 1 ? "s" : ""}` : ""}`} value={x.n} max={srcMax} />
+              <HBar key={x.source} label={`${x.source}${x.gagnes ? ` · ${x.gagnes} signée${x.gagnes > 1 ? "s" : ""}` : ""}`} value={x.n} max={srcMax} />
             ))}
             {g.sources.length === 0 && <p className="text-sm text-neutral-400">Pas encore de données.</p>}
           </div>

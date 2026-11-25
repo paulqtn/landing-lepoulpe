@@ -47,7 +47,7 @@ export default async function CommercialHome() {
     { n: devisATraiter.length, label: "Devis à traiter", sub: "calepinage + envoi", href: "/commercial/devis", icon: FileText, hot: devisATraiter.length > 0 },
     { n: rappelsDus.length, label: "Clients à rappeler par téléphone", sub: "rappel convenu ou demandé", href: "/commercial/relances", icon: PhoneCall, hot: rappelsDus.length > 0 },
     { n: mesDues.length, label: "Relances échues", sub: "la séquence vous attend", href: "/commercial/relances", icon: BellRing, hot: false },
-    { n: aLancer.length, label: "Gagnées à lancer en production", sub: "envoyer à l'atelier", href: "/commercial/production", icon: Trophy, hot: false },
+    { n: aLancer.length, label: "Signées à lancer en production", sub: "envoyer à l'atelier", href: "/commercial/production", icon: Trophy, hot: false },
   ];
 
   return (
@@ -102,14 +102,14 @@ export default async function CommercialHome() {
               </p>
               {perso.margesManquantes > 0 && (
                 <p className="mt-1 text-xs font-semibold text-amber-400">
-                  {perso.margesManquantes} affaire{perso.margesManquantes > 1 ? "s" : ""} gagnée{perso.margesManquantes > 1 ? "s" : ""} sans marge enregistrée : non comptée{perso.margesManquantes > 1 ? "s" : ""} dans la commission pour l&rsquo;instant.
+                  {perso.margesManquantes} affaire{perso.margesManquantes > 1 ? "s" : ""} signée{perso.margesManquantes > 1 ? "s" : ""} sans marge enregistrée : non comptée{perso.margesManquantes > 1 ? "s" : ""} dans la commission pour l&rsquo;instant.
               </p>
               )}
             </div>
           </div>
           <dl className="mt-4 flex flex-wrap gap-x-7 gap-y-2 border-t border-white/10 pt-3.5 text-xs text-pine-200">
             <div>Taux de signature : <strong className="font-extrabold text-white">{perso.tauxSignature !== null ? `${perso.tauxSignature} %` : "—"}</strong></div>
-            <div>Signées : <strong className="font-extrabold text-white">{perso.signees}</strong> · Perdues : <strong className="font-extrabold text-white">{perso.perdues}</strong></div>
+            <div>Signées : <strong className="font-extrabold text-white">{perso.signees}</strong> · Non signées : <strong className="font-extrabold text-white">{perso.perdues}</strong></div>
             <div>En cours : <strong className="font-extrabold text-white">{perso.enCours}</strong> ({eurFmt.format(perso.enCoursTTC)} €)</div>
             <div>Panier moyen : <strong className="font-extrabold text-white">{eurFmt.format(perso.panierMoyen)} €</strong></div>
             <Link href="/commercial/stats" className="ml-auto inline-flex items-center gap-1 font-bold text-amber-400 hover:text-amber-300">

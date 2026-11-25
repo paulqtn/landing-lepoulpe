@@ -60,7 +60,7 @@ export default async function LogistiquePage() {
       {plusTard > 0 && <p className="text-xs text-neutral-400">+ {plusTard} tâche{plusTard > 1 ? "s" : ""} au-delà de 7 jours.</p>}
 
       <p className="text-xs text-neutral-400">
-        Échéances calculées à partir de la date de validation par le commercial (affaire passée à « Gagné ») : lancement J+{delais.lancement}, découpe J+{delais.decoupe},
+        Échéances calculées à partir de la date de validation par le commercial (affaire passée à « Signé ») : lancement J+{delais.lancement}, découpe J+{delais.decoupe},
         façonnage J+{delais.faconnage}, prêt J+{delais.pret}, expédition J+{delais.expedition}.
       </p>
     </div>

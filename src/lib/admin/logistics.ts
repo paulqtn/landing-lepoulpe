@@ -298,7 +298,7 @@ export async function globalStats(): Promise<GlobalStats> {
   const funnel = [
     { label: "Demandes reçues", n: leads.length },
     { label: "Traitées / devis envoyés", n: enCours + by((l) => l.statut === "gagne" || l.statut === "perdu") },
-    { label: "Gagnées", n: by((l) => l.statut === "gagne") },
+    { label: "Signées", n: by((l) => l.statut === "gagne") },
   ];
   const tauxConversion = leads.length ? Math.round((funnel[2].n / leads.length) * 100) : 0;
 

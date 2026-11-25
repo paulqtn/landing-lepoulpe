@@ -14,8 +14,8 @@ const ISSUES: Record<string, { statut: Statut | null; label: string }> = {
   reflexion: { statut: "en_reflexion", label: "Client eu au téléphone — il réfléchit" },
   modifier: { statut: "devis_a_modifier", label: "Client eu au téléphone — devis à modifier" },
   sans_reponse: { statut: null, label: "Appel sans réponse" },
-  gagne: { statut: "gagne", label: "Client eu au téléphone — affaire gagnée" },
-  perdu: { statut: "perdu", label: "Client eu au téléphone — affaire perdue" },
+  gagne: { statut: "gagne", label: "Client eu au téléphone — affaire signée" },
+  perdu: { statut: "perdu", label: "Client eu au téléphone — affaire non signée" },
 };
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {

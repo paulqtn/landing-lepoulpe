@@ -45,7 +45,7 @@ export async function figerMargeAuGain(leadId: number): Promise<void> {
     const m = await calculerMarge(leadId);
     if (!m) return;
     await enregistrer(leadId, m);
-    await addEvent(leadId, "info", m.marge === null ? "Affaire gagnée — marge à saisir pour le calcul de la prime" : "Affaire gagnée — marge enregistrée pour le calcul de la prime");
+    await addEvent(leadId, "info", m.marge === null ? "Affaire signée — marge à saisir pour le calcul de la prime" : "Affaire signée — marge enregistrée pour le calcul de la prime");
   } catch (e) {
     console.error("[marge] calcul impossible :", e);
   }

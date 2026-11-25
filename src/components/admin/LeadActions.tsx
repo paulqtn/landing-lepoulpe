@@ -47,8 +47,8 @@ export function LeadActions({
     ["reflexion", "Il réfléchit, je le rappelle", "Statut « En réflexion » · e-mails arrêtés · rappel à la date choisie"],
     ["modifier", "Il veut modifier le devis", "Statut « Devis à modifier » · e-mails arrêtés"],
     ["sans_reponse", "Pas de réponse / messagerie", "Statut inchangé · la séquence d'e-mails continue"],
-    ["gagne", "C'est signé", "Statut « Gagné »"],
-    ["perdu", "Il ne donne pas suite", "Statut « Perdu »"],
+    ["gagne", "C'est signé", "Statut « Signé »"],
+    ["perdu", "Il ne donne pas suite", "Statut « Non signé »"],
   ];
   const appelApi = (body: Record<string, unknown>) =>
     call(`/api/admin/leads/${leadId}/appel`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });

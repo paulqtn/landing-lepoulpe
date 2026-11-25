@@ -33,7 +33,7 @@ export default async function ProductionPage() {
       <div>
         <h1 className="text-2xl font-extrabold text-inkgreen">Mise en production</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          Les affaires gagnées partent à l&rsquo;atelier d&rsquo;ici — le suivi fin (découpe, stock, tournées)
+          Les affaires signées partent à l&rsquo;atelier d&rsquo;ici — le suivi fin (découpe, stock, tournées)
           vivra dans l&rsquo;espace Logistique.
         </p>
       </div>
@@ -41,12 +41,12 @@ export default async function ProductionPage() {
       <section className="rounded-2xl border border-green-200 bg-white p-5">
         <h2 className="flex items-center gap-2 text-base font-extrabold text-inkgreen">
           <Trophy className="h-4 w-4 text-green-600" />
-          Gagnées — à lancer en fabrication
+          Signées — à lancer en fabrication
           <span className="ml-1 rounded-full bg-green-50 px-2 py-0.5 text-xs font-bold text-green-700">{aLancer.length}</span>
         </h2>
         {aLancer.length === 0 ? (
           <p className="mt-3 text-sm text-neutral-400">
-            Rien en attente — marquez une affaire « Gagné » sur sa fiche client pour la voir ici.
+            Rien en attente — marquez une affaire « Signé » sur sa fiche client pour la voir ici.
           </p>
         ) : (
           <ul className="mt-3 divide-y divide-neutral-100">

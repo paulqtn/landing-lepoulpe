@@ -32,10 +32,10 @@ email, relances programmées, suivi commercial.
   transports du générateur public et de la Simulation. Chaque publication crée une version
   (`price_versions`) avec motif, auteur et détail ; test d'impact avant publication ; retour
   arrière en un clic. Les règles de calcul restent dans le code.
-- **Primes des commerciaux** (par mois civil) : 4 % de la marge brute des affaires gagnées,
+- **Primes des commerciaux** (par mois civil) : 4 % de la marge brute des affaires signées,
   plus 150 € dès 110 000 € de CA HT puis 150 € par tranche de 10 000 € supplémentaire. Les
   quatre paramètres sont modifiables. La marge d'une affaire (vente HT − coût d'achat calculé
-  par le moteur) est figée au passage à « Gagné » ; un administrateur peut la corriger sur la
+  par le moteur) est figée au passage à « Signé » ; un administrateur peut la corriger sur la
   fiche client. Règle de calcul : `src/lib/admin/prime.ts` (testée par `npm test`).
 - **Mentions de la société** (adresse, SIRET, TVA, conditions) reprises
   sur les devis.
@@ -61,7 +61,7 @@ choisies sont toujours prises en compte.
 
 Rôle **Logisticien** : il ne voit que ses menus — Tâches du jour, Commandes atelier, Stock,
 Expéditions — et aucun montant. Les tâches partent de la date à laquelle le commercial a
-validé l'affaire (passage à « Gagné », `leads.won_at`) : lancement J+1, découpe J+3,
+validé l'affaire (passage à « Signé », `leads.won_at`) : lancement J+1, découpe J+3,
 façonnage J+6, prêt J+8, expédition J+10. Délais réglables dans *Tarifs et paramètres →
 Commissions, délais et société*. Menus ajustables compte par compte dans *Utilisateurs*.
 
@@ -72,7 +72,7 @@ tâche quotidienne de `vercel.json`. Dans l'onglet *Relances*, les rôles d'admi
 modifient l'objet, le texte et le bouton de chaque relance, les trois délais, et disposent
 d'un aperçu, d'un envoi d'essai et d'un interrupteur général. Variables : `{prenom}`,
 `{nom}`, `{montant}`, `{telephone}`, `{societe}`. La séquence s'arrête dès que l'affaire est
-gagnée, perdue ou « à rappeler ». Code : `src/lib/admin/relances.ts` et `sequence.ts`.
+signée, non signée ou « à rappeler ». Code : `src/lib/admin/relances.ts` et `sequence.ts`.
 
 Chaque relance a aussi une **heure d'envoi** (heure de Paris). Elle n'est tenue que si la
 tâche passe toutes les heures, ce que Vercel réserve à l'offre Pro. Tant que `vercel.json`
@@ -127,7 +127,7 @@ anonymisation définitive (les montants et statuts sont conservés pour les stat
 
 ## Pipeline des statuts
 
-`Nouveau → Devis envoyé → Relancé ×1 → Relancé ×2 → Gagné / Perdu`
+`Nouveau → Devis envoyé → Relancé ×1 → Relancé ×2 → Signé / Non signé`
 (+ « À rappeler » pour la prise de RDV téléphonique).
 
 ## v2 — CRM commercial

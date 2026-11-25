@@ -38,7 +38,7 @@ export function MargeActions({ leadId, venteHt, coutAchat, marge, source, gagne 
         <div className="flex justify-between border-t border-neutral-100 pt-1.5"><dt className="font-bold text-inkgreen">Marge brute</dt><dd className={`font-extrabold tabular-nums ${marge === null ? "text-amber-600" : "text-pine-700"}`}>{marge === null ? "à saisir" : eur(marge)}</dd></div>
       </dl>
       <p className="mt-2 text-xs text-neutral-400">
-        {source ?? (gagne ? "Pas encore calculée." : "Elle sera figée quand l'affaire passera à « Gagné ».")} Elle sert de base à la prime du commercial.
+        {source ?? (gagne ? "Pas encore calculée." : "Elle sera figée quand l'affaire passera à « Signé ».")} Elle sert de base à la prime du commercial.
       </p>
       <div className="mt-3 grid grid-cols-2 gap-2">
         <input aria-label="Vente HT" className={inputCls} inputMode="decimal" placeholder="Vente HT" value={v} onChange={(e) => setV(e.target.value)} />

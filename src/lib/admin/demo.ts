@@ -134,7 +134,7 @@ function build(): { leads: Lead[]; events: Record<number, LeadEvent[]> } {
     if (l.clicks > 0) push("email_clique", "Le client a cliqué dans un email", 6 * h);
     if (l.opens > 0) push("email_ouvert", "Le client a ouvert un email", 7 * h);
     if (l.statut === "devis_envoye") push("devis_envoye", "Email de devis automatique envoyé [démo]", Number(new Date()) - Number(new Date(l.created_at)) - 60_000);
-    if (l.statut === "gagne") push("statut", "Affaire gagnée — devis validé par le client [démo]", 3 * 24 * h);
+    if (l.statut === "gagne") push("statut", "Affaire signée — devis validé par le client [démo]", 3 * 24 * h);
     push("creation", `Demande reçue (${l.source}) — score ${l.score} (${l.score_points} pts) [démo]`, Number(new Date()) - Number(new Date(l.created_at)));
     events[l.id] = list;
   }

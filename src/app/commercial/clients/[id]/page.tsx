@@ -184,7 +184,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
 
         {lead.statut === "gagne" && (
           <div className="rounded-2xl border border-pine-200 bg-pine-50/60 p-4">
-            <p className="text-sm font-bold text-inkgreen">Client gagné 🎉</p>
+            <p className="text-sm font-bold text-inkgreen">Client signé 🎉</p>
             <p className="mb-3 mt-0.5 text-xs text-neutral-500">
               Envoyez le dossier à l&rsquo;atelier : la commande apparaît dans le pôle Gestion
               avec la matière réservée.
