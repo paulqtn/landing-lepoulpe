@@ -6,6 +6,7 @@ import { DevisActions } from "@/components/devis/DevisActions";
 import { Container } from "@/components/ui/Container";
 import { fichesPourLead, videoPourLead } from "@/lib/admin/assets";
 import { addEvent, getLeadByToken, hasRecentEvent, recordEngagement } from "@/lib/admin/db";
+import { quotesForLead } from "@/lib/admin/quotes";
 import { rescoreLead } from "@/lib/admin/rescore";
 import { phoneHref, site } from "@/lib/site";
 
@@ -17,12 +18,14 @@ export const metadata: Metadata = {
 };
 
 const eur = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
-const dateLong = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+const dateLong = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long", year: "numeric" });
 
 export default async function DevisPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   const lead = await getLeadByToken(token);
   if (!lead) notFound();
+  // Même numéro que sur le PDF reçu par e-mail (dernier devis envoyé), pour s'y retrouver au téléphone.
+  const refDevis = (await quotesForLead(lead.id)).find((x) => x.statut === "envoye")?.ref ?? null;
 
   // Tracking de consultation (1 événement max toutes les 6h, compteur à chaque vue).
   await recordEngagement(lead.id, { devis_views: 1 });
@@ -57,7 +60,7 @@ export default async function DevisPage({ params }: { params: Promise<{ token: s
       <Container className="py-10 sm:py-14">
         <div className="mx-auto max-w-3xl">
           <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-pine-700">
-            Devis n° DEV-{String(lead.id).padStart(4, "0")} · {dateLong.format(new Date(lead.created_at))}
+            Devis n° {refDevis ?? `DEV-${String(lead.id).padStart(4, "0")}`} · {dateLong.format(new Date(lead.created_at))}
           </p>
           <h1 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-inkgreen sm:text-4xl">
             {lead.name}, votre garde-corps en verre est prêt à partir en fabrication.

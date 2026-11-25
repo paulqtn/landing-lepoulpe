@@ -1,3 +1,4 @@
+import { refusAction } from "@/lib/admin/attribution";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
 import { getLead } from "@/lib/admin/db";
@@ -16,6 +17,9 @@ export async function POST(req: Request) {
   }
   const lead = await getLead(Number(body.leadId));
   if (!lead) return NextResponse.json({ ok: false, error: "Demande introuvable." }, { status: 404 });
+  const refusFiche = refusAction(g.user, lead);
+  if (refusFiche) return NextResponse.json({ ok: false, error: refusFiche }, { status: 403 });
+
   const quote = await ensureDraftForLead(lead, user.name, "manuel");
   return NextResponse.json({ ok: true, id: quote.id, ref: quote.ref });
 }

@@ -16,7 +16,7 @@ type Campagne = { id: number; created_at: string; created_by: string | null; suj
 const CORPS_DEPART = "<p>Bonjour {prenom},</p><p><br></p>";
 const inputCls =
   "w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm text-inkgreen outline-none transition focus:border-pine-500 focus:ring-4 focus:ring-pine-500/10";
-const dateFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+const dateFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
 export function NewsletterEditor(props: {
   statuts: StatutRow[];

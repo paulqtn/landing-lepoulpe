@@ -1,3 +1,4 @@
+import { refusAction } from "@/lib/admin/attribution";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
 import { getLead } from "@/lib/admin/db";
@@ -10,6 +11,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   const lead = await getLead(Number(id));
   if (!lead) return NextResponse.json({ error: "introuvable" }, { status: 404 });
+  const refusFiche = refusAction(g.user, lead);
+  if (refusFiche) return NextResponse.json({ ok: false, error: refusFiche }, { status: 403 });
+
 
   const r = await envoyerRelance(lead, "manuel");
   if (!r.ok) return NextResponse.json({ ok: false, error: r.reason }, { status: 502 });

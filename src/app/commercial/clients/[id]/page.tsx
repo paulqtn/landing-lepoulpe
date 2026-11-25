@@ -9,6 +9,8 @@ import { niveauInfo } from "@/lib/admin/niveaux";
 import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
 import { requireMenu } from "@/lib/admin/auth";
+import { refusAction } from "@/lib/admin/attribution";
+import { STATUT_LABELS, type Statut } from "@/lib/admin/statuts";
 import { QUOTE_STATUT_LABELS, quotesForLead } from "@/lib/admin/quotes";
 
 export const dynamic = "force-dynamic";
@@ -36,12 +38,15 @@ const EVENT_LABELS: Record<string, string> = {
 };
 
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireMenu("clients");
+  const me = await requireMenu("clients");
   const { id } = await params;
   const lead = await getLead(Number(id));
   if (!lead) notFound();
   const [events, quotes] = await Promise.all([listEvents(lead.id), quotesForLead(lead.id)]);
   const niveau = niveauInfo(lead.niveau);
+  const lectureSeule = refusAction(me, lead);
+  // Anciennes lignes d'historique : le code du statut est remplacé par son libellé.
+  const lisible = (m: string) => m.replace(/Statut → ([a-z_0-9]+)/, (t, k: string) => (STATUT_LABELS[k as Statut] ? `Statut → ${STATUT_LABELS[k as Statut]}` : t));
   const answers = (lead.answers ?? {}) as Record<string, unknown>;
 
   const champs: [string, unknown][] = [
@@ -130,7 +135,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           <section className="rounded-2xl border border-neutral-200 bg-white p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Devis détaillés</h2>
-              <PrepareQuoteButton leadId={lead.id} label={quotes.some((x) => x.statut === "brouillon") ? "Ouvrir le brouillon" : "Préparer un devis"} />
+              {!lectureSeule && <PrepareQuoteButton leadId={lead.id} label={quotes.some((x) => x.statut === "brouillon") ? "Ouvrir le brouillon" : "Préparer un devis"} />}
             </div>
             {quotes.length === 0 ? (
               <p className="mt-3 text-sm text-neutral-400">Aucun devis pour l&rsquo;instant.</p>
@@ -159,7 +164,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-pine-400" />
                   <div>
                     <p className="text-sm font-bold text-inkgreen">{EVENT_LABELS[e.type] ?? e.type}</p>
-                    {e.message && <p className="whitespace-pre-line text-xs text-neutral-500">{e.message}</p>}
+                    {e.message && <p className="whitespace-pre-line text-xs text-neutral-500">{lisible(e.message)}</p>}
                     <p className="text-[11px] text-neutral-400">{dateFmt.format(new Date(e.created_at))}</p>
                   </div>
                 </li>
@@ -168,19 +173,32 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           </section>
         </div>
 
+        {lectureSeule ? (
+          <div className="self-start rounded-2xl border border-amber-500/40 bg-amber-500/10 p-5">
+            <p className="text-sm font-bold text-inkgreen">Fiche en lecture seule</p>
+            <p className="mt-1 text-sm text-neutral-700">{lectureSeule}</p>
+            {!lead.assigned_to && (
+              <Link href="/commercial" className="mt-3 inline-flex rounded-full bg-pine-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-pine-600">
+                Voir la file des demandes
+              </Link>
+            )}
+          </div>
+        ) : (
         <LeadActions
-          leadId={lead.id}
-          statut={lead.statut}
-          relances={lead.relances}
-          hasEstimation={Boolean(lead.estimation_ttc)}
-          team={await getTeam()}
-          assignedTo={lead.assigned_to}
-          niveau={lead.niveau ?? null}
-          pauseAt={lead.sequence_pause_at ? new Date(lead.sequence_pause_at).toISOString() : null}
-          nextRelanceAt={lead.next_relance_at ? new Date(lead.next_relance_at).toISOString() : null}
-          rappelAt={lead.rappel_at ? new Date(lead.rappel_at).toISOString() : null}
-          devisEnvoye={quotes.some((x) => x.statut === "envoye") || events.some((e) => e.type === "devis_envoye")}
-        />
+            leadId={lead.id}
+            contact={{ name: lead.name, email: lead.email, phone: lead.phone }}
+            statut={lead.statut}
+            relances={lead.relances}
+            hasEstimation={Boolean(lead.estimation_ttc)}
+            team={await getTeam()}
+            assignedTo={lead.assigned_to}
+            niveau={lead.niveau ?? null}
+            pauseAt={lead.sequence_pause_at ? new Date(lead.sequence_pause_at).toISOString() : null}
+            nextRelanceAt={lead.next_relance_at ? new Date(lead.next_relance_at).toISOString() : null}
+            rappelAt={lead.rappel_at ? new Date(lead.rappel_at).toISOString() : null}
+            devisEnvoye={quotes.some((x) => x.statut === "envoye") || events.some((e) => e.type === "devis_envoye")}
+          />
+        )}
 
         {lead.statut === "gagne" && (
           <div className="rounded-2xl border border-pine-200 bg-pine-50/60 p-4">

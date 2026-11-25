@@ -1,3 +1,4 @@
+import { refusAction } from "@/lib/admin/attribution";
 import { premiereRelance } from "@/lib/admin/sequence";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
@@ -10,6 +11,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   const lead = await getLead(Number(id));
   if (!lead) return NextResponse.json({ error: "introuvable" }, { status: 404 });
+  const refusFiche = refusAction(g.user, lead);
+  if (refusFiche) return NextResponse.json({ ok: false, error: refusFiche }, { status: 403 });
+
 
   const mail = await sendDevisEmail(lead);
   if (!mail.sent) {

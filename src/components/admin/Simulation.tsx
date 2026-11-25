@@ -706,7 +706,7 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
               <li key={x.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5">
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-bold text-inkgreen">{x.label}</span>
-                  <span className="block text-xs text-neutral-400">{new Date(x.created_at).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })} · {x.created_by ?? "—"}</span>
+                  <span className="block text-xs text-neutral-400">{new Date(x.created_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris", dateStyle: "medium", timeStyle: "short" })} · {x.created_by ?? "—"}</span>
                 </span>
                 <span className="text-sm font-extrabold tabular-nums text-pine-700">{x.total_ht === null ? "À confirmer" : eur(Number(x.total_ht))} HT</span>
                 <button type="button" onClick={() => { setForm(formFromSaved(options, x.input)); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="rounded-lg border border-neutral-200 px-2.5 py-1.5 text-xs font-bold text-inkgreen transition hover:border-amber-500 hover:bg-amber-500/15">

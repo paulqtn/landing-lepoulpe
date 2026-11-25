@@ -11,7 +11,7 @@ import { mailConfigured } from "@/lib/admin/mail";
 
 export const dynamic = "force-dynamic";
 
-const dayFmt = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+const dayFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", weekday: "long", day: "numeric", month: "long" });
 
 export default async function CommercialHome() {
   await requireMenu("etat");

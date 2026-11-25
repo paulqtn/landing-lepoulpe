@@ -1,3 +1,4 @@
+import { refusAction } from "@/lib/admin/attribution";
 import { premiereRelance } from "@/lib/admin/sequence";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
@@ -23,6 +24,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
   const quote = await getQuote(Number((await params).id));
   if (!quote) return NextResponse.json({ ok: false, error: "Devis introuvable." }, { status: 404 });
+  const fiche = quote.lead_id ? await getLead(quote.lead_id) : null;
+  const refusFiche = fiche ? refusAction(user, fiche) : null;
+  if (refusFiche) return NextResponse.json({ ok: false, error: refusFiche }, { status: 403 });
   if (quote.statut !== "brouillon") return NextResponse.json({ ok: false, error: "Ce devis a déjà été envoyé." }, { status: 409 });
 
   const to = quote.client.email;

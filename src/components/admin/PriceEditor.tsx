@@ -17,7 +17,7 @@ type Version = { id: number; created_at: string; created_by: string | null; note
 const fmt = (n: number | null) => (n === null ? "À confirmer" : n.toLocaleString("fr-FR", { maximumFractionDigits: 4 }));
 const eur = (n: number | null) => (n === null ? "À confirmer" : `${n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`);
 const toStr = (n: number | null) => (n === null ? "" : String(n).replace(".", ","));
-const dateFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+const dateFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
 export function PriceEditor({
   engine, sections, scenarios, versions, currentVersion,

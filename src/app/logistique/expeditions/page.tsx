@@ -53,7 +53,7 @@ export default async function ExpeditionsPage() {
                       {s.ref} <span className="ml-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-bold text-neutral-600">{SHIPMENT_LABELS[s.statut]}</span>
                     </p>
                     <p className="text-xs text-neutral-400">
-                      {[s.transporteur, s.departement && `dépt ${s.departement}`, s.date_prevue && `prévue le ${new Date(s.date_prevue).toLocaleDateString("fr-FR")}`].filter(Boolean).join(" · ") || "—"}
+                      {[s.transporteur, s.departement && `dépt ${s.departement}`, s.date_prevue && `prévue le ${new Date(s.date_prevue).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" })}`].filter(Boolean).join(" · ") || "—"}
                     </p>
                     <p className="text-xs text-neutral-600">{s.orders.length ? s.orders.map((o) => `${o.ref} (${o.client})`).join(", ") : "Aucune commande rattachée"}</p>
                   </div>

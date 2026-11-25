@@ -1,5 +1,7 @@
 import { figerMargeAuGain } from "@/lib/admin/marge";
-import { refusAttribution } from "@/lib/admin/attribution";
+import { refusAction, refusAttribution } from "@/lib/admin/attribution";
+import { majCoordonnees } from "@/lib/admin/contact";
+import { STATUT_LABELS } from "@/lib/admin/statuts";
 import { NextResponse } from "next/server";
 import { niveauInfo } from "@/lib/admin/niveaux";
 import { requireMenuApi } from "@/lib/admin/auth";
@@ -23,7 +25,7 @@ export async function PATCH(req: Request, { params }: Params) {
   const lead = await getLead(Number(id));
   if (!lead) return NextResponse.json({ error: "introuvable" }, { status: 404 });
 
-  let body: { statut?: string; note?: string; next_relance_at?: string | null; assigned_to?: string | null; niveau?: number | null };
+  let body: { statut?: string; note?: string; next_relance_at?: string | null; assigned_to?: string | null; niveau?: number | null; contact?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -35,6 +37,19 @@ export async function PATCH(req: Request, { params }: Params) {
     if (refus) return NextResponse.json({ error: refus }, { status: 409 });
     await updateLead(lead.id, { assigned_to: body.assigned_to || null });
     await addEvent(lead.id, "info", body.assigned_to ? `Assigné à ${body.assigned_to}` : "Assignation retirée");
+  }
+
+  // Hors (ré)attribution, agir sur la fiche est réservé à son commercial et aux administrateurs.
+  let fiche = lead;
+  if (body.statut !== undefined || body.note !== undefined || body.niveau !== undefined || body.next_relance_at !== undefined || body.contact !== undefined) {
+    fiche = (await getLead(lead.id)) ?? lead;
+    const refus = refusAction(g.user, fiche);
+    if (refus) return NextResponse.json({ error: refus }, { status: 403 });
+  }
+
+  if (body.contact !== undefined) {
+    const r = await majCoordonnees(lead.id, body.contact, g.user.name);
+    if (r.error) return NextResponse.json({ error: r.error }, { status: 422 });
   }
 
   if (body.niveau !== undefined) {
@@ -54,7 +69,7 @@ export async function PATCH(req: Request, { params }: Params) {
     const patch: { statut: Statut; next_relance_at?: string | null } = { statut: body.statut as Statut };
     if (body.statut === "gagne" || body.statut === "perdu") patch.next_relance_at = null;
     await updateLead(lead.id, patch);
-    await addEvent(lead.id, "statut", `Statut → ${body.statut}`);
+    await addEvent(lead.id, "statut", `Statut → ${STATUT_LABELS[body.statut as Statut]} (${g.user.name})`);
     if (body.statut === "gagne") await figerMargeAuGain(lead.id);
   }
 
@@ -63,7 +78,7 @@ export async function PATCH(req: Request, { params }: Params) {
     await addEvent(
       lead.id,
       "relance_programmee",
-      body.next_relance_at ? `Relance programmée le ${new Date(body.next_relance_at).toLocaleDateString("fr-FR")}` : "Relance annulée",
+      body.next_relance_at ? `Relance programmée le ${new Date(body.next_relance_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" })}` : "Relance annulée",
     );
   }
 

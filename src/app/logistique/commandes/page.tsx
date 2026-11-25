@@ -12,7 +12,7 @@ const COLORS: Record<OrderStatut, string> = {
   expedie: "bg-green-50 text-green-700 ring-green-200",
   livre: "bg-neutral-100 text-neutral-500 ring-neutral-200",
 };
-const dateFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short" });
+const dateFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short" });
 
 /* Commandes atelier — de « à préparer » jusqu'à la livraison. Aucun montant ici. */
 export default async function CommandesPage() {

@@ -56,7 +56,7 @@ export default async function DiagnosticPage() {
               {h.migrations!.map((m) => (
                 <li key={m.id} className="flex justify-between gap-3">
                   <span className="font-mono text-xs text-neutral-700">{m.id}</span>
-                  <span className="text-xs text-neutral-400">{new Date(m.applied_at).toLocaleString("fr-FR")}</span>
+                  <span className="text-xs text-neutral-400">{new Date(m.applied_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris" })}</span>
                 </li>
               ))}
             </ul>

@@ -1,4 +1,4 @@
-import { requireMenuApi } from "@/lib/admin/auth";
+import { audit, requireMenuApi } from "@/lib/admin/auth";
 import { listLeads } from "@/lib/admin/db";
 import { site } from "@/lib/site";
 
@@ -7,11 +7,15 @@ export async function GET(req: Request) {
   const g = await requireMenuApi(req, ["clients"]);
   if (g.denied) return g.denied;
   const url = new URL(req.url);
-  const leads = await listLeads({
+  // Un commercial n'exporte que ses propres clients ; l'export complet est réservé aux administrateurs.
+  const complet = g.user.role === "superadmin" || g.user.role === "admin";
+  const tous = await listLeads({
     statut: url.searchParams.get("statut") ?? undefined,
     search: url.searchParams.get("q") ?? undefined,
     limit: 20000,
   });
+  const leads = complet ? tous : tous.filter((l) => l.assigned_to === g.user.name);
+  await audit(g.user.name, "export_clients", "leads", null, undefined, { lignes: leads.length, complet });
 
   const esc = (v: unknown) => `"${String(v ?? "").replaceAll('"', '""')}"`;
   const header = [
@@ -21,10 +25,10 @@ export async function GET(req: Request) {
   const lignes = leads.map((l) =>
     [
       l.id,
-      new Date(l.created_at).toLocaleString("fr-FR"),
+      new Date(l.created_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris" }),
       l.name, l.email, l.phone, l.source ?? "", l.score, l.score_points, l.statut,
       l.estimation_ttc ?? "", l.relances,
-      l.next_relance_at ? new Date(l.next_relance_at).toLocaleDateString("fr-FR") : "",
+      l.next_relance_at ? new Date(l.next_relance_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) : "",
       l.assigned_to ?? "", l.devis_views, l.opens, l.clicks,
       l.token ? `${site.url}/d/${l.token}` : "",
     ].map(esc).join(";"),

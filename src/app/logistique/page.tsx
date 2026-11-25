@@ -9,8 +9,8 @@ export const dynamic = "force-dynamic";
 /* Tâches du jour du logisticien — tout part de la date à laquelle le
    commercial a validé l'affaire. */
 
-const dayFmt = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
-const shortFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short" });
+const dayFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", weekday: "long", day: "numeric", month: "long" });
+const shortFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short" });
 
 export default async function LogistiquePage() {
   const user = await requireMenu("logistique");

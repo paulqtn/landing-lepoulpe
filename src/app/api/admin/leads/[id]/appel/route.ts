@@ -1,3 +1,4 @@
+import { refusAction } from "@/lib/admin/attribution";
 import { NextResponse } from "next/server";
 import { requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, adminQuery as q, getLead, updateLead } from "@/lib/admin/db";
@@ -23,6 +24,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (g.denied) return g.denied;
   const lead = await getLead(Number((await params).id));
   if (!lead) return NextResponse.json({ ok: false, error: "introuvable" }, { status: 404 });
+  const refusFiche = refusAction(g.user, lead);
+  if (refusFiche) return NextResponse.json({ ok: false, error: refusFiche }, { status: 403 });
+
   let body: Record<string, unknown>;
   try {
     body = await req.json();
@@ -68,7 +72,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     body.issue === "sans_reponse"
       ? " — la séquence d'e-mails continue"
       : body.issue === "reflexion" && rappel
-        ? ` — à rappeler le ${new Date(rappel).toLocaleDateString("fr-FR")}, e-mails arrêtés`
+        ? ` — à rappeler le ${new Date(rappel).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" })}, e-mails arrêtés`
         : issue.statut && issue.statut !== "gagne" && issue.statut !== "perdu"
           ? " — e-mails arrêtés"
           : "";

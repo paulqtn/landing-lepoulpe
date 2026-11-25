@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { QuoteEditor } from "@/components/admin/QuoteEditor";
+import { refusAction } from "@/lib/admin/attribution";
+import { getLead } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
 import { QUOTE_STATUT_LABELS, getQuote } from "@/lib/admin/quotes";
 import { getSociete, societeManquants } from "@/lib/admin/societe";
@@ -10,11 +12,14 @@ import { getSociete, societeManquants } from "@/lib/admin/societe";
 export const dynamic = "force-dynamic";
 
 export default async function QuotePage({ params }: { params: Promise<{ id: string }> }) {
-  await requireMenu("devis");
+  const me = await requireMenu("devis");
   const quote = await getQuote(Number((await params).id));
   if (!quote) notFound();
+  const fiche = quote.lead_id ? await getLead(quote.lead_id) : null;
+  const lectureSeule = fiche ? refusAction(me, fiche) : null;
   const manquants = societeManquants(await getSociete());
   const blockers = [
+    ...(lectureSeule ? [lectureSeule] : []),
     ...(manquants.length ? [`Mentions de la société à compléter (Tarifs et paramètres → Commissions et société) : ${manquants.join(", ")}.`] : []),
     ...(mailConfigured ? [] : ["L'envoi d'e-mails n'est pas configuré (RESEND_API_KEY absente dans Vercel)."]),
   ];
@@ -35,6 +40,11 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
           {quote.origine === "automatique" ? "Généré automatiquement à partir de la demande du site" : `Créé par ${quote.created_by ?? "—"}`} · fourniture seule, pose non comprise.
         </p>
       </div>
+      {lectureSeule && (
+        <p className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-neutral-800">
+          <strong className="text-inkgreen">Devis en lecture seule.</strong> {lectureSeule}
+        </p>
+      )}
       <QuoteEditor
         key={`${quote.id}-${quote.statut}`}
         id={quote.id}
@@ -43,7 +53,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
         client={quote.client}
         options={quote.options}
         blockers={blockers}
-        sentInfo={quote.sent_at ? `Envoyé le ${new Date(quote.sent_at).toLocaleString("fr-FR")} à ${quote.sent_to} par ${quote.sent_by}.` : null}
+        sentInfo={quote.sent_at ? `Envoyé le ${new Date(quote.sent_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris" })} à ${quote.sent_to} par ${quote.sent_by}.` : null}
       />
     </div>
   );

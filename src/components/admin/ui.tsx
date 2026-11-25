@@ -22,7 +22,7 @@ export function StatutBadge({ statut }: { statut: Statut }) {
   );
 }
 
-export const dateFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+export const dateFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 export const eurFmt = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 
 const SCORE_COLORS: Record<"A" | "B" | "C", string> = {

@@ -79,7 +79,7 @@ export async function renderQuotePdf(quote: Quote, societe: Societe): Promise<Ui
   y -= 24;
   right(`N° ${quote.ref}`, A4[0] - M, y, 10, bold);
   const date = new Date(quote.sent_at ?? quote.created_at);
-  right(`Date : ${date.toLocaleDateString("fr-FR")}`, A4[0] - M, y - 13, 9, font, GREY);
+  right(`Date : ${date.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" })}`, A4[0] - M, y - 13, 9, font, GREY);
   const validite = Number.parseInt(societe.validiteJours, 10);
   if (Number.isFinite(validite) && validite > 0) right(`Valable ${validite} jours`, A4[0] - M, y - 25, 9, font, GREY);
   let ys = y;

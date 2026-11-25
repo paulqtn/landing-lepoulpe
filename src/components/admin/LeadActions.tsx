@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { BellPlus, CalendarClock, Gauge, Loader2, MailX, Pause, PhoneCall, Play, Send, StickyNote, Trash2 } from "lucide-react";
+import { BellPlus, CalendarClock, Gauge, Loader2, MailX, Pause, PhoneCall, Play, Send, StickyNote, Trash2, UserPen } from "lucide-react";
 import { NIVEAUX } from "@/lib/admin/niveaux";
 import { STATUT_AIDE, STATUT_LABELS, STATUTS, sequenceActive, type Statut } from "@/lib/admin/statuts";
 
@@ -20,6 +20,7 @@ export function LeadActions({
   devisEnvoye = false,
   niveau = null,
   pauseAt = null,
+  contact,
 }: {
   leadId: number;
   statut: Statut;
@@ -36,6 +37,8 @@ export function LeadActions({
   niveau?: number | null;
   /** Relances automatiques en pause depuis cette date. */
   pauseAt?: string | null;
+  /** Coordonnées actuelles du client, modifiables depuis la fiche. */
+  contact?: { name: string; email: string; phone: string };
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -46,6 +49,8 @@ export function LeadActions({
   const [issue, setIssue] = useState("discussion");
   const [appelNote, setAppelNote] = useState("");
   const [rappelLe, setRappelLe] = useState("");
+  const [coord, setCoord] = useState(contact ?? { name: "", email: "", phone: "" });
+  const coordChange = Boolean(contact) && (coord.name !== contact!.name || coord.email !== contact!.email || coord.phone !== contact!.phone);
 
   const clos = statut === "gagne" || statut === "perdu";
   const seqOn = sequenceActive(statut) && Boolean(nextRelanceAt);
@@ -58,7 +63,7 @@ export function LeadActions({
     ["perdu", "Il ne donne pas suite", "Statut « Non signé »"],
   ];
   const enPause = !clos && Boolean(pauseAt) && !seqOn;
-  const quand = (iso: string) => new Date(iso).toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+  const quand = (iso: string) => new Date(iso).toLocaleString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
   const sequence = (body: Record<string, unknown>) =>
     call(`/api/admin/leads/${leadId}/sequence`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   const appelApi = (body: Record<string, unknown>) =>
@@ -91,7 +96,7 @@ export function LeadActions({
             <MailX className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             <span>
               {seqOn
-                ? `Séquence d'e-mails en cours : relance ${Math.min(relances + 1, 3)} prévue le ${new Date(nextRelanceAt!).toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}.`
+                ? `Séquence d'e-mails en cours : relance ${Math.min(relances + 1, 3)} prévue le ${new Date(nextRelanceAt!).toLocaleString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}.`
                 : enPause
                   ? `Séquence d'e-mails en pause depuis le ${quand(pauseAt!)} : aucun e-mail automatique ne part.`
                 : relances >= 3
@@ -99,7 +104,7 @@ export function LeadActions({
                   : !devisEnvoye
                     ? "Aucun e-mail automatique : le devis n'a pas encore été envoyé."
                     : `Séquence d'e-mails arrêtée (${STATUT_LABELS[statut].toLowerCase()}) : aucun e-mail automatique ne partira.`}
-              {rappelAt && ` Rappel téléphonique prévu le ${new Date(rappelAt).toLocaleDateString("fr-FR")}.`}
+              {rappelAt && ` Rappel téléphonique prévu le ${new Date(rappelAt).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" })}.`}
             </span>
           </p>
           {!appel ? (
@@ -189,6 +194,28 @@ export function LeadActions({
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
+        </section>
+      )}
+
+      {/* coordonnées */}
+      {contact && (
+        <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+          <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+            <UserPen className="h-3.5 w-3.5" />
+            Coordonnées
+          </h2>
+          <div className="mt-3 grid gap-2">
+            {([["name", "Nom", "text"], ["email", "E-mail", "email"], ["phone", "Téléphone", "tel"]] as const).map(([k, label, type]) => (
+              <label key={k} className="block text-xs font-semibold text-neutral-500">
+                {label}
+                <input type={type} value={coord[k]} onChange={(e) => setCoord({ ...coord, [k]: e.target.value })} className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm text-inkgreen outline-none focus:border-pine-500" />
+              </label>
+            ))}
+          </div>
+          <button type="button" disabled={pending || !coordChange} onClick={() => patch({ contact: coord })} className="mt-3 rounded-full bg-pine-700 px-5 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
+            Enregistrer les coordonnées
+          </button>
+          <p className="mt-2 text-xs text-neutral-400">Les relances et les devis partent à cette adresse.</p>
         </section>
       )}
 

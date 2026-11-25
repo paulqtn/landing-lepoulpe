@@ -94,6 +94,17 @@ appel sans réponse laisse la séquence continuer. « Reprendre la séquence » 
 où elle s'était arrêtée. Les clients à rappeler apparaissent dans l'onglet Relances et
 dans les priorités de l'accueil.
 
+## Qui peut agir sur une fiche
+
+Statut, note, score, relances, coordonnées et devis d'un client ne se modifient que par
+**son commercial** ou par un **administrateur** (`refusAction` dans `src/lib/admin/attribution.ts`,
+appliqué par toutes les API). Un client non attribué doit d'abord être pris dans la file, dans
+l'ordre d'arrivée ; pour les autres, la fiche et le devis s'affichent en lecture seule. Un client
+déjà suivi ne change de mains que par son commercial ou un administrateur. L'export CSV d'un
+commercial ne contient que ses clients (export complet : administrateurs), et chaque export est
+inscrit au journal. Les coordonnées se corrigent sur la fiche ou dans un devis : la fiche fait
+foi pour les relances. Toutes les dates s'affichent à l'heure de Paris.
+
 ## Fiche client : score du prospect et relances automatiques
 
 - **Score du prospect** (au-dessus de la note commerciale) : niveau de 1 à 5 posé à la main —

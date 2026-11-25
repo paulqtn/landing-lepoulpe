@@ -22,7 +22,7 @@ export type LeadRow = {
   assigned_to: string | null;
 };
 
-const dateFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+const dateFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 const eurFmt = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 
 export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }) {
