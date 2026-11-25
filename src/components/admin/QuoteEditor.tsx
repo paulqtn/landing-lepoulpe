@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, Copy, Download, Eye, Loader2, Plus, Send, Trash2, X } from "lucide-react";
+import { AlertTriangle, Calculator, Copy, Download, Eye, Loader2, Plus, Send, Trash2, X } from "lucide-react";
 
 /* Éditeur de devis : propositions côte à côte, lignes modifiables.
    Les totaux affichés sont indicatifs ; le serveur les recalcule à
@@ -13,6 +13,13 @@ type Line = { description: string; qty: string; unitPriceHt: string; vatRate: nu
 const IMG_SRC: Record<Img, string> = { rail: "/fixation-rail.png", pinces: "/fixation-pince.png", spider: "/fixation-spider.png" };
 type Option = { label: string; title: string; lines: Line[] };
 type Client = { name: string; email: string; phone: string; address: string };
+
+type Niveau = { coef: number; label: string; aide: string; ht: number; ttc: number };
+type Projet = { systeme: string; cotes: number[]; hauteur: number; verre: string; verreRetenu: string; teinte: string; codePostal: string };
+type Chiffrage = { niveaux: Niveau[] | null; coef: number | null; coefSite: number; projet: Projet };
+const SYSTEMES: [string, string][] = [["rail", "Rail"], ["pinces", "Pinces"], ["spider", "Fixations ponctuelles (spider)"]];
+const TEINTES: [string, string][] = [["clair", "Clair"], ["extra-clair", "Extra clair"], ["fume-1f", "Fumé une face"], ["fume-2f", "Fumé deux faces"]];
+const coefTxt = (c: number) => `×${String(c).replace(".", ",")}`;
 
 const VAT = [0.2, 0.1, 0.055, 0];
 const n = (s: string) => Number(String(s).trim().replace(/\s/g, "").replace(",", "."));
@@ -37,6 +44,7 @@ export function QuoteEditor(props: {
   options: { label: string; title: string; lines: { description: string; qty: number; unitPriceHt: number; vatRate: number; unit?: string; image?: Img | null }[] }[];
   sentInfo: string | null;
   blockers: string[];
+  chiffrage?: Chiffrage | null;
 }) {
   const router = useRouter();
   const editable = props.statut === "brouillon";
@@ -50,6 +58,54 @@ export function QuoteEditor(props: {
   const [confirm, setConfirm] = useState(false);
   const [checked, setChecked] = useState(false);
   const dialog = useRef<HTMLDivElement>(null);
+
+  /* Chiffrage intégré : projet du client + niveau de prix, recalculés par le serveur. */
+  const ch = props.chiffrage ?? null;
+  const [niveaux, setNiveaux] = useState<Niveau[] | null>(ch?.niveaux ?? null);
+  const [coef, setCoef] = useState<number | null>(ch?.coef ?? null);
+  const [coefApplique, setCoefApplique] = useState<number | null>(ch?.coef ?? null);
+  const [editProjet, setEditProjet] = useState(ch ? ch.niveaux === null : false);
+  const [projet, setProjet] = useState({
+    systeme: ch?.projet.systeme ?? "rail",
+    cotes: (ch?.projet.cotes ?? []).map((c) => String(c).replace(".", ",")).join(" + "),
+    hauteur: String(ch?.projet.hauteur ?? 100),
+    verre: ch?.projet.verre ?? "",
+    teinte: ch?.projet.teinte ?? "clair",
+    codePostal: ch?.projet.codePostal ?? "",
+  });
+  const [projetModifie, setProjetModifie] = useState(false);
+  const setP = (patch: Partial<typeof projet>) => { setProjet((p) => ({ ...p, ...patch })); setProjetModifie(true); };
+
+  async function appliquerChiffrage() {
+    if (coef === null) return setMsg({ ok: false, text: "Choisissez un niveau de prix." });
+    if (dirty && !(await save())) return;
+    setBusy("chiffrage");
+    setMsg(null);
+    try {
+      const res = await fetch(`/api/admin/quotes/${props.id}/chiffrage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          coef,
+          ...(projetModifie ? { projet: { ...projet, hauteur: Number(projet.hauteur), cotes: projet.cotes.split(/[+;]/).map((x) => n(x)).filter((x) => Number.isFinite(x) && x > 0) } } : {}),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) return setMsg({ ok: false, text: data.error ?? "Chiffrage impossible." });
+      setOptions((data.options as typeof props.options).map((o) => ({ ...o, lines: o.lines.map((l) => ({ ...l, qty: String(l.qty).replace(".", ","), unitPriceHt: String(l.unitPriceHt).replace(".", ",") })) })));
+      setNiveaux(data.niveaux);
+      setCoefApplique(data.coef);
+      setProjetModifie(false);
+      setEditProjet(false);
+      setDirty(false);
+      setMsg({ ok: true, text: `Devis recalculé au niveau ${coefTxt(data.coef)}.` });
+      router.refresh();
+    } catch {
+      setMsg({ ok: false, text: "Erreur réseau." });
+    } finally {
+      setBusy(null);
+    }
+  }
 
   const touch = () => { setDirty(true); setMsg(null); };
   const setOpt = (i: number, patch: Partial<Option>) => { setOptions((os) => os.map((o, k) => (k === i ? { ...o, ...patch } : o))); touch(); };
@@ -175,6 +231,78 @@ export function QuoteEditor(props: {
           ))}
         </div>
       </section>
+
+      {editable && ch && (
+        <section className="rounded-2xl border border-pine-200 bg-white p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+              <Calculator className="h-3.5 w-3.5" />
+              Chiffrage du projet
+            </h2>
+            <button type="button" onClick={() => setEditProjet(!editProjet)} className="text-xs font-bold text-pine-700 hover:underline">
+              {editProjet ? "Fermer" : "Modifier le projet"}
+            </button>
+          </div>
+          {!editProjet ? (
+            <p className="mt-2 text-sm text-neutral-700">
+              {SYSTEMES.find(([k]) => k === projet.systeme)?.[1]} · verre {projet.verre || ch.projet.verreRetenu || "auto"} {TEINTES.find(([k]) => k === projet.teinte)?.[1].toLowerCase()} · {projet.cotes || "—"} m · hauteur {projet.hauteur} cm
+              {projet.codePostal ? ` · ${projet.codePostal}` : ""}
+            </p>
+          ) : (
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Fixation</span>
+                <select className={inputCls} value={projet.systeme} onChange={(e) => setP({ systeme: e.target.value })}>{SYSTEMES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select>
+              </label>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Épaisseur du verre</span>
+                <select className={inputCls} value={projet.verre} onChange={(e) => setP({ verre: e.target.value })}>
+                  <option value="">Automatique selon le projet</option>
+                  {["66.4", "88.4", "1010.4"].map((v) => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </label>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Teinte du verre</span>
+                <select className={inputCls} value={projet.teinte} onChange={(e) => setP({ teinte: e.target.value })}>{TEINTES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select>
+              </label>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Longueurs en mètres (un « + » entre deux tronçons)</span>
+                <input className={inputCls} value={projet.cotes} placeholder="5,2 + 3,1" onChange={(e) => setP({ cotes: e.target.value })} />
+              </label>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Hauteur finie</span>
+                <select className={inputCls} value={projet.hauteur} onChange={(e) => setP({ hauteur: e.target.value })}>{["90", "100", "110"].map((h) => <option key={h} value={h}>{h} cm</option>)}</select>
+              </label>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Code postal du projet</span>
+                <input className={inputCls} inputMode="numeric" maxLength={5} value={projet.codePostal} onChange={(e) => setP({ codePostal: e.target.value.replace(/\D/g, "") })} />
+              </label>
+            </div>
+          )}
+
+          <fieldset className="mt-4">
+            <legend className="mb-2 text-xs font-bold text-inkgreen">Niveau de prix</legend>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {(niveaux ?? [1.7, 1.6, 1.5].map((c) => ({ coef: c, label: c === 1.7 ? "Plein tarif" : c === 1.6 ? "Remise" : "Remise exceptionnelle", aide: "", ht: 0, ttc: 0 }))).map((x) => (
+                <label key={x.coef} className={`flex cursor-pointer items-start gap-2.5 rounded-xl border px-3 py-2.5 transition ${coef === x.coef ? "border-amber-500 bg-amber-500/10" : "border-neutral-200 hover:bg-amber-500/15"}`}>
+                  <input type="radio" name="niveau-prix" className="mt-1 accent-pine-700" checked={coef === x.coef} onChange={() => setCoef(x.coef)} />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-bold text-inkgreen">{x.label} <span className="font-mono text-xs text-neutral-500">{coefTxt(x.coef)}</span></span>
+                    <span className="block text-sm font-extrabold tabular-nums text-pine-700">{niveaux && !projetModifie ? `${eur(x.ht)} HT` : "à recalculer"}</span>
+                    {niveaux && !projetModifie && <span className="block text-[11px] tabular-nums text-neutral-500">{eur(x.ttc)} TTC{x.aide ? ` · ${x.aide}` : ""}</span>}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <button type="button" onClick={appliquerChiffrage} disabled={busy !== null || coef === null || (coef === coefApplique && !projetModifie)} className="inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
+              {busy === "chiffrage" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Calculator className="h-3.5 w-3.5" />}
+              {projetModifie ? "Recalculer le devis" : "Appliquer ce prix au devis"}
+            </button>
+            <p className="min-w-0 flex-1 text-xs text-neutral-500">
+              {coefApplique !== null
+                ? `Devis actuellement au niveau ${coefTxt(coefApplique)}.`
+                : `Brouillon au prix affiché sur le site (${coefTxt(ch.coefSite)}).`}{" "}
+              Le calcul remplace la première ligne du devis ; les autres lignes sont conservées. En dessous de la remise exceptionnelle, l&rsquo;enregistrement est refusé.
+            </p>
+          </div>
+        </section>
+      )}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-500">

@@ -290,4 +290,9 @@ export const MIGRATIONS: Migration[] = [
       ALTER TABLE leads ADD COLUMN sequence_pause_at TIMESTAMPTZ;
     `,
   },
+  {
+    // Niveau de prix choisi pour un devis (coefficient appliqué au coût d'achat).
+    id: "012_niveau_de_prix_du_devis",
+    sql: `ALTER TABLE quotes ADD COLUMN coef NUMERIC(4,2);`,
+  },
 ];

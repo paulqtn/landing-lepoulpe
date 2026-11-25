@@ -5,7 +5,7 @@ import { requireMenuApi } from "@/lib/admin/auth";
 import { addEvent, getLead, updateLead } from "@/lib/admin/db";
 import { mailConfigured, sendQuoteEmail } from "@/lib/admin/mail";
 import { renderQuotePdf } from "@/lib/admin/quote-pdf";
-import { getQuote, markSent, optionTotals } from "@/lib/admin/quotes";
+import { getQuote, markSent, optionTotals, refusPlancher } from "@/lib/admin/quotes";
 import { getSociete, societeManquants } from "@/lib/admin/societe";
 import { site } from "@/lib/site";
 
@@ -29,6 +29,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (refusFiche) return NextResponse.json({ ok: false, error: refusFiche }, { status: 403 });
   if (quote.statut !== "brouillon") return NextResponse.json({ ok: false, error: "Ce devis a déjà été envoyé." }, { status: 409 });
 
+  const plancher = await refusPlancher(fiche, quote.options, user.role === "superadmin" || user.role === "admin");
+  if (plancher) return NextResponse.json({ ok: false, error: plancher }, { status: 422 });
   const to = quote.client.email;
   if (body.confirmRef !== quote.ref || body.confirmEmail !== to)
     return NextResponse.json({ ok: false, error: "Confirmation incomplète : le devis a changé depuis l'ouverture de la fenêtre. Rechargez la page." }, { status: 409 });

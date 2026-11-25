@@ -6,7 +6,8 @@ import { QuoteEditor } from "@/components/admin/QuoteEditor";
 import { refusAction } from "@/lib/admin/attribution";
 import { getLead } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
-import { QUOTE_STATUT_LABELS, getQuote } from "@/lib/admin/quotes";
+import { QUOTE_STATUT_LABELS, chiffrageDepuisLead, getQuote, prixParNiveau } from "@/lib/admin/quotes";
+import { getTarifsSite } from "@/lib/admin/prices";
 import { getSociete, societeManquants } from "@/lib/admin/societe";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +18,26 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
   if (!quote) notFound();
   const fiche = quote.lead_id ? await getLead(quote.lead_id) : null;
   const lectureSeule = fiche ? refusAction(me, fiche) : null;
+  // Chiffrage intégré au devis : projet de la demande, prix aux trois niveaux autorisés.
+  let chiffrage = null;
+  if (fiche && !lectureSeule && quote.statut === "brouillon") {
+    const a = (fiche.answers ?? {}) as Record<string, unknown>;
+    const c = await chiffrageDepuisLead(fiche);
+    chiffrage = {
+      niveaux: await prixParNiveau(fiche),
+      coef: quote.coef ? Number(quote.coef) : null,
+      coefSite: (await getTarifsSite()).coefDefaut,
+      projet: {
+        systeme: c?.systeme ?? "rail",
+        cotes: (Array.isArray(a.cotes) ? a.cotes : []).map(Number).filter((n) => Number.isFinite(n) && n > 0),
+        hauteur: Number(a.hauteur) || 100,
+        verre: typeof a.verre === "string" ? a.verre : "",
+        verreRetenu: c?.verre ?? "",
+        teinte: c?.teinte ?? "clair",
+        codePostal: typeof a.codePostal === "string" ? a.codePostal : "",
+      },
+    };
+  }
   const manquants = societeManquants(await getSociete());
   const blockers = [
     ...(lectureSeule ? [lectureSeule] : []),
@@ -53,6 +74,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
         client={quote.client}
         options={quote.options}
         blockers={blockers}
+        chiffrage={chiffrage}
         sentInfo={quote.sent_at ? `Envoyé le ${new Date(quote.sent_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris" })} à ${quote.sent_to} par ${quote.sent_by}.` : null}
       />
     </div>

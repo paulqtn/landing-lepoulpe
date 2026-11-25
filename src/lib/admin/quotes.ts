@@ -1,6 +1,7 @@
 import { adminQuery as q, addEvent, type Lead } from "./db";
 import { audit } from "./auth";
 import { currentVersion, getTarifsSite } from "./prices";
+import { COEF_PLANCHER, COEF_PLEIN, NIVEAUX_PRIX } from "./niveaux-prix";
 import { correspondance } from "@/lib/calculateur/correspondance";
 import { chiffrer } from "@/lib/calculateur/engine";
 
@@ -44,6 +45,8 @@ export type Quote = {
   total_ht: string;
   total_ttc: string;
   price_version: number | null;
+  /** Niveau de prix choisi (coefficient) ; null = prix du site ou saisie libre. */
+  coef?: string | null;
   sent_at: string | null;
   sent_by: string | null;
   sent_to: string | null;
@@ -107,7 +110,7 @@ const USAGES: Record<string, string> = {
 };
 
 /** Chiffrage d'une demande par le moteur du site, avec les tarifs en vigueur ; null si elle est incomplète. */
-export async function chiffrageDepuisLead(lead: Lead) {
+export async function chiffrageDepuisLead(lead: Lead, coefficient?: number) {
   const a = (lead.answers ?? {}) as Record<string, unknown>;
   const cotes = (Array.isArray(a.cotes) ? a.cotes : []).map(Number).filter((n) => Number.isFinite(n) && n > 0 && n <= 200).slice(0, 6);
   const hauteur = Number(a.hauteur);
@@ -126,6 +129,7 @@ export async function chiffrageDepuisLead(lead: Lead) {
       couleur: "anodise",
       departement: typeof a.codePostal === "string" ? a.codePostal.slice(0, 2) : undefined,
       livraison: "livraison",
+      ...(coefficient ? { coefficient } : {}),
     },
     await getTarifsSite(),
   );
@@ -133,8 +137,11 @@ export async function chiffrageDepuisLead(lead: Lead) {
 }
 
 /** Même correspondance que le générateur public, avec les tarifs en vigueur. */
-export async function draftOptionsFromLead(lead: Lead): Promise<QuoteOption[]> {
-  const c = await chiffrageDepuisLead(lead);
+export async function draftOptionsFromLead(lead: Lead, coefficient?: number): Promise<QuoteOption[]> {
+  const c = await chiffrageDepuisLead(lead, coefficient);
+  // Remise affichée au client : écart avec le plein tarif.
+  const plein = coefficient && coefficient < COEF_PLEIN ? await chiffrageDepuisLead(lead, COEF_PLEIN) : null;
+  const remise = c && plein ? r2(plein.r.prixHT - c.r.prixHT) : 0;
   if (!c) {
     // Demande incomplète : une ligne à compléter, reprise de l'estimation s'il y en a une.
     const ttc = lead.estimation_ttc ? Number(lead.estimation_ttc) : 0;
@@ -168,6 +175,7 @@ export async function draftOptionsFromLead(lead: Lead): Promise<QuoteOption[]> {
             `Longueur : ${troncons}${cotes.length > 1 ? ` (${String(ml).replace(".", ",")} ml)` : ""}`,
             `Accessoires inclus : ${sys.accessoires}`,
             "Conditionnement en caisse bois et livraison en France métropolitaine inclus",
+            ...(remise > 0 ? [`Remise commerciale incluse : − ${remise.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € HT`] : []),
           ].join("\n"),
           qty: ml,
           unit: "ml",
@@ -179,6 +187,37 @@ export async function draftOptionsFromLead(lead: Lead): Promise<QuoteOption[]> {
       ],
     },
   ];
+}
+
+/** Prix du projet d'une demande à chacun des niveaux autorisés ; null si la demande est incomplète. */
+export async function prixParNiveau(lead: Lead): Promise<{ coef: number; label: string; aide: string; ht: number; ttc: number }[] | null> {
+  const out = [];
+  for (const n of NIVEAUX_PRIX) {
+    const c = await chiffrageDepuisLead(lead, n.coef);
+    if (!c) return null;
+    out.push({ ...n, ht: c.r.prixHT, ttc: c.r.prixTTC });
+  }
+  return out;
+}
+
+/** Prix plancher HT du projet (coefficient le plus bas autorisé) ; null si la demande est incomplète. */
+export async function plancherHt(lead: Lead): Promise<number | null> {
+  const c = await chiffrageDepuisLead(lead, COEF_PLANCHER);
+  return c ? c.r.prixHT : null;
+}
+
+/**
+ * Refus si la proposition principale d'un devis passe sous le prix plancher du projet.
+ * Les administrateurs ne sont pas limités.
+ */
+export async function refusPlancher(lead: Lead | null, options: QuoteOption[], admin: boolean): Promise<string | null> {
+  if (admin || !lead || options.length === 0) return null;
+  const plancher = await plancherHt(lead);
+  if (plancher === null) return null;
+  const ht = optionTotals(options[0]).ht;
+  if (ht >= plancher - 0.5) return null;
+  const f = (x: number) => x.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return `Prix sous le plancher : ${f(ht)} € HT pour un minimum de ${f(plancher)} € HT (remise exceptionnelle ×${String(COEF_PLANCHER).replace(".", ",")}). Si le projet a changé, corrigez-le dans « Chiffrage » ; sinon demandez à un administrateur.`;
 }
 
 /* ------------------------------ Accès base ------------------------------ */

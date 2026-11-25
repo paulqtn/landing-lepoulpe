@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Check, Hammer, HardHat, HelpCircle, Loader2, Lock, MapPin, Minus, MousePointerClick, Phone, Plus, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Hammer, HardHat, HelpCircle, Loader2, Lock, Minus, MousePointerClick, Phone, Plus, Zap } from "lucide-react";
 import { FunnelHelp } from "@/components/FunnelHelp";
 import { usages } from "@/lib/catalog";
 import { guarantees, phoneHref, site } from "@/lib/site";
@@ -162,7 +162,7 @@ export function Configurator({
     cotes: defaults.cotes?.length ? defaults.cotes.map((c) => fmtM(c)) : ["3,00"],
     hauteur: defaults.hauteur,
   });
-  const [lead, setLead] = useState({ name: "", email: "", phone: "", cp: "", adresse: "", ville: "", consent: false });
+  const [lead, setLead] = useState({ name: "", email: "", phone: "", cp: "", consent: false });
   const [showErr, setShowErr] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
   const [result, setResult] = useState<Estimation | null>(null);
@@ -242,7 +242,7 @@ export function Configurator({
     name: lead.name.trim().length < 2,
     email: !EMAIL_RE.test(lead.email),
     phone: lead.phone.replace(/\D/g, "").length < 8,
-    adresse: lead.adresse.trim().length < 5,
+    cp: !/^\d{5}$/.test(lead.cp.trim()),
     consent: !lead.consent,
   };
 
@@ -338,9 +338,7 @@ export function Configurator({
             teinte: state.teinte,
             installation: state.installation,
             ...(lock.verre ? { verre: lock.verre } : {}),
-            codePostal: lead.cp,
-            adresse: lead.adresse,
-            ville: lead.ville,
+            codePostal: lead.cp.trim(),
             estimationTTC: estimation?.ttc ?? null,
           },
           source: source ?? "configurateur-devis",
@@ -886,14 +884,14 @@ export function Configurator({
                     <Field label="Email" type="email" value={lead.email} onChange={(v) => setLead((l) => ({ ...l, email: v }))} placeholder="jean@email.fr" autoComplete="email" error={showErr && leadErrors.email ? "Email invalide." : undefined} />
                     <Field label="Téléphone" type="tel" value={lead.phone} onChange={(v) => setLead((l) => ({ ...l, phone: v }))} placeholder="06 12 34 56 78" autoComplete="tel" error={showErr && leadErrors.phone ? "Numéro invalide." : undefined} />
                   </div>
-                  <AddressField
-                    value={lead.adresse}
-                    error={showErr && leadErrors.adresse ? "Indiquez l’adresse du chantier." : undefined}
-                    onChange={(q) => {
-                      const cp = q.match(/\b(\d{5})\b/)?.[1] ?? "";
-                      setLead((l) => ({ ...l, adresse: q, ville: "", ...(cp ? { cp } : {}) }));
-                    }}
-                    onSelect={(a) => setLead((l) => ({ ...l, adresse: a.label, cp: a.postcode, ville: a.city }))}
+                  <Field
+                    label="Code postal du projet"
+                    value={lead.cp}
+                    onChange={(v) => setLead((l) => ({ ...l, cp: v.replace(/\D/g, "").slice(0, 5) }))}
+                    placeholder="69003"
+                    autoComplete="postal-code"
+                    inputMode="numeric"
+                    error={showErr && leadErrors.cp ? "Indiquez le code postal du projet (5 chiffres)." : undefined}
                   />
                   <label className="flex cursor-pointer items-start gap-3 pt-1">
                     <input
@@ -1052,93 +1050,6 @@ function StepShell({ title, help, children }: { title: string; help?: string; ch
   );
 }
 
-/** Adresse du chantier avec autocomplétion officielle (API Adresse,
-    data.gouv.fr) : une seule saisie, et le CRM reçoit rue + CP + ville
-    structurés — plus de devis à retaper. Saisie libre si l'API est muette. */
-function AddressField({
-  value,
-  onChange,
-  onSelect,
-  error,
-}: {
-  value: string;
-  onChange: (q: string) => void;
-  onSelect: (a: { label: string; postcode: string; city: string }) => void;
-  error?: string;
-}) {
-  const [sugs, setSugs] = useState<{ label: string; postcode: string; city: string; context: string }[]>([]);
-  const [openList, setOpenList] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-  function query(q: string) {
-    onChange(q);
-    if (timer.current) clearTimeout(timer.current);
-    if (q.trim().length < 4) {
-      setSugs([]);
-      setOpenList(false);
-      return;
-    }
-    timer.current = setTimeout(async () => {
-      try {
-        const r = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&limit=4&autocomplete=1`);
-        if (!r.ok) return;
-        const j = (await r.json()) as { features?: { properties: { label: string; postcode?: string; city?: string; context?: string } }[] };
-        const list = (j.features ?? []).map((f) => ({
-          label: f.properties.label,
-          postcode: f.properties.postcode ?? "",
-          city: f.properties.city ?? "",
-          context: f.properties.context ?? "",
-        }));
-        setSugs(list);
-        setOpenList(list.length > 0);
-      } catch {
-        /* API muette : la saisie libre reste valable */
-      }
-    }, 250);
-  }
-
-  return (
-    <div className="relative">
-      <label className="block">
-        <span className="mb-1.5 block text-sm font-semibold text-neutral-700">Adresse du chantier</span>
-        <input
-          value={value}
-          placeholder="12 rue des Lilas, 69003 Lyon"
-          autoComplete="street-address"
-          onChange={(e) => query(e.target.value)}
-          onFocus={() => sugs.length > 0 && setOpenList(true)}
-          onBlur={() => setTimeout(() => setOpenList(false), 150)}
-          className={`w-full rounded-xl border bg-white px-4 py-3 text-base text-inkgreen outline-none transition placeholder:text-neutral-400 focus:ring-4 ${error ? "border-red-400 focus:border-red-500 focus:ring-red-500/10" : "border-neutral-200 focus:border-pine-500 focus:ring-pine-500/10"}`}
-        />
-      </label>
-      {error && <span className="mt-1 block text-xs font-semibold text-red-600">{error}</span>}
-      {openList && (
-        <ul className="absolute inset-x-0 top-full z-20 mt-1.5 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-elevated" role="listbox">
-          {sugs.map((a) => (
-            <li key={a.label}>
-              <button
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => {
-                  onSelect(a);
-                  setOpenList(false);
-                }}
-                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left transition hover:bg-amber-500/15"
-              >
-                <MapPin className="h-4 w-4 shrink-0 text-pine-600" />
-                <span className="min-w-0">
-                  <span className="block truncate text-sm font-semibold text-inkgreen">{a.label}</span>
-                  {a.context && <span className="block truncate text-xs text-neutral-400">{a.context}</span>}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
 function Field({
   label,
   value,
@@ -1146,6 +1057,7 @@ function Field({
   placeholder,
   type = "text",
   autoComplete,
+  inputMode,
   error,
 }: {
   label: string;
@@ -1154,6 +1066,7 @@ function Field({
   placeholder?: string;
   type?: string;
   autoComplete?: string;
+  inputMode?: "numeric" | "text";
   error?: string;
 }) {
   return (
@@ -1164,6 +1077,7 @@ function Field({
         value={value}
         placeholder={placeholder}
         autoComplete={autoComplete}
+        inputMode={inputMode}
         onChange={(e) => onChange(e.target.value)}
         className={`w-full rounded-xl border bg-white px-4 py-3 text-base text-inkgreen outline-none transition placeholder:text-neutral-400 focus:ring-4 ${error ? "border-red-400 focus:border-red-500 focus:ring-red-500/10" : "border-neutral-200 focus:border-pine-500 focus:ring-pine-500/10"}`}
       />

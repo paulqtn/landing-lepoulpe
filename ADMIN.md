@@ -94,6 +94,18 @@ appel sans réponse laisse la séquence continuer. « Reprendre la séquence » 
 où elle s'était arrêtée. Les clients à rappeler apparaissent dans l'onglet Relances et
 dans les priorités de l'accueil.
 
+## Chiffrage et niveaux de prix d'un devis
+
+Dans l'écran d'un devis (brouillon rattaché à une demande), le bloc **Chiffrage du projet**
+reprend le projet du client (fixation, verre, teinte, longueurs, hauteur, code postal), que le
+commercial peut corriger, et propose trois niveaux de prix : **plein tarif ×1,7**, **remise ×1,6**,
+**remise exceptionnelle ×1,5** (`src/lib/admin/niveaux-prix.ts`). Le serveur recalcule la première
+ligne du devis avec le moteur du site (`/api/admin/quotes/[id]/chiffrage`) ; une remise est écrite
+sur le devis. Le niveau ×1,5 est le **prix plancher** : en dessous, l'enregistrement et l'envoi
+sont refusés à un commercial (proposition principale), un administrateur n'est pas limité.
+Le brouillon automatique reste au prix affiché sur le site (coefficient des tarifs, 1,75 par défaut).
+Le générateur du site demande le **code postal du projet**, plus l'adresse.
+
 ## Qui peut agir sur une fiche
 
 Statut, note, score, relances, coordonnées et devis d'un client ne se modifient que par

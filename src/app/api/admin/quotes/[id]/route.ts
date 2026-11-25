@@ -4,7 +4,7 @@ import { refusAction } from "@/lib/admin/attribution";
 import { majCoordonnees } from "@/lib/admin/contact";
 import { getLead } from "@/lib/admin/db";
 import type { User } from "@/lib/admin/auth";
-import { duplicateQuote, getQuote, optionTotals, sanitizeClient, sanitizeOptions, updateQuote } from "@/lib/admin/quotes";
+import { duplicateQuote, getQuote, optionTotals, refusPlancher, sanitizeClient, sanitizeOptions, updateQuote } from "@/lib/admin/quotes";
 
 /** Un devis rattaché à un client ne se modifie que par son commercial ou un administrateur. */
 async function refusDevis(user: User, id: number): Promise<{ refus: string | null; leadId: number | null }> {
@@ -29,6 +29,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (droit.refus) return NextResponse.json({ ok: false, error: droit.refus }, { status: 403 });
   const { options, error } = sanitizeOptions(body.options);
   if (error) return NextResponse.json({ ok: false, error }, { status: 422 });
+  const plancher = await refusPlancher(droit.leadId ? await getLead(droit.leadId) : null, options, user.role === "superadmin" || user.role === "admin");
+  if (plancher) return NextResponse.json({ ok: false, error: plancher }, { status: 422 });
   const client = sanitizeClient(body.client);
   if (client.name.length < 2) return NextResponse.json({ ok: false, error: "Le nom du client est obligatoire." }, { status: 422 });
   const r = await updateQuote(id, client, options, user.name);
