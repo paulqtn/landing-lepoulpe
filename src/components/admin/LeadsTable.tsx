@@ -7,6 +7,7 @@ import { BellPlus, Loader2, UserRound } from "lucide-react";
 import { ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { STATUT_LABELS, STATUTS, type Statut } from "@/lib/admin/statuts";
 import { niveauInfo } from "@/lib/admin/niveaux";
+import { sourceLisible } from "@/lib/admin/sources";
 
 export type LeadRow = {
   id: number;
@@ -65,6 +66,7 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
         <div className="sticky top-3 z-10 flex flex-wrap items-center gap-2.5 rounded-2xl border border-pine-200 bg-pine-50 px-4 py-3 shadow-card">
           <span className="text-sm font-bold text-inkgreen">{sel.size} sélectionné(s)</span>
           <select
+            aria-label="Changer le statut des clients sélectionnés"
             defaultValue=""
             disabled={pending}
             onChange={(e) => e.target.value && bulk("statut", e.target.value)}
@@ -77,6 +79,7 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
           </select>
           {team.length > 0 && (
             <select
+              aria-label="Attribuer les clients sélectionnés"
               defaultValue=""
               disabled={pending}
               onChange={(e) => e.target.value && bulk("assign", e.target.value)}
@@ -110,12 +113,13 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
                   type="checkbox"
                   checked={allChecked}
                   onChange={() => setSel(allChecked ? new Set() : new Set(leads.map((l) => l.id)))}
+                  aria-label="Sélectionner tous les clients de la page"
                   className="h-4 w-4 accent-pine-600"
                 />
               </th>
               <th className="px-2 py-3">Score</th>
               <th className="px-4 py-3">Contact</th>
-              <th className="hidden px-4 py-3 md:table-cell">Source</th>
+              <th className="hidden px-4 py-3 md:table-cell">Origine</th>
               <th className="hidden px-4 py-3 sm:table-cell">Estimation</th>
               <th className="px-4 py-3">Statut</th>
               <th className="hidden px-4 py-3 lg:table-cell">Suivi</th>
@@ -125,7 +129,7 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
             {leads.map((l) => (
               <tr key={l.id} className={`transition ${sel.has(l.id) ? "bg-amber-500/[0.08]" : "hover:bg-amber-500/[0.05]"}`}>
                 <td className="px-3 py-3">
-                  <input type="checkbox" checked={sel.has(l.id)} onChange={() => toggle(l.id)} className="h-4 w-4 accent-pine-600" />
+                  <input type="checkbox" checked={sel.has(l.id)} onChange={() => toggle(l.id)} aria-label={`Sélectionner ${l.name}`} className="h-4 w-4 accent-pine-600" />
                 </td>
                 <td className="px-2 py-3">
                   <ScoreBadge score={l.score} points={l.score_points} />
@@ -137,8 +141,9 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
                   <p className="text-xs text-neutral-400">
                     {l.email} · {l.phone} · {dateFmt.format(new Date(l.created_at))}
                   </p>
+                  {l.estimation_ttc && <p className="mt-0.5 text-sm font-bold tabular-nums text-pine-700 sm:hidden">{eurFmt.format(Number(l.estimation_ttc))} €</p>}
                 </td>
-                <td className="hidden px-4 py-3 text-xs text-neutral-500 md:table-cell">{l.source ?? "site"}</td>
+                <td className="hidden px-4 py-3 text-xs text-neutral-500 md:table-cell">{sourceLisible(l.source)}</td>
                 <td className="hidden px-4 py-3 font-bold tabular-nums text-pine-700 sm:table-cell">
                   {l.estimation_ttc ? `${eurFmt.format(Number(l.estimation_ttc))} €` : "—"}
                 </td>
@@ -160,7 +165,7 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
             {leads.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-4 py-10 text-center text-sm text-neutral-400">
-                  Aucune demande ne correspond.
+                  Aucun client ne correspond à cette recherche ou à ces filtres.
                 </td>
               </tr>
             )}

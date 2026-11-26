@@ -26,7 +26,7 @@ export const dateFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Pari
 export const eurFmt = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 
 const SCORE_COLORS: Record<"A" | "B" | "C", string> = {
-  A: "bg-green-600 text-white",
+  A: "bg-green-700 text-white",
   B: "bg-amber-500 text-pine-950",
   C: "bg-neutral-200 text-neutral-600",
 };

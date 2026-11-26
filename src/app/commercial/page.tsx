@@ -10,6 +10,7 @@ import { listOrders } from "@/lib/admin/logistics";
 import { mailConfigured } from "@/lib/admin/mail";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: { absolute: "Accueil · Back office" } };
 
 const dayFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", weekday: "long", day: "numeric", month: "long" });
 

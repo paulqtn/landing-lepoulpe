@@ -107,7 +107,7 @@ export function AdminLogin({ mode = "login", detail }: { mode?: Mode; detail?: s
         disabled={loading || !email || !password || (setup && (!token || !name))}
         className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-pine-700 px-6 py-3 text-sm font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"
       >
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : setup ? "Créer le compte" : "Entrer"}
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : setup ? "Créer le compte" : "Se connecter"}
       </button>
     </form>
   );

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, Handshake } from "lucide-react";
+import { toast } from "./Toasts";
 
 /* Petits boutons de la fiche client qui ont besoin du navigateur. */
 
@@ -21,6 +22,15 @@ const CLE_COUR = "mgk-page-courante";
 /** À placer une fois dans le back office : retient la page précédente pour le bouton « Retour ». */
 export function SuiviNavigation() {
   const chemin = usePathname();
+  /* Renvoi depuis une page réservée : on l'explique, puis on nettoie l'adresse. */
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("refus") !== "1") return;
+    url.searchParams.delete("refus");
+    window.history.replaceState(null, "", url.pathname + url.search);
+    const t = setTimeout(() => toast("Cette page ne vous est pas ouverte : vous avez été ramené ici. Demandez l'accès à votre administrateur si vous en avez besoin.", true), 150);
+    return () => clearTimeout(t);
+  }, [chemin]);
   useEffect(() => {
     try {
       const ici = window.location.pathname + window.location.search;

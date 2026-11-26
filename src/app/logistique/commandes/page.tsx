@@ -3,6 +3,7 @@ import { requireMenu } from "@/lib/admin/auth";
 import { listOrders, listShipments, ORDER_LABELS, ORDER_STATUTS, type OrderStatut } from "@/lib/admin/logistics";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Commandes atelier" };
 
 const COLORS: Record<OrderStatut, string> = {
   a_preparer: "bg-amber-500/15 text-amber-700 ring-amber-500/30",

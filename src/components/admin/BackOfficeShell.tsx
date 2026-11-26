@@ -12,7 +12,7 @@ import { dbConfigured } from "@/lib/admin/db";
 /* Coquille commune aux espaces du back office (commercial, logistique) :
    connexion, puis menu latéral limité aux menus ouverts à ce compte. */
 export async function BackOfficeShell({ children }: { children: React.ReactNode }) {
-  const gate = (node: React.ReactNode) => <main className="grid min-h-[70vh] place-items-center bg-mist px-5 py-16">{node}</main>;
+  const gate = (node: React.ReactNode) => <main className="mgk-bo grid min-h-[70vh] place-items-center bg-mist px-5 py-16">{node}</main>;
 
   if (!dbConfigured) return gate(<AdminLogin mode="nodb" />);
 
@@ -29,7 +29,7 @@ export async function BackOfficeShell({ children }: { children: React.ReactNode 
   }
 
   return (
-    <main className="min-h-screen bg-mist">
+    <main className="mgk-bo min-h-screen bg-mist">
       <Toasts />
       <SuiviNavigation />
       {/* Barre du haut toujours visible : cloche, téléphone (sur mobile) et retour au site. */}

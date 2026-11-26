@@ -4,6 +4,7 @@ import { adminQuery } from "@/lib/admin/db";
 import { simulationOptions } from "@/lib/simulation/catalog";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Simulation" };
 
 /* Simulation — chiffrage d'un tronçon de garde-corps selon les règles
    du classeur MGK 2026 (parité Excel), avec comparatif des 16 systèmes. */

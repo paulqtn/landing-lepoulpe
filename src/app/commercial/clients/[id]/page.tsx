@@ -9,9 +9,10 @@ import { LeadFiles } from "@/components/admin/LeadFiles";
 import { BoutonAppeler } from "@/components/admin/Telephone";
 import { ConclureVente, RetourLien } from "@/components/admin/FicheBoutons";
 import { niveauInfo } from "@/lib/admin/niveaux";
+import { sourceLisible } from "@/lib/admin/sources";
 import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
-import { peutVoirFiche, requireMenu } from "@/lib/admin/auth";
+import { currentUser, peutVoirFiche, requireMenu } from "@/lib/admin/auth";
 import { refusAction } from "@/lib/admin/attribution";
 import { MOTIFS_PERTE } from "@/lib/admin/cloture";
 import { STATUT_LABELS, type Statut } from "@/lib/admin/statuts";
@@ -40,6 +41,13 @@ const EVENT_LABELS: Record<string, string> = {
   commande: "Commande atelier",
   attribution: "Attribution",
 };
+
+/* Titre de l'onglet : le nom du client d'abord, pour s'y retrouver entre plusieurs onglets. */
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const me = await currentUser();
+  const lead = me ? await getLead(Number((await params).id)) : null;
+  return { title: me && lead && peutVoirFiche(me, lead) ? `${lead.name} · Fiche client` : "Fiche client" };
+}
 
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
   const me = await requireMenu("clients");
@@ -100,7 +108,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
               <Phone className="h-3.5 w-3.5" /> {lead.phone}
             </a>
             <span>reçue le {dateFmt.format(new Date(lead.created_at))}</span>
-            <span>source : {lead.source ?? "site"}</span>
+            <span>origine : {sourceLisible(lead.source)}</span>
           </p>
           <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-neutral-400">
             <span className="flex items-center gap-1">
@@ -147,7 +155,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             </Link>
           ) : null}
           {peutConclure && (
-            <ConclureVente className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-green-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-green-700 lg:flex-none" />
+            <ConclureVente className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-green-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-green-800 lg:flex-none" />
           )}
           <a href="#note" className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-sm font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700 lg:flex-none">
             <StickyNote className="h-4 w-4" /> Note

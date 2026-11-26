@@ -111,6 +111,19 @@ export function LeadActions({
     window.addEventListener("mgk:conclure", ouvrir);
     return () => window.removeEventListener("mgk:conclure", ouvrir);
   }, []);
+  /* Fin d'un appel abouti : le compte rendu s'ouvre sans avoir à le chercher. */
+  const zoneAppel = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const ouvrir = () => { setAppel(true); setTimeout(() => zoneAppel.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 80); };
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("cr") === "1") {
+      url.searchParams.delete("cr");
+      window.history.replaceState(null, "", url.pathname + url.search);
+      ouvrir();
+    }
+    window.addEventListener("mgk:compte-rendu", ouvrir);
+    return () => window.removeEventListener("mgk:compte-rendu", ouvrir);
+  }, []);
   /** Signature, puis commande atelier dans la foulée si demandé. */
   const signer = () =>
     patch({ statut: "gagne" }, "Affaire signée.", async () => {
@@ -125,7 +138,7 @@ export function LeadActions({
     <div className="space-y-5">
       {/* appel client + séquence d'e-mails */}
       {!clos && (
-        <section className="rounded-2xl border border-pine-200 bg-white p-5">
+        <section ref={zoneAppel} className="rounded-2xl border border-pine-200 bg-white p-5">
           <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Suivi du client</h2>
           {rappelAt && <p className="mt-3 rounded-xl bg-amber-500/15 px-3 py-2 text-xs font-semibold text-neutral-800">Rappel téléphonique prévu le {quand(rappelAt)}.</p>}
           {!appel ? (

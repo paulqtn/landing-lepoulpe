@@ -4,6 +4,7 @@ import { dbHealth } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Diagnostic" };
 
 /* Diagnostic — état réel de la base et des services, lu à l'instant. */
 export default async function DiagnosticPage() {

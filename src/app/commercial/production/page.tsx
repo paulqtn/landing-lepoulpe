@@ -1,3 +1,4 @@
+import { sourceLisible } from "@/lib/admin/sources";
 import { requireMenu, voitTout } from "@/lib/admin/auth";
 import Link from "next/link";
 import { Factory, PackageCheck, Trophy } from "lucide-react";
@@ -7,6 +8,7 @@ import { listLeads } from "@/lib/admin/db";
 import { listOrders, ORDER_LABELS, type OrderStatut } from "@/lib/admin/logistics";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Mise en production" };
 
 /* Mise en production — le pont commercial → atelier : chaque affaire
    gagnée part en fabrication en un clic, puis se suit d'ici. */
@@ -60,7 +62,7 @@ export default async function ProductionPage() {
                 <ScoreBadge score={l.score} />
                 <Link href={`/commercial/clients/${l.id}`} className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-bold text-inkgreen hover:text-pine-700">{l.name}</span>
-                  <span className="block text-xs text-neutral-400">{l.source ?? "site"}</span>
+                  <span className="block text-xs text-neutral-400">{sourceLisible(l.source)}</span>
                 </Link>
                 {l.estimation_ttc && (
                   <span className="text-sm font-extrabold tabular-nums text-pine-700">{eurFmt.format(Number(l.estimation_ttc))} €</span>

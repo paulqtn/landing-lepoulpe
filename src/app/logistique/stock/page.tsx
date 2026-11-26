@@ -3,6 +3,7 @@ import { requireMenu } from "@/lib/admin/auth";
 import { listStock } from "@/lib/admin/logistics";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Stock" };
 
 /* Stock matière — quantité en rayon, réservée par l'atelier, et ce qu'il restera. */
 export default async function StockPage() {

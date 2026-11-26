@@ -4,6 +4,7 @@ import { canManageUsers, currentUser, userMenus, type User } from "@/lib/admin/a
 import { adminQuery } from "@/lib/admin/db";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Utilisateurs" };
 
 /* Gestion des comptes — réservée au super-administrateur. */
 export default async function UtilisateursPage() {

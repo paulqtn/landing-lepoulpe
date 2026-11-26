@@ -174,8 +174,15 @@ export function TelephoneProvider({ children, visible }: { children: React.React
             .then((r) => r.json())
             .then((r: { leadId?: number | null }) => {
               const issue = duree > 0 ? `Appel terminé — ${dureeLisible(duree)}` : direction === "out" ? "Appel sans réponse" : "Appel manqué";
-              setInfo(r.leadId ? { texte: `${issue}. Inscrit dans l'historique du client.`, lien: { href: `/commercial/clients/${r.leadId}`, label: "Ouvrir la fiche pour le compte rendu" } } : { texte: `${issue}. Numéro inconnu du back office.` });
+              setInfo(r.leadId ? { texte: `${issue}. Inscrit dans l'historique du client.`, lien: { href: `/commercial/clients/${r.leadId}?cr=1`, label: "Ouvrir la fiche pour le compte rendu" } } : { texte: `${issue}. Numéro inconnu du back office.` });
               router.refresh();
+              /* Appel abouti avec un client connu : le compte rendu s'ouvre tout seul.
+                 Sauf pendant la rédaction d'un devis, pour ne rien faire perdre. */
+              if (r.leadId && duree > 0) {
+                const ici = window.location.pathname;
+                if (ici === `/commercial/clients/${r.leadId}`) window.dispatchEvent(new Event("mgk:compte-rendu"));
+                else if (!ici.startsWith("/commercial/devis/")) router.push(`/commercial/clients/${r.leadId}?cr=1`);
+              }
             })
             .catch(() => setInfo({ erreur: true, texte: "Appel terminé, mais il n'a pas pu être inscrit dans l'historique." }));
           break;

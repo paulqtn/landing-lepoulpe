@@ -1,3 +1,4 @@
+import { sourceLisible } from "@/lib/admin/sources";
 import { eurFmt } from "@/components/admin/ui";
 import { currentRep, requireMenu, voitTout } from "@/lib/admin/auth";
 import { getCompSettings, repStats } from "@/lib/admin/compens";
@@ -7,6 +8,7 @@ import { getTeam } from "@/lib/admin/team";
 import { globalStats, ORDER_LABELS } from "@/lib/admin/logistics";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Statistiques" };
 
 /* Statistiques — la performance par commercial d'abord, puis les stats
    secondaires (volumes, sources, usages, production). */
@@ -149,7 +151,7 @@ export default async function StatsPage() {
         <Panel title="Meilleures sources" note="D'où viennent les demandes — et lesquelles signent.">
           <div className="space-y-2.5">
             {g.sources.map((x) => (
-              <HBar key={x.source} label={`${x.source}${x.gagnes ? ` · ${x.gagnes} signée${x.gagnes > 1 ? "s" : ""}` : ""}`} value={x.n} max={srcMax} />
+              <HBar key={x.source} label={`${sourceLisible(x.source)}${x.gagnes ? ` · ${x.gagnes} signée${x.gagnes > 1 ? "s" : ""}` : ""}`} value={x.n} max={srcMax} />
             ))}
             {g.sources.length === 0 && <p className="text-sm text-neutral-400">Pas encore de données.</p>}
           </div>

@@ -159,7 +159,8 @@ export async function requireMenu(key: MenuKey): Promise<User> {
   if (!user) notFound();
   if (!hasMenu(user, key)) {
     const first = MENUS.find((m) => userMenus(user).includes(m.key));
-    redirect(first ? first.href : "/commercial/compte");
+    // On le dit à la personne : sans message, le renvoi ressemble à une panne.
+    redirect(`${first ? first.href : "/commercial/compte"}?refus=1`);
   }
   return user;
 }

@@ -1,4 +1,4 @@
-import { peutVoirFiche, requireMenu, voitTout } from "@/lib/admin/auth";
+import { currentUser, hasMenu, peutVoirFiche, requireMenu, voitTout } from "@/lib/admin/auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -13,6 +13,15 @@ import { getCoefsPrix } from "@/lib/admin/niveaux-prix-serveur";
 import { getSociete, societeManquants } from "@/lib/admin/societe";
 
 export const dynamic = "force-dynamic";
+
+/* Titre de l'onglet : le client et le numéro du devis d'abord. */
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const me = await currentUser();
+  const quote = me && hasMenu(me, "devis") ? await getQuote(Number((await params).id)) : null;
+  const fiche = quote?.lead_id ? await getLead(quote.lead_id) : null;
+  if (!me || !quote || (fiche && !peutVoirFiche(me, fiche))) return { title: "Devis" };
+  return { title: `${quote.client?.name ? `${quote.client.name} · ` : ""}Devis ${quote.ref}` };
+}
 
 export default async function QuotePage({ params }: { params: Promise<{ id: string }> }) {
   const me = await requireMenu("devis");

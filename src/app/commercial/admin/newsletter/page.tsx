@@ -7,6 +7,7 @@ import { STATUT_LABELS, STATUTS } from "@/lib/admin/statuts";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Newsletter" };
 
 /* Newsletter — réservée au super-administrateur. */
 export default async function NewsletterPage() {

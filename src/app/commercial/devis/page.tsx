@@ -7,6 +7,7 @@ import { USAGE_LABELS } from "@/lib/admin/statuts";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Devis à traiter" };
 
 /* Devis à traiter — les demandes qui attendent leur chiffrage :
    relecture du brouillon généré, puis envoi après validation. */
@@ -45,7 +46,7 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         {list.length === 0 ? (
           <p className="py-6 text-center text-sm text-neutral-400">
-            Aucun devis en attente{mode === "moi" ? " chez vous" : ""} — piochez des entrants depuis l&rsquo;état des lieux.
+            Aucun devis en attente{mode === "moi" ? " chez vous" : ""} — prenez une nouvelle demande depuis l&rsquo;accueil.
           </p>
         ) : (
           <ul className="divide-y divide-neutral-100">
