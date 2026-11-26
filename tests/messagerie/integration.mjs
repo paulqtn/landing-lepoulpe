@@ -124,7 +124,7 @@ try {
 
   /* --------------- brouillon modifié ici, puis dans un autre logiciel --------------- */
   const d0 = (await api(`/messages/${dv}`)).json.brouillon;
-  r = await api("/brouillons", { body: { id: d0.id, messageId: dv, dest: d0.dest, cc: "", sujet: d0.sujet, corps: "Bonjour,\n\nJe vous renvoie le devis demain.\n\nEssai A" } });
+  r = await api("/brouillons", { body: { messageId: dv, dest: d0.dest, cc: "", sujet: d0.sujet, corps: "Bonjour,\n\nJe vous renvoie le devis demain.\n\nEssai A" } });
   br = await dossier("Brouillons");
   const b1 = br.find((b) => b.p.subject === "Re: Devis terrasse");
   ok(r.json.brouillon.dansLaBoite && br.length === 2 && /demain/.test(b1.p.text), "brouillon modifié : nouvelle version dans la boîte, ancienne retirée");
@@ -163,6 +163,16 @@ try {
   ok(t.json.compte.statut === "erreur" && /refuse la connexion/.test(t.json.compte.erreur), "boîte injoignable : état en erreur, message clair");
   await sql("UPDATE mail_accounts SET imap_port = 1143 WHERE email = $1", [base.email]); await sql("UPDATE mail_jobs SET prochain_essai_at = now() WHERE statut = 'attente'");
   ok((await tout()).json.compte.statut === "ok", "connexion rétablie : la boîte repart seule");
+
+  /* -------------------- aucun contenu d'e-mail dans la base -------------------- */
+  const [{ t: dump }] = await sql(
+    `SELECT (SELECT coalesce(string_agg(m::text, ' '), '') FROM mail_messages m) || (SELECT coalesce(string_agg(d::text, ' '), '') FROM mail_drafts d)
+          || (SELECT coalesce(string_agg(j::text, ' '), '') FROM mail_jobs j) || (SELECT coalesce(string_agg(coalesce(detail, ''), ' '), '') FROM mail_journal)
+          || (SELECT coalesce(string_agg(coalesce(message, ''), ' '), '') FROM lead_events WHERE lead_id = $1) AS t`,
+    [lead.id],
+  );
+  const traces = ["Devis terrasse", "Chantier", `client${MARQUE}`, "claire@client.invalid", "refaire le devis", "depuis mon téléphone", "photo.jpg", "SECRET BANCAIRE", "Délai de réponse"].filter((x) => dump.includes(x));
+  ok(traces.length === 0, "base de données : aucun objet, expéditeur, texte, pièce jointe ni brouillon enregistré", traces.join(", "));
 
   /* ------------------------ tableau de bord, déconnexion ------------------------ */
   r = await api("/stats");

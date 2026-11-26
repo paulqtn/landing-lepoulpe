@@ -11,16 +11,16 @@ export type CompteVue = {
 };
 export type Etat = { pret: { chiffrement: boolean; ia: boolean; iaCle: boolean; iaAutorisee: boolean }; compte: CompteVue | null; fournisseurs: FournisseurVue[] };
 export type Ligne = {
-  id: number; dossier: "inbox" | "sent"; from_nom: string; from_email: string; dest: { to?: string[] }; sujet: string; extrait: string; date: string; lu: boolean;
-  categorie: string | null; priorite: string | null; besoin_reponse: boolean | null; statut: string; resume: string | null; lead_id: number | null; nb_pieces: number; a_brouillon: boolean; repondu_at: string | null;
+  id: number; dossier: "inbox" | "sent"; from_nom: string; from_email: string; dest: { to?: string[] }; sujet: string; date: string; lu: boolean;
+  categorie: string | null; priorite: string | null; besoin_reponse: boolean | null; statut: string; lead_id: number | null; nb_pieces: number; a_brouillon: boolean; repondu_at: string | null;
 };
 export type Compteurs = Record<string, number> & { categories: Record<string, number> };
-export type BrouillonVue = { id: number; dest: string; cc: string; sujet: string; corps: string; origine: string; manquants: string[]; dansLaBoite: boolean; imap_erreur?: string | null };
+export type BrouillonVue = { id: number; dest: string; cc: string; sujet: string; corps: string; origine: string; manquants: string[]; dansLaBoite: boolean };
 export type Conversation = {
   message: {
     id: number; dossier: "inbox" | "sent"; de: { nom: string; email: string }; a: string[]; cc: string[]; sujet: string; date: string; texte: string; html: string | null; imagesMasquees: number;
     pieces: { n: number; nom: string; type: string; taille: number; dangereuse: boolean }[]; archive: boolean; statut: string; categorie: string | null; priorite: string | null; besoinReponse: boolean | null;
-    intention: string | null; resume: string | null; infos: Record<string, string> | null; langue: string | null; iaLe: string | null; iaManuel: boolean; iaErreur: string | null; reponduLe: string | null; enCours: string | null;
+    langue: string | null; iaLe: string | null; iaManuel: boolean; iaErreur: string | null; reponduLe: string | null; enCours: string | null;
   };
   fil: { id: number; envoye: boolean; de: string; date: string; texte: string }[];
   brouillon: BrouillonVue | null;

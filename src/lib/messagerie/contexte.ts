@@ -2,15 +2,15 @@ import { adminQuery as q } from "@/lib/admin/db";
 import { peutVoirFiche, type User } from "@/lib/admin/auth";
 import { getSociete } from "@/lib/admin/societe";
 import { STATUT_LABELS, type Statut } from "@/lib/admin/statuts";
+import type { Conversation } from "./boite";
 import { globaux, reglagesDe, type Compte } from "./comptes";
 import type { ContexteRedaction } from "./ia";
 import { neutraliser, sansCitation } from "./modele";
 
 /* Contexte commercial transmis à l'IA pour rédiger : uniquement ce que le commercial a le droit
    de voir, et uniquement ce qui sert à répondre. Jamais de tarif d'achat, de marge, de
-   coefficient ni de pièce jointe. Les montants cités sont ceux des devis déjà envoyés au client. */
-
-export type MessageCtx = { id: number; dossier: "inbox" | "sent"; from_nom: string; from_email: string; sujet: string; date: string; corps: string | null; fil: string; message_id: string; lead_id: number | null };
+   coefficient ni de pièce jointe. Les montants cités sont ceux des devis déjà envoyés au client.
+   Les e-mails viennent d'être relus dans la boîte : rien n'en est conservé après l'appel. */
 
 const dateFr = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", dateStyle: "medium", timeStyle: "short" });
 
@@ -55,33 +55,19 @@ async function texteFiche(user: User, leadId: number | null): Promise<string> {
   ].filter(Boolean).join("\n");
 }
 
-/** Messages précédents de la conversation, du plus ancien au plus récent, bornés. */
-export async function texteFil(compte: Compte, fil: string, sauf?: number): Promise<string> {
-  if (!fil) return "";
-  const msgs = await q<{ id: number; dossier: string; from_nom: string; from_email: string; date: string; corps: string | null }>(
-    "SELECT id, dossier, from_nom, from_email, date, corps FROM mail_messages WHERE account_id = $1 AND fil = $2 ORDER BY date DESC LIMIT 9",
-    [compte.id, fil],
-  );
-  return msgs
-    .filter((m) => m.id !== sauf)
-    .slice(0, 8)
-    .reverse()
-    .map((m) => `<message de="${m.dossier === "sent" ? "le commercial" : neutraliser(m.from_nom || m.from_email, 120).replace(/"/g, "'")}" date="${dateFr.format(new Date(m.date))}">\n${neutraliser(sansCitation(m.corps ?? ""), 2500)}\n</message>`)
+/** Les autres messages du fil, tels qu'ils viennent d'être relus, bornés et neutralisés. */
+export function texteFil(conv: Conversation): string {
+  return conv.fil
+    .slice(-8)
+    .map((m) => `<message de="${m.envoye ? "le commercial" : neutraliser(m.fromNom || m.fromEmail, 120).replace(/"/g, "'")}" date="${dateFr.format(m.date)}">\n${neutraliser(sansCitation(m.texte), 2500)}\n</message>`)
     .join("\n");
 }
 
-async function texteStyle(compte: Compte): Promise<string> {
-  const msgs = await q<{ corps: string | null }>(
-    "SELECT corps FROM mail_messages WHERE account_id = $1 AND dossier = 'sent' AND corps IS NOT NULL AND length(corps) > 80 ORDER BY date DESC LIMIT 3",
-    [compte.id],
-  );
-  return msgs.map((m, i) => `<exemple n="${i + 1}">\n${neutraliser(sansCitation(m.corps ?? ""), 900)}\n</exemple>`).join("\n");
-}
-
-export async function contexteRedaction(compte: Compte, user: User, m: MessageCtx | null): Promise<ContexteRedaction> {
-  const [societe, g, fiche, fil, style] = await Promise.all([getSociete(), globaux(), texteFiche(user, m?.lead_id ?? null), m ? texteFil(compte, m.fil, m.dossier === "inbox" ? m.id : undefined) : Promise.resolve(""), texteStyle(compte)]);
+export async function contexteRedaction(compte: Compte, user: User, conv: Conversation, leadId: number | null, recu: boolean): Promise<ContexteRedaction> {
+  const [societe, g, fiche] = await Promise.all([getSociete(), globaux(), texteFiche(user, leadId)]);
   const r = reglagesDe(compte);
   const coordonnees = [societe.telephone && `Téléphone de l'entreprise : ${societe.telephone}`, societe.email && `E-mail de contact : ${societe.email}`, societe.validiteJours && `Validité d'un devis : ${societe.validiteJours} jours`].filter(Boolean).join("\n");
+  const m = conv.message;
   return {
     societe: societe.raisonSociale,
     commercial: compte.nom || user.name,
@@ -89,9 +75,9 @@ export async function contexteRedaction(compte: Compte, user: User, m: MessageCt
     instructionsPerso: r.instructions,
     connaissances: [coordonnees, g.connaissances].filter(Boolean).join("\n\n"),
     fiche,
-    fil,
-    style,
-    courriel: m && m.dossier === "inbox" ? { de: `${m.from_nom} <${m.from_email}>`, sujet: m.sujet, corps: sansCitation(m.corps ?? "") } : null,
+    fil: texteFil(conv),
+    style: conv.style.filter((x) => x.texte.length > 80).map((x, i) => `<exemple n="${i + 1}">\n${neutraliser(sansCitation(x.texte), 900)}\n</exemple>`).join("\n"),
+    courriel: m && recu ? { de: `${m.fromNom} <${m.fromEmail}>`, sujet: m.sujet, corps: sansCitation(m.texte) } : null,
   };
 }
 

@@ -1,33 +1,23 @@
 import { NextResponse } from "next/server";
 import { accesAvecBoite, corps, refuse } from "@/lib/messagerie/acces";
-import { deposer, enregistrerBrouillon } from "@/lib/messagerie/brouillons";
+import { indexDe } from "@/lib/messagerie/boite";
+import { ecrireBrouillon } from "@/lib/messagerie/brouillons";
 import { erreurLisible } from "@/lib/messagerie/imap";
 
 export const maxDuration = 45;
 
-/** Enregistre le brouillon du commercial et le dépose aussitôt dans le dossier Brouillons de sa boîte. */
+/** Écrit le brouillon du commercial dans le dossier Brouillons de sa boîte (son contenu n'est pas gardé en base). */
 export async function POST(req: Request) {
   const a = await accesAvecBoite(req);
   if (a.refus) return a.refus;
   const b = await corps(req);
   if (!b || typeof b.corps !== "string") return refuse("Brouillon illisible.", 400);
-  const d = await enregistrerBrouillon(a.compte, {
-    id: Number(b.id) || undefined,
-    messageId: Number(b.messageId) || null,
-    dest: String(b.dest ?? ""),
-    cc: String(b.cc ?? ""),
-    sujet: String(b.sujet ?? ""),
-    corps: b.corps,
-    origine: b.origine === "ia" ? "ia" : "manuel",
-    manquants: Array.isArray(b.manquants) ? b.manquants.map(String) : [],
-  });
-  let dansLaBoite = false;
-  let avertissement: string | null = null;
+  const idx = Number(b.messageId) ? await indexDe(a.compte, Number(b.messageId)) : null;
+  if (!idx || idx.dossier === "sent") return refuse("Message d'origine introuvable.", 404);
   try {
-    await deposer(a.compte, d.id);
-    dansLaBoite = true;
+    const d = await ecrireBrouillon(a.compte, idx, { dest: String(b.dest ?? ""), cc: String(b.cc ?? ""), sujet: String(b.sujet ?? ""), corps: b.corps, origine: "manuel", manquants: Array.isArray(b.manquants) ? b.manquants.map(String) : [] });
+    return NextResponse.json({ ok: true, brouillon: d, avertissement: null });
   } catch (e) {
-    avertissement = `Enregistré dans le back office, mais pas encore dans votre boîte mail : ${erreurLisible(e)}`;
+    return refuse(`Le brouillon n'a pas pu être enregistré dans votre boîte mail : ${erreurLisible(e)}`, 502);
   }
-  return NextResponse.json({ ok: true, brouillon: { id: d.id, dest: d.dest, cc: d.cc, sujet: d.sujet, corps: d.corps, origine: d.origine, manquants: d.manquants, dansLaBoite }, avertissement });
 }

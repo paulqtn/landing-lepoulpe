@@ -48,7 +48,7 @@ export function Reglages({ etat, admin, onCompte, onDeconnecte }: { etat: Etat; 
     const res = await appel("/compte", { method: "DELETE" });
     setOccupe(null);
     if (!res.ok) return toast(res.error, true);
-    toast("Boîte mail déconnectée. Ses messages ont été retirés du back office.");
+    toast("Boîte mail déconnectée.");
     onDeconnecte();
   }
 
@@ -74,7 +74,7 @@ export function Reglages({ etat, admin, onCompte, onDeconnecte }: { etat: Etat; 
             <button type="button" className={`${bouton} hover:border-red-300 hover:text-red-700`} onClick={() => setDeconnexion(true)}><Unplug className="h-3.5 w-3.5" /> Déconnecter la boîte</button>
           ) : (
             <span className="flex flex-wrap items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800" role="alertdialog" aria-label="Confirmer la déconnexion">
-              Vos identifiants, vos messages et vos brouillons seront effacés du back office. Votre boîte mail, elle, ne change pas.
+              Vos identifiants et vos étiquettes de tri seront effacés du back office. Votre boîte mail, elle, ne change pas.
               <button type="button" className="rounded-full bg-red-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-red-700 disabled:opacity-40" disabled={occupe !== null} onClick={deconnecter}>{occupe === "deconnexion" ? "Déconnexion…" : "Confirmer"}</button>
               <button type="button" className={bouton} onClick={() => setDeconnexion(false)}>Annuler</button>
             </span>
@@ -189,7 +189,7 @@ export function Globaux() {
         <textarea id="g-connaissances" rows={7} className={champ} value={g.connaissances} onChange={(e) => set({ connaissances: e.target.value })} placeholder={"Produits et services, zones livrées, délais habituels que vous acceptez de citer, garanties, conditions de pose, horaires, règles commerciales…\nL'IA ne cite que ce qui est écrit ici ou dans la fiche du client. N'y mettez ni prix d'achat ni marge."} />
       </label>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        <label className="block"><span className={etiquette}>Conservation des e-mails dans le back office (jours)</span><input id="g-conservation" inputMode="numeric" className={champ} value={g.conservationJours} onChange={(e) => set({ conservationJours: Number(e.target.value.replace(/\D/g, "")) || 0 })} /></label>
+        <label className="block"><span className={etiquette}>Durée de l&rsquo;index de tri (jours)</span><input id="g-conservation" inputMode="numeric" className={champ} value={g.conservationJours} onChange={(e) => set({ conservationJours: Number(e.target.value.replace(/\D/g, "")) || 0 })} /></label>
         <label className="block"><span className={etiquette}>Première synchronisation : jours repris</span><input id="g-initial" inputMode="numeric" className={champ} value={g.joursInitial} onChange={(e) => set({ joursInitial: Number(e.target.value.replace(/\D/g, "")) || 0 })} /></label>
       </div>
       <button type="button" className={`${boutonPrincipal} mt-4`} disabled={occupe} onClick={async () => { setOccupe(true); const r = await appel<{ globaux: ReglagesGlobaux }>("/globaux", { method: "PUT", body: g }); setOccupe(false); if (!r.ok) return toast(r.error, true); setG(r.globaux); toast("Réglages de l'entreprise enregistrés."); }}>
@@ -202,7 +202,7 @@ export function Globaux() {
       </ul>
 
       <h3 className="mt-6 text-sm font-extrabold text-inkgreen">Boîtes connectées ({d.boites.length})</h3>
-      <p className="text-xs text-neutral-500">Vous voyez l&rsquo;état des connexions, jamais le contenu des boîtes.</p>
+      <p className="text-xs text-neutral-500">Vous voyez l&rsquo;état des connexions, jamais le contenu des boîtes. Aucun e-mail n&rsquo;est enregistré dans la base : seules les étiquettes de tri le sont.</p>
       {d.boites.length === 0 ? <p className="mt-2 text-sm text-neutral-600">Aucune boîte connectée pour l&rsquo;instant.</p> : (
         <ul className="mt-2 divide-y divide-neutral-100 text-sm">
           {d.boites.map((b) => <li key={b.email} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2"><strong className="text-inkgreen">{b.utilisateur}</strong><span className="text-neutral-600">{b.email}</span><span className={`ml-auto text-xs font-bold ${b.statut === "ok" ? "text-green-700" : "text-red-700"}`}>{b.statut === "ok" ? `synchronisée ${ilYA(b.last_sync_at)}` : `en erreur : ${b.erreur ?? ""}`}</span></li>)}

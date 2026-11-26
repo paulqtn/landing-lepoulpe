@@ -18,6 +18,8 @@ export type Reponse = {
   origine?: { messageId: string; references: string[]; date: Date; de: string; texte: string } | null;
   enteteId: string;
   brouillonId?: number;
+  /** Points à vérifier avant l'envoi : écrits dans un en-tête du brouillon, retirés à l'envoi. */
+  manquants?: string[];
 };
 
 export const nouvelEnteteId = (email: string) => `<mgk-${Date.now().toString(36)}-${randomBytes(6).toString("hex")}@${email.split("@")[1] || "localhost"}>`;
@@ -43,7 +45,7 @@ export async function composer(r: Reponse): Promise<Buffer> {
     messageId: r.enteteId,
     inReplyTo: r.origine?.messageId ? `<${r.origine.messageId}>` : undefined,
     references: refs.length ? refs : undefined,
-    headers: r.brouillonId ? { "X-MGK-Brouillon": String(r.brouillonId) } : undefined,
+    headers: r.brouillonId ? { "X-MGK-Brouillon": String(r.brouillonId), ...(r.manquants?.length ? { "X-MGK-A-Verifier": Buffer.from(JSON.stringify(r.manquants.slice(0, 10)), "utf8").toString("base64") } : {}) } : undefined,
     date: new Date(),
   });
   return mail.compile().build();

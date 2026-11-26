@@ -45,9 +45,15 @@ export function Messagerie({ initial, admin, ouvrir, message }: { initial: Etat;
 
   useEffect(() => { if (message) toast(message.texte, !message.ok); }, [message]);
 
+  // La vue demandée est lue au moment de l'appel : un rechargement lancé en tâche de fond (après
+  // une synchronisation) ne peut pas ramener l'écran sur une vue que le commercial vient de quitter.
+  const demande = useRef({ vue, page, filtres });
+  demande.current = { vue, page, filtres };
+  const aBoite = Boolean(compte);
   const charger = useCallback(async () => {
-    if (!compte) return;
+    if (!aBoite) return;
     const n = ++requete.current;
+    const { vue, page, filtres } = demande.current;
     const p = new URLSearchParams({ vue, page: String(page) });
     for (const [k, v] of Object.entries(filtres)) if (v) p.set(k, v);
     const r = await appel<{ messages: Ligne[]; total: number; parPage: number; compteurs: Compteurs }>(`/messages?${p}`);
@@ -56,9 +62,9 @@ export function Messagerie({ initial, admin, ouvrir, message }: { initial: Etat;
     setErreur(null);
     setListe({ messages: r.messages, total: r.total, parPage: r.parPage });
     setCompteurs(r.compteurs);
-  }, [compte, vue, page, filtres]);
+  }, [aBoite]);
 
-  useEffect(() => { void charger(); }, [charger]);
+  useEffect(() => { void charger(); }, [charger, vue, page, filtres]);
 
   /* Passage de traitement : synchronise si c'est dû et fait avancer la file. Tourne tant que l'écran est visible. */
   const passage = useCallback(async (forcer: boolean) => {
@@ -180,7 +186,7 @@ export function Messagerie({ initial, admin, ouvrir, message }: { initial: Etat;
               <div className="relative min-w-0 flex-1">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
                 <label className="sr-only" htmlFor="msg-recherche">Rechercher dans mes e-mails</label>
-                <input id="msg-recherche" className={`${champ} rounded-full pl-9 pr-9`} value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Rechercher : nom, objet, contenu…" />
+                <input id="msg-recherche" className={`${champ} rounded-full pl-9 pr-9`} value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Rechercher dans ma boîte…" />
                 {(recherche || filtres.q) && <button type="button" aria-label="Effacer la recherche" className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-neutral-500 hover:bg-mist" onClick={() => { setRecherche(""); setFiltres({ ...filtres, q: "" }); setPage(1); }}><X className="h-4 w-4" /></button>}
               </div>
               <button type="button" aria-expanded={filtresOuverts} className={`${bouton} shrink-0 ${nbFiltres > 0 ? "border-pine-600 text-pine-800" : ""}`} onClick={() => setFiltresOuverts(!filtresOuverts)}>
@@ -227,7 +233,6 @@ export function Messagerie({ initial, admin, ouvrir, message }: { initial: Etat;
                             <span className="shrink-0 text-xs tabular-nums text-neutral-600">{quand(m.date)}</span>
                           </span>
                           <span className={`mt-0.5 block truncate text-sm ${m.lu ? "text-neutral-700" : "font-bold text-inkgreen"}`}>{m.sujet || "(sans objet)"}</span>
-                          <span className="mt-0.5 line-clamp-2 block text-xs leading-relaxed text-neutral-600">{m.resume || m.extrait}</span>
                           <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
                             {m.priorite && (m.priorite === "urgent" || m.priorite === "eleve") && <span className={`rounded-full px-2 py-0.5 text-xs font-bold ring-1 ring-inset ${PRIORITE_STYLE[m.priorite]}`}>{PRIORITE_LABELS[m.priorite as Priorite]}</span>}
                             {m.categorie && <span className="rounded-full bg-mist px-2 py-0.5 text-xs font-semibold text-neutral-700">{CATEGORIE_LABELS[m.categorie as Categorie] ?? m.categorie}</span>}
@@ -264,7 +269,7 @@ export function Messagerie({ initial, admin, ouvrir, message }: { initial: Etat;
                 <div>
                   <FileText className="mx-auto h-8 w-8 text-neutral-400" />
                   <p className="mt-2 text-sm font-bold text-inkgreen">Choisissez un message</p>
-                  <p className="mt-1 max-w-xs text-xs text-neutral-600">Son résumé, la fiche du client et la réponse préparée s&rsquo;affichent ici. Les réponses prêtes sont dans « Brouillons préparés ».</p>
+                  <p className="mt-1 max-w-xs text-xs text-neutral-600">Le message, la fiche du client et la réponse préparée s&rsquo;affichent ici, lus directement dans votre boîte. Les réponses prêtes sont dans « Brouillons préparés ».</p>
                   {(compteurs?.brouillons ?? 0) > 0 && <button type="button" className={`${boutonPrincipal} mt-4`} onClick={() => choisirVue("brouillons")}><Sparkles className="h-4 w-4" /> {compteurs?.brouillons} réponse{(compteurs?.brouillons ?? 0) > 1 ? "s" : ""} à valider</button>}
                 </div>
               </div>

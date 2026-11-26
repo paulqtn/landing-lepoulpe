@@ -9,6 +9,7 @@ import { LeadFiles } from "@/components/admin/LeadFiles";
 import { BoutonAppeler } from "@/components/admin/Telephone";
 import { ConclureVente, RetourLien } from "@/components/admin/FicheBoutons";
 import { niveauInfo } from "@/lib/admin/niveaux";
+import { CATEGORIE_LABELS } from "@/lib/messagerie/modele";
 import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
 import { hasMenu, peutVoirFiche, requireMenu } from "@/lib/admin/auth";
@@ -53,9 +54,9 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
   ]);
   // E-mails de la boîte de la personne connectée rattachés à ce client (jamais ceux d'un collègue).
   const courriels = hasMenu(me, "messagerie")
-    ? await adminQuery<{ id: number; dossier: string; sujet: string; date: string; resume: string | null }>(
-        "SELECT m.id, m.dossier, m.sujet, m.date, m.resume FROM mail_messages m JOIN mail_accounts a ON a.id = m.account_id WHERE a.user_id = $1 AND (m.lead_id = $2 OR ($3 <> '' AND (lower(m.from_email) = $3 OR m.dest->'to' ? $3))) ORDER BY m.date DESC LIMIT 8",
-        [me.id, lead.id, (lead.email ?? "").toLowerCase()],
+    ? await adminQuery<{ id: number; dossier: string; date: string; categorie: string | null }>(
+        "SELECT m.id, m.dossier, m.date, m.categorie FROM mail_messages m JOIN mail_accounts a ON a.id = m.account_id WHERE a.user_id = $1 AND m.lead_id = $2 ORDER BY m.date DESC LIMIT 8",
+        [me.id, lead.id],
       ).catch(() => [])
     : [];
   const devisSigne = quotes.filter((x) => x.statut === "envoye").sort((a, b) => Number(new Date(b.sent_at ?? 0)) - Number(new Date(a.sent_at ?? 0)))[0] ?? null;
@@ -218,9 +219,9 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
                   <li key={c.id}>
                     <Link href={`/commercial/messagerie?m=${c.id}`} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 py-2.5 text-sm transition hover:text-pine-700">
                       <span className="rounded-full bg-mist px-2 py-0.5 text-[11px] font-bold text-neutral-600">{c.dossier === "sent" ? "Envoyé" : "Reçu"}</span>
-                      <span className="min-w-0 flex-1 truncate font-bold text-inkgreen">{c.sujet || "(sans objet)"}</span>
+                      <span className="min-w-0 flex-1 truncate font-bold text-inkgreen">{(CATEGORIE_LABELS as Record<string, string>)[c.categorie ?? ""] ?? "E-mail"}</span>
                       <span className="text-xs text-neutral-400">{dateFmt.format(new Date(c.date))}</span>
-                      {c.resume && <span className="w-full text-xs text-neutral-500">{c.resume}</span>}
+                      <span className="text-xs font-bold text-pine-700">Lire dans la messagerie →</span>
                     </Link>
                   </li>
                 ))}

@@ -96,6 +96,8 @@ export type MessageLu = {
   pieces: PieceJointe[];
   lu: boolean;
   enteteBrouillon: string | null;
+  /** Points à vérifier, portés par le brouillon lui-même (en-tête du message), jamais par la base. */
+  manquants: string[];
 };
 
 const adresses = (a: AddressObject | AddressObject[] | undefined) => (Array.isArray(a) ? a : a ? [a] : []).flatMap((x) => x.value).map((v) => (v.address ?? "").toLowerCase()).filter(Boolean);
@@ -122,18 +124,64 @@ export function versMessage(p: ParsedMail, uid: number, flags: Set<string>, date
     pieces: p.attachments.filter((a) => a.contentDisposition !== "inline" || !a.cid).map((a) => ({ nom: (a.filename ?? "pièce jointe").slice(0, 200), type: a.contentType ?? "application/octet-stream", taille: a.size ?? 0 })).slice(0, 30),
     lu: flags.has("\\Seen"),
     enteteBrouillon: typeof entete === "string" ? entete.trim() : null,
+    manquants: lireManquants(p.headers.get("x-mgk-a-verifier")),
   };
+}
+
+function lireManquants(v: unknown): string[] {
+  if (typeof v !== "string" || !v.trim()) return [];
+  try {
+    const l = JSON.parse(Buffer.from(v.replace(/\s+/g, ""), "base64").toString("utf8")) as unknown;
+    return Array.isArray(l) ? l.map((x) => String(x).slice(0, 300)).slice(0, 10) : [];
+  } catch {
+    return [];
+  }
 }
 
 const TAILLE_MAX = 3_000_000;
 
-/** Nouveaux messages d'un dossier depuis la dernière synchronisation, par lots bornés. */
-export async function lireNouveaux(
+/** En-têtes d'un message : de quoi l'afficher dans une liste et le situer dans un fil, sans son contenu. */
+export type Entete = { uid: number; messageId: string; inReplyTo: string | null; references: string[]; fromNom: string; fromEmail: string; to: string[]; sujet: string; date: Date; lu: boolean; nbPieces: number };
+
+type Structure = { disposition?: string; childNodes?: Structure[] };
+const compterPieces = (n: Structure | undefined): number => (!n ? 0 : (n.disposition === "attachment" ? 1 : 0) + (n.childNodes ?? []).reduce((s, c) => s + compterPieces(c), 0));
+
+/** En-têtes de messages désignés par leur numéro dans le dossier (lecture seule, rien n'est marqué lu). */
+export async function lireEntetes(client: ImapFlow, chemin: string, uids: number[]): Promise<Entete[]> {
+  const out: Entete[] = [];
+  if (uids.length === 0) return out;
+  const verrou = await client.getMailboxLock(chemin);
+  try {
+    for await (const m of client.fetch(uids, { uid: true, flags: true, envelope: true, internalDate: true, bodyStructure: true, headers: ["references"] }, { uid: true })) {
+      const e = m.envelope;
+      const refs = (m.headers?.toString("utf8") ?? "").replace(/\r?\n[ \t]+/g, " ").match(/^references:\s*(.*)$/im)?.[1] ?? "";
+      out.push({
+        uid: m.uid,
+        messageId: idMessage(e?.messageId) || `sans-id-${m.uid}`,
+        inReplyTo: idMessage(e?.inReplyTo) || null,
+        references: refs.split(/\s+/).map(idMessage).filter(Boolean).slice(-30),
+        fromNom: (e?.from?.[0]?.name ?? "").slice(0, 200),
+        fromEmail: (e?.from?.[0]?.address ?? "").toLowerCase().slice(0, 320),
+        to: (e?.to ?? []).map((x) => (x.address ?? "").toLowerCase()).filter(Boolean).slice(0, 50),
+        sujet: (e?.subject ?? "").slice(0, 500),
+        date: e?.date ? new Date(e.date) : m.internalDate ? new Date(m.internalDate) : new Date(),
+        lu: m.flags?.has("\\Seen") ?? false,
+        nbPieces: compterPieces(m.bodyStructure as Structure | undefined),
+      });
+    }
+  } finally {
+    verrou.release();
+  }
+  return out;
+}
+
+/** Numéros des nouveaux messages d'un dossier depuis la dernière synchronisation, par lots bornés. */
+export async function nouveauxUids(
   client: ImapFlow,
   chemin: string,
   etat: { uidValidity: string; lastUid: number } | undefined,
   opts: { depuis: Date; lot: number; premierMax: number },
-): Promise<{ messages: MessageLu[]; etat: { uidValidity: string; lastUid: number }; reste: boolean }> {
+): Promise<{ uids: number[]; etat: { uidValidity: string; lastUid: number }; reste: boolean; repart: boolean }> {
   const verrou = await client.getMailboxLock(chemin);
   try {
     const boite = client.mailbox;
@@ -141,31 +189,44 @@ export async function lireNouveaux(
     const validite = String(boite.uidValidity);
     const repart = !etat || etat.uidValidity !== validite;
     let uids: number[];
-    if (repart) {
-      const trouves = (await client.search({ since: opts.depuis }, { uid: true })) || [];
-      uids = trouves.sort((a, b) => a - b).slice(-opts.premierMax);
-    } else {
-      const trouves = (await client.search({ uid: `${etat.lastUid + 1}:*` }, { uid: true })) || [];
-      uids = trouves.filter((u) => u > etat.lastUid).sort((a, b) => a - b);
-    }
+    if (repart) uids = ((await client.search({ since: opts.depuis }, { uid: true })) || []).sort((a, b) => a - b).slice(-opts.premierMax);
+    else uids = ((await client.search({ uid: `${etat.lastUid + 1}:*` }, { uid: true })) || []).filter((u) => u > etat.lastUid).sort((a, b) => a - b);
     const lot = uids.slice(0, opts.lot);
-    const messages: MessageLu[] = [];
-    let dernier = repart ? 0 : etat.lastUid;
-    if (lot.length > 0) {
-      for await (const m of client.fetch(lot, { uid: true, flags: true, internalDate: true, source: { start: 0, maxLength: TAILLE_MAX } }, { uid: true })) {
-        dernier = Math.max(dernier, m.uid);
-        if (!m.source) continue;
-        try {
-          messages.push(versMessage(await simpleParser(m.source, { skipImageLinks: true, skipTextToHtml: true }), m.uid, m.flags ?? new Set(), m.internalDate));
-        } catch {
-          /* message illisible : on passe au suivant, sans bloquer la boîte */
-        }
+    const dernier = lot.length > 0 ? lot[lot.length - 1] : repart ? Math.max(0, Number(boite.uidNext ?? 1) - 1) : etat.lastUid;
+    return { uids: lot, etat: { uidValidity: validite, lastUid: dernier }, reste: uids.length > lot.length, repart };
+  } finally {
+    verrou.release();
+  }
+}
+
+/** Messages complets, lus dans la boîte au moment où on en a besoin (jamais conservés). */
+export async function lireMessages(client: ImapFlow, chemin: string, uids: number[]): Promise<MessageLu[]> {
+  const out: MessageLu[] = [];
+  if (uids.length === 0) return out;
+  const verrou = await client.getMailboxLock(chemin);
+  try {
+    for await (const m of client.fetch(uids, { uid: true, flags: true, internalDate: true, source: { start: 0, maxLength: TAILLE_MAX } }, { uid: true })) {
+      if (!m.source) continue;
+      try {
+        out.push(versMessage(await simpleParser(m.source, { skipImageLinks: true, skipTextToHtml: true }), m.uid, m.flags ?? new Set(), m.internalDate));
+      } catch {
+        /* message illisible : on passe au suivant */
       }
-      dernier = Math.max(dernier, lot[lot.length - 1]);
-    } else if (repart) {
-      dernier = Math.max(0, Number(boite.uidNext ?? 1) - 1);
     }
-    return { messages, etat: { uidValidity: validite, lastUid: dernier }, reste: uids.length > lot.length };
+  } finally {
+    verrou.release();
+  }
+  return out;
+}
+
+/** Recherche faite par le serveur de messagerie lui-même (texte libre et expéditeur). */
+export async function chercher(client: ImapFlow, chemin: string, f: { texte?: string; expediteur?: string }): Promise<number[]> {
+  const verrou = await client.getMailboxLock(chemin);
+  try {
+    const criteres: Record<string, unknown> = {};
+    if (f.expediteur) criteres.from = f.expediteur.slice(0, 100);
+    if (f.texte) criteres.or = [{ from: f.texte.slice(0, 100) }, { subject: f.texte.slice(0, 100) }, { body: f.texte.slice(0, 100) }];
+    return ((await client.search(criteres, { uid: true })) || []).sort((a, b) => b - a).slice(0, 500);
   } finally {
     verrou.release();
   }
@@ -233,8 +294,8 @@ export async function marquerLu(client: ImapFlow, chemin: string, uid: number, l
   }
 }
 
-/** Archivage : déplacement vers le dossier d'archives (créé au besoin). */
-export async function archiver(client: ImapFlow, d: Dossiers, uid: number): Promise<string> {
+/** Archivage : déplacement vers le dossier d'archives (créé au besoin). Rend la nouvelle position du message quand le serveur la donne. */
+export async function archiver(client: ImapFlow, d: Dossiers, uid: number): Promise<{ chemin: string; uid: number | null; uidValidity: string | null }> {
   let cible = d.archive;
   if (!cible) {
     await client.mailboxCreate("Archives").catch(() => undefined);
@@ -242,11 +303,12 @@ export async function archiver(client: ImapFlow, d: Dossiers, uid: number): Prom
   }
   const verrou = await client.getMailboxLock(d.inbox);
   try {
-    await client.messageMove([uid], cible, { uid: true });
+    const r = await client.messageMove([uid], cible, { uid: true });
+    if (!r) throw new Error("Le serveur a refusé le déplacement.");
+    return { chemin: cible, uid: r.uidMap?.get(uid) ?? null, uidValidity: r.uidValidity !== undefined ? String(r.uidValidity) : null };
   } finally {
     verrou.release();
   }
-  return cible;
 }
 
 /** Message complet, pour en extraire une pièce jointe à la demande. */

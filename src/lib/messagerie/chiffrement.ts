@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes } from "node:crypto";
 
 /* Chiffrement des identifiants de messagerie (mot de passe IMAP, jetons OAuth) avant écriture
    en base : AES-256-GCM, clé dérivée de MESSAGERIE_SECRET (variable d'environnement, jamais
@@ -28,4 +28,13 @@ export function dechiffrer<T>(chiffre: string, secret?: string): T {
   const d = createDecipheriv("aes-256-gcm", cle(secret), Buffer.from(iv, "base64"));
   d.setAuthTag(Buffer.from(tag, "base64"));
   return JSON.parse(Buffer.concat([d.update(Buffer.from(data, "base64")), d.final()]).toString("utf8")) as T;
+}
+
+/**
+ * Empreinte d'un identifiant de message ou d'une adresse : elle permet de reconnaître « le même »
+ * sans que la valeur soit écrite en base ni retrouvable à partir de l'empreinte (clé secrète).
+ */
+export function empreinteDe(valeur: string | null | undefined, secret?: string): string {
+  const v = (valeur ?? "").trim().toLowerCase().replace(/^<|>$/g, "");
+  return v ? createHmac("sha256", cle(secret)).update(v).digest("hex").slice(0, 32) : "";
 }

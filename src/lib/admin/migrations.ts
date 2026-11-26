@@ -468,4 +468,32 @@ export const MIGRATIONS: Migration[] = [
       UPDATE users SET menus = menus || '["messagerie"]'::jsonb WHERE menus IS NOT NULL AND menus ? 'clients' AND NOT menus ? 'messagerie';
     `,
   },
+  {
+    // Messagerie : plus aucun contenu d'e-mail en base. Les messages et les brouillons sont lus et
+    // écrits directement dans la boîte mail ; la base ne garde qu'un index sans contenu (position
+    // du message dans la boîte, date, empreintes des identifiants, étiquettes du tri).
+    // Cette migration retire donc volontairement les colonnes de contenu créées par la 016.
+    id: "017_messagerie_sans_contenu",
+    sql: `
+      ALTER TABLE mail_messages
+        DROP COLUMN message_id, DROP COLUMN in_reply_to, DROP COLUMN refs, DROP COLUMN from_nom, DROP COLUMN from_email,
+        DROP COLUMN dest, DROP COLUMN sujet, DROP COLUMN extrait, DROP COLUMN corps, DROP COLUMN html, DROP COLUMN pieces,
+        DROP COLUMN intention, DROP COLUMN resume, DROP COLUMN infos;
+      ALTER TABLE mail_messages ADD COLUMN mid TEXT NOT NULL DEFAULT '';
+      ALTER TABLE mail_messages ADD COLUMN irt TEXT;
+      ALTER TABLE mail_messages ADD COLUMN exp TEXT NOT NULL DEFAULT '';
+      ALTER TABLE mail_messages ADD COLUMN nb_pieces INT NOT NULL DEFAULT 0;
+      ALTER TABLE mail_messages DROP CONSTRAINT mail_messages_dossier_check;
+      ALTER TABLE mail_messages ADD CONSTRAINT mail_messages_dossier_check CHECK (dossier IN ('inbox', 'sent', 'archive'));
+      CREATE INDEX idx_mail_messages_empreinte ON mail_messages(account_id, mid);
+      ALTER TABLE mail_drafts DROP COLUMN dest, DROP COLUMN cc, DROP COLUMN sujet, DROP COLUMN corps, DROP COLUMN manquants, DROP COLUMN imap_erreur;
+      -- Les lignes déjà synchronisées n'ont plus d'empreinte : l'index repart de zéro à la prochaine synchronisation.
+      DELETE FROM mail_jobs;
+      DELETE FROM mail_drafts;
+      DELETE FROM mail_messages;
+      UPDATE mail_accounts SET etat = '{}';
+      -- Le journal ne garde que la nature des actions, plus aucun objet ni destinataire.
+      UPDATE mail_journal SET detail = NULL;
+    `,
+  },
 ];

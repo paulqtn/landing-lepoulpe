@@ -1,57 +1,54 @@
 import { adminQuery as q } from "@/lib/admin/db";
 import { getSociete } from "@/lib/admin/societe";
-import { deposer, enregistrerBrouillon } from "./brouillons";
+import { chargerConversation, indexDe, oublier } from "./boite";
+import { ecrireBrouillon, repereDuMessage } from "./brouillons";
 import { compteParId, globaux, journal, reglagesDe, type Compte } from "./comptes";
-import { avecSignature, contexteRedaction, texteFil, type MessageCtx } from "./contexte";
+import { avecSignature, contexteRedaction, texteFil } from "./contexte";
 import { classer, ErreurIA, iaConfiguree, redigerReponse } from "./ia";
 import { CATEGORIES_SANS_REPONSE, estExclu, prioriteParRegle, sansCitation, type Categorie } from "./modele";
 import { synchroniser, utilisateurDe } from "./synchro";
 import { echouer, enAttente, menage, planifier, prendre, terminer, type Tache } from "./taches";
 
 /* Chaîne de traitement d'un e-mail reçu :
-   synchronisation → analyse → classement et priorité → besoin de réponse → contexte commercial
-   → rédaction → dépôt dans les Brouillons de la boîte → notification → validation humaine.
-   Chaque étape est une tâche de la file : elle peut échouer et reprendre sans refaire les autres. */
+   synchronisation → lecture dans la boîte → analyse → étiquettes (catégorie, priorité, besoin de
+   réponse) → contexte commercial → rédaction → dépôt dans les Brouillons de la boîte →
+   notification → validation humaine.
+   Le message est relu dans la boîte à chaque étape et n'est jamais recopié en base. Chaque étape
+   est une tâche de la file : elle peut échouer et reprendre sans refaire les autres. */
 
-type Msg = MessageCtx & { account_id: number; ia_at: string | null; ia_manuel: boolean; categorie: Categorie | null; besoin_reponse: boolean | null };
-
-async function message(compte: Compte, id: number): Promise<Msg | null> {
-  return (await q<Msg>("SELECT id, account_id, dossier, from_nom, from_email, sujet, date, corps, fil, message_id, lead_id, ia_at, ia_manuel, categorie, besoin_reponse FROM mail_messages WHERE id = $1 AND account_id = $2", [id, compte.id]))[0] ?? null;
-}
-
-/** Analyse d'un message reçu, puis mise en file de la réponse si elle est attendue. */
+/** Analyse d'un message reçu (relu dans la boîte), puis mise en file de la réponse si elle est attendue. */
 export async function analyser(compte: Compte, id: number, force = false): Promise<void> {
-  const m = await message(compte, id);
-  if (!m || m.dossier !== "inbox") return;
-  if (m.ia_manuel && !force) return; // le commercial a classé lui-même : son choix reste
-  if (m.ia_at && !force) return; // déjà analysé : jamais deux fois
+  const idx = await indexDe(compte, id);
+  if (!idx || idx.dossier !== "inbox") return;
+  if (idx.ia_manuel && !force) return; // le commercial a classé lui-même : son choix reste
+  if (idx.ia_at && !force) return; // déjà analysé : jamais deux fois
   const [g, r, societe] = [await globaux(), reglagesDe(compte), await getSociete()];
   if (!g.ia || !iaConfiguree) return;
-  if (estExclu(m.from_email, r.exclusions)) return;
-  const corps = sansCitation(m.corps ?? "");
-  const c = await classer({ societe: societe.raisonSociale, de: `${m.from_nom} <${m.from_email}>`, sujet: m.sujet, corps, fil: await texteFil(compte, m.fil, m.id), connu: m.lead_id !== null });
-  const priorite = prioriteParRegle({ from: m.from_email, sujet: m.sujet, corps }, r.regles) ?? c.priorite;
-  const besoin = c.besoin_reponse && !CATEGORIES_SANS_REPONSE.includes(c.categorie);
-  await q(
-    "UPDATE mail_messages SET categorie = $2, priorite = $3, besoin_reponse = $4, intention = $5, resume = $6, infos = $7, langue = $8, ia_at = now(), ia_erreur = NULL WHERE id = $1 AND (NOT ia_manuel OR $9)",
-    [m.id, c.categorie, priorite, besoin, c.intention, c.resume, JSON.stringify(c.infos), c.langue, force],
-  );
-  if (besoin && r.brouillonsAuto && r.categoriesAuto.includes(c.categorie)) await planifier(compte.id, "reponse", m.id);
+  const conv = await chargerConversation(compte, idx);
+  const m = conv.message;
+  if (!m) return oublier(compte, [idx.id]); // le message a quitté la boîte entre-temps
+  if (estExclu(m.fromEmail, r.exclusions)) return;
+  const corps = sansCitation(m.texte);
+  const c = await classer({ societe: societe.raisonSociale, de: `${m.fromNom} <${m.fromEmail}>`, sujet: m.sujet, corps, fil: texteFil(conv), connu: idx.lead_id !== null });
+  const priorite = prioriteParRegle({ from: m.fromEmail, sujet: m.sujet, corps }, r.regles) ?? c.priorite;
+  const besoin = c.besoin_reponse && !CATEGORIES_SANS_REPONSE.includes(c.categorie as Categorie);
+  await q("UPDATE mail_messages SET categorie = $2, priorite = $3, besoin_reponse = $4, langue = $5, ia_at = now(), ia_erreur = NULL WHERE id = $1 AND (NOT ia_manuel OR $6)", [idx.id, c.categorie, priorite, besoin, c.langue, force]);
+  if (besoin && r.brouillonsAuto && r.categoriesAuto.includes(c.categorie as Categorie)) await planifier(compte.id, "reponse", idx.id);
 }
 
-/** Rédaction de la réponse, enregistrée comme brouillon, puis dépôt dans la boîte en tâche suivante. */
-export async function preparerReponse(compte: Compte, id: number): Promise<number | null> {
-  const m = await message(compte, id);
-  if (!m || m.dossier !== "inbox") return null;
-  const existe = await q<{ id: number }>("SELECT id FROM mail_drafts WHERE account_id = $1 AND message_id = $2 AND statut IN ('brouillon', 'envoye') LIMIT 1", [compte.id, m.id]);
-  if (existe[0]) return existe[0].id; // un brouillon existe déjà : on n'en prépare pas un second
+/** Rédaction de la réponse, écrite directement dans le dossier Brouillons de la boîte. */
+export async function preparerReponse(compte: Compte, id: number): Promise<void> {
+  const idx = await indexDe(compte, id);
+  if (!idx || idx.dossier !== "inbox") return;
+  if (await repereDuMessage(compte, idx.id)) return; // un brouillon existe déjà : on n'en prépare pas un second
+  if (idx.repondu_at) return; // déjà répondu entre-temps
   const user = await utilisateurDe(compte);
-  if (!user) return null;
-  const red = await redigerReponse(await contexteRedaction(compte, user, m));
-  const b = await enregistrerBrouillon(compte, { messageId: m.id, dest: m.from_email, cc: "", sujet: "", corps: avecSignature(red.texte, reglagesDe(compte).signature), origine: "ia", manquants: red.manquants });
-  await planifier(compte.id, "brouillon_imap", b.id);
-  await journal(compte.user_id, compte.email, "brouillon_ia", m.sujet);
-  return b.id;
+  if (!user) return;
+  const conv = await chargerConversation(compte, idx, { style: true });
+  if (!conv.message) return oublier(compte, [idx.id]);
+  const red = await redigerReponse(await contexteRedaction(compte, user, conv, idx.lead_id, true));
+  await ecrireBrouillon(compte, idx, { dest: conv.message.fromEmail, cc: "", sujet: "", corps: avecSignature(red.texte, reglagesDe(compte).signature), origine: "ia", manquants: red.manquants }, conv.message);
+  await journal(compte.user_id, compte.email, "brouillon_ia");
 }
 
 async function executer(compte: Compte, t: Tache): Promise<{ suite?: boolean }> {
@@ -66,9 +63,8 @@ async function executer(compte: Compte, t: Tache): Promise<{ suite?: boolean }> 
     case "reponse":
       await preparerReponse(compte, t.ref_id);
       return {};
-    case "brouillon_imap":
-      await deposer(compte, t.ref_id);
-      return {};
+    default:
+      return {}; // ancien type de tâche : plus rien à faire
   }
 }
 

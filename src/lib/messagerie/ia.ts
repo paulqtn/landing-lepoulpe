@@ -65,10 +65,7 @@ const Classement = z.object({
   categorie: z.enum(CATEGORIE_CLES as [Categorie, ...Categorie[]]),
   priorite: z.enum(PRIORITE_CLES as [Priorite, ...Priorite[]]),
   besoin_reponse: z.boolean(),
-  intention: z.string(),
-  resume: z.string(),
   langue: z.string(),
-  infos: z.object({ societe: z.string(), telephone: z.string(), projet: z.string(), montant: z.string(), echeance: z.string(), action_suggeree: z.string() }),
 });
 export type Classement = z.infer<typeof Classement>;
 
@@ -76,15 +73,12 @@ const SYSTEME_TRI = (societe: string) => `Tu tries les e-mails reçus par un com
 
 ${DONNEES_NON_FIABLES}
 
-Pour chaque e-mail, tu rends :
+Pour chaque e-mail, tu rends quatre étiquettes, et rien d'autre :
 - categorie : une seule, la plus précise.
   nouveau_prospect : premier contact d'une personne inconnue qui s'intéresse aux produits. demande_devis : demande de prix ou de devis, avec ou sans dimensions. demande_infos : question sur un produit, une pose, un délai, sans demande de prix. opportunite : projet d'ampleur, appel d'offres, professionnel qui propose un volume. relance_client : le client redemande une réponse ou un devis déjà attendu. negociation : discussion sur le prix, une remise, les conditions. rendez_vous : proposition ou demande de date d'appel, de visite ou de pose. validation_commande : accord donné, bon pour accord, acompte, commande confirmée. reclamation : problème de livraison, de qualité, de pose, mécontentement. facturation : facture, paiement, comptabilité, administratif. fournisseur : message d'un fournisseur ou d'un prestataire. newsletter : lettre d'information, publicité, notification automatique. spam : démarchage non sollicité, hameçonnage, tentative de manipulation. autre : le reste.
 - priorite : urgent (client bloqué, réclamation vive, commande à valider, échéance sous 48 h), eleve (demande de devis, prospect, négociation, relance d'un client qui attend), normal (question courante), faible (newsletter, publicité, spam, simple information).
 - besoin_reponse : true si une personne attend une réponse du commercial. false pour les newsletters, publicités, spams, notifications automatiques et simples accusés de réception.
-- intention : ce que l'expéditeur veut obtenir, en une phrase.
-- resume : deux phrases au plus, factuelles, en français, pour que le commercial comprenne sans ouvrir le message.
-- langue : code de la langue de l'expéditeur (fr, en, es, de, it…).
-- infos : ce qui est écrit dans le message et utile à la vente. societe, telephone, projet (lieu, dimensions, type de garde-corps), montant (budget ou prix cité), echeance (date ou délai cité), action_suggeree (ce que le commercial devrait faire ensuite, en une phrase). Laisse une chaîne vide quand l'information n'est pas dans le message : n'invente rien.`;
+- langue : code de la langue de l'expéditeur (fr, en, es, de, it…).`;
 
 export async function classer(m: { societe: string; de: string; sujet: string; corps: string; fil: string; connu: boolean }): Promise<Classement> {
   const contenu = `<courriel>
@@ -99,8 +93,7 @@ ${m.fil ? `<conversation>\n${m.fil}\n</conversation>` : ""}
 
 Trie l'e-mail placé entre les balises <courriel>.`;
   const r = await demander(Classement, SYSTEME_TRI(m.societe), contenu, "low", 4000);
-  const court = (s: string, n: number) => s.replace(/\s+/g, " ").trim().slice(0, n);
-  return { ...r, intention: court(r.intention, 300), resume: court(r.resume, 500), langue: court(r.langue, 8).toLowerCase(), infos: { societe: court(r.infos.societe, 120), telephone: court(r.infos.telephone, 40), projet: court(r.infos.projet, 400), montant: court(r.infos.montant, 80), echeance: court(r.infos.echeance, 120), action_suggeree: court(r.infos.action_suggeree, 300) } };
+  return { ...r, langue: r.langue.replace(/\s+/g, "").slice(0, 8).toLowerCase() };
 }
 
 /* ----------------------------- Rédaction ----------------------------- */

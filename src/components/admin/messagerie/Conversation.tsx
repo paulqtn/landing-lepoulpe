@@ -21,7 +21,6 @@ const ACTIONS: { cle: string; label: string }[] = [
   { cle: "rendez_vous", label: "Proposer un rendez-vous" },
 ];
 const LANGUES = ["français", "anglais", "espagnol", "allemand", "italien", "néerlandais", "portugais"];
-const INFOS: [string, string][] = [["societe", "Société"], ["telephone", "Téléphone"], ["projet", "Projet"], ["montant", "Montant cité"], ["echeance", "Échéance"]];
 
 function CorpsHtml({ html }: { html: string }) {
   const ref = useRef<HTMLIFrameElement>(null);
@@ -103,14 +102,14 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
     setB({ ...r.brouillon });
     setModifie(false);
     setDemande("");
-    toast("Brouillon préparé. Il arrive aussi dans les brouillons de votre boîte mail.");
+    toast("Brouillon préparé et enregistré dans les brouillons de votre boîte mail.");
     onChange();
   }
 
   async function enregistrer(silencieux = false): Promise<number | null> {
     if (!b) return null;
     setOccupe("enregistrer");
-    const r = await appel<{ brouillon: BrouillonVue; avertissement: string | null }>("/brouillons", { body: { id: b.id, messageId: recu ? id : null, dest: b.dest, cc: b.cc, sujet: b.sujet, corps: b.corps, origine: modifie ? "manuel" : b.origine, manquants: b.manquants } });
+    const r = await appel<{ brouillon: BrouillonVue; avertissement: string | null }>("/brouillons", { body: { messageId: id, dest: b.dest, cc: b.cc, sujet: b.sujet, corps: b.corps, origine: modifie ? "manuel" : b.origine, manquants: b.manquants } });
     setOccupe(null);
     if (!r.ok) { toast(r.error, true); return null; }
     setB({ ...r.brouillon });
@@ -152,7 +151,6 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
 
   const maj = (p: Partial<NonNullable<typeof b>>) => { setB((x) => (x ? { ...x, ...p } : x)); setModifie(true); setConfirmer(false); };
   const reperes = b ? (b.corps.match(/\[[^\]\n]{2,80}\]/g) ?? []) : [];
-  const infos = INFOS.filter(([k]) => m.infos?.[k]);
 
   return (
     <article className="space-y-4">
@@ -190,14 +188,10 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
         )}
 
         {/* ce que l'IA a compris */}
-        {recu && (m.resume || m.enCours || m.iaErreur) && (
+        {recu && (m.enCours || m.iaErreur) && (
           <div className="mt-3 rounded-xl bg-pine-50 px-3.5 py-3 text-sm text-pine-950">
             {m.enCours && <p className="flex items-center gap-2 font-semibold"><Loader2 className="h-4 w-4 animate-spin" /> {m.enCours === "analyse" ? "Analyse du message en cours…" : "Rédaction de la réponse en cours…"}</p>}
-            {m.resume && <p><Sparkles className="mr-1 inline h-4 w-4 text-pine-600" />{m.resume}</p>}
-            {m.intention && <p className="mt-1 text-xs text-pine-800">Ce qu&rsquo;il attend : {m.intention}</p>}
-            {infos.length > 0 && <dl className="mt-2 grid gap-x-4 gap-y-1 text-xs sm:grid-cols-2">{infos.map(([k, l]) => <div key={k} className="flex gap-1.5"><dt className="font-bold">{l} :</dt><dd className="min-w-0 break-words">{m.infos?.[k]}</dd></div>)}</dl>}
-            {m.infos?.action_suggeree && <p className="mt-2 text-xs font-semibold">Suite conseillée : {m.infos.action_suggeree}</p>}
-            {m.iaErreur && <p className="mt-1 flex items-start gap-1.5 text-xs text-red-700"><TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" /> L&rsquo;analyse a échoué : {m.iaErreur} <button type="button" className="font-bold underline" onClick={() => action({ relancerAnalyse: true }, "Analyse relancée.")}>Relancer</button></p>}
+            {m.iaErreur && <p className="flex items-start gap-1.5 text-xs text-red-700"><TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" /> L&rsquo;analyse a échoué : {m.iaErreur} <button type="button" className="font-bold underline" onClick={() => action({ relancerAnalyse: true }, "Analyse relancée.")}>Relancer</button></p>}
           </div>
         )}
 
@@ -211,7 +205,7 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
               <span className="ml-auto text-xs font-bold text-pine-700">Ouvrir la fiche client →</span>
             </Link>
           ) : (
-            <Link href={`/commercial/clients/nouveau?nom=${encodeURIComponent(m.de.nom || m.infos?.societe || "")}&email=${encodeURIComponent(m.de.email)}&telephone=${encodeURIComponent(m.infos?.telephone ?? "")}`} className="mt-3 flex items-center gap-2 rounded-xl border border-dashed border-neutral-300 px-3.5 py-2.5 text-sm text-neutral-700 transition hover:border-pine-400 hover:text-pine-800">
+            <Link href={`/commercial/clients/nouveau?nom=${encodeURIComponent(m.de.nom)}&email=${encodeURIComponent(m.de.email)}`} className="mt-3 flex items-center gap-2 rounded-xl border border-dashed border-neutral-300 px-3.5 py-2.5 text-sm text-neutral-700 transition hover:border-pine-400 hover:text-pine-800">
               <UserPlus className="h-4 w-4" /> Cet expéditeur n&rsquo;est pas dans vos clients. <span className="font-bold">Créer sa fiche prospect</span>
             </Link>
           )
@@ -266,7 +260,6 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="flex items-center gap-2 text-base font-extrabold text-inkgreen"><Wand2 className="h-4 w-4 text-pine-600" /> Assistant</h3>
           {b?.dansLaBoite && !modifie && <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-bold text-green-700"><MailCheck className="h-3.5 w-3.5" /> Dans les brouillons de votre boîte mail</span>}
-          {b && !b.dansLaBoite && !modifie && <span className="rounded-full bg-amber-500/15 px-2.5 py-1 text-xs font-bold text-amber-800">Dépôt dans votre boîte en cours</span>}
           {modifie && <span className="rounded-full bg-amber-500/15 px-2.5 py-1 text-xs font-bold text-amber-800">Modifications non enregistrées</span>}
           <span className="ml-auto flex flex-wrap gap-2">
             <button type="button" className={bouton} disabled={!iaPrete || occupe !== null} onClick={() => ia("resumer")}>{occupe === "resumer" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />} Résumer la conversation</button>

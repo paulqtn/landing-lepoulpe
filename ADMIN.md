@@ -336,11 +336,23 @@ Autorisations demandées : Google `https://mail.google.com/` ; Microsoft `IMAP.A
 
 ### Fonctionnement
 
-- **Tables** (migration 016) : `mail_accounts` (une boîte par utilisateur, secret chiffré
-  AES-256-GCM), `mail_messages`, `mail_drafts`, `mail_jobs` (file de tâches), `mail_journal`.
-- **Chaîne** (`src/lib/messagerie/pipeline.ts`) : synchronisation → analyse → catégorie et
-  priorité → besoin de réponse → contexte du CRM → rédaction → dépôt IMAP (`APPEND`, drapeau
-  `\Draft`, en-têtes `In-Reply-To` et `References`) → cloche → validation humaine.
+- **Aucun e-mail n'est stocké en base.** Les messages, leurs pièces jointes et les brouillons
+  sont lus et écrits directement dans la boîte mail, à chaque affichage. La base ne garde qu'un
+  index sans contenu (`mail_messages`, migration 017) : la position du message dans la boîte
+  (dossier, UID), sa date, des empreintes non réversibles (identifiant du message, fil,
+  expéditeur) et les étiquettes du tri (catégorie, priorité, besoin de réponse, traité).
+  `mail_drafts` ne contient qu'un repère : à quel message le brouillon répond et où il se
+  trouve. Le journal ne note que la nature des actions.
+- **Ce que cela implique** : chaque liste et chaque conversation ouvre une connexion à la boîte
+  (comptez une à deux secondes selon le fournisseur) ; si la boîte ne répond pas, l'écran le
+  dit et rien ne s'affiche. La recherche de texte est faite par le serveur de messagerie. Le
+  résumé d'une conversation se demande à l'assistant, il n'est pas conservé.
+- **Tables** : `mail_accounts` (une boîte par utilisateur, secret chiffré AES-256-GCM),
+  `mail_messages` (index), `mail_drafts` (repères), `mail_jobs` (file de tâches), `mail_journal`.
+- **Chaîne** (`src/lib/messagerie/pipeline.ts`) : synchronisation de l'index → lecture du
+  message dans la boîte → étiquettes → contexte du CRM → rédaction → dépôt IMAP (`APPEND`,
+  drapeau `\Draft`, en-têtes `In-Reply-To` et `References`) → cloche → validation humaine. Les
+  points à vérifier avant l'envoi voyagent dans un en-tête du brouillon, retiré à l'envoi.
 - **Tâches** : rien ne tourne en permanence sur Vercel. Les tâches sont inscrites en base et
   exécutées par lots : tant qu'un écran du back office est ouvert (toutes les 45 s sur la
   messagerie, toutes les 3 min ailleurs), au clic sur *Synchroniser*, et une fois par jour par
@@ -350,9 +362,12 @@ Autorisations demandées : Google `https://mail.google.com/` ; Microsoft `IMAP.A
 - **Doublons** : un message est identifié par dossier + UIDVALIDITY + UID ; un seul brouillon
   en cours par message reçu ; un brouillon inchangé n'est pas redéposé (empreinte du contenu) ;
   une nouvelle version est déposée avant que l'ancienne soit retirée.
-- **Brouillon modifié ailleurs** : à chaque synchronisation, le dossier Brouillons est comparé.
-  Brouillon modifié dans un autre logiciel → repris dans le back office ; envoyé depuis un autre
-  logiciel → marqué envoyé et message marqué répondu ; supprimé → retiré.
+- **Brouillon modifié ailleurs** : le brouillon est relu dans la boîte à chaque ouverture, donc
+  une modification faite dans Outlook ou sur le téléphone s'affiche telle quelle. Envoyé depuis
+  un autre logiciel → message marqué répondu ; supprimé → repère retiré.
+- **Message déplacé ailleurs** : un message sorti de la boîte de réception depuis un autre
+  logiciel quitte l'index (il reste dans la boîte). Archivé depuis le back office, il reste
+  consultable dans *Archives* quand le serveur indique sa nouvelle position.
 
 ### Sécurité et confidentialité
 
@@ -371,11 +386,11 @@ Autorisations demandées : Google `https://mail.google.com/` ; Microsoft `IMAP.A
   fichiers exécutables étant refusés.
 - Serveur de messagerie saisi par l'utilisateur : ports de messagerie seulement, adresses
   internes refusées.
-- Conservation : au-delà de la durée fixée par l'administrateur (90 jours par défaut), les
-  messages quittent le back office (ils restent dans la boîte mail). Déconnecter une boîte
-  efface ses identifiants, ses messages et ses brouillons du back office, et retire l'accès chez
-  Google.
-- Journal des actions : table `mail_journal` (connexion, envoi, tri corrigé, appel à l'IA…).
+- Conservation : la base ne contient aucun e-mail. L'index de tri est lui-même purgé au-delà de
+  la durée fixée par l'administrateur (90 jours par défaut). Déconnecter une boîte efface ses
+  identifiants et son index, et retire l'accès chez Google.
+- Journal des actions : table `mail_journal` (connexion, envoi, tri corrigé, appel à l'IA…),
+  sans objet ni destinataire.
 
 ### Tests
 

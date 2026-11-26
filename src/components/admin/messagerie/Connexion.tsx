@@ -58,7 +58,7 @@ export function Connexion({ etat, compte, onConnecte, onAnnule }: { etat: Etat; 
         <PlugZap className="h-5 w-5 text-pine-600" /> {compte ? "Paramètres de connexion" : "Connecter ma boîte mail"}
       </h2>
       <p className="mt-1 text-sm text-neutral-600">
-        Vos e-mails restent dans votre boîte : le back office les lit, les trie et y dépose des brouillons de réponse. Rien n&rsquo;est envoyé sans votre validation.
+        Vos e-mails restent dans votre boîte : le back office les y lit, les trie et y dépose des brouillons de réponse. Aucun e-mail n&rsquo;est copié dans le back office, et rien n&rsquo;est envoyé sans votre validation.
       </p>
 
       {!etat.pret.chiffrement && (
