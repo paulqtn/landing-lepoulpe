@@ -51,18 +51,6 @@
    se déclenche, souris comme tactile. */
 @custom-variant hover (&:hover);
 
-/* Back office : lisibilité. Le gris secondaire passe au-dessus du contraste
-   minimal (4,5 pour 1) et aucun texte ne descend sous 12 px. */
-.mgk-bo {
-  --color-neutral-400: #6b6b6b;
-  --color-neutral-500: #5e5e5e;
-}
-.mgk-bo .text-\[9px\],
-.mgk-bo .text-\[10px\],
-.mgk-bo .text-\[11px\] {
-  font-size: 12px;
-}
-
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }

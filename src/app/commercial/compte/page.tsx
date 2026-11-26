@@ -2,7 +2,6 @@ import { AccountForm } from "@/components/admin/AccountForm";
 import { ROLE_LABELS, currentUser } from "@/lib/admin/auth";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Mon compte" };
 
 export default async function ComptePage() {
   const me = await currentUser();

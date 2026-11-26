@@ -4,7 +4,6 @@ import { ProspectForm } from "@/components/admin/ProspectForm";
 import { requireMenu } from "@/lib/admin/auth";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Nouveau prospect" };
 
 /* Nouveau prospect saisi à la main (appel direct, recommandation…). */
 export default async function NouveauProspectPage() {

@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     if (again?.assigned_to && again.assigned_to !== rep) return NextResponse.json({ ok: false, error: "taken", by: again.assigned_to }, { status: 409 });
     return NextResponse.json({ ok: false, error: "not_first", first: first?.name ?? null }, { status: 409 });
   }
-  await addEvent(lead.id, "attribution", `Pris par ${rep}`);
+  await addEvent(lead.id, "attribution", `Pioché par ${rep}`);
   // Le devis à relire s'ouvre aussitôt après la prise.
   const devis = await q<{ id: number }>("SELECT id FROM quotes WHERE lead_id = $1 AND statut = 'brouillon' ORDER BY id DESC LIMIT 1", [lead.id]);
   return NextResponse.json({ ok: true, leadId: lead.id, name: lead.name, devisId: devis[0]?.id ?? null });

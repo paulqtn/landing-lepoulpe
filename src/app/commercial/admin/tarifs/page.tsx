@@ -10,7 +10,6 @@ import { referenceScenarios } from "@/lib/admin/prices-ref";
 import { SOCIETE_FIELDS, getSociete } from "@/lib/admin/societe";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Tarifs et paramètres" };
 
 /* Tarifs et paramètres — tout ce qui se règle sans redéployer le site. */
 

@@ -10,7 +10,6 @@ import { countRappels, dueRelances, type Lead, listRappels, relancesAVenir } fro
 import { mailConfigured } from "@/lib/admin/mail";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Relances" };
 
 /* Relances — l'automatisation sous contrôle : ce qui est dû maintenant,
    ce qui partira ensuite, et l'engagement constaté sur chaque client. */

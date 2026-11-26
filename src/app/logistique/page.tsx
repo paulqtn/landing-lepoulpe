@@ -5,7 +5,6 @@ import { requireMenu } from "@/lib/admin/auth";
 import { logisticsBoard, type Task } from "@/lib/admin/logistics-tasks";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: { absolute: "Tâches du jour · Back office" } };
 
 /* Tâches du jour du logisticien — tout part de la date à laquelle le
    commercial a validé l'affaire. */

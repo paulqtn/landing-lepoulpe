@@ -5,7 +5,6 @@ import { niveauInfo } from "@/lib/admin/niveaux";
 import { STATUT_LABELS, STATUTS, type Statut, pipeline, pipelineApercu } from "@/lib/admin/db";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Vue Kanban" };
 
 /* Vue Kanban — toutes les affaires, colonne par colonne, montants en tête. */
 

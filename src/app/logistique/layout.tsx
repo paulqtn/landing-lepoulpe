@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { BackOfficeShell } from "@/components/admin/BackOfficeShell";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: { default: "Logistique", template: "%s · Back office" },
+  title: `Espace logistique — ${site.name}`,
   robots: { index: false, follow: false },
 };
 

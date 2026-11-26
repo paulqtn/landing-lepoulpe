@@ -310,18 +310,3 @@ répondre à une demande d'un client ; le composant `RgpdActions` peut être rem
 - **Démo** : bouton « Créer des leads de démo » sur le tableau de bord vide
   (tarifs calculés par le vrai moteur).
 - Vidéos & fiches par système : à renseigner dans `src/lib/admin/assets.ts`.
-
-## Ma journée (accueil du back office)
-
-L'accueil commercial est une seule file de travail, `src/app/commercial/page.tsx`. Chaque ligne
-porte un client, la raison de sa présence et l'action à faire. Ordre : devis validé en ligne,
-rappels du jour ou en retard, devis à refaire, prochaine demande de la file commune (une seule,
-la règle de l'ordre d'arrivée ne change pas), clients qui ont consulté leur devis ces 48 h,
-devis à relire et envoyer, affaires signées à lancer en production. Un client n'apparaît
-qu'une fois, sous sa raison la plus urgente.
-
-« Devis à traiter » et « Relances » ne sont plus dans le menu quand le compte a « Ma journée » :
-les deux pages existent toujours (liens en bas de Ma journée) et leurs droits ne changent pas.
-
-Lisibilité : la classe `mgk-bo` (posée par `BackOfficeShell`) fonce le gris secondaire et
-impose 12 px au minimum dans tout le back office (`globals.css`). Le site public n'est pas touché.

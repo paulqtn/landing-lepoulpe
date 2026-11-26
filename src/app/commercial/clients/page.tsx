@@ -6,7 +6,6 @@ import { countLeads, listLeads, STATUT_LABELS, STATUTS } from "@/lib/admin/db";
 import { getTeam } from "@/lib/admin/team";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Clients" };
 
 export default async function LeadsPage({
   searchParams,
@@ -60,8 +59,7 @@ export default async function LeadsPage({
             <input
               name="q"
               defaultValue={q ?? ""}
-              aria-label="Rechercher un client par nom, e-mail ou téléphone"
-              placeholder="Nom, e-mail, téléphone…"
+              placeholder="Nom, email, téléphone…"
               className="w-56 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm outline-none transition focus:border-pine-500"
             />
           </form>
@@ -83,7 +81,7 @@ export default async function LeadsPage({
         <div className="flex flex-wrap gap-1.5">
           <FilterChip href={`/commercial/clients${statut ? `?statut=${statut}` : ""}`} active={mode === "moi"} label={`Mes clients`} />
           {equipe && <FilterChip href={`/commercial/clients?qui=tous${statut ? `&statut=${statut}` : ""}`} active={mode === "tous"} label="Toute l'équipe" />}
-          <FilterChip href={`/commercial/clients?qui=libre${statut ? `&statut=${statut}` : ""}`} active={mode === "libre"} label="À prendre" />
+          <FilterChip href={`/commercial/clients?qui=libre${statut ? `&statut=${statut}` : ""}`} active={mode === "libre"} label="À piocher" />
         </div>
       )}
 

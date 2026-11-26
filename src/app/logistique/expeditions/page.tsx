@@ -3,7 +3,6 @@ import { requireMenu } from "@/lib/admin/auth";
 import { listOrders, listShipments, SHIPMENT_LABELS, SHIPMENT_STATUTS } from "@/lib/admin/logistics";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Expéditions" };
 
 /* Expéditions — les tournées, et les commandes prêtes à y rattacher. */
 export default async function ExpeditionsPage() {
