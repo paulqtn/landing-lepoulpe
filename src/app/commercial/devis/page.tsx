@@ -46,7 +46,7 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         {list.length === 0 ? (
           <p className="py-6 text-center text-sm text-neutral-400">
-            Aucun devis en attente{mode === "moi" ? " chez vous" : ""} — prenez une nouvelle demande depuis l&rsquo;accueil.
+            Aucun devis en attente{mode === "moi" ? " chez vous" : ""} — prenez une nouvelle demande depuis Ma journée.
           </p>
         ) : (
           <ul className="divide-y divide-neutral-100">

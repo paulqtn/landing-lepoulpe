@@ -28,5 +28,5 @@ export function refusAction(user: User, lead: Pick<Lead, "assigned_to">): string
   if (lead.assigned_to && lead.assigned_to === user.name) return null;
   return lead.assigned_to
     ? `Ce client est suivi par ${lead.assigned_to} : seul son commercial ou un administrateur peut agir sur sa fiche.`
-    : "Ce client n'est pas encore attribué : prenez-le d'abord depuis l'état des lieux, dans l'ordre d'arrivée.";
+    : "Ce client n'est pas encore attribué : prenez-le d'abord depuis Ma journée, dans l'ordre d'arrivée.";
 }

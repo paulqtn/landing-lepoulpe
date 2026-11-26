@@ -16,7 +16,7 @@ export default function BackOfficeNotFound() {
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-2.5">
         <Link href="/commercial" className="inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600">
-          Revenir à l&rsquo;accueil <ArrowRight className="h-4 w-4" />
+          Revenir à Ma journée <ArrowRight className="h-4 w-4" />
         </Link>
         <Link href="/commercial/clients" className="inline-flex items-center rounded-full border border-neutral-200 bg-white px-5 py-2.5 text-sm font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700">
           Mes clients

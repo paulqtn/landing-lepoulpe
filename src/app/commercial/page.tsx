@@ -1,62 +1,163 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, BellRing, Euro, FileText, Flame, Hand, PhoneCall, Trophy } from "lucide-react";
+import { AlertTriangle, ArrowRight, BadgeCheck, CalendarClock, Eye, Factory, FilePenLine, FileText, Hand, Phone, PhoneCall, Sparkles } from "lucide-react";
 import { ClaimButton } from "@/components/admin/ClaimButton";
+import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
 import { SeedDemo } from "@/components/admin/SeedDemo";
-import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
-import { currentRep, requireMenu } from "@/lib/admin/auth";
+import { BoutonAppeler } from "@/components/admin/Telephone";
+import { eurFmt } from "@/components/admin/ui";
+import { currentRep, hasMenu, requireMenu } from "@/lib/admin/auth";
 import { getCompSettings, repStats } from "@/lib/admin/compens";
-import { dueRelances, listDevisATraiter, listLeads, stats, type Lead, listLeadsLight, listRappels } from "@/lib/admin/db";
+import { dueRelances, listDevisATraiter, listLeads, listLeadsLight, listRappels, stats, type Lead } from "@/lib/admin/db";
 import { listOrders } from "@/lib/admin/logistics";
 import { mailConfigured } from "@/lib/admin/mail";
+import { sourceLisible } from "@/lib/admin/sources";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: { absolute: "Accueil · Back office" } };
+export const metadata = { title: { absolute: "Ma journée · Back office" } };
+
+/* Ma journée — une seule file de travail. Chaque ligne porte un client,
+   la raison pour laquelle il est là et l'action à faire, dans l'ordre
+   d'urgence. Une ligne disparaît dès que l'action est faite. */
 
 const dayFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", weekday: "long", day: "numeric", month: "long" });
+const heureFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", hour: "2-digit", minute: "2-digit" });
+const jourFmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", weekday: "long", day: "numeric", month: "short" });
+const cleJour = new Intl.DateTimeFormat("fr-CA", { timeZone: "Europe/Paris" });
 
-export default async function CommercialHome() {
-  await requireMenu("etat");
+/** « il y a 2 h », « hier », « il y a 4 j » : l'ancienneté se lit sans calcul. */
+function ilYA(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const min = Math.max(0, Math.round((Date.now() - Number(new Date(iso))) / 60_000));
+  if (min < 60) return `il y a ${Math.max(1, min)} min`;
+  if (min < 24 * 60) return `il y a ${Math.round(min / 60)} h`;
+  const j = Math.round(min / 1440);
+  return j === 1 ? "hier" : `il y a ${j} j`;
+}
+
+type Action = "appeler" | "devis" | "prendre" | "lancer";
+type Ligne = {
+  lead: Lead;
+  genre: "valide" | "rappel" | "modifier" | "file" | "chaud" | "devis" | "lancer";
+  raison: string;
+  detail?: string;
+  action: Action;
+  label?: string;
+  urgent?: boolean;
+};
+
+const GENRES: Record<Ligne["genre"], { icon: typeof Phone; cls: string }> = {
+  valide: { icon: BadgeCheck, cls: "bg-amber-500 text-pine-950" },
+  rappel: { icon: PhoneCall, cls: "bg-pine-700 text-white" },
+  modifier: { icon: FilePenLine, cls: "bg-rose-100 text-rose-800" },
+  file: { icon: Sparkles, cls: "bg-amber-500/20 text-amber-800" },
+  chaud: { icon: Eye, cls: "bg-orange-100 text-orange-800" },
+  devis: { icon: FileText, cls: "bg-pine-50 text-pine-700" },
+  lancer: { icon: Factory, cls: "bg-neutral-100 text-neutral-700" },
+};
+
+export default async function MaJournee() {
+  const me = await requireMenu("etat");
   const rep = await currentRep();
   const mine = rep ?? undefined;
-  // Chaque file de travail est une requête ciblée : les compteurs restent
-  // justes quelle que soit la taille de la base.
-  const [s, pool, devisATraiter, chauds, nouveauxA, gagnes, dues, orders, persoLeads] = await Promise.all([
+  const [s, pool, devisATraiter, chauds, gagnes, dues, orders, persoLeads, rappels, comp] = await Promise.all([
     stats(),
     listLeads({ assigned: "__libre", actifs: true, order: "ancien", limit: 500 }),
     listDevisATraiter(mine),
-    listLeads({ assigned: mine, actifs: true, activeSinceHours: 48, limit: 500 }),
-    listLeads({ assigned: mine, statut: "nouveau", score: "A", limit: 500 }),
+    listLeads({ assigned: mine, actifs: true, activeSinceHours: 48, limit: 200 }),
     listLeads({ assigned: mine, statut: "gagne", limit: 500 }),
     dueRelances(),
     listOrders(),
     rep ? listLeadsLight({ assigned: rep }) : Promise.resolve([]),
+    listRappels(mine),
+    getCompSettings(),
   ]);
+  const perso = rep ? repStats(persoLeads, rep, comp) : null;
+  const aujourdhui = cleJour.format(new Date());
+  const maintenant = Date.now();
+
+  /* --- la file, dans l'ordre d'urgence ; un client n'y figure qu'une fois --- */
+  const lignes: Ligne[] = [];
+  const vus = new Set<number>();
+  const ajouter = (l: Ligne) => {
+    if (vus.has(l.lead.id)) return;
+    vus.add(l.lead.id);
+    lignes.push(l);
+  };
+
+  // 1. Le client a dit oui en ligne : rien n'est plus chaud.
+  for (const l of rappels.filter((x) => x.a_valide))
+    ajouter({ lead: l, genre: "valide", raison: "A validé son devis en ligne", detail: "Appelez-le pour conclure la vente.", action: "appeler", urgent: true });
+
+  // 2. Rappels convenus pour aujourd'hui (ou en retard), et rappels demandés par le client.
+  let rappelsPlusTard = 0;
+  for (const l of rappels) {
+    if (l.rappel_at) {
+      const jour = cleJour.format(new Date(l.rappel_at));
+      if (jour > aujourdhui) {
+        if (!vus.has(l.id)) rappelsPlusTard++;
+        continue;
+      }
+      const enRetard = Number(new Date(l.rappel_at)) < maintenant;
+      const raison = jour < aujourdhui ? `Rappel prévu ${jourFmt.format(new Date(l.rappel_at))}, en retard` : enRetard ? `Rappel prévu à ${heureFmt.format(new Date(l.rappel_at))}, à faire maintenant` : `Rappel prévu à ${heureFmt.format(new Date(l.rappel_at))}`;
+      ajouter({ lead: l, genre: "rappel", raison, action: "appeler", urgent: enRetard });
+    } else {
+      ajouter({ lead: l, genre: "rappel", raison: "A demandé à être rappelé", action: "appeler", urgent: true });
+    }
+  }
+
+  // 3. Devis à refaire après un échange.
+  for (const l of devisATraiter.filter((x) => x.statut === "devis_a_modifier"))
+    ajouter({ lead: l, genre: "modifier", raison: "Attend un devis modifié", detail: l.devis_brouillon_id ? "Le nouveau devis est commencé, il reste à l'envoyer." : undefined, action: "devis", label: l.devis_brouillon_id ? "Reprendre le devis" : "Refaire le devis" });
+
+  // 4. La prochaine demande de la file commune (une seule : elles se prennent dans l'ordre d'arrivée).
+  const prochaine = pool[0];
+  if (prochaine)
+    ajouter({
+      lead: prochaine,
+      genre: "file",
+      raison: `Nouvelle demande, arrivée ${ilYA(prochaine.created_at)}`,
+      detail: `${sourceLisible(prochaine.source)}${pool.length > 1 ? ` · ${pool.length - 1} autre${pool.length > 2 ? "s" : ""} en attente derrière` : ""}`,
+      action: "prendre",
+    });
+
+  // 5. Clients actifs sur leur devis ces 48 dernières heures.
+  for (const l of chauds.filter((x) => x.statut !== "nouveau" && (x.devis_views > 0 || x.clicks > 0)))
+    ajouter({
+      lead: l,
+      genre: "chaud",
+      raison: l.devis_views > 0 ? `A consulté son devis ${l.devis_views > 1 ? `${l.devis_views} fois` : ""}${l.last_activity_at ? `${l.devis_views > 1 ? ", " : ""}dernière visite ${ilYA(l.last_activity_at)}` : ""}`.replace(/\s+,/, ",").trim() : `A cliqué dans vos e-mails ${ilYA(l.last_activity_at)}`,
+      detail: "C'est le bon moment pour l'appeler.",
+      action: "appeler",
+    });
+
+  // 6. Devis prêts à relire et à envoyer.
+  for (const l of devisATraiter.filter((x) => x.statut !== "devis_a_modifier"))
+    ajouter({
+      lead: l,
+      genre: "devis",
+      raison: l.statut === "nouveau" ? `Devis à envoyer, demande reçue ${ilYA(l.created_at)}` : "Devis commencé, pas encore envoyé",
+      action: "devis",
+      label: "Relire et envoyer",
+    });
+
+  // 7. Affaires signées qui n'ont pas encore de commande à l'atelier.
+  const avecCommande = new Set(orders.map((o) => o.lead_id).filter(Boolean));
+  if (hasMenu(me, "production"))
+    for (const l of gagnes.filter((x) => !avecCommande.has(x.id)))
+      ajouter({ lead: l, genre: "lancer", raison: "Affaire signée, à lancer en production", action: "lancer" });
 
   const mesDues = rep ? dues.filter((l) => l.assigned_to === rep) : dues;
-  const finJour = new Date(); finJour.setHours(23, 59, 59, 999);
-  const rappelsDus = (await listRappels(mine)).filter((l) => !l.rappel_at || new Date(l.rappel_at) <= finJour);
-  const aAppeler = nouveauxA.filter((l) => !chauds.some((c) => c.id === l.id));
-  const withOrder = new Set(orders.map((o) => o.lead_id).filter(Boolean));
-  const aLancer = gagnes.filter((l) => !withOrder.has(l.id));
-  const comp = await getCompSettings();
-  const perso = rep ? repStats(persoLeads, rep, comp) : null;
-
-  /* Les tâches, dans l'ordre d'attaque du matin. */
-  const taches = [
-    { n: pool.length, label: "Leads entrants à piocher", sub: "dans l'ordre d'arrivée", href: "#pioche", icon: Hand, hot: pool.length > 0 },
-    { n: chauds.length, label: "Signaux chauds à rappeler", sub: "devis consultés ces 48 h", href: "/commercial/clients?qui=moi", icon: Flame, hot: chauds.length > 0 },
-    { n: devisATraiter.length, label: "Devis à traiter", sub: "à relire, à refaire ou à envoyer", href: "/commercial/devis", icon: FileText, hot: devisATraiter.length > 0 },
-    { n: rappelsDus.length, label: "Clients à rappeler par téléphone", sub: "rappel convenu ou demandé", href: "/commercial/relances", icon: PhoneCall, hot: rappelsDus.length > 0 },
-    { n: mesDues.length, label: "Relances échues", sub: "la séquence vous attend", href: "/commercial/relances", icon: BellRing, hot: false },
-    { n: aLancer.length, label: "Signées à lancer en production", sub: "envoyer à l'atelier", href: "/commercial/production", icon: Trophy, hot: false },
-  ];
+  const urgentes = lignes.filter((l) => l.urgent).length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold text-inkgreen">{rep ? `Bonjour ${rep} 👋` : "État des lieux"}</h1>
-          <p className="text-sm capitalize text-neutral-400">{dayFmt.format(new Date())}</p>
+          <h1 className="text-2xl font-extrabold text-inkgreen">{rep ? "Ma journée" : "La journée de l'équipe"}</h1>
+          <p className="text-sm text-neutral-500">
+            {dayFmt.format(new Date()).replace(/^./, (c) => c.toUpperCase())}
+            {rep ? ` · bonjour ${rep}` : ""}
+          </p>
         </div>
         {s.total === 0 && process.env.VERCEL_ENV !== "production" && <SeedDemo />}
       </div>
@@ -64,139 +165,104 @@ export default async function CommercialHome() {
       {!rep && (
         <p className="flex items-start gap-2.5 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-neutral-700">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-          Vous êtes connecté sans identité : déconnectez-vous puis choisissez votre nom pour retrouver
-          vos clients, votre chiffre et votre prime.
+          Vous êtes connecté sans identité : déconnectez-vous puis choisissez votre nom pour retrouver vos clients, votre chiffre et votre prime.
         </p>
       )}
 
-      {/* ------------------- votre argent, en premier ------------------- */}
+      {/* ---------------- vos résultats, sur une ligne ---------------- */}
       {perso && (
-        <section className="overflow-hidden rounded-2xl border border-neutral-200 bg-pine-900 p-5 text-white">
-          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
-            <div>
-              <p className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-200">
-                <Euro className="h-3.5 w-3.5 text-amber-400" />
-                CA HT signé ce mois-ci
-              </p>
-              <p className="mt-1 text-3xl font-extrabold tabular-nums">{eurFmt.format(perso.caMois)} €</p>
-              <p className="mt-0.5 text-xs text-pine-200">Marge brute : {eurFmt.format(perso.margeMois)} €</p>
-            </div>
-            <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-200">Votre prime du mois</p>
-              <p className="mt-1 text-3xl font-extrabold tabular-nums text-amber-400">{eurFmt.format(perso.primeMois)} €</p>
-              <p className="mt-0.5 text-xs text-pine-200">
-                {comp.tauxMarge} % de la marge : {eurFmt.format(perso.commissionMois)} €{perso.bonusMois > 0 ? ` + bonus ${eurFmt.format(perso.bonusMois)} €` : ""}
-              </p>
-            </div>
-            <div className="min-w-56 flex-1">
-              <p className="flex items-baseline justify-between font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-200">
-                <span>Bonus +{eurFmt.format(comp.bonusParTranche)} € dès {eurFmt.format(comp.seuilCA)} € HT</span>
-                <span className="text-amber-400">{perso.pctObjectif} %</span>
-              </p>
-              <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white/15">
-                <div className="h-full rounded-full bg-amber-500 transition-all" style={{ width: `${perso.pctObjectif}%` }} />
-              </div>
-              <p className="mt-1.5 text-xs text-pine-200">
-                {perso.resteObjectif > 0
-                  ? `Encore ${eurFmt.format(perso.resteObjectif)} € HT pour déclencher le bonus, puis +${eurFmt.format(comp.bonusParTranche)} € tous les ${eurFmt.format(comp.tranche)} €.`
-                  : `Bonus débloqué : ${perso.tranchesBonus} × ${eurFmt.format(comp.bonusParTranche)} €. Encore ${eurFmt.format(perso.resteProchaineTranche)} € HT pour la tranche suivante.`}
-              </p>
-              {perso.margesManquantes > 0 && (
-                <p className="mt-1 text-xs font-semibold text-amber-400">
-                  {perso.margesManquantes} affaire{perso.margesManquantes > 1 ? "s" : ""} signée{perso.margesManquantes > 1 ? "s" : ""} sans marge enregistrée : non comptée{perso.margesManquantes > 1 ? "s" : ""} dans la commission pour l&rsquo;instant.
-              </p>
-              )}
-            </div>
-          </div>
-          <dl className="mt-4 flex flex-wrap gap-x-7 gap-y-2 border-t border-white/10 pt-3.5 text-xs text-pine-200">
-            <div>Taux de signature : <strong className="font-extrabold text-white">{perso.tauxSignature !== null ? `${perso.tauxSignature} %` : "—"}</strong></div>
-            <div>Signées : <strong className="font-extrabold text-white">{perso.signees}</strong> · Non signées : <strong className="font-extrabold text-white">{perso.perdues}</strong></div>
-            <div>En cours : <strong className="font-extrabold text-white">{perso.enCours}</strong> ({eurFmt.format(perso.enCoursTTC)} €)</div>
-            <div>Panier moyen : <strong className="font-extrabold text-white">{eurFmt.format(perso.panierMoyen)} €</strong></div>
-            <Link href="/commercial/stats" className="ml-auto inline-flex items-center gap-1 font-bold text-amber-400 hover:text-amber-300">
-              Mes stats détaillées <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </dl>
-        </section>
+        <Link href={hasMenu(me, "stats") ? "/commercial/stats" : "/commercial"} className="flex flex-wrap items-center gap-x-6 gap-y-1.5 rounded-2xl bg-pine-900 px-5 py-3 text-sm text-pine-100 transition hover:bg-pine-800">
+          <span>Signé ce mois-ci <strong className="ml-1 font-extrabold tabular-nums text-white">{eurFmt.format(perso.caMois)} € HT</strong></span>
+          <span>Ma prime <strong className="ml-1 font-extrabold tabular-nums text-amber-400">{eurFmt.format(perso.primeMois)} €</strong></span>
+          <span className="flex min-w-40 flex-1 items-center gap-2.5">
+            <span className="shrink-0">Bonus</span>
+            <span className="h-2 flex-1 overflow-hidden rounded-full bg-white/15"><span className="block h-full rounded-full bg-amber-500" style={{ width: `${perso.pctObjectif}%` }} /></span>
+            <strong className="shrink-0 font-extrabold tabular-nums text-white">{perso.pctObjectif} %</strong>
+          </span>
+          {perso.margesManquantes > 0 && <span className="font-semibold text-amber-400">{perso.margesManquantes} affaire{perso.margesManquantes > 1 ? "s" : ""} sans marge enregistrée</span>}
+          <span className="inline-flex items-center gap-1 font-bold text-amber-400">Mes résultats <ArrowRight className="h-3.5 w-3.5" /></span>
+        </Link>
       )}
 
-      {/* ------------------- la pioche des entrants ------------------- */}
-      <section id="pioche" className="rounded-2xl border border-amber-500/40 bg-white p-5">
-        <h2 className="flex items-center gap-2 text-base font-extrabold text-inkgreen">
-          <Hand className="h-4 w-4 text-amber-600" />
-          Leads entrants — à piocher
-          <span className="ml-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-amber-700">{pool.length}</span>
+      {/* ------------------------ la file de travail ------------------------ */}
+      <section className="rounded-2xl border border-neutral-200 bg-white">
+        <h2 className="flex flex-wrap items-center gap-2 border-b border-neutral-100 px-5 py-4 text-base font-extrabold text-inkgreen">
+          À faire maintenant
+          <span className="rounded-full bg-pine-50 px-2 py-0.5 text-xs font-bold text-pine-800">{lignes.length}</span>
+          {urgentes > 0 && <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-800">{urgentes} urgent{urgentes > 1 ? "s" : ""}</span>}
+          <span className="ml-auto text-xs font-semibold text-neutral-500">Du plus urgent au moins urgent</span>
         </h2>
-        <p className="mt-1 text-xs text-neutral-400">Par ordre d&rsquo;arrivée, le plus ancien en premier. Seule la première demande peut être prise : les suivantes se débloquent une à une.</p>
-        {pool.length === 0 ? (
-          <p className="mt-3 text-sm text-neutral-400">File vide — tous les entrants sont attribués.</p>
+        {lignes.length === 0 ? (
+          <div className="px-5 py-12 text-center">
+            <p className="text-base font-bold text-inkgreen">Tout est traité.</p>
+            <p className="mx-auto mt-1 max-w-md text-sm text-neutral-500">
+              Aucun client ne vous attend pour l&rsquo;instant. Une nouvelle demande ou un devis validé apparaîtra ici, et la cloche vous préviendra.
+            </p>
+            <Link href="/commercial/clients" className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2 text-sm font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700">
+              Voir mes clients <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         ) : (
-          <ul className="mt-3 divide-y divide-neutral-100">
-            {pool.slice(0, 8).map((l, rang) => (
-              <li key={l.id} className={`flex flex-wrap items-center gap-x-4 gap-y-2 py-3 ${rang === 0 ? "" : "opacity-60"}`}>
-                <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-extrabold tabular-nums ${rang === 0 ? "bg-amber-500 text-pine-950" : "bg-neutral-100 text-neutral-500"}`} title={`Rang ${rang + 1} dans la file`}>
-                  {rang + 1}
-                </span>
-                <ScoreBadge score={l.score} points={l.score_points} />
-                <Link href={`/commercial/clients/${l.id}`} className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-bold text-inkgreen hover:text-pine-700">{l.name}</span>
-                  <span className="block text-xs text-neutral-400">
-                    arrivé le {dateFmt.format(new Date(l.created_at))} · {l.source ?? "site"}
+          <ol className="divide-y divide-neutral-100">
+            {lignes.map((t) => {
+              const G = GENRES[t.genre];
+              const l = t.lead;
+              return (
+                <li key={`${t.genre}-${l.id}`} className={`flex flex-wrap items-center gap-x-4 gap-y-2.5 px-5 py-3.5 ${t.urgent ? "bg-amber-500/[0.06]" : ""}`}>
+                  <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${G.cls}`} aria-hidden>
+                    <G.icon className="h-5 w-5" />
                   </span>
-                </Link>
-                {l.estimation_ttc && (
-                  <span className="text-sm font-extrabold tabular-nums text-pine-700">{eurFmt.format(Number(l.estimation_ttc))} €</span>
-                )}
-                {rang === 0 ? (
-                  <ClaimButton leadId={l.id} />
-                ) : (
-                  <span className="rounded-full border border-neutral-200 px-3 py-1.5 text-[11px] font-bold text-neutral-400">En attente du n°{rang}</span>
-                )}
-              </li>
-            ))}
-          </ul>
+                  <Link href={`/commercial/clients/${l.id}`} className="min-w-0 flex-1 basis-56">
+                    <span className="block truncate text-sm font-bold text-inkgreen hover:text-pine-700">
+                      {l.name}
+                      {!rep && l.assigned_to ? <span className="ml-2 font-semibold text-neutral-500">· {l.assigned_to}</span> : null}
+                    </span>
+                    <span className="block text-sm text-neutral-700">{t.raison}</span>
+                    {t.detail && <span className="block text-xs text-neutral-500">{t.detail}</span>}
+                  </Link>
+                  {l.estimation_ttc && <span className="text-sm font-extrabold tabular-nums text-pine-700">{eurFmt.format(Number(l.estimation_ttc))} €</span>}
+                  <span className="flex w-full justify-end sm:w-44">
+                    {t.action === "appeler" &&
+                      (l.phone ? (
+                        <BoutonAppeler numero={l.phone} leadId={l.id} nom={l.name} className="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-pine-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600 sm:w-auto">
+                          <Phone className="h-4 w-4" /> Appeler
+                        </BoutonAppeler>
+                      ) : (
+                        <Link href={`/commercial/clients/${l.id}`} className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2.5 text-sm font-bold text-neutral-700 sm:w-auto">Ouvrir la fiche</Link>
+                      ))}
+                    {t.action === "devis" && <PrepareQuoteButton leadId={l.id} label={t.label ?? "Relire et envoyer"} />}
+                    {t.action === "prendre" && <ClaimButton leadId={l.id} />}
+                    {t.action === "lancer" && (
+                      <Link href="/commercial/production" className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-pine-300 bg-white px-4 py-2.5 text-sm font-bold text-pine-800 transition hover:bg-pine-50 sm:w-auto">
+                        <Factory className="h-4 w-4" /> Lancer
+                      </Link>
+                    )}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
         )}
       </section>
 
-      {/* ----------------------- vos priorités ----------------------- */}
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="text-base font-extrabold text-inkgreen">Vos priorités du jour</h2>
-        <ul className="mt-3 divide-y divide-neutral-100">
-          {taches.map((t) => (
-            <li key={t.label}>
-              <Link href={t.href} className="flex items-center gap-4 py-3 transition hover:bg-mist/60">
-                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${t.hot ? "bg-amber-500 text-pine-950" : "bg-pine-50 text-pine-700"}`}>
-                  <t.icon className="h-[18px] w-[18px]" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold text-inkgreen">{t.label}</span>
-                  <span className="block text-xs text-neutral-400">{t.sub}</span>
-                </span>
-                <span className={`text-2xl font-extrabold tabular-nums ${t.n > 0 ? (t.hot ? "text-amber-600" : "text-inkgreen") : "text-neutral-300"}`}>
-                  {t.n}
-                </span>
-                <ArrowRight className="h-4 w-4 shrink-0 text-neutral-300" />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* --------------- vos clients à l'action maintenant --------------- */}
-      <FileSection
-        icon={<Flame className="h-4 w-4 text-orange-500" />}
-        titre={rep ? "Vos signaux chauds" : "Signaux chauds"}
-        vide="Pas d'activité récente sur vos devis."
-        leads={chauds}
-        detail={(l) => `${l.devis_views > 0 ? `${l.devis_views} vue${l.devis_views > 1 ? "s" : ""} du devis · ` : ""}${l.opens} ouv. · ${l.clicks} clic${l.clicks > 1 ? "s" : ""}`}
-      />
-      <FileSection
-        icon={<PhoneCall className="h-4 w-4 text-green-600" />}
-        titre={rep ? "Vos appels prioritaires (score A)" : "À appeler en priorité (score A)"}
-        vide="Aucun client A en attente — beau travail."
-        leads={aAppeler}
-        detail={(l) => `${l.score_points} pts · ${l.source ?? "site"}`}
-      />
+      {/* -------- ce qui ne demande rien aujourd'hui, pour mémoire -------- */}
+      <div className="flex flex-wrap gap-x-6 gap-y-2 px-1 text-sm text-neutral-600">
+        {rappelsPlusTard > 0 && hasMenu(me, "relances") && (
+          <Link href="/commercial/relances" className="inline-flex items-center gap-1.5 font-semibold hover:text-pine-700">
+            <CalendarClock className="h-4 w-4 text-pine-600" /> {rappelsPlusTard} rappel{rappelsPlusTard > 1 ? "s" : ""} prévu{rappelsPlusTard > 1 ? "s" : ""} les jours suivants
+          </Link>
+        )}
+        {hasMenu(me, "relances") && (
+          <Link href="/commercial/relances" className="inline-flex items-center gap-1.5 font-semibold hover:text-pine-700">
+            <Hand className="h-4 w-4 text-pine-600" /> Relances automatiques{mesDues.length > 0 ? ` : ${mesDues.length} à partir` : ""}
+          </Link>
+        )}
+        {hasMenu(me, "devis") && (
+          <Link href="/commercial/devis" className="inline-flex items-center gap-1.5 font-semibold hover:text-pine-700">
+            <FileText className="h-4 w-4 text-pine-600" /> Tous les devis à traiter
+          </Link>
+        )}
+      </div>
 
       {!mailConfigured && (
         <p className="flex items-start gap-2.5 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-neutral-700">
@@ -205,55 +271,5 @@ export default async function CommercialHome() {
         </p>
       )}
     </div>
-  );
-}
-
-function FileSection({
-  icon,
-  titre,
-  vide,
-  leads,
-  detail,
-}: {
-  icon: React.ReactNode;
-  titre: string;
-  vide: string;
-  leads: Lead[];
-  detail: (l: Lead) => string;
-}) {
-  return (
-    <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-      <h2 className="flex items-center gap-2 text-base font-extrabold text-inkgreen">
-        {icon}
-        {titre}
-        <span className="ml-1 rounded-full bg-mist px-2 py-0.5 text-xs font-bold text-neutral-500">{leads.length}</span>
-      </h2>
-      {leads.length === 0 ? (
-        <p className="mt-3 text-sm text-neutral-400">{vide}</p>
-      ) : (
-        <ul className="mt-3 divide-y divide-neutral-100">
-          {leads.map((l) => (
-            <li key={l.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
-              <ScoreBadge score={l.score} points={l.score_points} />
-              <Link href={`/commercial/clients/${l.id}`} className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-bold text-inkgreen hover:text-pine-700">{l.name}</span>
-                <span className="block text-xs text-neutral-400">{detail(l)}</span>
-              </Link>
-              {l.estimation_ttc && (
-                <span className="text-sm font-extrabold tabular-nums text-pine-700">{eurFmt.format(Number(l.estimation_ttc))} €</span>
-              )}
-              <StatutBadge statut={l.statut} />
-              <a
-                href={`tel:${l.phone.replace(/\s/g, "")}`}
-                className="inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-pine-600"
-              >
-                <PhoneCall className="h-3.5 w-3.5" />
-                {l.phone}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
   );
 }

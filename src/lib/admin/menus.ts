@@ -15,7 +15,7 @@ export const MENU_KEYS = [
 export type MenuKey = (typeof MENU_KEYS)[number];
 
 export const MENUS: { key: MenuKey; label: string; href: string; group: "commercial" | "logistique" | "administration"; exact?: boolean }[] = [
-  { key: "etat", label: "État des lieux", href: "/commercial", group: "commercial", exact: true },
+  { key: "etat", label: "Ma journée", href: "/commercial", group: "commercial", exact: true },
   { key: "devis", label: "Devis à traiter", href: "/commercial/devis", group: "commercial" },
   { key: "clients", label: "Clients", href: "/commercial/clients", group: "commercial" },
   { key: "relances", label: "Relances", href: "/commercial/relances", group: "commercial" },

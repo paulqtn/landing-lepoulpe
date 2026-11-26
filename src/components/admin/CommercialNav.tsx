@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import {
   Activity, BarChart3, BellRing, Boxes, Calculator, ClipboardList, Factory, FileText, Hammer, Home, KanbanSquare, LogOut, Megaphone, SlidersHorizontal, Truck, UserCog, UserRound, Users,
@@ -23,7 +24,13 @@ type Item = { href: string; label: string; icon: typeof Home; exact?: boolean };
 export function CommercialNav({ menus, superadmin, compact = false }: { menus: MenuKey[]; superadmin: boolean; compact?: boolean }) {
   const path = usePathname();
   // Seuls les menus ouverts à ce compte sont affichés (le serveur les vérifie aussi).
-  const visible = MENUS.filter((m) => menus.includes(m.key));
+  // « Ma journée » réunit les devis à traiter et les rappels : ces deux listes quittent le menu
+  // (elles restent accessibles depuis Ma journée). Sans Ma journée, elles restent au menu.
+  const journee = menus.includes("etat");
+  const visible = MENUS.filter((m) => menus.includes(m.key) && !(journee && (m.key === "devis" || m.key === "relances")));
+  // Sur téléphone, l'entrée de la page en cours est amenée à l'écran.
+  const actifRef = useRef<HTMLAnchorElement>(null);
+  useEffect(() => { if (compact) actifRef.current?.scrollIntoView({ inline: "center", block: "nearest" }); }, [compact, path]);
   const toItem = (m: (typeof MENUS)[number]): Item => ({ href: m.href, label: m.label, icon: ICONS[m.key], exact: m.exact });
   const groups = (["commercial", "logistique", "administration"] as const)
     .map((g) => ({
@@ -52,6 +59,8 @@ export function CommercialNav({ menus, superadmin, compact = false }: { menus: M
           <Link
             key={n.href}
             href={n.href}
+            ref={isOn(n) ? actifRef : undefined}
+            aria-current={isOn(n) ? "page" : undefined}
             className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold ${
               isOn(n) ? "border-pine-700 bg-pine-700 text-white" : "border-neutral-200 bg-white text-neutral-700"
             }`}
