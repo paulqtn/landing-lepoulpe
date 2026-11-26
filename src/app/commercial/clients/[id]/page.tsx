@@ -11,7 +11,7 @@ import { ConclureVente, RetourLien } from "@/components/admin/FicheBoutons";
 import { niveauInfo } from "@/lib/admin/niveaux";
 import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
-import { peutVoirFiche, requireMenu } from "@/lib/admin/auth";
+import { hasMenu, peutVoirFiche, requireMenu } from "@/lib/admin/auth";
 import { refusAction } from "@/lib/admin/attribution";
 import { MOTIFS_PERTE } from "@/lib/admin/cloture";
 import { STATUT_LABELS, type Statut } from "@/lib/admin/statuts";
@@ -51,6 +51,13 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
     quotesForLead(lead.id),
     adminQuery<{ id: number; name: string; bytes: number; created_by: string | null; created_at: string }>("SELECT id, name, bytes, created_by, created_at FROM lead_files WHERE lead_id = $1 AND complete ORDER BY id DESC", [lead.id]),
   ]);
+  // E-mails de la boîte de la personne connectée rattachés à ce client (jamais ceux d'un collègue).
+  const courriels = hasMenu(me, "messagerie")
+    ? await adminQuery<{ id: number; dossier: string; sujet: string; date: string; resume: string | null }>(
+        "SELECT m.id, m.dossier, m.sujet, m.date, m.resume FROM mail_messages m JOIN mail_accounts a ON a.id = m.account_id WHERE a.user_id = $1 AND (m.lead_id = $2 OR ($3 <> '' AND (lower(m.from_email) = $3 OR m.dest->'to' ? $3))) ORDER BY m.date DESC LIMIT 8",
+        [me.id, lead.id, (lead.email ?? "").toLowerCase()],
+      ).catch(() => [])
+    : [];
   const devisSigne = quotes.filter((x) => x.statut === "envoye").sort((a, b) => Number(new Date(b.sent_at ?? 0)) - Number(new Date(a.sent_at ?? 0)))[0] ?? null;
   // Validation du devis en ligne par le client : l'information la plus chaude de la fiche.
   const validation = lead.statut !== "gagne" && lead.statut !== "perdu" ? events.find((e) => e.type === "devis_accepte") : undefined;
@@ -202,6 +209,24 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
               </ul>
             )}
           </section>
+
+          {courriels.length > 0 && (
+            <section className="order-4 rounded-2xl border border-neutral-200 bg-white p-5">
+              <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">E-mails échangés (ma boîte)</h2>
+              <ul className="mt-3 divide-y divide-neutral-100">
+                {courriels.map((c) => (
+                  <li key={c.id}>
+                    <Link href={`/commercial/messagerie?m=${c.id}`} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 py-2.5 text-sm transition hover:text-pine-700">
+                      <span className="rounded-full bg-mist px-2 py-0.5 text-[11px] font-bold text-neutral-600">{c.dossier === "sent" ? "Envoyé" : "Reçu"}</span>
+                      <span className="min-w-0 flex-1 truncate font-bold text-inkgreen">{c.sujet || "(sans objet)"}</span>
+                      <span className="text-xs text-neutral-400">{dateFmt.format(new Date(c.date))}</span>
+                      {c.resume && <span className="w-full text-xs text-neutral-500">{c.resume}</span>}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <div className="order-4">
             <LeadFiles leadId={lead.id} lectureSeule={Boolean(lectureSeule)} files={files.map((f) => ({ ...f, created_at: new Date(f.created_at).toISOString() }))} />

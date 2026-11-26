@@ -310,3 +310,75 @@ répondre à une demande d'un client ; le composant `RgpdActions` peut être rem
 - **Démo** : bouton « Créer des leads de démo » sur le tableau de bord vide
   (tarifs calculés par le vrai moteur).
 - Vidéos & fiches par système : à renseigner dans `src/lib/admin/assets.ts`.
+
+## Messagerie intelligente
+
+Menu *Messagerie intelligente* (`/commercial/messagerie`). Chaque commercial connecte sa propre
+boîte mail ; le back office la lit par IMAP, trie les messages avec l'IA et dépose des brouillons
+de réponse dans le **vrai dossier Brouillons de la boîte** (visibles dans Outlook, Gmail, le
+webmail et le téléphone). **Rien n'est jamais envoyé automatiquement** : l'envoi demande un clic
+puis une confirmation, et passe par le SMTP de la boîte.
+
+### Variables à poser dans Vercel
+
+| Variable | Rôle | Obligatoire |
+| --- | --- | --- |
+| `MESSAGERIE_SECRET` | Clé de chiffrement des mots de passe et des jetons (32 caractères au minimum, aléatoires). Sans elle, aucune boîte ne peut être connectée. **Ne jamais la changer ensuite** : les identifiants enregistrés deviendraient illisibles (il faudrait reconnecter chaque boîte). | oui |
+| `ANTHROPIC_API_KEY` | Clé du service d'IA (Claude). Sans elle, les boîtes se synchronisent mais ne sont ni triées ni suivies d'un brouillon. Facturation à l'usage, chez Anthropic. | pour l'IA |
+| `MESSAGERIE_MODELE` | Modèle utilisé (défaut `claude-opus-5-5`). | non |
+| `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET` | Bouton « Se connecter avec Google ». Sans elles, Gmail se connecte par mot de passe d'application. | non |
+| `MICROSOFT_OAUTH_CLIENT_ID`, `MICROSOFT_OAUTH_CLIENT_SECRET` | Bouton « Se connecter avec Microsoft ». **Obligatoires pour Outlook et Microsoft 365**, qui refusent le mot de passe en IMAP. | pour Outlook |
+
+Adresse de retour à déclarer chez Google et Microsoft :
+`https://<domaine>/api/admin/messagerie/oauth/google/callback` et `…/oauth/microsoft/callback`.
+Autorisations demandées : Google `https://mail.google.com/` ; Microsoft `IMAP.AccessAsUser.All`,
+`SMTP.Send`, `offline_access`.
+
+### Fonctionnement
+
+- **Tables** (migration 016) : `mail_accounts` (une boîte par utilisateur, secret chiffré
+  AES-256-GCM), `mail_messages`, `mail_drafts`, `mail_jobs` (file de tâches), `mail_journal`.
+- **Chaîne** (`src/lib/messagerie/pipeline.ts`) : synchronisation → analyse → catégorie et
+  priorité → besoin de réponse → contexte du CRM → rédaction → dépôt IMAP (`APPEND`, drapeau
+  `\Draft`, en-têtes `In-Reply-To` et `References`) → cloche → validation humaine.
+- **Tâches** : rien ne tourne en permanence sur Vercel. Les tâches sont inscrites en base et
+  exécutées par lots : tant qu'un écran du back office est ouvert (toutes les 45 s sur la
+  messagerie, toutes les 3 min ailleurs), au clic sur *Synchroniser*, et une fois par jour par
+  la tâche planifiée `/api/admin/cron/messagerie` (offre Vercel gratuite ; à l'heure ou plus
+  souvent avec Vercel Pro, en changeant `vercel.json`). Verrou en base (`FOR UPDATE SKIP
+  LOCKED`), quatre essais avec délai croissant, puis échec visible sur le message.
+- **Doublons** : un message est identifié par dossier + UIDVALIDITY + UID ; un seul brouillon
+  en cours par message reçu ; un brouillon inchangé n'est pas redéposé (empreinte du contenu) ;
+  une nouvelle version est déposée avant que l'ancienne soit retirée.
+- **Brouillon modifié ailleurs** : à chaque synchronisation, le dossier Brouillons est comparé.
+  Brouillon modifié dans un autre logiciel → repris dans le back office ; envoyé depuis un autre
+  logiciel → marqué envoyé et message marqué répondu ; supprimé → retiré.
+
+### Sécurité et confidentialité
+
+- Une boîte n'est lisible que par son propriétaire : aucune route ne prend l'identifiant d'une
+  boîte en paramètre. L'administrateur voit l'état des connexions, jamais le contenu.
+- Le contenu d'un e-mail est une donnée, jamais une consigne : il est neutralisé puis placé
+  entre balises, les consignes ne sont que dans le message système, et l'IA n'a aucun outil
+  (elle ne peut ni envoyer, ni modifier le CRM).
+- Transmis à l'IA : le texte du message et du fil (tronqués), le nom du commercial, ses
+  consignes, le texte *Ce que l'IA peut savoir sur l'entreprise*, et un extrait de la fiche du
+  client (étape, projet, devis déjà envoyés, dernières notes). **Jamais** : pièces jointes,
+  identifiants, tarifs d'achat, coefficients, marges. Les expéditeurs exclus par le commercial
+  ne sont jamais transmis.
+- HTML des e-mails nettoyé à l'enregistrement et affiché dans un cadre isolé sans script ;
+  images distantes masquées par défaut ; pièces jointes relues dans la boîte à la demande, les
+  fichiers exécutables étant refusés.
+- Serveur de messagerie saisi par l'utilisateur : ports de messagerie seulement, adresses
+  internes refusées.
+- Conservation : au-delà de la durée fixée par l'administrateur (90 jours par défaut), les
+  messages quittent le back office (ils restent dans la boîte mail). Déconnecter une boîte
+  efface ses identifiants, ses messages et ses brouillons du back office, et retire l'accès chez
+  Google.
+- Journal des actions : table `mail_journal` (connexion, envoi, tri corrigé, appel à l'IA…).
+
+### Tests
+
+`npm test` couvre le chiffrement, les fournisseurs, les règles de tri et la neutralisation du
+contenu. `npm run test:messagerie` rejoue le parcours complet en local (voir
+`tests/messagerie/README.md`).

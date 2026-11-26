@@ -14,9 +14,10 @@ const LIEUX = [["", "À préciser"], ["terrasse", "Terrasse"], ["balcon", "Balco
 const SYSTEMES = [["", "À préciser"], ["rail", "Rail"], ["pinces", "Pinces"], ["spider", "Fixations ponctuelles (spider)"], ["conseil", "À conseiller"]];
 const TEINTES = [["", "À préciser"], ["clair", "Clair"], ["extra-clair", "Extra clair"], ["fume-1f", "Fumé une face"], ["fume-2f", "Fumé deux faces"]];
 
-export function ProspectForm() {
+/** `depart` : coordonnées déjà connues (par exemple l'expéditeur d'un e-mail de la messagerie). */
+export function ProspectForm({ depart }: { depart?: { name?: string; email?: string; phone?: string } } = {}) {
   const router = useRouter();
-  const [f, setF] = useState({ name: "", phone: "", email: "", origine: "appel", lieu: "", systeme: "", cotes: "", hauteur: "", teinte: "", codePostal: "", note: "" });
+  const [f, setF] = useState({ name: depart?.name ?? "", phone: depart?.phone ?? "", email: depart?.email ?? "", origine: depart?.email ? "autre" : "appel", lieu: "", systeme: "", cotes: "", hauteur: "", teinte: "", codePostal: "", note: "" });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [doublon, setDoublon] = useState<{ id: number; name: string; forcable?: boolean } | null>(null);

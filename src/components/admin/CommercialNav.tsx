@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Activity, BarChart3, BellRing, Boxes, Calculator, ClipboardList, Factory, FileText, Hammer, Home, KanbanSquare, LogOut, Megaphone, SlidersHorizontal, Truck, UserCog, UserRound, Users,
+  Activity, BarChart3, BellRing, Boxes, Calculator, ClipboardList, Factory, FileText, Hammer, Home, KanbanSquare, LogOut, Mails, Megaphone, SlidersHorizontal, Truck, UserCog, UserRound, Users,
 } from "lucide-react";
 import { AdminLogout } from "@/components/admin/AdminLogout";
 import { GROUP_LABELS, MENUS, type MenuKey } from "@/lib/admin/menus";
@@ -13,7 +13,7 @@ import { GROUP_LABELS, MENUS, type MenuKey } from "@/lib/admin/menus";
 
 const ICONS: Record<MenuKey, typeof Home> = {
   etat: Home, devis: FileText, clients: Users, relances: BellRing, pipeline: KanbanSquare, production: Factory,
-  stats: BarChart3, simulation: Calculator,
+  stats: BarChart3, simulation: Calculator, messagerie: Mails,
   logistique: ClipboardList, commandes: Hammer, stock: Boxes, expeditions: Truck,
   tarifs: SlidersHorizontal, diagnostic: Activity,
 };

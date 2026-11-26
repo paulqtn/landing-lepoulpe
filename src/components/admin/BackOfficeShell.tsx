@@ -3,6 +3,7 @@ import { Alertes } from "@/components/admin/Alertes";
 import { Toasts } from "@/components/admin/Toasts";
 import { SuiviNavigation } from "@/components/admin/FicheBoutons";
 import { TelephoneProvider } from "@/components/admin/Telephone";
+import { VeilleMessagerie } from "@/components/admin/messagerie/Veille";
 import { site } from "@/lib/site";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { CommercialNav } from "@/components/admin/CommercialNav";
@@ -32,6 +33,7 @@ export async function BackOfficeShell({ children }: { children: React.ReactNode 
     <main className="min-h-screen bg-mist">
       <Toasts />
       <SuiviNavigation />
+      {hasMenu(user, "messagerie") && <VeilleMessagerie />}
       {/* Barre du haut toujours visible : cloche, téléphone (sur mobile) et retour au site. */}
       <div className="sticky top-0 z-30 border-b border-neutral-200 bg-white">
         <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 py-2.5 sm:px-6">

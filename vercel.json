@@ -1,5 +1,12 @@
 {
   "crons": [
-    { "path": "/api/admin/cron/relances", "schedule": "0 7 * * *" }
+    {
+      "path": "/api/admin/cron/relances",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/admin/cron/messagerie",
+      "schedule": "30 6 * * *"
+    }
   ]
 }

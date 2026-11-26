@@ -348,4 +348,124 @@ export const MIGRATIONS: Migration[] = [
       CREATE INDEX idx_telephonie_appels_lead ON telephonie_appels(lead_id);
     `,
   },
+  {
+    // Messagerie intelligente : boîte mail de chaque commercial, messages synchronisés, brouillons
+    // préparés, file de tâches et journal. Les identifiants (colonne secret) sont chiffrés avant
+    // écriture. Déconnecter une boîte supprime ses messages et ses brouillons du back office.
+    id: "016_messagerie_intelligente",
+    sql: `
+      CREATE TABLE mail_accounts (
+        id SERIAL PRIMARY KEY,
+        user_id INT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+        email TEXT NOT NULL,
+        nom TEXT NOT NULL DEFAULT '',
+        fournisseur TEXT NOT NULL DEFAULT 'autre',
+        auth TEXT NOT NULL DEFAULT 'password' CHECK (auth IN ('password', 'google', 'microsoft')),
+        imap_host TEXT NOT NULL,
+        imap_port INT NOT NULL,
+        imap_secure BOOLEAN NOT NULL DEFAULT true,
+        imap_user TEXT NOT NULL,
+        smtp_host TEXT NOT NULL DEFAULT '',
+        smtp_port INT NOT NULL DEFAULT 465,
+        smtp_secure BOOLEAN NOT NULL DEFAULT true,
+        secret TEXT NOT NULL,
+        dossiers JSONB NOT NULL DEFAULT '{}',
+        etat JSONB NOT NULL DEFAULT '{}',
+        reglages JSONB NOT NULL DEFAULT '{}',
+        statut TEXT NOT NULL DEFAULT 'ok' CHECK (statut IN ('ok', 'erreur')),
+        erreur TEXT,
+        last_sync_at TIMESTAMPTZ,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+      CREATE TABLE mail_messages (
+        id SERIAL PRIMARY KEY,
+        account_id INT NOT NULL REFERENCES mail_accounts(id) ON DELETE CASCADE,
+        dossier TEXT NOT NULL CHECK (dossier IN ('inbox', 'sent')),
+        uid BIGINT NOT NULL,
+        uidvalidity BIGINT NOT NULL,
+        message_id TEXT NOT NULL DEFAULT '',
+        in_reply_to TEXT,
+        refs TEXT,
+        fil TEXT NOT NULL DEFAULT '',
+        from_nom TEXT NOT NULL DEFAULT '',
+        from_email TEXT NOT NULL DEFAULT '',
+        dest JSONB NOT NULL DEFAULT '{}',
+        sujet TEXT NOT NULL DEFAULT '',
+        date TIMESTAMPTZ NOT NULL DEFAULT now(),
+        extrait TEXT NOT NULL DEFAULT '',
+        corps TEXT,
+        html TEXT,
+        pieces JSONB NOT NULL DEFAULT '[]',
+        lu BOOLEAN NOT NULL DEFAULT false,
+        archive BOOLEAN NOT NULL DEFAULT false,
+        statut TEXT NOT NULL DEFAULT 'a_traiter' CHECK (statut IN ('a_traiter', 'en_attente', 'traite')),
+        lead_id INT REFERENCES leads(id) ON DELETE SET NULL,
+        categorie TEXT,
+        priorite TEXT,
+        besoin_reponse BOOLEAN,
+        intention TEXT,
+        resume TEXT,
+        infos JSONB,
+        langue TEXT,
+        ia_at TIMESTAMPTZ,
+        ia_manuel BOOLEAN NOT NULL DEFAULT false,
+        ia_erreur TEXT,
+        repondu_at TIMESTAMPTZ,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (account_id, dossier, uidvalidity, uid)
+      );
+      CREATE INDEX idx_mail_messages_liste ON mail_messages(account_id, dossier, date DESC);
+      CREATE INDEX idx_mail_messages_fil ON mail_messages(account_id, fil);
+      CREATE INDEX idx_mail_messages_mid ON mail_messages(account_id, message_id);
+      CREATE INDEX idx_mail_messages_lead ON mail_messages(lead_id);
+      CREATE TABLE mail_drafts (
+        id SERIAL PRIMARY KEY,
+        account_id INT NOT NULL REFERENCES mail_accounts(id) ON DELETE CASCADE,
+        message_id INT REFERENCES mail_messages(id) ON DELETE SET NULL,
+        dest TEXT NOT NULL DEFAULT '',
+        cc TEXT NOT NULL DEFAULT '',
+        sujet TEXT NOT NULL DEFAULT '',
+        corps TEXT NOT NULL DEFAULT '',
+        origine TEXT NOT NULL DEFAULT 'ia' CHECK (origine IN ('ia', 'manuel')),
+        manquants JSONB NOT NULL DEFAULT '[]',
+        statut TEXT NOT NULL DEFAULT 'brouillon' CHECK (statut IN ('brouillon', 'envoye', 'supprime')),
+        entete_id TEXT,
+        imap_uid BIGINT,
+        imap_uidvalidity BIGINT,
+        empreinte TEXT,
+        imap_erreur TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        sent_at TIMESTAMPTZ
+      );
+      CREATE UNIQUE INDEX idx_mail_drafts_un_par_message ON mail_drafts(account_id, message_id) WHERE statut = 'brouillon' AND message_id IS NOT NULL;
+      CREATE TABLE mail_jobs (
+        id SERIAL PRIMARY KEY,
+        account_id INT NOT NULL REFERENCES mail_accounts(id) ON DELETE CASCADE,
+        type TEXT NOT NULL CHECK (type IN ('sync', 'analyse', 'reponse', 'brouillon_imap')),
+        ref_id INT NOT NULL,
+        statut TEXT NOT NULL DEFAULT 'attente' CHECK (statut IN ('attente', 'en_cours', 'fait', 'echec')),
+        tentatives INT NOT NULL DEFAULT 0,
+        prochain_essai_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        verrou_jusqua TIMESTAMPTZ,
+        erreur TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        fini_at TIMESTAMPTZ
+      );
+      CREATE UNIQUE INDEX idx_mail_jobs_sans_doublon ON mail_jobs(type, ref_id) WHERE statut IN ('attente', 'en_cours');
+      CREATE INDEX idx_mail_jobs_file ON mail_jobs(account_id, statut, prochain_essai_at);
+      CREATE TABLE mail_journal (
+        id SERIAL PRIMARY KEY,
+        user_id INT,
+        email TEXT NOT NULL DEFAULT '',
+        action TEXT NOT NULL,
+        detail TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+      CREATE INDEX idx_mail_journal_user ON mail_journal(user_id, created_at DESC);
+      -- Les comptes dont les menus ont été personnalisés reçoivent le nouveau menu s'ils suivent des clients.
+      UPDATE users SET menus = menus || '["messagerie"]'::jsonb WHERE menus IS NOT NULL AND menus ? 'clients' AND NOT menus ? 'messagerie';
+    `,
+  },
 ];

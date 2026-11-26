@@ -30,10 +30,23 @@ export async function GET(req: Request) {
         [since.toISOString(), admin, user.name],
       )
     : [];
+  // Messagerie : e-mail urgent trié, réponse prête à valider (selon les réglages du commercial, sur sa seule boîte).
+  const courriels = hasMenu(user, "messagerie")
+    ? await q<{ id: number; sujet: string; from_nom: string; from_email: string; genre: string }>(
+        `SELECT m.id, m.sujet, m.from_nom, m.from_email, 'urgent' AS genre FROM mail_messages m JOIN mail_accounts a ON a.id = m.account_id
+         WHERE a.user_id = $1 AND m.dossier = 'inbox' AND m.priorite = 'urgent' AND m.ia_at > $2 AND COALESCE((a.reglages->>'notifUrgent')::boolean, true)
+         UNION ALL
+         SELECT m.id, m.sujet, m.from_nom, m.from_email, 'brouillon' AS genre FROM mail_drafts d JOIN mail_messages m ON m.id = d.message_id JOIN mail_accounts a ON a.id = d.account_id
+         WHERE a.user_id = $1 AND d.statut = 'brouillon' AND d.origine = 'ia' AND d.created_at > $2 AND COALESCE((a.reglages->>'notifBrouillon')::boolean, true)
+         LIMIT 10`,
+        [user.id, since.toISOString()],
+      ).catch(() => [])
+    : [];
   return NextResponse.json({
     now: now.toISOString(),
     alertes: [
       ...demandes.map((d) => ({ cle: `d${d.id}`, titre: "Nouvelle demande", texte: `${d.name}${d.estimation_ttc ? ` · ${Math.round(Number(d.estimation_ttc)).toLocaleString("fr-FR")} € TTC` : ""}`, href: "/commercial" })),
+      ...courriels.map((c) => ({ cle: `mail-${c.genre}-${c.id}`, titre: c.genre === "urgent" ? "E-mail urgent" : "Réponse prête à valider", texte: `${c.from_nom || c.from_email} · ${c.sujet}`.slice(0, 120), href: `/commercial/messagerie?m=${c.id}` })),
       ...clients.map((c) => ({ cle: `${c.type}${c.id}`, titre: c.type === "devis_accepte" ? "Devis validé en ligne" : "Demande de rappel", texte: c.name, href: `/commercial/clients/${c.id}` })),
     ],
   });

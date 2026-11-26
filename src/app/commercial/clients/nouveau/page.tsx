@@ -6,7 +6,9 @@ import { requireMenu } from "@/lib/admin/auth";
 export const dynamic = "force-dynamic";
 
 /* Nouveau prospect saisi à la main (appel direct, recommandation…). */
-export default async function NouveauProspectPage() {
+export default async function NouveauProspectPage({ searchParams }: { searchParams: Promise<{ nom?: string; email?: string; telephone?: string }> }) {
+  const p = await searchParams;
+  const depart = { name: (p.nom ?? "").slice(0, 120), email: (p.email ?? "").slice(0, 200), phone: (p.telephone ?? "").slice(0, 30) };
   await requireMenu("clients");
   return (
     <div className="max-w-4xl space-y-5">
@@ -18,7 +20,7 @@ export default async function NouveauProspectPage() {
         <h1 className="text-2xl font-extrabold text-inkgreen">Nouveau prospect</h1>
         <p className="mt-1 text-sm text-neutral-500">Pour un appel direct ou un contact hors site. La fiche vous est attribuée : elle ne passe pas par la file des demandes.</p>
       </div>
-      <ProspectForm />
+      <ProspectForm depart={depart} />
     </div>
   );
 }
