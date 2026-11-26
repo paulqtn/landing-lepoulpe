@@ -58,6 +58,7 @@ export default async function StatsPage() {
   // Un commercial ne voit que ses propres chiffres ; les administrateurs voient toute l'équipe.
   const moi = voitTout(me) ? undefined : me.name;
   const [rep, leads, g] = await Promise.all([currentRep(), listLeadsLight(moi ? { assigned: moi } : {}), globalStats(moi)]);
+  const perso = Boolean(moi); // toute la page se lit alors à la première personne
   const team = moi ? [moi] : await getTeam();
   const reps = moi ? [moi] : [...new Set([...team, ...leads.map((l) => l.assigned_to).filter((x): x is string => Boolean(x))])];
   const comp = await getCompSettings();
@@ -69,11 +70,14 @@ export default async function StatsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-inkgreen">Statistiques</h1>
+      <div>
+        <h1 className="text-2xl font-extrabold text-inkgreen">{perso ? "Mes statistiques" : "Statistiques"}</h1>
+        {perso && <p className="mt-1 text-sm text-neutral-500">Tous les chiffres de cette page ne concernent que vos clients et vos affaires.</p>}
+      </div>
 
       {/* ------------------ la performance par commercial ------------------ */}
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="text-base font-extrabold text-inkgreen">Performance par commercial</h2>
+        <h2 className="text-base font-extrabold text-inkgreen">{perso ? "Ma performance ce mois-ci" : "Performance par commercial"}</h2>
         <p className="mt-1 text-xs text-neutral-400">
           Prime du mois = {comp.tauxMarge} % de la marge brute + {eurFmt.format(comp.bonusParTranche)} € dès {eurFmt.format(comp.seuilCA)} € de CA HT, puis {eurFmt.format(comp.bonusParTranche)} € par tranche de {eurFmt.format(comp.tranche)} €.
         </p>
@@ -121,10 +125,10 @@ export default async function StatsPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: "Demandes sur 30 jours", value: String(g.parJour.reduce((s, p) => s + p.n, 0)) },
-          { label: "Taux de conversion global", value: `${g.tauxConversion} %` },
-          { label: "Pipeline en cours (TTC)", value: `${eurFmt.format(g.pipelineTTC)} €` },
-          { label: "Panier moyen estimé", value: `${eurFmt.format(g.panierMoyen)} €` },
+          { label: perso ? "Mes demandes sur 30 jours" : "Demandes sur 30 jours", value: String(g.parJour.reduce((s, p) => s + p.n, 0)) },
+          { label: perso ? "Mon taux de signature" : "Taux de conversion global", value: `${g.tauxConversion} %` },
+          { label: perso ? "Mes affaires en cours (TTC)" : "Pipeline en cours (TTC)", value: `${eurFmt.format(g.pipelineTTC)} €` },
+          { label: perso ? "Mon panier moyen estimé" : "Panier moyen estimé", value: `${eurFmt.format(g.panierMoyen)} €` },
         ].map((k) => (
           <div key={k.label} className="rounded-2xl border border-neutral-200 bg-white p-5">
             <p className="text-2xl font-extrabold tabular-nums text-inkgreen">{k.value}</p>
@@ -133,22 +137,22 @@ export default async function StatsPage() {
         ))}
       </div>
 
-      <Panel title="Volume de demandes — 30 derniers jours" note="Le jour courant est en ambre.">
+      <Panel title={perso ? "Mes demandes — 30 derniers jours" : "Volume de demandes — 30 derniers jours"} note="Le jour courant est en ambre.">
         <Spark data={g.parJour} />
       </Panel>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Panel title="Entonnoir de conversion">
+        <Panel title={perso ? "Mon entonnoir de conversion" : "Entonnoir de conversion"}>
           <div className="space-y-2.5">{g.funnel.map((f) => <HBar key={f.label} label={f.label} value={f.n} max={funnelMax} />)}</div>
         </Panel>
-        <Panel title="Scores des demandes" note="A : à appeler en priorité — B : à relancer — C : à nourrir.">
+        <Panel title={perso ? "Scores de mes demandes" : "Scores des demandes"} note="A : à appeler en priorité — B : à relancer — C : à nourrir.">
           <div className="space-y-2.5">
             {(["A", "B", "C"] as const).map((x) => (
               <HBar key={x} label={`Score ${x}`} value={g.scores[x]} max={Math.max(1, g.scores.A + g.scores.B + g.scores.C)} />
             ))}
           </div>
         </Panel>
-        <Panel title="Meilleures sources" note="D'où viennent les demandes — et lesquelles signent.">
+        <Panel title={perso ? "Origine de mes clients" : "Meilleures sources"} note="D'où viennent les demandes — et lesquelles signent.">
           <div className="space-y-2.5">
             {g.sources.map((x) => (
               <HBar key={x.source} label={`${sourceLisible(x.source)}${x.gagnes ? ` · ${x.gagnes} signée${x.gagnes > 1 ? "s" : ""}` : ""}`} value={x.n} max={srcMax} />
@@ -156,7 +160,7 @@ export default async function StatsPage() {
             {g.sources.length === 0 && <p className="text-sm text-neutral-400">Pas encore de données.</p>}
           </div>
         </Panel>
-        <Panel title="Projets par usage">
+        <Panel title={perso ? "Mes projets par usage" : "Projets par usage"}>
           <div className="space-y-2.5">
             {g.usages.map((u) => (
               <HBar key={u.usage} label={USAGE_LABELS[u.usage] ?? u.usage} value={u.n} max={usgMax} />
@@ -167,8 +171,8 @@ export default async function StatsPage() {
       </div>
 
       <Panel
-        title="Production & logistique"
-        note={`Délai moyen atelier → expédition : ${g.delaiMoyenJours !== null ? `${g.delaiMoyenJours} j` : "—"} · ${g.stockAlertes} alerte${g.stockAlertes > 1 ? "s" : ""} stock (détail dans le futur espace Logistique).`}
+        title={perso ? "Mes affaires en production" : "Production & logistique"}
+        note={perso ? `Délai moyen atelier → expédition de vos affaires : ${g.delaiMoyenJours !== null ? `${g.delaiMoyenJours} j` : "—"}.` : `Délai moyen atelier → expédition : ${g.delaiMoyenJours !== null ? `${g.delaiMoyenJours} j` : "—"} · ${g.stockAlertes} alerte${g.stockAlertes > 1 ? "s" : ""} stock (détail dans le futur espace Logistique).`}
       >
         <div className="space-y-2.5">
           {g.ordersParStatut.map((o) => (
