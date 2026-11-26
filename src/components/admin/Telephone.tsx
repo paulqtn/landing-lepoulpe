@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type RingoverSDK from "ringover-sdk";
@@ -50,6 +51,9 @@ export function TelephoneProvider({ children, visible }: { children: React.React
   const [appel, setAppelState] = useState<Appel | null>(null);
   const [micro, setMicro] = useState<Micro>("inconnu");
   const [info, setInfo] = useState<Info | null>(null);
+  // Emplacement du bouton dans la barre du haut (utilisé sur téléphone, où un bouton flottant cache le contenu).
+  const [barre, setBarre] = useState<HTMLElement | null>(null);
+  useEffect(() => setBarre(document.getElementById("mgk-tel-barre")), []);
   const setAppel = (a: Appel | null) => { appelRef.current = a; setAppelState(a); };
 
   /* Préférence de ce navigateur. */
@@ -221,15 +225,29 @@ export function TelephoneProvider({ children, visible }: { children: React.React
             aria-label={actif ? (ouvert ? "Réduire le téléphone" : "Ouvrir le téléphone") : "Téléphone Ringover"}
             aria-expanded={actif ? ouvert : invite}
             onClick={() => (actif ? setOuvert(!ouvert) : setInvite(!invite))}
-            className={`fixed bottom-20 right-4 z-40 grid h-12 w-12 place-items-center rounded-full text-white shadow-card transition hover:scale-105 lg:bottom-5 ${enAppel ? "animate-pulse bg-amber-500 text-pine-950" : "bg-pine-700 hover:bg-pine-600"}`}
+            className={`fixed bottom-5 right-4 z-40 hidden h-12 w-12 place-items-center rounded-full text-white shadow-card transition hover:scale-105 lg:grid ${enAppel ? "animate-pulse bg-amber-500 text-pine-950" : "bg-pine-700 hover:bg-pine-600"}`}
           >
             {enAppel ? <PhoneCall className="h-5 w-5" /> : <Phone className="h-5 w-5" />}
             <span className={`absolute right-0 top-0 h-3 w-3 rounded-full ring-2 ring-white ${pastille}`} />
           </button>
 
+          {barre &&
+            createPortal(
+              <button
+                type="button"
+                aria-label={actif ? (ouvert ? "Réduire le téléphone" : "Ouvrir le téléphone") : "Téléphone Ringover"}
+                onClick={() => (actif ? setOuvert(!ouvert) : setInvite(!invite))}
+                className={`relative grid h-8 w-8 place-items-center rounded-full border lg:hidden ${enAppel ? "animate-pulse border-amber-500 bg-amber-500 text-pine-950" : "border-pine-200 bg-pine-50 text-pine-800"}`}
+              >
+                {enAppel ? <PhoneCall className="h-3.5 w-3.5" /> : <Phone className="h-3.5 w-3.5" />}
+                <span className={`absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-white ${pastille}`} />
+              </button>,
+              barre,
+            )}
+
           {/* invitation à activer (rien n'est chargé avant) */}
           {!actif && invite && (
-            <div role="dialog" aria-label="Activer le téléphone" className="fixed bottom-36 right-4 z-40 w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-neutral-200 bg-white p-4 shadow-card lg:bottom-20">
+            <div role="dialog" aria-label="Activer le téléphone" className="fixed right-4 top-14 z-40 w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-neutral-200 bg-white p-4 shadow-card lg:bottom-20 lg:top-auto">
               <p className="text-sm font-extrabold text-inkgreen">Téléphone Ringover</p>
               <p className="mt-1 text-xs text-neutral-600">Appelez vos clients depuis le back office avec votre compte Ringover. Les appels sont inscrits dans l&rsquo;historique des fiches. L&rsquo;activation vaut pour ce navigateur seulement.</p>
               <div className="mt-3 flex gap-2">
@@ -244,7 +262,7 @@ export function TelephoneProvider({ children, visible }: { children: React.React
             <section
               aria-label="Téléphone"
               aria-hidden={!ouvert}
-              className={`fixed bottom-36 right-4 z-40 flex h-[min(42rem,calc(100dvh-11rem))] w-[min(23.75rem,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-card transition lg:bottom-20 lg:h-[min(42rem,calc(100dvh-7rem))] ${ouvert ? "opacity-100" : "pointer-events-none invisible opacity-0"}`}
+              className={`fixed right-2 top-14 z-40 flex h-[min(42rem,calc(100dvh-4.5rem))] w-[min(23.75rem,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-card transition lg:bottom-20 lg:right-4 lg:top-auto lg:h-[min(42rem,calc(100dvh-7rem))] ${ouvert ? "opacity-100" : "pointer-events-none invisible opacity-0"}`}
             >
               <header className="flex items-center gap-2 border-b border-neutral-200 bg-mist px-3 py-2">
                 <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${pastille}`} />

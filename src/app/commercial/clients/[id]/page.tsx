@@ -7,6 +7,7 @@ import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui"
 import { adminQuery, getLead, listEvents } from "@/lib/admin/db";
 import { LeadFiles } from "@/components/admin/LeadFiles";
 import { BoutonAppeler } from "@/components/admin/Telephone";
+import { ConclureVente, RetourLien } from "@/components/admin/FicheBoutons";
 import { niveauInfo } from "@/lib/admin/niveaux";
 import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
@@ -53,6 +54,12 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
   const devisSigne = quotes.filter((x) => x.statut === "envoye").sort((a, b) => Number(new Date(b.sent_at ?? 0)) - Number(new Date(a.sent_at ?? 0)))[0] ?? null;
   // Validation du devis en ligne par le client : l'information la plus chaude de la fiche.
   const validation = lead.statut !== "gagne" && lead.statut !== "perdu" ? events.find((e) => e.type === "devis_accepte") : undefined;
+  const clos = lead.statut === "gagne" || lead.statut === "perdu";
+  // Le client attend un nouveau devis et aucun brouillon n'existe : on propose de le refaire.
+  const aRefaire = lead.statut === "devis_a_modifier" && !quotes.some((x) => x.statut === "brouillon");
+  // Un devis est parti et l'affaire est ouverte : la vente peut se conclure d'un clic.
+  const peutConclure = !clos && Boolean(devisSigne);
+  const commande = lead.statut === "gagne" ? (await adminQuery<{ ref: string }>("SELECT ref FROM orders WHERE lead_id = $1 ORDER BY id DESC LIMIT 1", [lead.id]))[0] ?? null : null;
   const devisRapide = quotes.find((x) => x.statut === "brouillon") ?? quotes[0] ?? null;
   const niveau = niveauInfo(lead.niveau);
   const lectureSeule = refusAction(me, lead);
@@ -75,10 +82,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="space-y-5">
-      <Link href="/commercial/clients" className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-500 transition hover:text-inkgreen">
-        <ArrowLeft className="h-4 w-4" />
-        Toutes les demandes
-      </Link>
+      <RetourLien defaut="/commercial/clients" />
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -135,10 +139,15 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
               <Phone className="h-4 w-4" /> Appeler
             </BoutonAppeler>
           )}
-          {devisRapide && (
-            <Link href={`/commercial/devis/${devisRapide.id}`} className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-bold text-pine-950 transition hover:bg-amber-600 lg:flex-none">
+          {aRefaire ? (
+            <PrepareQuoteButton leadId={lead.id} label="Refaire le devis" className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-bold text-pine-950 transition hover:bg-amber-600 disabled:opacity-40 lg:flex-none" />
+          ) : devisRapide ? (
+            <Link href={`/commercial/devis/${devisRapide.id}`} className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-bold transition lg:flex-none ${devisRapide.statut === "brouillon" ? "bg-amber-500 text-pine-950 hover:bg-amber-600" : "border border-neutral-200 bg-white text-neutral-700 hover:border-pine-300 hover:text-pine-700"}`}>
               <FileText className="h-4 w-4" /> Devis{devisRapide.statut === "brouillon" && <span className="hidden sm:inline">&nbsp;à envoyer</span>}
             </Link>
+          ) : null}
+          {peutConclure && (
+            <ConclureVente className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-green-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-green-700 lg:flex-none" />
           )}
           <a href="#note" className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-sm font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700 lg:flex-none">
             <StickyNote className="h-4 w-4" /> Note
@@ -174,7 +183,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           <section className="order-3 rounded-2xl border border-neutral-200 bg-white p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Devis détaillés</h2>
-              {!lectureSeule && <PrepareQuoteButton leadId={lead.id} label={quotes.some((x) => x.statut === "brouillon") ? "Ouvrir le brouillon" : "Préparer un devis"} />}
+              {!lectureSeule && <PrepareQuoteButton leadId={lead.id} label={quotes.some((x) => x.statut === "brouillon") ? "Ouvrir le brouillon" : quotes.some((x) => x.statut === "envoye") ? "Nouvelle version du devis" : "Préparer un devis"} />}
             </div>
             {quotes.length === 0 ? (
               <p className="mt-3 text-sm text-neutral-400">Aucun devis pour l&rsquo;instant.</p>
@@ -217,6 +226,19 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
         </div>
 
         <div className="order-2 space-y-5 lg:order-none">
+          {lead.statut === "gagne" && (
+            <div className="rounded-2xl border border-pine-200 bg-pine-50/60 p-4">
+              <p className="text-sm font-bold text-inkgreen">Client signé 🎉</p>
+              {commande ? (
+                <p className="mt-0.5 text-xs text-neutral-600">Commande atelier <strong>{commande.ref}</strong> créée. Son avancement se suit dans le menu Production.</p>
+              ) : (
+                <>
+                  <p className="mb-3 mt-0.5 text-xs text-neutral-500">Envoyez le dossier à l&rsquo;atelier : la commande apparaît dans le pôle Gestion avec la matière réservée.</p>
+                  <CreateOrderButton leadId={lead.id} />
+                </>
+              )}
+            </div>
+          )}
           {lectureSeule ? (
             <div className="self-start rounded-2xl border border-amber-500/40 bg-amber-500/10 p-5">
               <p className="text-sm font-bold text-inkgreen">Fiche en lecture seule</p>
@@ -248,16 +270,6 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
 
           {lead.statut === "perdu" && lead.motif_perte && (
             <p className="rounded-2xl border border-neutral-200 bg-white p-4 text-sm text-neutral-700">Non signé — motif : <strong className="text-inkgreen">{MOTIFS_PERTE[lead.motif_perte] ?? lead.motif_perte}</strong></p>
-          )}
-          {lead.statut === "gagne" && (
-            <div className="rounded-2xl border border-pine-200 bg-pine-50/60 p-4">
-              <p className="text-sm font-bold text-inkgreen">Client signé 🎉</p>
-              <p className="mb-3 mt-0.5 text-xs text-neutral-500">
-                Envoyez le dossier à l&rsquo;atelier : la commande apparaît dans le pôle Gestion
-                avec la matière réservée.
-              </p>
-              <CreateOrderButton leadId={lead.id} />
-            </div>
           )}
         </div>
       </div>

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, FileText } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge } from "@/components/admin/ui";
 import { currentRep, requireMenu, voitTout } from "@/lib/admin/auth";
-import { listLeads } from "@/lib/admin/db";
+import { listLeads, listDevisATraiter } from "@/lib/admin/db";
 import { USAGE_LABELS } from "@/lib/admin/statuts";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
 
@@ -13,13 +13,12 @@ export const dynamic = "force-dynamic";
 
 export default async function DevisPage({ searchParams }: { searchParams: Promise<{ qui?: string }> }) {
   const me = await requireMenu("devis");
-  const [{ qui }, rep, tous] = await Promise.all([searchParams, currentRep(), listLeads({ statut: "nouveau", limit: 1000 })]);
+  const [{ qui }, rep, tous] = await Promise.all([searchParams, currentRep(), listDevisATraiter(undefined, 1000)]);
   const equipe = voitTout(me);
   const mode = equipe && (qui === "tous" || !rep) ? "tous" : "moi";
   const base = tous;
-  const list = (mode === "moi" ? base.filter((l) => l.assigned_to === rep) : base).sort(
-    (a, b) => Number(new Date(a.created_at)) - Number(new Date(b.created_at)),
-  );
+  // Déjà triés : demandes de modification d'abord, puis par ordre d'arrivée.
+  const list = mode === "moi" ? base.filter((l) => l.assigned_to === rep) : base;
 
   const age = (iso: string) => {
     const hrs = Math.round((Date.now() - Number(new Date(iso))) / 3600_000);
@@ -32,7 +31,7 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
         <div>
           <h1 className="text-2xl font-extrabold text-inkgreen">Devis à traiter</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            Chaque demande a son brouillon de devis : relisez-le, ajustez les lignes, puis validez l&rsquo;envoi — le statut passe alors à « Devis envoyé ».
+            Les devis qui vous attendent : nouvelles demandes, devis à modifier après un appel, et brouillons pas encore envoyés. Relisez, choisissez le prix, puis validez l&rsquo;envoi.
           </p>
         </div>
         {rep && equipe && (
@@ -58,7 +57,14 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
                 <li key={l.id} className="flex flex-wrap items-center gap-x-4 gap-y-2.5 py-3.5">
                   <ScoreBadge score={l.score} points={l.score_points} />
                   <Link href={`/commercial/clients/${l.id}`} className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold text-inkgreen hover:text-pine-700">{l.name}</span>
+                    <span className="flex items-center gap-2">
+                      <span className="truncate text-sm font-bold text-inkgreen hover:text-pine-700">{l.name}</span>
+                      {l.statut === "devis_a_modifier" ? (
+                        <span className="shrink-0 rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-bold text-rose-700 ring-1 ring-inset ring-rose-200">Devis à modifier</span>
+                      ) : l.statut !== "nouveau" ? (
+                        <span className="shrink-0 rounded-full bg-sky-50 px-2 py-0.5 text-[11px] font-bold text-sky-700 ring-1 ring-inset ring-sky-200">Brouillon non envoyé</span>
+                      ) : null}
+                    </span>
                     <span className="block text-xs text-neutral-400">
                       {usage ? `${usage} · ` : ""}
                       {cotes ? `${cotes} m · ` : ""}
@@ -80,7 +86,7 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
                     Fiche
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
-                  <PrepareQuoteButton leadId={l.id} label="Relire et envoyer le devis" />
+                  <PrepareQuoteButton leadId={l.id} label={l.statut === "devis_a_modifier" && !l.devis_brouillon_id ? "Refaire le devis" : "Relire et envoyer le devis"} />
                 </li>
               );
             })}

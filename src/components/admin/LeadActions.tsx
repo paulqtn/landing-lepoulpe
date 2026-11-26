@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { BellPlus, CalendarClock, Gauge, Loader2, MailX, Pause, PhoneCall, Play, Send, StickyNote, Trash2, UserPen } from "lucide-react";
 import { NIVEAUX } from "@/lib/admin/niveaux";
+import { toast } from "./Toasts";
 import { MOTIFS_PERTE, statutAutomatique } from "@/lib/admin/cloture";
 import { STATUT_AIDE, STATUT_LABELS, STATUTS, sequenceActive, type Statut } from "@/lib/admin/statuts";
 
@@ -55,6 +56,8 @@ export function LeadActions({
   const [issue, setIssue] = useState("discussion");
   const [appelNote, setAppelNote] = useState("");
   const [rappelLe, setRappelLe] = useState("");
+  const [rappelHeure, setRappelHeure] = useState("09:00");
+  const dansJours = (n: number) => { const d = new Date(Date.now() + n * 86400_000); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
   const [cloture, setCloture] = useState<"gagne" | "perdu" | null>(null);
   const [motif, setMotif] = useState("");
   const [precision, setPrecision] = useState("");
@@ -74,27 +77,49 @@ export function LeadActions({
   ];
   const enPause = !clos && Boolean(pauseAt) && !seqOn;
   const quand = (iso: string) => new Date(iso).toLocaleString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
-  const sequence = (body: Record<string, unknown>) =>
-    call(`/api/admin/leads/${leadId}/sequence`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const sequence = (body: Record<string, unknown>, ok: string) =>
+    call(`/api/admin/leads/${leadId}/sequence`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }, ok);
   const appelApi = (body: Record<string, unknown>) =>
-    call(`/api/admin/leads/${leadId}/appel`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    call(`/api/admin/leads/${leadId}/appel`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }, "Appel enregistré.");
 
-  function call(path: string, init?: RequestInit) {
+  /* Chaque action dit si elle a réussi : message en haut de l'écran, visible où que l'on soit dans la fiche. */
+  function call(path: string, init?: RequestInit, ok?: string, ensuite?: () => Promise<string | void>) {
     start(async () => {
       setMsg(null);
-      const res = await fetch(path, init);
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) setMsg((data as { error?: string }).error ?? "Erreur");
+      const res = await fetch(path, init).catch(() => null);
+      const data = res ? await res.json().catch(() => ({})) : {};
+      if (!res?.ok) {
+        const erreur = (data as { error?: string }).error ?? "L'action n'a pas abouti.";
+        setMsg(erreur);
+        toast(erreur, true);
+      } else {
+        const suite = ensuite ? await ensuite().catch(() => undefined) : undefined;
+        if (suite ?? ok) toast((suite ?? ok) as string);
+      }
       router.refresh();
     });
   }
 
-  const patch = (body: Record<string, unknown>) =>
-    call(`/api/admin/leads/${leadId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+  const patch = (body: Record<string, unknown>, ok = "Enregistré.", ensuite?: () => Promise<string | void>) =>
+    call(`/api/admin/leads/${leadId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }, ok, ensuite);
+
+  /* « Conclure la vente » (bouton du haut de la fiche) ouvre la confirmation de signature. */
+  const zoneCloture = useRef<HTMLDivElement>(null);
+  const [atelier, setAtelier] = useState(true);
+  useEffect(() => {
+    const ouvrir = () => { setCloture("gagne"); setOkSigne(false); setMsg(null); setTimeout(() => zoneCloture.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 50); };
+    window.addEventListener("mgk:conclure", ouvrir);
+    return () => window.removeEventListener("mgk:conclure", ouvrir);
+  }, []);
+  /** Signature, puis commande atelier dans la foulée si demandé. */
+  const signer = () =>
+    patch({ statut: "gagne" }, "Affaire signée.", async () => {
+      if (!atelier) return;
+      const res = await fetch("/api/admin/logistics", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "order_create", leadId }) });
+      const d = await res.json().catch(() => ({}));
+      return res.ok ? `Affaire signée. Commande atelier ${d.ref ?? ""} créée.` : "Affaire signée. La commande atelier n'a pas pu être créée : lancez-la depuis la fiche.";
     });
+
 
   return (
     <div className="space-y-5">
@@ -102,21 +127,7 @@ export function LeadActions({
       {!clos && (
         <section className="rounded-2xl border border-pine-200 bg-white p-5">
           <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Suivi du client</h2>
-          <p className={`mt-3 flex items-start gap-2 rounded-xl px-3 py-2 text-xs ${seqOn ? "bg-sky-50 text-sky-900" : "bg-mist text-neutral-700"}`}>
-            <MailX className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            <span>
-              {seqOn
-                ? `Séquence d'e-mails en cours : relance ${Math.min(relances + 1, 3)} prévue le ${new Date(nextRelanceAt!).toLocaleString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}.`
-                : enPause
-                  ? `Séquence d'e-mails en pause depuis le ${quand(pauseAt!)} : aucun e-mail automatique ne part.`
-                : relances >= 3
-                  ? "Séquence d'e-mails terminée : les 3 relances sont parties."
-                  : !devisEnvoye
-                    ? "Aucun e-mail automatique : le devis n'a pas encore été envoyé."
-                    : `Séquence d'e-mails arrêtée (${STATUT_LABELS[statut].toLowerCase()}) : aucun e-mail automatique ne partira.`}
-              {rappelAt && ` Rappel téléphonique prévu le ${new Date(rappelAt).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" })}.`}
-            </span>
-          </p>
+          {rappelAt && <p className="mt-3 rounded-xl bg-amber-500/15 px-3 py-2 text-xs font-semibold text-neutral-800">Rappel téléphonique prévu le {quand(rappelAt)}.</p>}
           {!appel ? (
             <div className="mt-3 space-y-2">
               <button type="button" disabled={pending} onClick={() => setAppel(true)} className="flex w-full items-center justify-center gap-2 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
@@ -149,10 +160,21 @@ export function LeadActions({
               )}
               {issue === "gagne" && !devisRetenu && !admin && <p className="rounded-xl bg-amber-500/15 px-3 py-2 text-xs font-semibold text-neutral-800">Aucun devis envoyé : envoyez d&rsquo;abord le devis signé.</p>}
               {issue === "reflexion" && (
-                <label className="block text-xs font-semibold text-neutral-600">
-                  Le rappeler le
-                  <input type="date" value={rappelLe} onChange={(e) => setRappelLe(e.target.value)} className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-pine-500" />
-                </label>
+                <div className="space-y-1.5">
+                  <p className="text-xs font-semibold text-neutral-600">Le rappeler</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([["Demain", 1], ["Dans 3 jours", 3], ["Dans une semaine", 7]] as const).map(([label, j]) => {
+                      const d = dansJours(j);
+                      return (
+                        <button key={j} type="button" onClick={() => setRappelLe(d)} className={`rounded-full border px-3 py-1.5 text-xs font-bold transition ${rappelLe === d ? "border-amber-500 bg-amber-500/10 text-inkgreen" : "border-neutral-200 bg-white text-neutral-600 hover:border-pine-300"}`}>{label}</button>
+                      );
+                    })}
+                  </div>
+                  <div className="flex gap-2">
+                    <input type="date" aria-label="Date du rappel" value={rappelLe} onChange={(e) => setRappelLe(e.target.value)} className="min-w-0 flex-1 rounded-xl border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-pine-500" />
+                    <input type="time" aria-label="Heure du rappel" value={rappelHeure} onChange={(e) => setRappelHeure(e.target.value)} className="w-28 rounded-xl border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-pine-500" />
+                  </div>
+                </div>
               )}
               <textarea value={appelNote} onChange={(e) => setAppelNote(e.target.value)} rows={2} placeholder="Compte-rendu (facultatif)" className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-pine-500" />
               <div className="flex gap-2">
@@ -160,7 +182,7 @@ export function LeadActions({
                   type="button"
                   disabled={pending || (issue === "reflexion" && !rappelLe) || (issue === "perdu" && !motif) || (issue === "gagne" && !devisRetenu && !admin)}
                   onClick={() => {
-                    appelApi({ issue, note: appelNote, ...(issue === "perdu" ? { motif } : {}), ...(issue === "reflexion" ? { rappelLe: new Date(`${rappelLe}T09:00:00`).toISOString() } : {}) });
+                    appelApi({ issue, note: appelNote, ...(issue === "perdu" ? { motif } : {}), ...(issue === "reflexion" ? { rappelLe: new Date(`${rappelLe}T${rappelHeure || "09:00"}:00`).toISOString() } : {}) });
                     setAppel(false);
                     setAppelNote("");
                   }}
@@ -176,31 +198,32 @@ export function LeadActions({
         </section>
       )}
 
-      {/* score du prospect */}
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-          <Gauge className="h-3.5 w-3.5" />
-          Score du prospect
-        </h2>
-        <div className="mt-3 space-y-1.5" role="radiogroup" aria-label="Score du prospect">
-          {NIVEAUX.map((x) => (
-            <button
-              key={x.n}
-              type="button"
-              role="radio"
-              aria-checked={niveau === x.n}
-              disabled={pending}
-              onClick={() => patch({ niveau: niveau === x.n ? null : x.n })}
-              className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition disabled:opacity-60 ${niveau === x.n ? "border-amber-500 bg-amber-500/10" : "border-neutral-200 hover:bg-amber-500/15"}`}
-            >
-              <span className="w-3 text-sm font-extrabold tabular-nums text-neutral-400">{x.n}</span>
-              <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${x.cls}`}>{x.label}</span>
-              <span className="min-w-0 flex-1 text-xs text-neutral-500">{x.description}</span>
-            </button>
-          ))}
-        </div>
-        <p className="mt-2 text-xs text-neutral-400">{niveau ? "Cliquez de nouveau sur le score choisi pour le retirer." : "Aucun score pour l'instant."}</p>
-      </section>
+      {/* score du prospect : une ligne de cinq pastilles */}
+      {!clos && (
+        <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+          <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+            <Gauge className="h-3.5 w-3.5" />
+            Score du prospect
+          </h2>
+          <div className="mt-3 flex flex-wrap gap-1.5" role="radiogroup" aria-label="Score du prospect">
+            {NIVEAUX.map((x) => (
+              <button
+                key={x.n}
+                type="button"
+                role="radio"
+                aria-checked={niveau === x.n}
+                title={x.description}
+                disabled={pending}
+                onClick={() => patch({ niveau: niveau === x.n ? null : x.n }, niveau === x.n ? "Score retiré." : `Score : ${x.label}.`)}
+                className={`rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset transition disabled:opacity-60 ${niveau === x.n ? `${x.cls} ring-2` : "bg-white text-neutral-500 ring-neutral-200 hover:bg-amber-500/15"}`}
+              >
+                {x.n} · {x.label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-neutral-400">{niveau ? `${NIVEAUX.find((x) => x.n === niveau)?.description} Cliquez de nouveau pour retirer le score.` : "Aucun score pour l'instant."}</p>
+        </section>
+      )}
 
       {/* note */}
       <section id="note" className="scroll-mt-4 rounded-2xl border border-neutral-200 bg-white p-5">
@@ -219,7 +242,7 @@ export function LeadActions({
           type="button"
           disabled={pending || !note.trim()}
           onClick={() => {
-            patch({ note });
+            patch({ note }, "Note ajoutée.");
             setNote("");
           }}
           className="mt-2 rounded-full bg-pine-700 px-5 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"
@@ -243,7 +266,7 @@ export function LeadActions({
                 onClick={() => {
                   if (s === statut) return;
                   // Signature et non-signature passent par une confirmation.
-                  if (s === "gagne" || s === "perdu") { setCloture(s); setOkSigne(false); setMsg(null); } else { setCloture(null); patch({ statut: s }); }
+                  if (s === "gagne" || s === "perdu") { setCloture(s); setOkSigne(false); setMsg(null); } else { setCloture(null); patch({ statut: s }, `Statut : ${STATUT_LABELS[s]}.`); }
                 }}
                 className={`rounded-full px-3 py-1.5 text-xs font-bold transition disabled:cursor-not-allowed ${
                   statut === s
@@ -261,7 +284,7 @@ export function LeadActions({
         <p className="mt-2 text-xs text-neutral-400">Les statuts « Relancé » se posent tout seuls à l&rsquo;envoi d&rsquo;une relance.</p>
 
         {cloture === "gagne" && (
-          <div className="mt-3 rounded-xl border border-pine-200 bg-pine-50/60 p-3 text-sm">
+          <div ref={zoneCloture} className="mt-3 rounded-xl border border-pine-200 bg-pine-50/60 p-3 text-sm">
             <p className="font-bold text-inkgreen">Passer l&rsquo;affaire en « Signé » ?</p>
             {devisRetenu ? (
               <p className="mt-1 text-neutral-700">Devis retenu : <strong>{devisRetenu.ref}</strong>, <strong className="tabular-nums">{Number(devisRetenu.ht).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € HT</strong>. Ce montant sert au chiffre signé et à la prime.</p>
@@ -274,8 +297,14 @@ export function LeadActions({
                 <span>Le client a donné son accord sur ce devis.</span>
               </label>
             )}
+            {(devisRetenu || admin) && (
+              <label className="mt-1.5 flex items-start gap-2 text-xs text-neutral-700">
+                <input type="checkbox" className="mt-0.5 h-4 w-4 accent-pine-700" checked={atelier} onChange={(e) => setAtelier(e.target.checked)} />
+                <span>Créer la commande atelier dans la foulée.</span>
+              </label>
+            )}
             <div className="mt-3 flex flex-wrap gap-2">
-              <button type="button" disabled={pending || !okSigne || (!devisRetenu && !admin)} onClick={() => { patch({ statut: "gagne" }); setCloture(null); }} className="rounded-full bg-pine-700 px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40">Confirmer la signature</button>
+              <button type="button" disabled={pending || !okSigne || (!devisRetenu && !admin)} onClick={() => { signer(); setCloture(null); }} className="rounded-full bg-pine-700 px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40">Confirmer la signature</button>
               <button type="button" onClick={() => setCloture(null)} className="rounded-full border border-neutral-200 bg-white px-4 py-1.5 text-xs font-bold text-neutral-600">Annuler</button>
             </div>
           </div>
@@ -293,7 +322,7 @@ export function LeadActions({
             </div>
             <input value={precision} onChange={(e) => setPrecision(e.target.value)} maxLength={300} placeholder="Précision (facultatif) : nom du concurrent, prix annoncé…" className="mt-2 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm outline-none focus:border-pine-500" />
             <div className="mt-3 flex flex-wrap gap-2">
-              <button type="button" disabled={pending || !motif} onClick={() => { patch({ statut: "perdu", motif, precision }); setCloture(null); }} className="rounded-full bg-pine-700 px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40">Confirmer « Non signé »</button>
+              <button type="button" disabled={pending || !motif} onClick={() => { patch({ statut: "perdu", motif, precision }, "Affaire classée « Non signé »."); setCloture(null); }} className="rounded-full bg-pine-700 px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40">Confirmer « Non signé »</button>
               <button type="button" onClick={() => setCloture(null)} className="rounded-full border border-neutral-200 bg-white px-4 py-1.5 text-xs font-bold text-neutral-600">Annuler</button>
             </div>
           </div>
@@ -301,11 +330,12 @@ export function LeadActions({
         {msg && <p className="mt-2 text-xs font-semibold text-red-600">{msg}</p>}
       </section>
 
-      {/* relances automatiques : pause, suppression, déclenchement */}
+      {/* relances : état, pause, suppression, déclenchement, envoi immédiat — rien sur une affaire close */}
+      {!clos && (
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
           <CalendarClock className="h-3.5 w-3.5" />
-          Relances automatiques
+          Relances par e-mail
         </h2>
         <p className={`mt-3 rounded-xl px-3 py-2 text-xs font-semibold ${seqOn ? "bg-sky-50 text-sky-900" : enPause ? "bg-amber-500/15 text-neutral-800" : "bg-mist text-neutral-600"}`}>
           {clos
@@ -322,7 +352,7 @@ export function LeadActions({
           <>
             <div className="mt-3 flex flex-wrap gap-2">
               {seqOn && (
-                <button type="button" disabled={pending} onClick={() => sequence({ action: "pause" })} className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2 text-xs font-bold text-neutral-700 transition hover:border-amber-500 hover:bg-amber-500/15 disabled:opacity-40">
+                <button type="button" disabled={pending} onClick={() => sequence({ action: "pause" }, "Relances mises en pause.")} className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2 text-xs font-bold text-neutral-700 transition hover:border-amber-500 hover:bg-amber-500/15 disabled:opacity-40">
                   <Pause className="h-3.5 w-3.5" /> Mettre en pause
                 </button>
               )}
@@ -331,14 +361,14 @@ export function LeadActions({
                   type="button"
                   disabled={pending || !devisEnvoye}
                   title={devisEnvoye ? undefined : "Envoyez d'abord un devis à ce client"}
-                  onClick={() => { if (enPause || window.confirm(`Déclencher les relances automatiques ? La relance ${relances + 1} partira selon le délai réglé dans l'onglet Relances.`)) sequence({ action: "declencher" }); }}
+                  onClick={() => { if (enPause || window.confirm(`Déclencher les relances automatiques ? La relance ${relances + 1} partira selon le délai réglé dans l'onglet Relances.`)) sequence({ action: "declencher" }, enPause ? "Relances reprises." : "Relances déclenchées."); }}
                   className="inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"
                 >
                   <Play className="h-3.5 w-3.5" /> {enPause ? "Reprendre les relances" : "Déclencher la séquence"}
                 </button>
               )}
               {(seqOn || enPause) && (
-                <button type="button" disabled={pending} onClick={() => { if (window.confirm("Supprimer les relances automatiques prévues pour ce client ? Vous pourrez les déclencher de nouveau plus tard.")) sequence({ action: "supprimer" }); }} className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2 text-xs font-bold text-neutral-600 transition hover:border-red-300 hover:text-red-600 disabled:opacity-40">
+                <button type="button" disabled={pending} onClick={() => { if (window.confirm("Supprimer les relances automatiques prévues pour ce client ? Vous pourrez les déclencher de nouveau plus tard.")) sequence({ action: "supprimer" }, "Relances supprimées."); }} className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2 text-xs font-bold text-neutral-600 transition hover:border-red-300 hover:text-red-600 disabled:opacity-40">
                   <Trash2 className="h-3.5 w-3.5" /> Supprimer les relances
                 </button>
               )}
@@ -352,7 +382,7 @@ export function LeadActions({
                 <button
                   type="button"
                   disabled={pending || !relanceDate}
-                  onClick={() => { sequence({ action: "declencher", date: new Date(`${relanceDate}T09:00:00`).toISOString() }); setRelanceDate(""); }}
+                  onClick={() => { sequence({ action: "declencher", date: new Date(`${relanceDate}T09:00:00`).toISOString() }, "Prochaine relance programmée."); setRelanceDate(""); }}
                   className="rounded-full border border-neutral-200 px-4 py-2 text-xs font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-40"
                 >
                   Programmer
@@ -363,34 +393,30 @@ export function LeadActions({
             )}
           </>
         )}
-        {msg && <p className="mt-2 text-xs font-semibold text-red-600">{msg}</p>}
-      </section>
-
-      {/* emails */}
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Relance immédiate</h2>
-        <div className="mt-3 space-y-2.5">
+        {devisEnvoye && relances < 3 && (
           <button
             type="button"
-            disabled={pending || relances >= 3 || !devisEnvoye}
-            title={devisEnvoye ? undefined : "Envoyez d'abord le devis"}
-            onClick={() => { if (window.confirm(`Envoyer maintenant la relance ${relances + 1} à ce client ?`)) call(`/api/admin/leads/${leadId}/relance`, { method: "POST" }); }}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"
+            disabled={pending}
+            onClick={() => { if (window.confirm(`Envoyer maintenant la relance ${relances + 1} à ce client ?`)) call(`/api/admin/leads/${leadId}/relance`, { method: "POST" }, `Relance ${relances + 1} envoyée.`); }}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2 text-xs font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700 disabled:opacity-40"
           >
-            <BellPlus className="h-4 w-4" />
-            {relances >= 3 ? "Séquence terminée (3 relances)" : !devisEnvoye ? "Relance possible après l'envoi du devis" : `Envoyer la relance ${relances + 1} maintenant`}
+            <BellPlus className="h-3.5 w-3.5" />
+            Envoyer la relance {relances + 1} maintenant
           </button>
-          {msg && <p className="text-xs font-semibold text-red-600">{msg}</p>}
-        </div>
+        )}
+        {msg && <p className="mt-2 text-xs font-semibold text-red-600">{msg}</p>}
       </section>
+      )}
 
       {/* coordonnées */}
       {contact && (
-        <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-          <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+        <details className="group rounded-2xl border border-neutral-200 bg-white p-5">
+          <summary className="flex cursor-pointer list-none items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 [&::-webkit-details-marker]:hidden">
             <UserPen className="h-3.5 w-3.5" />
-            Coordonnées
-          </h2>
+            <span className="flex-1">Coordonnées{team.length > 0 ? " et commercial" : ""}</span>
+            <span className="font-sans text-xs normal-case tracking-normal text-pine-700 group-open:hidden">Modifier</span>
+            <span className="hidden font-sans text-xs normal-case tracking-normal text-pine-700 group-open:inline">Replier</span>
+          </summary>
           <div className="mt-3 grid gap-2">
             {([["name", "Nom", "text"], ["email", "E-mail", "email"], ["phone", "Téléphone", "tel"]] as const).map(([k, label, type]) => (
               <label key={k} className="block text-xs font-semibold text-neutral-500">
@@ -399,30 +425,29 @@ export function LeadActions({
               </label>
             ))}
           </div>
-          <button type="button" disabled={pending || !coordChange} onClick={() => patch({ contact: coord })} className="mt-3 rounded-full bg-pine-700 px-5 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
+          <button type="button" disabled={pending || !coordChange} onClick={() => patch({ contact: coord }, "Coordonnées enregistrées.")} className="mt-3 rounded-full bg-pine-700 px-5 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
             Enregistrer les coordonnées
           </button>
           <p className="mt-2 text-xs text-neutral-400">Les relances et les devis partent à cette adresse.</p>
-        </section>
+          {team.length > 0 && (
+            <label className="mt-4 block border-t border-neutral-100 pt-3 text-xs font-semibold text-neutral-500">
+              Commercial qui suit ce client
+            <select
+              defaultValue={assignedTo ?? ""}
+              disabled={pending}
+              onChange={(e) => patch({ assigned_to: e.target.value }, e.target.value ? `Client confié à ${e.target.value}.` : "Client remis dans la file.")}
+              className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm font-semibold text-inkgreen outline-none focus:border-pine-500"
+            >
+              <option value="">Non assigné</option>
+              {team.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+            </label>
+          )}
+        </details>
       )}
 
-      {/* assignation */}
-      {team.length > 0 && (
-        <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-          <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Commercial</h2>
-          <select
-            defaultValue={assignedTo ?? ""}
-            disabled={pending}
-            onChange={(e) => patch({ assigned_to: e.target.value })}
-            className="mt-3 w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm font-semibold text-inkgreen outline-none focus:border-pine-500"
-          >
-            <option value="">Non assigné</option>
-            {team.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </section>
-      )}
     </div>
   );
 }

@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "./Toasts";
 import { AlertTriangle, Calculator, Copy, Download, Eye, Loader2, Plus, Send, Trash2, X } from "lucide-react";
 
 /* Éditeur de devis : propositions côte à côte, lignes modifiables.
@@ -51,6 +53,9 @@ export function QuoteEditor(props: {
   sentInfo: string | null;
   blockers: string[];
   chiffrage?: Chiffrage | null;
+  /** Fiche du client, et devis suivant à traiter (proposés après l'envoi). */
+  ficheHref?: string | null;
+  suivant?: { id: number; nom: string } | null;
 }) {
   const router = useRouter();
   const editable = props.statut === "brouillon";
@@ -60,7 +65,8 @@ export function QuoteEditor(props: {
   );
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
-  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [msg, setMsgState] = useState<{ ok: boolean; text: string } | null>(null);
+  const setMsg = (m: { ok: boolean; text: string } | null) => { setMsgState(m); if (m) toast(m.text, !m.ok); };
   const [confirm, setConfirm] = useState(false);
   const [checked, setChecked] = useState(false);
   const dialog = useRef<HTMLDivElement>(null);
@@ -68,7 +74,8 @@ export function QuoteEditor(props: {
   /* Chiffrage intégré : projet du client + niveau de prix, recalculés par le serveur. */
   const ch = props.chiffrage ?? null;
   const [niveaux, setNiveaux] = useState<Niveau[] | null>(ch?.niveaux ?? null);
-  const [coef, setCoef] = useState<number | null>(ch?.coef ?? null);
+  const [coefState, setCoef] = useState<number | null>(ch?.coef ?? null);
+  const coef = coefState;
   const [coefApplique, setCoefApplique] = useState<number | null>(ch?.coef ?? null);
   const [editProjet, setEditProjet] = useState(ch ? ch.niveaux === null : false);
   const [projet, setProjet] = useState({
@@ -82,8 +89,10 @@ export function QuoteEditor(props: {
   const [projetModifie, setProjetModifie] = useState(false);
   const setP = (patch: Partial<typeof projet>) => { setProjet((p) => ({ ...p, ...patch })); setProjetModifie(true); };
 
-  async function appliquerChiffrage() {
+  async function appliquerChiffrage(choix?: number) {
+    const coef = choix ?? coefState;
     if (coef === null) return setMsg({ ok: false, text: "Choisissez un niveau de prix." });
+    setCoef(coef);
     if (dirty && !(await save())) return;
     setBusy("chiffrage");
     setMsg(null);
@@ -203,7 +212,18 @@ export function QuoteEditor(props: {
   const blockers = [...props.blockers, ...(emailOk ? [] : ["L'adresse e-mail du client est manquante ou invalide."])];
 
   return (
-    <div className="space-y-5">
+    <div className={`space-y-5 ${editable ? "pb-20 lg:pb-0" : ""}`}>
+      {editable && (
+        <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-neutral-200 bg-white px-4 py-2.5 lg:hidden">
+          <p className="min-w-0 flex-1 leading-tight">
+            <span className="block text-[11px] font-semibold text-neutral-500">Total TTC{coefApplique !== null ? ` · ${coefTxt(coefApplique)}` : ""}</span>
+            <span className="block text-base font-extrabold tabular-nums text-pine-700">{all[0] ? eur(all[0].ttc) : "—"}</span>
+          </p>
+          <button type="button" onClick={askSend} disabled={busy !== null} className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-bold text-pine-950 disabled:opacity-40">
+            <Send className="h-4 w-4" /> Envoyer
+          </button>
+        </div>
+      )}
       {msg && (
         <p role="status" className={`rounded-xl border px-4 py-2.5 text-sm font-semibold ${msg.ok ? "border-green-200 bg-green-50 text-green-800" : "border-red-200 bg-red-50 text-red-700"}`}>
           {msg.text}
@@ -211,7 +231,17 @@ export function QuoteEditor(props: {
       )}
       {!editable && (
         <p className="flex flex-wrap items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm text-sky-900">
-          <span className="flex-1">{props.sentInfo ?? "Ce devis n'est plus modifiable."} Son contenu est figé.</span>
+          <span className="min-w-0 flex-1 basis-60">{props.sentInfo ?? "Ce devis n'est plus modifiable."} Son contenu est figé.</span>
+          {props.suivant && (
+            <Link href={`/commercial/devis/${props.suivant.id}`} className="inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-3.5 py-1.5 text-xs font-bold text-white transition hover:bg-pine-600">
+              Devis suivant : {props.suivant.nom}
+            </Link>
+          )}
+          {props.ficheHref && (
+            <Link href={props.ficheHref} className="inline-flex items-center gap-1.5 rounded-full border border-sky-300 bg-white px-3.5 py-1.5 text-xs font-bold text-sky-900">
+              Retour à la fiche
+            </Link>
+          )}
           <button type="button" disabled={busy !== null} onClick={duplicate} className="inline-flex items-center gap-1.5 rounded-full border border-sky-300 bg-white px-3.5 py-1.5 text-xs font-bold text-sky-900 transition hover:bg-sky-100 disabled:opacity-40">
             <Copy className="h-3.5 w-3.5" />
             Créer une nouvelle version
@@ -219,8 +249,15 @@ export function QuoteEditor(props: {
         </p>
       )}
 
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Client</h2>
+      <details open={!emailOk || undefined} className="group rounded-2xl border border-neutral-200 bg-white p-5 lg:[&:not([open])>summary]:mb-0">
+        <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1 [&::-webkit-details-marker]:hidden">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Client</span>
+          <span className="min-w-0 flex-1 truncate text-sm font-bold text-inkgreen">{client.name} <span className="font-semibold text-neutral-500">· {client.email || "pas d'e-mail"}</span></span>
+          <span className="text-xs font-bold text-pine-700 group-open:hidden">Modifier</span>
+          <span className="hidden text-xs font-bold text-pine-700 group-open:inline">Replier</span>
+        </summary>
+        {!emailOk && <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">Il manque l&rsquo;adresse e-mail du client : saisissez-la ici pour pouvoir envoyer le devis. Elle sera reportée sur sa fiche.</p>}
+        <div className="mt-3">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {(
             [
@@ -236,7 +273,8 @@ export function QuoteEditor(props: {
             </label>
           ))}
         </div>
-      </section>
+        </div>
+      </details>
 
       {editable && ch && (
         <section className="rounded-2xl border border-pine-200 bg-white p-5">
@@ -285,7 +323,7 @@ export function QuoteEditor(props: {
             <div className="grid gap-2 sm:grid-cols-3">
               {(niveaux ?? ch.grille.map((g) => ({ ...g, aide: "", ht: 0, ttc: 0 }))).map((x) => (
                 <label key={x.coef} className={`flex cursor-pointer items-start gap-2.5 rounded-xl border px-3 py-2.5 transition ${coef === x.coef ? "border-amber-500 bg-amber-500/10" : "border-neutral-200 hover:bg-amber-500/15"}`}>
-                  <input type="radio" name="niveau-prix" className="mt-1 accent-pine-700" checked={coef === x.coef} onChange={() => setCoef(x.coef)} />
+                  <input type="radio" name="niveau-prix" className="mt-1 accent-pine-700" disabled={busy !== null} checked={coef === x.coef} onChange={() => (projetModifie ? setCoef(x.coef) : appliquerChiffrage(x.coef))} />
                   <span className="min-w-0">
                     <span className="block text-sm font-bold text-inkgreen">{x.label} <span className="font-mono text-xs text-neutral-500">{coefTxt(x.coef)}</span></span>
                     <span className="block text-sm font-extrabold tabular-nums text-pine-700">{niveaux && !projetModifie ? `${eur(x.ht)} HT` : "à recalculer"}</span>
@@ -295,18 +333,16 @@ export function QuoteEditor(props: {
               ))}
             </div>
           </fieldset>
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <button type="button" onClick={appliquerChiffrage} disabled={busy !== null || coef === null || (coef === coefApplique && !projetModifie)} className="inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
+          {projetModifie && (
+            <button type="button" onClick={() => appliquerChiffrage()} disabled={busy !== null || coef === null} className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
               {busy === "chiffrage" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Calculator className="h-3.5 w-3.5" />}
-              {projetModifie ? "Recalculer le devis" : "Appliquer ce prix au devis"}
+              Recalculer le devis
             </button>
-            <p className="min-w-0 flex-1 text-xs text-neutral-500">
-              {coefApplique !== null
-                ? `Devis actuellement au niveau ${coefTxt(coefApplique)}.`
-                : `Brouillon au prix affiché sur le site (${coefTxt(ch.coefSite)}).`}{" "}
-              Le calcul remplace la première ligne du devis ; les autres lignes sont conservées. En dessous de la remise exceptionnelle, l&rsquo;enregistrement est refusé.
-            </p>
-          </div>
+          )}
+          <p className="mt-3 text-xs text-neutral-500">
+            {busy === "chiffrage" ? "Calcul en cours… " : coefApplique !== null ? `Devis au niveau ${coefTxt(coefApplique)}. ` : `Aucun niveau choisi : brouillon au prix affiché sur le site (${coefTxt(ch.coefSite)}). `}
+            Un clic sur un prix l&rsquo;applique à la première ligne du devis ; les autres lignes sont conservées. Rien ne part en dessous de la remise exceptionnelle.
+          </p>
         </section>
       )}
 
@@ -481,7 +517,7 @@ export function PrepareQuoteButton({ leadId, label = "Préparer le devis", class
         if (res?.ok) router.push(`/commercial/devis/${data.id}`);
         else {
           setBusy(false);
-          window.alert(data.error ?? "Impossible de préparer le devis.");
+          toast(data.error ?? "Impossible de préparer le devis.", true);
         }
       }}
       className={className ?? "inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40"}

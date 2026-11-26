@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "./Toasts";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2, PackagePlus, Plus, Truck } from "lucide-react";
@@ -33,6 +35,7 @@ function useAction() {
     else if (!r.ok) setNote("Échec — réessayez");
     else {
       setNote(okNote);
+      if (okNote) toast(okNote);
       router.refresh();
     }
     if (!r.ok) setTimeout(() => setNote(""), 3500);
@@ -140,7 +143,7 @@ export function CreateOrderButton({ leadId }: { leadId: number }) {
       <button
         type="button"
         disabled={busy}
-        onClick={() => run({ action: "order_create", leadId }, "Commande créée — voir le pôle Gestion")}
+        onClick={() => run({ action: "order_create", leadId }, "Commande atelier créée.")}
         className={BTN}
       >
         {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PackagePlus className="h-3.5 w-3.5" />}

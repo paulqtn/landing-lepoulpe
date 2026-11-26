@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { BellPlus, Loader2, UserRound } from "lucide-react";
 import { ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { STATUT_LABELS, STATUTS, type Statut } from "@/lib/admin/statuts";
+import { niveauInfo } from "@/lib/admin/niveaux";
 
 export type LeadRow = {
   id: number;
@@ -18,6 +19,8 @@ export type LeadRow = {
   statut: Statut;
   score: "A" | "B" | "C";
   score_points: number;
+  /** Score du prospect (1 à 5) posé par le commercial. */
+  niveau?: number | null;
   next_relance_at: string | null;
   assigned_to: string | null;
 };
@@ -141,6 +144,7 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
                 </td>
                 <td className="px-4 py-3">
                   <StatutBadge statut={l.statut} />
+                  {niveauInfo(l.niveau) && <span title={niveauInfo(l.niveau)!.description} className={`mt-1 block w-fit rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset ${niveauInfo(l.niveau)!.cls}`}>{l.niveau} · {niveauInfo(l.niveau)!.label}</span>}
                 </td>
                 <td className="hidden px-4 py-3 text-xs text-neutral-500 lg:table-cell">
                   {l.assigned_to && (

@@ -261,7 +261,8 @@ export type LeadFilter = {
   /** Activité (ouverture, clic, consultation) dans les N dernières heures. */
   activeSinceHours?: number;
   score?: "A" | "B" | "C";
-  order?: "recent" | "ancien";
+  /** Tri : plus récents (défaut), plus anciens, montant décroissant, ou score du prospect décroissant. */
+  order?: "recent" | "ancien" | "montant" | "score";
 };
 
 function demoFilter(opts: LeadFilter): Lead[] {
@@ -320,7 +321,7 @@ export async function listLeads(opts: LeadFilter = {}): Promise<Lead[]> {
   vals.push(Math.max(0, opts.offset ?? 0));
   return q<Lead>(
     `SELECT * FROM leads ${sql}
-     ORDER BY created_at ${opts.order === "ancien" ? "ASC, id ASC" : "DESC, id DESC"}
+     ORDER BY ${opts.order === "ancien" ? "created_at ASC, id ASC" : opts.order === "montant" ? "estimation_ttc DESC NULLS LAST, id DESC" : opts.order === "score" ? "niveau DESC NULLS LAST, score_points DESC, id DESC" : "created_at DESC, id DESC"}
      LIMIT $${vals.length - 1} OFFSET $${vals.length}`,
     vals,
   );
@@ -398,6 +399,25 @@ export async function pipelineApercu(parStatut = 8, assigned?: string): Promise<
        WHERE ($2::text IS NULL OR assigned_to = $2)
      ) t WHERE rn <= $1 ORDER BY created_at DESC`,
     [parStatut, assigned ?? null],
+  );
+}
+
+/**
+ * Les devis qui attendent le commercial : demandes nouvelles, clients qui ont demandé une
+ * modification, et tout client (affaire non close) dont un brouillon n'est pas encore parti.
+ * Les demandes de modification passent en tête, puis par ordre d'arrivée.
+ */
+export async function listDevisATraiter(assigned?: string, limit = 500): Promise<(Lead & { devis_brouillon_id: number | null })[]> {
+  if (!dbConfigured) return demoLeads().filter((l) => l.statut === "nouveau" && (!assigned || l.assigned_to === assigned)).map((l) => ({ ...l, devis_brouillon_id: null }));
+  return q<Lead & { devis_brouillon_id: number | null }>(
+    `SELECT * FROM (
+       SELECT l.*, (SELECT qu.id FROM quotes qu WHERE qu.lead_id = l.id AND qu.statut = 'brouillon' ORDER BY qu.id DESC LIMIT 1) AS devis_brouillon_id
+       FROM leads l
+       WHERE l.statut NOT IN ('gagne', 'perdu') AND l.anonymized_at IS NULL AND ($1::text IS NULL OR l.assigned_to = $1)
+     ) t
+     WHERE statut IN ('nouveau', 'devis_a_modifier') OR devis_brouillon_id IS NOT NULL
+     ORDER BY (statut = 'devis_a_modifier') DESC, created_at ASC, id ASC LIMIT $2`,
+    [assigned ?? null, limit],
   );
 }
 

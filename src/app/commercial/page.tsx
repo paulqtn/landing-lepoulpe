@@ -5,7 +5,7 @@ import { SeedDemo } from "@/components/admin/SeedDemo";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { currentRep, requireMenu } from "@/lib/admin/auth";
 import { getCompSettings, repStats } from "@/lib/admin/compens";
-import { dueRelances, listLeads, stats, type Lead, listLeadsLight, listRappels } from "@/lib/admin/db";
+import { dueRelances, listDevisATraiter, listLeads, stats, type Lead, listLeadsLight, listRappels } from "@/lib/admin/db";
 import { listOrders } from "@/lib/admin/logistics";
 import { mailConfigured } from "@/lib/admin/mail";
 
@@ -22,7 +22,7 @@ export default async function CommercialHome() {
   const [s, pool, devisATraiter, chauds, nouveauxA, gagnes, dues, orders, persoLeads] = await Promise.all([
     stats(),
     listLeads({ assigned: "__libre", actifs: true, order: "ancien", limit: 500 }),
-    listLeads({ assigned: mine, statut: "nouveau", limit: 500 }),
+    listDevisATraiter(mine),
     listLeads({ assigned: mine, actifs: true, activeSinceHours: 48, limit: 500 }),
     listLeads({ assigned: mine, statut: "nouveau", score: "A", limit: 500 }),
     listLeads({ assigned: mine, statut: "gagne", limit: 500 }),
@@ -44,7 +44,7 @@ export default async function CommercialHome() {
   const taches = [
     { n: pool.length, label: "Leads entrants à piocher", sub: "dans l'ordre d'arrivée", href: "#pioche", icon: Hand, hot: pool.length > 0 },
     { n: chauds.length, label: "Signaux chauds à rappeler", sub: "devis consultés ces 48 h", href: "/commercial/clients?qui=moi", icon: Flame, hot: chauds.length > 0 },
-    { n: devisATraiter.length, label: "Devis à traiter", sub: "calepinage + envoi", href: "/commercial/devis", icon: FileText, hot: devisATraiter.length > 0 },
+    { n: devisATraiter.length, label: "Devis à traiter", sub: "à relire, à refaire ou à envoyer", href: "/commercial/devis", icon: FileText, hot: devisATraiter.length > 0 },
     { n: rappelsDus.length, label: "Clients à rappeler par téléphone", sub: "rappel convenu ou demandé", href: "/commercial/relances", icon: PhoneCall, hot: rappelsDus.length > 0 },
     { n: mesDues.length, label: "Relances échues", sub: "la séquence vous attend", href: "/commercial/relances", icon: BellRing, hot: false },
     { n: aLancer.length, label: "Signées à lancer en production", sub: "envoyer à l'atelier", href: "/commercial/production", icon: Trophy, hot: false },
@@ -119,30 +119,6 @@ export default async function CommercialHome() {
         </section>
       )}
 
-      {/* ----------------------- vos priorités ----------------------- */}
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="text-base font-extrabold text-inkgreen">Vos priorités du jour</h2>
-        <ul className="mt-3 divide-y divide-neutral-100">
-          {taches.map((t) => (
-            <li key={t.label}>
-              <Link href={t.href} className="flex items-center gap-4 py-3 transition hover:bg-mist/60">
-                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${t.hot ? "bg-amber-500 text-pine-950" : "bg-pine-50 text-pine-700"}`}>
-                  <t.icon className="h-[18px] w-[18px]" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold text-inkgreen">{t.label}</span>
-                  <span className="block text-xs text-neutral-400">{t.sub}</span>
-                </span>
-                <span className={`text-2xl font-extrabold tabular-nums ${t.n > 0 ? (t.hot ? "text-amber-600" : "text-inkgreen") : "text-neutral-300"}`}>
-                  {t.n}
-                </span>
-                <ArrowRight className="h-4 w-4 shrink-0 text-neutral-300" />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-
       {/* ------------------- la pioche des entrants ------------------- */}
       <section id="pioche" className="rounded-2xl border border-amber-500/40 bg-white p-5">
         <h2 className="flex items-center gap-2 text-base font-extrabold text-inkgreen">
@@ -179,6 +155,30 @@ export default async function CommercialHome() {
             ))}
           </ul>
         )}
+      </section>
+
+      {/* ----------------------- vos priorités ----------------------- */}
+      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+        <h2 className="text-base font-extrabold text-inkgreen">Vos priorités du jour</h2>
+        <ul className="mt-3 divide-y divide-neutral-100">
+          {taches.map((t) => (
+            <li key={t.label}>
+              <Link href={t.href} className="flex items-center gap-4 py-3 transition hover:bg-mist/60">
+                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${t.hot ? "bg-amber-500 text-pine-950" : "bg-pine-50 text-pine-700"}`}>
+                  <t.icon className="h-[18px] w-[18px]" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold text-inkgreen">{t.label}</span>
+                  <span className="block text-xs text-neutral-400">{t.sub}</span>
+                </span>
+                <span className={`text-2xl font-extrabold tabular-nums ${t.n > 0 ? (t.hot ? "text-amber-600" : "text-inkgreen") : "text-neutral-300"}`}>
+                  {t.n}
+                </span>
+                <ArrowRight className="h-4 w-4 shrink-0 text-neutral-300" />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* --------------- vos clients à l'action maintenant --------------- */}

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { repFromRequest, requireMenuApi } from "@/lib/admin/auth";
-import { addEvent, claimInOrder, dbConfigured, getLead, oldestPoolLead } from "@/lib/admin/db";
+import { addEvent, adminQuery as q, claimInOrder, dbConfigured, getLead, oldestPoolLead } from "@/lib/admin/db";
 
 /* La pioche : un commercial s'attribue un lead entrant, strictement dans
    l'ordre d'arrivée — impossible de prendre une demande tant qu'une plus
@@ -32,5 +32,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "not_first", first: first?.name ?? null }, { status: 409 });
   }
   await addEvent(lead.id, "attribution", `Pioché par ${rep}`);
-  return NextResponse.json({ ok: true });
+  // Le devis à relire s'ouvre aussitôt après la prise.
+  const devis = await q<{ id: number }>("SELECT id FROM quotes WHERE lead_id = $1 AND statut = 'brouillon' ORDER BY id DESC LIMIT 1", [lead.id]);
+  return NextResponse.json({ ok: true, leadId: lead.id, name: lead.name, devisId: devis[0]?.id ?? null });
 }

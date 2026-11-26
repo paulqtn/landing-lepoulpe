@@ -1,6 +1,7 @@
 import { requireMenu, voitTout } from "@/lib/admin/auth";
 import Link from "next/link";
 import { dateFmt, eurFmt, ScoreBadge } from "@/components/admin/ui";
+import { niveauInfo } from "@/lib/admin/niveaux";
 import { STATUT_LABELS, STATUTS, type Statut, pipeline, pipelineApercu } from "@/lib/admin/db";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,9 @@ const COL_COLORS: Record<Statut, string> = {
   gagne: "border-t-green-500",
   perdu: "border-t-neutral-300",
 };
+
+/** Jours écoulés depuis la dernière activité connue (à défaut, depuis la demande). */
+const sansAction = (l: { last_activity_at: string | null; created_at: string }) => Math.max(0, Math.floor((Date.now() - Number(new Date(l.last_activity_at ?? l.created_at))) / 86400_000));
 
 export default async function PipelinePage() {
   const me = await requireMenu("pipeline");
@@ -55,8 +59,9 @@ export default async function PipelinePage() {
                       <ScoreBadge score={l.score} />
                       <span className="min-w-0 flex-1 truncate text-sm font-bold text-inkgreen">{l.name}</span>
                     </span>
+                    {niveauInfo(l.niveau) && <span className={`mt-1.5 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset ${niveauInfo(l.niveau)!.cls}`}>{l.niveau} · {niveauInfo(l.niveau)!.label}</span>}
                     <span className="mt-1.5 flex items-center justify-between text-[11px] text-neutral-400">
-                      <span>{dateFmt.format(new Date(l.created_at)).split(" ").slice(0, 2).join(" ")}</span>
+                      <span title={`Demande du ${dateFmt.format(new Date(l.created_at))}`}>{sansAction(l) === 0 ? "actif aujourd'hui" : `${sansAction(l)} j sans action`}</span>
                       {l.estimation_ttc && (
                         <span className="font-extrabold tabular-nums text-pine-700">{eurFmt.format(Number(l.estimation_ttc))} €</span>
                       )}

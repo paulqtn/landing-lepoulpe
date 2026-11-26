@@ -94,6 +94,33 @@ appel sans réponse laisse la séquence continuer. « Reprendre la séquence » 
 où elle s'était arrêtée. Les clients à rappeler apparaissent dans l'onglet Relances et
 dans les priorités de l'accueil.
 
+## Parcours du commercial (prise → devis → signature)
+
+Réglé après l'audit d'usage : 13 clics de la prise d'une demande à la commande atelier.
+
+- **Prendre une demande** ouvre directement son devis (`ClaimButton`). La file est en haut de
+  l'état des lieux.
+- **Devis à traiter** (`listDevisATraiter`) : demandes nouvelles, clients « Devis à modifier »
+  (en tête) et tout brouillon non envoyé d'une affaire ouverte. Même compteur dans les priorités.
+- **Écran du devis** : un clic sur un niveau de prix l'applique ; bloc client replié (ouvert et
+  signalé s'il manque l'e-mail) ; sur téléphone, barre fixe avec le total et « Envoyer » ; après
+  l'envoi, « Devis suivant » et « Retour à la fiche ».
+- **Préparer / refaire un devis** : s'il existe un brouillon il est rouvert ; sinon, s'il y a un
+  devis envoyé, une nouvelle version en est tirée (niveau de prix conservé).
+- **Fiche client** : barre d'actions (Appeler, Devis ou « Refaire le devis », « Conclure la
+  vente » dès qu'un devis est parti, Note). La signature propose de créer la commande atelier
+  dans la foulée. Un seul bloc « Relances par e-mail », score sur une ligne, coordonnées et
+  commercial repliés ; relances et score masqués sur une affaire close.
+- **Confirmations** : chaque action affiche un message en haut de l'écran (`Toasts.tsx`,
+  fonction `toast()`).
+- **Rappels** : raccourcis (demain, 3 jours, une semaine) et heure ; bouton « Appeler » dans la
+  liste des relances.
+- **Listes** : tri des clients (récents, anciens, montant, score), score du prospect affiché
+  dans la liste et la vue Kanban, avec les jours sans action.
+- **Retour** : le bouton de la fiche ramène à la liste d'où l'on vient (`SuiviNavigation`).
+- **Sur téléphone**, le bouton du téléphone Ringover est dans la barre du haut (fixe) et non
+  plus flottant.
+
 ## Téléphonie Ringover (téléphone intégré)
 
 **Étape 1, en place : le SDK JavaScript seul** (`ringover-sdk`, gratuit, aucune clé).

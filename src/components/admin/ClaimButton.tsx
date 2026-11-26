@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Hand, Loader2 } from "lucide-react";
+import { toast } from "./Toasts";
 
 /* « Je le prends » — la pioche d'un lead entrant par le commercial connecté. */
 export function ClaimButton({ leadId }: { leadId: number }) {
@@ -18,9 +19,13 @@ export function ClaimButton({ leadId }: { leadId: number }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ leadId }),
       });
-      const j = (await r.json()) as { ok: boolean; demo?: boolean; error?: string; by?: string; first?: string | null };
+      const j = (await r.json()) as { ok: boolean; demo?: boolean; error?: string; by?: string; first?: string | null; leadId?: number; name?: string; devisId?: number | null };
       if (j.ok) {
-        router.refresh();
+        // On enchaîne : le devis du client s'ouvre tout de suite (sa fiche s'il n'a pas de devis).
+        toast(`Demande prise${j.name ? ` : ${j.name}` : ""}. ${j.devisId ? "Voici son devis à relire." : "Voici sa fiche."}`);
+        if (j.devisId) router.push(`/commercial/devis/${j.devisId}`);
+        else if (j.leadId) router.push(`/commercial/clients/${j.leadId}`);
+        else router.refresh();
         return;
       }
       setNote(j.demo ? "Mode démo : écritures désactivées" : j.error === "taken" ? `Déjà pris par ${j.by}` : j.error === "not_first" ? `Prenez d'abord la demande la plus ancienne${j.first ? ` (${j.first})` : ""}` : j.error === "no_rep" ? "Reconnectez-vous en choisissant votre nom" : "Échec — réessayez");

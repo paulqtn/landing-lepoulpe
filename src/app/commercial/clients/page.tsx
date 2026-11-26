@@ -10,10 +10,12 @@ export const dynamic = "force-dynamic";
 export default async function LeadsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ statut?: string; q?: string; qui?: string; page?: string }>;
+  searchParams: Promise<{ statut?: string; q?: string; qui?: string; page?: string; tri?: string }>;
 }) {
   const me = await requireMenu("clients");
-  const { statut, q, qui, page: pageParam } = await searchParams;
+  const { statut, q, qui, page: pageParam, tri: triParam } = await searchParams;
+  const TRIS = [["recent", "Plus récents"], ["ancien", "Plus anciens"], ["montant", "Montant"], ["score", "Score"]] as const;
+  const tri = TRIS.find(([k]) => k === triParam)?.[0] ?? "recent";
   const rep = await currentRep();
   const equipe = voitTout(me); // un commercial ne voit que ses clients et la file
   const mode = qui === "libre" ? "libre" : equipe && (qui === "tous" || !rep) ? "tous" : "moi";
@@ -21,12 +23,13 @@ export default async function LeadsPage({
   const PAGE = 50;
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
   const [leads, total] = await Promise.all([
-    listLeads({ statut, search: q, assigned, limit: PAGE, offset: (page - 1) * PAGE }),
+    listLeads({ statut, search: q, assigned, order: tri, limit: PAGE, offset: (page - 1) * PAGE }),
     countLeads({ statut, search: q, assigned }),
   ]);
   const pages = Math.max(1, Math.ceil(total / PAGE));
   const pageHref = (n: number) =>
-    `/commercial/clients?${new URLSearchParams({ ...(statut ? { statut } : {}), ...(q ? { q } : {}), ...(qui ? { qui } : {}), ...(n > 1 ? { page: String(n) } : {}) })}`;
+    `/commercial/clients?${new URLSearchParams({ ...(statut ? { statut } : {}), ...(q ? { q } : {}), ...(qui ? { qui } : {}), ...(tri !== "recent" ? { tri } : {}), ...(n > 1 ? { page: String(n) } : {}) })}`;
+  const triHref = (t: string) => `/commercial/clients?${new URLSearchParams({ ...(statut ? { statut } : {}), ...(q ? { q } : {}), ...(qui ? { qui } : {}), ...(t !== "recent" ? { tri: t } : {}) })}`;
   const rows: LeadRow[] = leads.map((l) => ({
     id: l.id,
     created_at: String(l.created_at),
@@ -40,6 +43,7 @@ export default async function LeadsPage({
     score_points: l.score_points,
     next_relance_at: l.next_relance_at ? String(l.next_relance_at) : null,
     assigned_to: l.assigned_to,
+    niveau: l.niveau ?? null,
   }));
 
   const exportHref = `/api/admin/export?${new URLSearchParams({ ...(statut ? { statut } : {}), ...(q ? { q } : {}) })}`;
@@ -85,6 +89,13 @@ export default async function LeadsPage({
         <FilterChip href={`/commercial/clients${mode !== "moi" ? `?qui=${qui}` : ""}`} active={!statut} label="Tous statuts" />
         {STATUTS.map((s) => (
           <FilterChip key={s} href={`/commercial/clients?statut=${s}${mode !== "moi" && qui ? `&qui=${qui}` : ""}`} active={statut === s} label={STATUT_LABELS[s]} />
+        ))}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-1.5 text-xs">
+        <span className="font-semibold text-neutral-500">Trier par</span>
+        {TRIS.map(([k, label]) => (
+          <FilterChip key={k} href={triHref(k)} active={tri === k} label={label} />
         ))}
       </div>
 

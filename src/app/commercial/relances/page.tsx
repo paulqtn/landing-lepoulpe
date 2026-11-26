@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { BellRing, CalendarClock, MailCheck, PhoneCall } from "lucide-react";
+import { BoutonAppeler } from "@/components/admin/Telephone";
+import { BellRing, CalendarClock, MailCheck, PhoneCall, Phone } from "lucide-react";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { RelancesEditor } from "@/components/admin/RelancesEditor";
 import { canManageSettings, requireMenu, voitTout } from "@/lib/admin/auth";
@@ -67,9 +68,14 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
                     <span className="block text-xs text-neutral-400">{l.phone}{mine ? "" : l.assigned_to ? ` · ${l.assigned_to}` : " · non attribué"}</span>
                   </Link>
                   <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${retard ? "bg-amber-500/15 text-amber-700 ring-amber-500/30" : "bg-neutral-50 text-neutral-500 ring-neutral-200"}`}>
-                    {l.rappel_at ? `${retard ? "à rappeler depuis le" : "rappel le"} ${new Date(l.rappel_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short" })}` : l.a_valide ? "a validé son devis en ligne" : "rappel demandé par le client"}
+                    {l.rappel_at ? `${retard ? "à rappeler depuis le" : "rappel le"} ${new Date(l.rappel_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}` : l.a_valide ? "a validé son devis en ligne" : "rappel demandé par le client"}
                   </span>
                   <StatutBadge statut={l.statut} />
+                  {l.phone && (
+                    <BoutonAppeler numero={l.phone} leadId={l.id} nom={l.name} className="inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-3.5 py-1.5 text-xs font-bold text-white transition hover:bg-pine-600">
+                      <Phone className="h-3.5 w-3.5" /> Appeler
+                    </BoutonAppeler>
+                  )}
                 </li>
               );
             })}

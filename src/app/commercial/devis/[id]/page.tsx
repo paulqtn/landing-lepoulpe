@@ -1,10 +1,10 @@
-import { peutVoirFiche, requireMenu } from "@/lib/admin/auth";
+import { peutVoirFiche, requireMenu, voitTout } from "@/lib/admin/auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { QuoteEditor } from "@/components/admin/QuoteEditor";
 import { refusAction } from "@/lib/admin/attribution";
-import { getLead } from "@/lib/admin/db";
+import { getLead, listDevisATraiter } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
 import { QUOTE_STATUT_LABELS, chiffrageDepuisLead, getQuote, prixParNiveau } from "@/lib/admin/quotes";
 import { getTarifsSite } from "@/lib/admin/prices";
@@ -42,6 +42,10 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
       },
     };
   }
+  // Devis suivant à traiter par cette personne (proposé une fois celui-ci envoyé).
+  const file = quote.statut === "brouillon" ? [] : await listDevisATraiter(voitTout(me) ? undefined : me.name, 50);
+  const prochain = file.find((l) => l.id !== quote.lead_id && l.devis_brouillon_id && (voitTout(me) ? l.assigned_to === me.name : true));
+  const suivant = prochain?.devis_brouillon_id ? { id: prochain.devis_brouillon_id, nom: prochain.name } : null;
   const manquants = societeManquants(await getSociete());
   const blockers = [
     ...(lectureSeule ? [lectureSeule] : []),
@@ -79,6 +83,8 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
         options={quote.options}
         blockers={blockers}
         chiffrage={chiffrage}
+        ficheHref={quote.lead_id ? `/commercial/clients/${quote.lead_id}` : null}
+        suivant={suivant}
         sentInfo={quote.sent_at ? `Envoyé le ${new Date(quote.sent_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris" })} à ${quote.sent_to} par ${quote.sent_by}.` : null}
       />
     </div>
