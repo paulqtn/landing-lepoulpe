@@ -16,7 +16,7 @@ email, relances programmées, suivi commercial.
 3. **Comptes et rôles** — le super-administrateur crée les autres comptes dans
    *Administration → Utilisateurs* : `superadmin` (tout + comptes), `admin` (tarifs,
    paramètres, diagnostic, RGPD), `commercial` (clients, devis, simulation).
-   Mots de passe hachés (scrypt), sessions révocables de 12 h. Les anciennes variables
+   Mots de passe hachés (scrypt), sessions révocables de 48 h. Les anciennes variables
    `ADMIN_ACCESS_CODE`, `CALC_ACCESS_CODE`, `ADMIN_TEAM`, `ADMIN_SECRET` ne servent plus.
 4. **Emails** — compte [Resend](https://resend.com), domaine vérifié, puis `RESEND_API_KEY`,
    `EMAIL_FROM` (ex. `MGK Garde-corps <devis@votre-domaine.fr>`) et `EMAIL_REPLY_TO`.

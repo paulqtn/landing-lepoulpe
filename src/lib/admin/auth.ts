@@ -17,7 +17,8 @@ import { adminQuery as q, dbConfigured } from "./db";
 /* ================================================================== */
 
 export const ADMIN_COOKIE = "mgk_session";
-export const SESSION_HOURS = 12;
+/** Durée d'une connexion au back office : on reste connecté 48 heures après s'être identifié. */
+export const SESSION_HOURS = 48;
 
 export const ROLES = ["superadmin", "admin", "commercial", "logisticien"] as const;
 export type Role = (typeof ROLES)[number];
