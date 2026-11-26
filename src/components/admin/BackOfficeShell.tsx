@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Alertes } from "@/components/admin/Alertes";
+import { TelephoneProvider } from "@/components/admin/Telephone";
 import { site } from "@/lib/site";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { CommercialNav } from "@/components/admin/CommercialNav";
-import { ROLE_LABELS, countUsers, currentUser, setupTokenConfigured, userMenus } from "@/lib/admin/auth";
+import { ROLE_LABELS, countUsers, currentUser, hasMenu, setupTokenConfigured, userMenus } from "@/lib/admin/auth";
 import { dbConfigured } from "@/lib/admin/db";
 
 /* Coquille commune aux espaces du back office (commercial, logistique) :
@@ -52,7 +53,8 @@ export async function BackOfficeShell({ children }: { children: React.ReactNode 
           <div className="mb-4 md:hidden">
             <CommercialNav menus={userMenus(user)} superadmin={user.role === "superadmin"} compact />
           </div>
-          {children}
+          {/* Téléphone intégré : proposé à ceux qui suivent des clients, chargé seulement s'ils l'activent. */}
+          <TelephoneProvider visible={hasMenu(user, "clients") || hasMenu(user, "etat")}>{children}</TelephoneProvider>
         </div>
       </div>
     </main>

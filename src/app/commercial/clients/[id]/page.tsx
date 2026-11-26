@@ -6,6 +6,7 @@ import { CreateOrderButton } from "@/components/admin/LogisticsActions";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { adminQuery, getLead, listEvents } from "@/lib/admin/db";
 import { LeadFiles } from "@/components/admin/LeadFiles";
+import { BoutonAppeler } from "@/components/admin/Telephone";
 import { niveauInfo } from "@/lib/admin/niveaux";
 import { getTeam } from "@/lib/admin/team";
 import { PrepareQuoteButton } from "@/components/admin/QuoteEditor";
@@ -130,9 +131,9 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
       {!lectureSeule && (
         <div className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t border-neutral-200 bg-white px-3 py-2 lg:static lg:z-auto lg:border-0 lg:bg-transparent lg:p-0">
           {lead.phone && (
-            <a href={`tel:${lead.phone.replace(/\s/g, "")}`} className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-pine-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600 lg:flex-none">
+            <BoutonAppeler numero={lead.phone} leadId={lead.id} nom={lead.name} className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-pine-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600 lg:flex-none">
               <Phone className="h-4 w-4" /> Appeler
-            </a>
+            </BoutonAppeler>
           )}
           {devisRapide && (
             <Link href={`/commercial/devis/${devisRapide.id}`} className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-bold text-pine-950 transition hover:bg-amber-600 lg:flex-none">

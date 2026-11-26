@@ -323,4 +323,29 @@ export const MIGRATIONS: Migration[] = [
     id: "014_motif_de_non_signature",
     sql: `ALTER TABLE leads ADD COLUMN motif_perte TEXT;`,
   },
+  {
+    // Journal des appels téléphoniques (téléphone intégré aujourd'hui ; webhooks, enregistrements
+    // et résumés pourront compléter les mêmes lignes, reconnues par call_id).
+    id: "015_journal_des_appels",
+    sql: `
+      CREATE TABLE telephonie_appels (
+        id SERIAL PRIMARY KEY,
+        call_id TEXT NOT NULL UNIQUE,
+        source TEXT NOT NULL DEFAULT 'sdk',
+        lead_id INT REFERENCES leads(id) ON DELETE SET NULL,
+        utilisateur TEXT,
+        direction TEXT NOT NULL CHECK (direction IN ('in', 'out')),
+        from_number TEXT NOT NULL DEFAULT '',
+        to_number TEXT NOT NULL DEFAULT '',
+        answered BOOLEAN NOT NULL DEFAULT false,
+        ring_s INT NOT NULL DEFAULT 0,
+        duree_s INT NOT NULL DEFAULT 0,
+        enregistrement_url TEXT,
+        resume TEXT,
+        details JSONB,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+      CREATE INDEX idx_telephonie_appels_lead ON telephonie_appels(lead_id);
+    `,
+  },
 ];

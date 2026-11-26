@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --experimental-strip-types --test src/lib/simulation/engine.test.mjs src/lib/admin/prime.test.mjs src/lib/calculateur/correspondance.test.mjs src/lib/admin/dates-paris.test.mjs"
+    "test": "node --experimental-strip-types --test src/lib/simulation/engine.test.mjs src/lib/admin/prime.test.mjs src/lib/calculateur/correspondance.test.mjs src/lib/admin/dates-paris.test.mjs src/lib/telephonie/numero.test.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.18.0",
@@ -17,6 +17,7 @@
     "pg": "^8.23.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "ringover-sdk": "^1.1.3",
     "sanitize-html": "^2.18.2"
   },
   "devDependencies": {

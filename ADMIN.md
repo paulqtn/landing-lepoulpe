@@ -94,6 +94,41 @@ appel sans réponse laisse la séquence continuer. « Reprendre la séquence » 
 où elle s'était arrêtée. Les clients à rappeler apparaissent dans l'onglet Relances et
 dans les priorités de l'accueil.
 
+## Téléphonie Ringover (téléphone intégré)
+
+**Étape 1, en place : le SDK JavaScript seul** (`ringover-sdk`, gratuit, aucune clé).
+Le SDK affiche l'application web Ringover (`app.ringover.com`) dans une fenêtre intégrée :
+connexion, micro et appels se passent chez Ringover. Le back office ne voit jamais les
+identifiants ; il reçoit des messages (connexion, sonnerie, décroché, raccroché) et peut
+demander de composer un numéro.
+
+- `src/components/admin/Telephone.tsx` : bouton flottant, fenêtre du téléphone, écoute des
+  messages (uniquement ceux venant de `https://app.ringover.com`), bouton `BoutonAppeler`.
+  Monté dans `BackOfficeShell` : présent sur toutes les pages, la fenêtre reste chargée d'une
+  page à l'autre.
+- **Activation par navigateur** : rien n'est chargé tant que la personne ne clique pas sur
+  « Activer le téléphone » (préférence `mgk-telephone` du navigateur). Sans activation, le bouton
+  « Appeler » des fiches reste un lien téléphonique classique.
+- `src/lib/telephonie/numero.ts` : mise au format international des numéros (testé par `npm test`).
+- **Journal des appels** : table `telephonie_appels` (un appel = un `call_id`), remplie en fin
+  d'appel par `/api/admin/telephonie/appels`, avec une ligne dans l'historique de la fiche dont
+  le numéro correspond. `/api/admin/telephonie/contact` retrouve le client d'un numéro entrant.
+  Ces données viennent du navigateur du commercial (source `sdk`).
+- **Micro** : le navigateur demande l'autorisation pour le site, qui la prête à la fenêtre
+  Ringover (`allow="microphone"` posé par le SDK). Il faut https (c'est le cas sur Vercel).
+  Aucun en-tête du site ne bloque le micro ni les fenêtres intégrées.
+- Limites du SDK seul : il faut que le back office soit ouvert pour recevoir un appel ; pas
+  d'enregistrement, de transcription ni de résumé ; passer de l'espace commercial à l'espace
+  logistique recharge le téléphone.
+
+**Étapes suivantes prévues** (rien n'est installé ni payé pour l'instant) :
+1. *API REST* : clé `RINGOVER_API_KEY` dans Vercel, un fichier `src/lib/telephonie/ringover-api.ts`
+   (jamais côté navigateur) pour relire les appels et compléter `telephonie_appels`.
+2. *Webhooks* : une route `/api/webhooks/ringover` (signature vérifiée) qui écrit dans la même
+   table avec la source `webhook` : les appels sont alors tracés même back office fermé.
+3. *Résumés IA natifs (Empower)* : colonnes `resume` et `enregistrement_url` déjà prévues ;
+   le résumé s'affichera dans l'historique de la fiche.
+
 ## Niveaux de prix réglables, et ce que voit chaque commercial
 
 - **Niveaux de prix** : *Tarifs et paramètres → Commissions, délais et société → Niveaux de prix
