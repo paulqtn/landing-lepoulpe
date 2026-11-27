@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertTriangle, Archive, BarChart3, Clock, FileText, Flame, Inbox, Loader2, Mail, MailOpen, MessageSquareReply, Paperclip, RefreshCw, Search, Send, Settings, SlidersHorizontal, Sparkles, X } from "lucide-react";
+import { AlertTriangle, Archive, BarChart3, Clock, FileText, Flame, Inbox, Loader2, Mail, MailOpen, MessageSquareReply, Paperclip, PenLine, RefreshCw, Search, Send, Settings, SlidersHorizontal, Sparkles, X } from "lucide-react";
 import { CATEGORIES, CATEGORIE_LABELS, PRIORITES, PRIORITE_LABELS, type Categorie, type Priorite } from "@/lib/messagerie/modele";
 import { toast } from "../Toasts";
 import { Connexion } from "./Connexion";
 import { Conversation } from "./Conversation";
+import { Nouveau } from "./Nouveau";
 import { Globaux, Reglages } from "./Reglages";
 import { appel, bouton, boutonPrincipal, champ, ilYA, PRIORITE_STYLE, quand, type CompteVue, type Compteurs, type Etat, type Ligne } from "./commun";
 
@@ -26,7 +27,7 @@ type Onglet = "messages" | "tableau" | "parametres";
 type Filtres = { q: string; expediteur: string; categorie: string; priorite: string; statut: string; du: string; au: string };
 const SANS_FILTRE: Filtres = { q: "", expediteur: "", categorie: "", priorite: "", statut: "", du: "", au: "" };
 
-export function Messagerie({ initial, admin, ouvrir, message }: { initial: Etat; admin: boolean; ouvrir?: number; message?: { ok: boolean; texte: string } }) {
+export function Messagerie({ initial, admin, ouvrir, ecrireA, message }: { initial: Etat; admin: boolean; ouvrir?: number; ecrireA?: string; message?: { ok: boolean; texte: string } }) {
   const [etat, setEtat] = useState<Etat>(initial);
   const [onglet, setOnglet] = useState<Onglet>("messages");
   const [vue, setVue] = useState("reception");
@@ -37,7 +38,7 @@ export function Messagerie({ initial, admin, ouvrir, message }: { initial: Etat;
   const [liste, setListe] = useState<{ messages: Ligne[]; total: number; parPage: number } | null>(null);
   const [compteurs, setCompteurs] = useState<Compteurs | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
-  const [selection, setSelection] = useState<number | null>(ouvrir ?? null);
+  const [selection, setSelection] = useState<number | "nouveau" | null>(ouvrir ?? (ecrireA ? "nouveau" : null));
   const [synchro, setSynchro] = useState(false);
   const [enCours, setEnCours] = useState(0);
   const compte = etat.compte;
@@ -116,7 +117,10 @@ export function Messagerie({ initial, admin, ouvrir, message }: { initial: Etat;
           <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${compte.statut === "ok" ? "bg-green-600" : "bg-red-600"}`} />
           <span className="truncate"><strong className="font-bold text-inkgreen">{compte.email}</strong> · {compte.statut === "ok" ? `synchronisée ${ilYA(compte.lastSyncAt)}` : "connexion en erreur"}{enCours > 0 ? ` · ${enCours} tâche${enCours > 1 ? "s" : ""} en cours` : ""}</span>
         </p>
-        <button type="button" className={`${bouton} ml-auto`} disabled={synchro} onClick={() => passage(true)}>
+        <button type="button" className={`${boutonPrincipal} ml-auto`} onClick={() => { setOnglet("messages"); setSelection("nouveau"); }}>
+          <PenLine className="h-4 w-4" /> Nouveau message
+        </button>
+        <button type="button" className={bouton} disabled={synchro} onClick={() => passage(true)}>
           {synchro ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />} Synchroniser
         </button>
       </div>
@@ -262,7 +266,9 @@ export function Messagerie({ initial, admin, ouvrir, message }: { initial: Etat;
 
           {/* --------------------------- conversation --------------------------- */}
           <section aria-label="Conversation" className={`min-w-0 ${selection ? "" : "hidden lg:block"}`}>
-            {selection ? (
+            {selection === "nouveau" ? (
+              <Nouveau destinataire={ecrireA} envoiPossible={Boolean(compte.smtp.host)} onFermer={() => { setSelection(null); void charger(); }} />
+            ) : selection ? (
               <Conversation id={selection} iaPrete={iaPrete} envoiPossible={Boolean(compte.smtp.host)} onRetour={() => setSelection(null)} onChange={() => void charger()} />
             ) : (
               <div className="grid h-full min-h-64 place-items-center rounded-2xl border border-dashed border-neutral-300 bg-white/60 p-8 text-center">

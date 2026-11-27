@@ -60,8 +60,10 @@ const versOrigine = (o: MessageLu | null) => (o ? { messageId: o.messageId, refe
  * Écrit le brouillon dans le dossier Brouillons de la boîte (et nulle part ailleurs).
  * Un seul brouillon en cours par message reçu ; une version identique n'est pas redéposée.
  */
-export async function ecrireBrouillon(compte: Compte, idx: Index | null, v: Contenu & { origine: "ia" | "manuel" }, origine?: MessageLu | null): Promise<BrouillonLu> {
-  const dejaLa = idx ? await repereDuMessage(compte, idx.id) : null;
+export async function ecrireBrouillon(compte: Compte, idx: Index | null, v: Contenu & { origine: "ia" | "manuel"; id?: number }, origine?: MessageLu | null): Promise<BrouillonLu> {
+  // Réponse : le repère est celui du message reçu. Nouveau message : celui qu'on est en train de modifier, s'il existe.
+  const libre = !idx && v.id ? await repereDe(compte, v.id) : null;
+  const dejaLa = idx ? await repereDuMessage(compte, idx.id) : libre && libre.statut === "brouillon" && libre.message_id === null ? libre : null;
   const rep =
     dejaLa ??
     (await q<Repere>(
@@ -98,6 +100,21 @@ export async function ecrireBrouillon(compte: Compte, idx: Index | null, v: Cont
   }
 }
 
+/** Nouveaux messages en cours d'écriture (sans message d'origine), relus dans le dossier Brouillons. */
+export async function nouveauxEnCours(compte: Compte): Promise<(BrouillonLu & { modifieLe: string })[]> {
+  const reps = await q<Repere>("SELECT * FROM mail_drafts WHERE account_id = $1 AND message_id IS NULL AND statut = 'brouillon' AND imap_uid IS NOT NULL ORDER BY updated_at DESC LIMIT 20", [compte.id]);
+  if (reps.length === 0 || !compte.dossiers.drafts) return [];
+  const lus = await avecImap(compte, (client) => lireMessages(client, compte.dossiers.drafts as string, reps.map((r) => Number(r.imap_uid))));
+  const out: (BrouillonLu & { modifieLe: string })[] = [];
+  for (const r of reps) {
+    const m = lus.find((x) => x.uid === Number(r.imap_uid));
+    // Absent de la boîte : supprimé ou envoyé depuis un autre logiciel, le repère n'a plus lieu d'être.
+    if (!m) await q("UPDATE mail_drafts SET statut = 'supprime', updated_at = now() WHERE id = $1", [r.id]);
+    else out.push({ ...contenuDe(m), id: r.id, origine: r.origine, dansLaBoite: true, modifieLe: r.updated_at });
+  }
+  return out;
+}
+
 /** Retire un brouillon de la boîte mail. */
 export async function supprimerBrouillon(compte: Compte, id: number): Promise<boolean> {
   const rep = await repereDe(compte, id);
@@ -109,7 +126,7 @@ export async function supprimerBrouillon(compte: Compte, id: number): Promise<bo
 }
 
 /** Envoi, uniquement sur demande du commercial : le brouillon est relu dans la boîte, envoyé par SMTP, rangé dans « Envoyés », puis retiré. */
-export async function envoyerBrouillon(compte: Compte, id: number, auteur: string): Promise<void> {
+export async function envoyerBrouillon(compte: Compte, id: number, auteur: string, ficheDuDestinataire?: (email: string) => Promise<number | null>): Promise<void> {
   const rep = await repereDe(compte, id);
   if (!rep || rep.statut !== "brouillon" || !rep.imap_uid || !compte.dossiers.drafts) throw new Error("Ce brouillon n'existe plus ou a déjà été envoyé.");
   if (!compte.smtp_host) throw new Error("Le serveur d'envoi (SMTP) n'est pas renseigné dans les paramètres de la boîte.");
@@ -148,6 +165,10 @@ export async function envoyerBrouillon(compte: Compte, id: number, auteur: strin
   if (idx) {
     await q("UPDATE mail_messages SET statut = 'traite', repondu_at = now(), lu = true WHERE id = $1", [idx.id]);
     if (idx.lead_id) await addEvent(idx.lead_id, "info", `E-mail envoyé par ${auteur} depuis la messagerie`).catch(() => undefined);
+  } else if (ficheDuDestinataire) {
+    // Nouveau message à un client connu : l'envoi est noté sur sa fiche (sans objet ni contenu).
+    const lead = await ficheDuDestinataire(listeAdresses(c.dest)[0]).catch(() => null);
+    if (lead) await addEvent(lead, "info", `E-mail envoyé par ${auteur} depuis la messagerie`).catch(() => undefined);
   }
   await journal(compte.user_id, compte.email, "envoi");
 }

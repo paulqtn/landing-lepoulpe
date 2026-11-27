@@ -164,6 +164,19 @@ try {
   await sql("UPDATE mail_accounts SET imap_port = 1143 WHERE email = $1", [base.email]); await sql("UPDATE mail_jobs SET prochain_essai_at = now() WHERE statut = 'attente'");
   ok((await tout()).json.compte.statut === "ok", "connexion rétablie : la boîte repart seule");
 
+  /* ----------------------------- nouveau message ----------------------------- */
+  r = await api("/brouillons", { body: { messageId: null, dest: "prospect@nouveau.invalid", cc: "", sujet: "Votre projet", corps: "Bonjour,\n\nVoici les informations." } });
+  const nouveau = r.json?.brouillon;
+  r = await api("/brouillons", { body: { id: nouveau?.id, messageId: null, dest: "prospect@nouveau.invalid", cc: "", sujet: "Votre projet", corps: "Bonjour,\n\nVersion corrigée." } });
+  br = await dossier("Brouillons");
+  const bn = br.filter((b) => b.p.subject === "Votre projet");
+  ok(bn.length === 1 && bn[0].flags.includes("\\Draft") && !bn[0].p.inReplyTo && /Version corrigée/.test(bn[0].p.text) && r.json.brouillon.id === nouveau.id, "nouveau message : écrit dans les Brouillons de la boîte, une seule version après modification");
+  ok((await api("/brouillons")).json.brouillons.some((b) => b.id === nouveau.id && b.sujet === "Votre projet"), "nouveau message en cours : retrouvé en relisant la boîte");
+  ok((await api(`/brouillons/${nouveau.id}/envoyer`, { cookie: B, body: { confirme: true } })).status === 422, "nouveau message : un autre commercial ne peut pas l'envoyer");
+  const avantEnvoi = smtpRecus().length;
+  r = await api(`/brouillons/${nouveau.id}/envoyer`, { body: { confirme: true } });
+  ok(r.json?.ok && smtpRecus().length === avantEnvoi + 1 && smtpRecus().pop().to[0] === "prospect@nouveau.invalid" && !(await dossier("Brouillons")).some((b) => b.p.subject === "Votre projet"), "nouveau message : envoyé après confirmation, brouillon retiré");
+
   /* -------------------- aucun contenu d'e-mail dans la base -------------------- */
   const [{ t: dump }] = await sql(
     `SELECT (SELECT coalesce(string_agg(m::text, ' '), '') FROM mail_messages m) || (SELECT coalesce(string_agg(d::text, ' '), '') FROM mail_drafts d)
@@ -171,7 +184,7 @@ try {
           || (SELECT coalesce(string_agg(coalesce(message, ''), ' '), '') FROM lead_events WHERE lead_id = $1) AS t`,
     [lead.id],
   );
-  const traces = ["Devis terrasse", "Chantier", `client${MARQUE}`, "claire@client.invalid", "refaire le devis", "depuis mon téléphone", "photo.jpg", "SECRET BANCAIRE", "Délai de réponse"].filter((x) => dump.includes(x));
+  const traces = ["Votre projet", "prospect@nouveau", "Version corrigée", "Devis terrasse", "Chantier", `client${MARQUE}`, "claire@client.invalid", "refaire le devis", "depuis mon téléphone", "photo.jpg", "SECRET BANCAIRE", "Délai de réponse"].filter((x) => dump.includes(x));
   ok(traces.length === 0, "base de données : aucun objet, expéditeur, texte, pièce jointe ni brouillon enregistré", traces.join(", "));
 
   /* ------------------------ tableau de bord, déconnexion ------------------------ */

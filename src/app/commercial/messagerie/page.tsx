@@ -12,7 +12,7 @@ export const metadata = { title: "Messagerie intelligente" };
 
 /* Messagerie intelligente : la boîte mail du commercial connecté, triée par l'IA, avec les
    réponses préparées. Chacun ne voit que sa propre boîte. */
-export default async function MessageriePage({ searchParams }: { searchParams: Promise<{ m?: string; oauth?: string; connecte?: string }> }) {
+export default async function MessageriePage({ searchParams }: { searchParams: Promise<{ m?: string; a?: string; oauth?: string; connecte?: string }> }) {
   const me = await requireMenu("messagerie");
   const [p, g, compte] = await Promise.all([searchParams, globaux(), compteDe(me.id)]);
   if (!g.actif && !voitTout(me))
@@ -28,5 +28,5 @@ export default async function MessageriePage({ searchParams }: { searchParams: P
     fournisseurs: [...FOURNISSEURS, AUTRE].map((f) => ({ cle: f.cle, nom: f.nom, imap: f.imap, smtp: f.smtp, oauth: f.oauth ?? null, oauthObligatoire: Boolean(f.oauthObligatoire), oauthPret: f.oauth ? oauthConfigure(f.oauth) : false, aide: f.aide })),
   };
   const message = p.connecte === "1" ? { ok: true, texte: "Boîte mail connectée. La première synchronisation démarre." } : p.oauth ? { ok: false, texte: p.oauth.slice(0, 300) } : undefined;
-  return <Messagerie initial={initial} admin={canManageSettings(me)} ouvrir={Number(p.m) || undefined} message={message} />;
+  return <Messagerie initial={initial} admin={canManageSettings(me)} ouvrir={Number(p.m) || undefined} ecrireA={p.a && /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(p.a) ? p.a.slice(0, 200) : undefined} message={message} />;
 }

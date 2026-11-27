@@ -362,6 +362,10 @@ Autorisations demandées : Google `https://mail.google.com/` ; Microsoft `IMAP.A
 - **Doublons** : un message est identifié par dossier + UIDVALIDITY + UID ; un seul brouillon
   en cours par message reçu ; un brouillon inchangé n'est pas redéposé (empreinte du contenu) ;
   une nouvelle version est déposée avant que l'ancienne soit retirée.
+- **Nouveau message** : le bouton *Nouveau message* écrit un e-mail de zéro (sans message
+  d'origine). Il suit les mêmes règles : brouillon dans la boîte, envoi après confirmation,
+  rien en base. Depuis une fiche client, l'adresse du client ouvre un nouveau message quand la
+  personne connectée a une boîte.
 - **Brouillon modifié ailleurs** : le brouillon est relu dans la boîte à chaque ouverture, donc
   une modification faite dans Outlook ou sur le téléphone s'affiche telle quelle. Envoyé depuis
   un autre logiciel → message marqué répondu ; supprimé → repère retiré.

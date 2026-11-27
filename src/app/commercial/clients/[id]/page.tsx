@@ -52,6 +52,8 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
     quotesForLead(lead.id),
     adminQuery<{ id: number; name: string; bytes: number; created_by: string | null; created_at: string }>("SELECT id, name, bytes, created_by, created_at FROM lead_files WHERE lead_id = $1 AND complete ORDER BY id DESC", [lead.id]),
   ]);
+  // Boîte mail connectée : l'adresse du client ouvre un nouveau message dans la messagerie.
+  const aBoite = hasMenu(me, "messagerie") && (await adminQuery<{ id: number }>("SELECT id FROM mail_accounts WHERE user_id = $1", [me.id]).catch(() => [])).length > 0;
   // E-mails de la boîte de la personne connectée rattachés à ce client (jamais ceux d'un collègue).
   const courriels = hasMenu(me, "messagerie")
     ? await adminQuery<{ id: number; dossier: string; date: string; categorie: string | null }>(
@@ -100,7 +102,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           </div>
           <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-neutral-500">
 {lead.email && (
-                          <a href={`mailto:${lead.email}`} className="flex items-center gap-1.5 font-semibold text-pine-700 hover:underline">
+                          <a href={aBoite ? `/commercial/messagerie?a=${encodeURIComponent(lead.email)}` : `mailto:${lead.email}`} title={aBoite ? "Écrire à ce client depuis la messagerie" : undefined} className="flex items-center gap-1.5 font-semibold text-pine-700 hover:underline">
               <Mail className="h-3.5 w-3.5" /> {lead.email}
             </a>
             )}

@@ -25,6 +25,8 @@ test("fournisseurs reconnus par l'adresse ou par les serveurs du domaine", () =>
   assert.equal(fournisseurParMx(["aspmx.l.google.com"])?.cle, "gmail");
   assert.equal(fournisseurParMx(["societe-fr.mail.protection.outlook.com"])?.cle, "outlook");
   assert.equal(fournisseurParMx(["mta-gw.infomaniak.ch"])?.cle, "infomaniak");
+  assert.equal(fournisseurParMx(["mx1.hostinger.com", "mx2.hostinger.com"])?.cle, "hostinger");
+  assert.equal(fournisseurParMx(["mx1.titan.email"])?.cle, "titan");
   assert.equal(fournisseurParMx(["mail.exemple.fr"]), null);
   assert.equal(fournisseurParCle("n-existe-pas").cle, "autre");
   assert.equal(fournisseurParCle("outlook").oauthObligatoire, true);

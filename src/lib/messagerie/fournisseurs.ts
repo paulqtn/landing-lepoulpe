@@ -43,6 +43,18 @@ export const FOURNISSEURS: Fournisseur[] = [
     aide: "Identifiant : l'adresse e-mail complète. Avec la validation en deux étapes, créez un mot de passe d'application dans le Manager Infomaniak.",
   },
   {
+    cle: "hostinger", nom: "Hostinger",
+    imap: { host: "imap.hostinger.com", port: 993, secure: true }, smtp: { host: "smtp.hostinger.com", port: 465, secure: true },
+    domaines: [], mx: ["hostinger.com", "hostinger.fr"],
+    aide: "Identifiant : l'adresse e-mail complète. Mot de passe : celui de la boîte mail (hPanel → E-mails), pas celui du compte Hostinger. Offre « Titan » : choisissez plutôt le fournisseur Titan.",
+  },
+  {
+    cle: "titan", nom: "Titan (Hostinger, autres hébergeurs)",
+    imap: { host: "imap.titan.email", port: 993, secure: true }, smtp: { host: "smtp.titan.email", port: 465, secure: true },
+    domaines: [], mx: ["titan.email"],
+    aide: "Identifiant : l'adresse e-mail complète. Mot de passe : celui de la boîte mail.",
+  },
+  {
     cle: "ionos", nom: "IONOS (1&1)",
     imap: { host: "imap.ionos.fr", port: 993, secure: true }, smtp: { host: "smtp.ionos.fr", port: 465, secure: true },
     domaines: [], mx: ["ionos.fr", "ionos.com", "kundenserver.de"], aide: "Identifiant : l'adresse e-mail complète.",
