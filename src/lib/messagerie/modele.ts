@@ -49,6 +49,8 @@ export type Reglages = {
   categoriesAuto: Categorie[];
   exclusions: string[];
   frequenceMin: number;
+  /** Sirène de dix secondes à chaque e-mail reçu. */
+  notifMail: boolean;
   notifUrgent: boolean;
   notifBrouillon: boolean;
   regles: ReglePriorite[];
@@ -63,6 +65,7 @@ export const REGLAGES_DEFAUT: Reglages = {
   categoriesAuto: CATEGORIES_REPONSE_DEFAUT,
   exclusions: [],
   frequenceMin: 5,
+  notifMail: true,
   notifUrgent: true,
   notifBrouillon: true,
   regles: [],
@@ -96,6 +99,7 @@ export function sanitizeReglages(raw: unknown, base: Reglages = REGLAGES_DEFAUT)
     categoriesAuto: cats,
     exclusions,
     frequenceMin: freq,
+    notifMail: bool("notifMail"),
     notifUrgent: bool("notifUrgent"),
     notifBrouillon: bool("notifBrouillon"),
     regles,

@@ -43,10 +43,21 @@ export async function GET(req: Request) {
         [user.id, since.toISOString()],
       ).catch(() => [])
     : [];
+  // Nouvel e-mail reçu : une seule alerte par passage, sans objet ni expéditeur. Les messages repris
+  // par une première synchronisation (anciens) ne déclenchent rien.
+  const recus = hasMenu(user, "messagerie")
+    ? await q<{ n: number; dernier: number | null }>(
+        `SELECT count(*)::int AS n, max(m.id) AS dernier FROM mail_messages m JOIN mail_accounts a ON a.id = m.account_id
+         WHERE a.user_id = $1 AND m.dossier = 'inbox' AND m.created_at > $2 AND m.date > now() - interval '45 minutes' AND COALESCE((a.reglages->>'notifMail')::boolean, true)`,
+        [user.id, since.toISOString()],
+      ).catch(() => [])
+    : [];
+  const nouveaux = recus[0]?.n ?? 0;
   return NextResponse.json({
     now: now.toISOString(),
     alertes: [
       ...demandes.map((d) => ({ cle: `d${d.id}`, titre: "Nouvelle demande", texte: `${d.name}${d.estimation_ttc ? ` · ${Math.round(Number(d.estimation_ttc)).toLocaleString("fr-FR")} € TTC` : ""}`, href: "/commercial" })),
+      ...(nouveaux > 0 ? [{ cle: `mail-recu-${recus[0]?.dernier}`, titre: nouveaux > 1 ? `${nouveaux} nouveaux e-mails` : "Nouvel e-mail", texte: "Ouvrir la messagerie", href: nouveaux === 1 ? `/commercial/messagerie?m=${recus[0]?.dernier}` : "/commercial/messagerie", son: "sirene" as const }] : []),
       ...courriels.map((c) => ({ cle: `mail-${c.genre}-${c.id}`, titre: c.genre === "urgent" ? "E-mail urgent" : "Réponse prête à valider", texte: (CATEGORIE_LABELS as Record<string, string>)[c.categorie ?? ""] ?? "Ouvrir le message", href: `/commercial/messagerie?m=${c.id}` })),
       ...clients.map((c) => ({ cle: `${c.type}${c.id}`, titre: c.type === "devis_accepte" ? "Devis validé en ligne" : "Demande de rappel", texte: c.name, href: `/commercial/clients/${c.id}` })),
     ],

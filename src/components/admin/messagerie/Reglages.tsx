@@ -86,7 +86,7 @@ export function Reglages({ etat, admin, onCompte, onDeconnecte }: { etat: Etat; 
       <section className={carte}>
         <h2 className={titre}>Tri et réponses automatiques</h2>
         <div className="mt-2 divide-y divide-neutral-100">
-          <Bascule id="r-tri" label="Trier mes e-mails automatiquement" aide="Chaque nouveau message reçoit une catégorie, une priorité et un résumé." valeur={r.triAuto} onChange={(v) => set({ triAuto: v })} />
+          <Bascule id="r-tri" label="Trier mes e-mails automatiquement" aide="Chaque nouveau message reçoit une catégorie et une priorité." valeur={r.triAuto} onChange={(v) => set({ triAuto: v })} />
           <Bascule id="r-brouillons" label="Préparer les réponses en brouillon" aide="Le brouillon est déposé dans votre boîte mail. Vous le relisez et l'envoyez vous-même." valeur={r.brouillonsAuto} onChange={(v) => set({ brouillonsAuto: v })} />
         </div>
         <fieldset className="mt-4" disabled={!r.brouillonsAuto}>
@@ -111,10 +111,11 @@ export function Reglages({ etat, admin, onCompte, onDeconnecte }: { etat: Etat; 
       <section className={carte}>
         <h2 className={titre}>Notifications</h2>
         <div className="mt-2 divide-y divide-neutral-100">
+          <Bascule id="r-n-mail" label="Sirène de police de 10 secondes à chaque e-mail reçu" aide="Elle se coupe en fermant l'alerte, ou avec le bouton de la cloche en haut de l'écran." valeur={r.notifMail} onChange={(v) => set({ notifMail: v })} />
           <Bascule id="r-n-urgent" label="Me prévenir quand un e-mail urgent arrive" valeur={r.notifUrgent} onChange={(v) => set({ notifUrgent: v })} />
           <Bascule id="r-n-brouillon" label="Me prévenir quand une réponse est prête à valider" valeur={r.notifBrouillon} onChange={(v) => set({ notifBrouillon: v })} />
         </div>
-        <p className="mt-1 text-xs text-neutral-500">Les notifications passent par la cloche du back office, en haut de l&rsquo;écran.</p>
+        <p className="mt-1 text-xs text-neutral-500">Les notifications passent par la cloche du back office, en haut de l&rsquo;écran. Elles ne sonnent que lorsque le back office est ouvert dans votre navigateur, au moment où la synchronisation découvre le message.</p>
       </section>
 
       <section className={carte}>
