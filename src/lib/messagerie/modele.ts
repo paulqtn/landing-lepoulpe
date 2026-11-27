@@ -49,7 +49,7 @@ export type Reglages = {
   categoriesAuto: Categorie[];
   exclusions: string[];
   frequenceMin: number;
-  /** Sirène de dix secondes à chaque e-mail reçu. */
+  /** Son de notification bref à chaque e-mail reçu. */
   notifMail: boolean;
   notifUrgent: boolean;
   notifBrouillon: boolean;

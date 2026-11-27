@@ -111,7 +111,7 @@ export function Reglages({ etat, admin, onCompte, onDeconnecte }: { etat: Etat; 
       <section className={carte}>
         <h2 className={titre}>Notifications</h2>
         <div className="mt-2 divide-y divide-neutral-100">
-          <Bascule id="r-n-mail" label="Sirène de police de 10 secondes à chaque e-mail reçu" aide="Elle se coupe en fermant l'alerte, ou avec le bouton de la cloche en haut de l'écran." valeur={r.notifMail} onChange={(v) => set({ notifMail: v })} />
+          <Bascule id="r-n-mail" label="Son de notification à chaque e-mail reçu" aide="Un son bref, façon téléphone. Il se coupe avec le bouton de la cloche en haut de l'écran." valeur={r.notifMail} onChange={(v) => set({ notifMail: v })} />
           <Bascule id="r-n-urgent" label="Me prévenir quand un e-mail urgent arrive" valeur={r.notifUrgent} onChange={(v) => set({ notifUrgent: v })} />
           <Bascule id="r-n-brouillon" label="Me prévenir quand une réponse est prête à valider" valeur={r.notifBrouillon} onChange={(v) => set({ notifBrouillon: v })} />
         </div>

@@ -362,10 +362,10 @@ Autorisations demandées : Google `https://mail.google.com/` ; Microsoft `IMAP.A
 - **Doublons** : un message est identifié par dossier + UIDVALIDITY + UID ; un seul brouillon
   en cours par message reçu ; un brouillon inchangé n'est pas redéposé (empreinte du contenu) ;
   une nouvelle version est déposée avant que l'ancienne soit retirée.
-- **Sirène à la réception** : chaque e-mail reçu déclenche une alerte « Nouvel e-mail » et une
-  sirène deux tons de dix secondes (`Alertes.tsx`), coupée en fermant l'alerte ou avec le bouton
-  de la cloche. Réglage par commercial (*Paramètres → Notifications*). Elle ne sonne que
-  back office ouvert, quand la synchronisation découvre le message.
+- **Notification à la réception** : chaque e-mail reçu déclenche une alerte « Nouvel e-mail » et
+  un son bref de trois notes (`Alertes.tsx`). Réglage par commercial (*Paramètres →
+  Notifications*) ; le bouton de la cloche coupe tous les sons. Elle ne sonne que back office
+  ouvert, quand la synchronisation découvre le message.
 - **Nouveau message** : le bouton *Nouveau message* écrit un e-mail de zéro (sans message
   d'origine). Il suit les mêmes règles : brouillon dans la boîte, envoi après confirmation,
   rien en base. Depuis une fiche client, l'adresse du client ouvre un nouveau message quand la

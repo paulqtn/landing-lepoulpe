@@ -9,7 +9,7 @@ import { Bell, BellOff, X } from "lucide-react";
    ou qu'un client valide son devis en ligne. L'écran interroge le serveur toutes les
    30 secondes, uniquement quand l'onglet est visible. */
 
-type Alerte = { cle: string; titre: string; texte: string; href: string; son?: "sirene" };
+type Alerte = { cle: string; titre: string; texte: string; href: string; son?: "notif" };
 const PERIODE = 30_000;
 
 function sonner(ctx: AudioContext) {
@@ -31,30 +31,23 @@ function sonner(ctx: AudioContext) {
   });
 }
 
-/** Durée de la sirène annonçant un e-mail reçu. */
-const SIRENE_S = 10;
-
-/** Sirène deux tons (435 Hz / 580 Hz, l'alternance des véhicules de police français). Rend de quoi la couper. */
-function sirene(ctx: AudioContext): () => void {
-  const o = ctx.createOscillator();
-  const g = ctx.createGain();
-  const t0 = ctx.currentTime;
-  o.type = "square";
-  for (let t = 0, i = 0; t < SIRENE_S; t += 0.55, i++) o.frequency.setValueAtTime(i % 2 === 0 ? 435 : 580, t0 + t);
-  g.gain.setValueAtTime(0.0001, t0);
-  g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.05);
-  g.gain.setValueAtTime(0.12, t0 + SIRENE_S - 0.15);
-  g.gain.exponentialRampToValueAtTime(0.0001, t0 + SIRENE_S);
-  o.connect(g).connect(ctx.destination);
-  o.start(t0);
-  o.stop(t0 + SIRENE_S);
-  return () => {
-    try {
-      g.gain.cancelScheduledValues(ctx.currentTime);
-      g.gain.setValueAtTime(0.0001, ctx.currentTime);
-      o.stop(ctx.currentTime + 0.05);
-    } catch {}
-  };
+/** Notification brève à l'arrivée d'un e-mail : trois notes courtes, façon téléphone (moins d'une seconde). */
+function notification(ctx: AudioContext) {
+  [[1318.5, 0], [1046.5, 0.13], [1568, 0.26]].forEach(([freq, retard]) => {
+    [[1, 0.22], [2, 0.05]].forEach(([harmonique, vol]) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      const t = ctx.currentTime + retard;
+      o.type = "sine";
+      o.frequency.value = freq * harmonique;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol, t + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
+      o.connect(g).connect(ctx.destination);
+      o.start(t);
+      o.stop(t + 0.35);
+    });
+  });
 }
 
 export function Alertes({ depuis }: { depuis: string }) {
@@ -87,16 +80,12 @@ export function Alertes({ depuis }: { depuis: string }) {
     };
   }, []);
 
-  /* Sirène en cours : une seule à la fois, coupée dès que l'alerte est fermée ou le son coupé. */
-  const couperSirene = useRef<(() => void) | null>(null);
-  const taire = useCallback(() => { couperSirene.current?.(); couperSirene.current = null; }, []);
-  const sonnerSirene = useCallback(() => {
+  const sonnerNotification = useCallback(() => {
     const ctx = audio.current;
     if (!ctx) return;
-    const lancer = () => { taire(); couperSirene.current = sirene(ctx); };
-    if (ctx.state !== "running") void ctx.resume().then(() => ctx.state === "running" && lancer()).catch(() => {});
-    else lancer();
-  }, [taire]);
+    if (ctx.state !== "running") void ctx.resume().then(() => ctx.state === "running" && notification(ctx)).catch(() => {});
+    else notification(ctx);
+  }, []);
 
   const cloche = useCallback(() => {
     const ctx = audio.current;
@@ -122,8 +111,8 @@ export function Alertes({ depuis }: { depuis: string }) {
         if (nouvelles.length === 0) return;
         nouvelles.forEach((a) => vues.current.add(a.cle));
         setListe((l) => [...nouvelles, ...l].slice(0, 5));
-        // Un e-mail reçu fait sonner la sirène ; les autres alertes, la cloche.
-        if (sonRef.current) (nouvelles.some((a) => a.son === "sirene") ? sonnerSirene : cloche)();
+        // Un e-mail reçu joue la notification brève ; les autres alertes, la cloche.
+        if (sonRef.current) (nouvelles.every((a) => a.son === "notif") ? sonnerNotification : cloche)();
         router.refresh();
       } catch {}
     }
@@ -135,7 +124,7 @@ export function Alertes({ depuis }: { depuis: string }) {
       clearInterval(timer);
       document.removeEventListener("visibilitychange", retour);
     };
-  }, [cloche, sonnerSirene, router]);
+  }, [cloche, sonnerNotification, router]);
 
   useEffect(() => {
     // Le compteur dans le titre de l'onglet est reposé régulièrement : un changement de page le remet à zéro.
@@ -163,7 +152,6 @@ export function Alertes({ depuis }: { depuis: string }) {
             localStorage.setItem("mgk-cloche", v ? "oui" : "non");
           } catch {}
           if (v) setTimeout(cloche, 50);
-          else taire();
         }}
         className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition ${son ? "border-pine-200 bg-pine-50 text-pine-800" : "border-neutral-200 bg-white text-neutral-500"}`}
       >
@@ -175,11 +163,11 @@ export function Alertes({ depuis }: { depuis: string }) {
           {liste.map((a) => (
             <div key={a.cle} className="flex items-start gap-3 rounded-2xl border border-amber-500/50 bg-white p-3 shadow-card">
               <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-amber-500 text-pine-950"><Bell className="h-4 w-4" /></span>
-              <Link href={a.href} onClick={() => { if (a.son) taire(); setListe((l) => l.filter((x) => x.cle !== a.cle)); }} className="min-w-0 flex-1">
+              <Link href={a.href} onClick={() => setListe((l) => l.filter((x) => x.cle !== a.cle))} className="min-w-0 flex-1">
                 <span className="block text-sm font-extrabold text-inkgreen">{a.titre}</span>
                 <span className="block truncate text-xs text-neutral-600">{a.texte}</span>
               </Link>
-              <button type="button" aria-label={a.son ? "Fermer et couper la sirène" : "Fermer"} onClick={() => { if (a.son) taire(); setListe((l) => l.filter((x) => x.cle !== a.cle)); }} className="rounded-lg p-1 text-neutral-400 hover:bg-neutral-100"><X className="h-4 w-4" /></button>
+              <button type="button" aria-label="Fermer" onClick={() => setListe((l) => l.filter((x) => x.cle !== a.cle))} className="rounded-lg p-1 text-neutral-400 hover:bg-neutral-100"><X className="h-4 w-4" /></button>
             </div>
           ))}
         </div>
