@@ -111,8 +111,9 @@ export function Alertes({ depuis }: { depuis: string }) {
         if (nouvelles.length === 0) return;
         nouvelles.forEach((a) => vues.current.add(a.cle));
         setListe((l) => [...nouvelles, ...l].slice(0, 5));
-        // Un e-mail reçu joue la notification brève ; les autres alertes, la cloche.
-        if (sonRef.current) (nouvelles.every((a) => a.son === "notif") ? sonnerNotification : cloche)();
+        // Tout ce qui vient de la messagerie (e-mail reçu, e-mail urgent, réponse prête) joue la
+        // notification brève ; une demande du site ou un devis validé garde la cloche.
+        if (sonRef.current) (nouvelles.every((a) => a.cle.startsWith("mail-")) ? sonnerNotification : cloche)();
         router.refresh();
       } catch {}
     }
