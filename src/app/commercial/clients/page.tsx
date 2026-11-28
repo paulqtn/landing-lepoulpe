@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Download, Search, SearchX, UserPlus, Users, X } from "lucide-react";
 import { LeadsTable, type LeadRow } from "@/components/admin/LeadsTable";
 import { TriClients } from "@/components/admin/TriClients";
+import { boutonPrincipalCls, boutonSecondaireCls, EtatVide, Onglets } from "@/components/admin/ui";
 import { currentRep, requireMenu, voitTout } from "@/lib/admin/auth";
 import { countLeads, countLeadsParStatut, listLeads, STATUT_LABELS, STATUTS } from "@/lib/admin/db";
 import type { Statut } from "@/lib/admin/statuts";
@@ -113,22 +114,7 @@ export default async function LeadsPage({
 
       <section className="rounded-2xl border border-neutral-200 bg-white">
         {/* ---------------- 1. à qui sont les clients : onglets ---------------- */}
-        <nav aria-label="Portée de la liste" className="flex gap-1 overflow-x-auto border-b border-neutral-200 px-3">
-          {portees.map((p, i) => {
-            const on = mode === p.cle;
-            return (
-              <Link
-                key={p.cle}
-                href={href({ qui: p.cle, statut: null, page: null })}
-                aria-current={on ? "page" : undefined}
-                className={`-mb-px flex shrink-0 items-center gap-2 border-b-2 px-3 py-3.5 text-sm font-bold transition ${on ? "border-pine-700 text-pine-800" : "border-transparent text-neutral-500 hover:border-neutral-300 hover:text-inkgreen"}`}
-              >
-                {p.label}
-                <span className={`rounded-full px-2 py-0.5 text-xs font-bold tabular-nums ${on ? "bg-pine-700 text-white" : p.cle === "libre" && nbPortees[i] > 0 ? "bg-amber-500/20 text-amber-800" : "bg-mist text-neutral-600"}`}>{nbPortees[i]}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        <Onglets label="Portée de la liste" items={portees.map((p, i) => ({ href: href({ qui: p.cle, statut: null, page: null }), label: p.label, n: nbPortees[i], on: mode === p.cle, alerte: p.cle === "libre" }))} />
 
         {/* ---------------- recherche, puis 3. ordre de la liste ---------------- */}
         <div className="flex flex-wrap items-center gap-3 px-4 pt-4">
@@ -173,29 +159,26 @@ export default async function LeadsPage({
       )}
 
       {total === 0 ? (
-        <div className="rounded-2xl border border-dashed border-neutral-300 bg-white px-6 py-14 text-center">
-          <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-mist text-neutral-500">{filtre ? <SearchX className="h-6 w-6" /> : <Users className="h-6 w-6" />}</span>
-          <p className="mt-4 text-base font-extrabold text-inkgreen">
-            {filtre ? "Aucun client ne correspond" : mode === "libre" ? "La file est vide" : mode === "tous" ? "Aucun client pour l'instant" : "Vous n'avez pas encore de client"}
-          </p>
-          <p className="mx-auto mt-1 max-w-md text-sm text-neutral-600">
-            {filtre
+        <EtatVide
+          icon={filtre ? <SearchX className="h-6 w-6" /> : <Users className="h-6 w-6" />}
+          titre={filtre ? "Aucun client ne correspond" : mode === "libre" ? "La file est vide" : mode === "tous" ? "Aucun client pour l'instant" : "Vous n'avez pas encore de client"}
+          texte={
+            filtre
               ? "Essayez un autre mot, ou retirez le filtre d'étape."
               : mode === "libre"
                 ? "Toutes les demandes entrantes sont attribuées. Les prochaines arriveront ici."
-                : "Prenez une demande dans la file, ou créez une fiche pour un contact reçu par téléphone."}
-          </p>
-          <div className="mt-5 flex flex-wrap justify-center gap-2.5">
-            {filtre ? (
-              <Link href={href({ statut: null, q: null, page: null })} className="inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600">Effacer les filtres</Link>
-            ) : (
-              <>
-                {mode !== "libre" && <Link href={href({ qui: "libre", statut: null, page: null })} className="inline-flex items-center gap-1.5 rounded-full bg-pine-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-pine-600">Voir les demandes à piocher</Link>}
-                <Link href="/commercial/clients/nouveau" className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-5 py-2.5 text-sm font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700"><UserPlus className="h-4 w-4" /> Nouveau prospect</Link>
-              </>
-            )}
-          </div>
-        </div>
+                : "Prenez une demande dans la file, ou créez une fiche pour un contact reçu par téléphone."
+          }
+        >
+          {filtre ? (
+            <Link href={href({ statut: null, q: null, page: null })} className={boutonPrincipalCls}>Effacer les filtres</Link>
+          ) : (
+            <>
+              {mode !== "libre" && <Link href={href({ qui: "libre", statut: null, page: null })} className={boutonPrincipalCls}>Voir les demandes à piocher</Link>}
+              <Link href="/commercial/clients/nouveau" className={boutonSecondaireCls}><UserPlus className="h-4 w-4" /> Nouveau prospect</Link>
+            </>
+          )}
+        </EtatVide>
       ) : (
         <>
           <LeadsTable leads={rows} team={team} />

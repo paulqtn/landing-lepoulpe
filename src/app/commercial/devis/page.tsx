@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, FileText } from "lucide-react";
-import { dateFmt, eurFmt, ScoreBadge } from "@/components/admin/ui";
+import { ArrowRight, FileCheck2 } from "lucide-react";
+import { boutonPrincipalCls, boutonSecondaireCls, dateFmt, eurFmt, EtatVide, Onglets, ScoreBadge } from "@/components/admin/ui";
 import { currentRep, requireMenu, voitTout } from "@/lib/admin/auth";
 import { listLeads, listDevisATraiter } from "@/lib/admin/db";
 import { USAGE_LABELS } from "@/lib/admin/statuts";
@@ -25,30 +25,39 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
     return hrs < 24 ? `${hrs} h` : `${Math.round(hrs / 24)} j`;
   };
 
+  const nbMiens = base.filter((l) => l.assigned_to === rep).length;
+
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-extrabold text-inkgreen">Devis à traiter</h1>
-          <p className="mt-1 text-sm text-neutral-500">
-            Les devis qui vous attendent : nouvelles demandes, devis à modifier après un appel, et brouillons pas encore envoyés. Relisez, choisissez le prix, puis validez l&rsquo;envoi.
-          </p>
-        </div>
-        {rep && equipe && (
-          <div className="flex gap-1.5">
-            <Chip href="/commercial/devis" active={mode === "moi"} label="Les miens" />
-            <Chip href="/commercial/devis?qui=tous" active={mode === "tous"} label="Toute l'équipe" />
-          </div>
-        )}
+      <div>
+        <h1 className="text-2xl font-extrabold text-inkgreen">Devis à traiter</h1>
+        <p className="mt-1 max-w-3xl text-sm text-neutral-600">
+          Nouvelles demandes, devis à modifier après un appel et brouillons pas encore envoyés. Relisez, choisissez le prix, puis validez l&rsquo;envoi.
+        </p>
       </div>
 
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
+      <section className="rounded-2xl border border-neutral-200 bg-white">
+        {rep && equipe && (
+          <Onglets
+            label="Portée de la liste"
+            items={[
+              { href: "/commercial/devis", label: "Les miens", n: nbMiens, on: mode === "moi" },
+              { href: "/commercial/devis?qui=tous", label: "Toute l'équipe", n: base.length, on: mode === "tous" },
+            ]}
+          />
+        )}
         {list.length === 0 ? (
-          <p className="py-6 text-center text-sm text-neutral-400">
-            Aucun devis en attente{mode === "moi" ? " chez vous" : ""} — piochez des entrants depuis l&rsquo;état des lieux.
-          </p>
+          <EtatVide
+            encadre={false}
+            icon={<FileCheck2 className="h-6 w-6" />}
+            titre={mode === "moi" ? "Aucun devis ne vous attend" : "Aucun devis en attente"}
+            texte={mode === "moi" ? "Tout est envoyé. Prenez une nouvelle demande dans la file pour préparer son devis." : "Tous les devis de l'équipe sont partis."}
+          >
+            <Link href="/commercial#pioche" className={boutonPrincipalCls}>Voir les demandes à piocher</Link>
+            <Link href="/commercial/clients" className={boutonSecondaireCls}>Mes clients</Link>
+          </EtatVide>
         ) : (
-          <ul className="divide-y divide-neutral-100">
+          <ul className="divide-y divide-neutral-100 px-5">
             {list.map((l) => {
               const a = (l.answers ?? {}) as Record<string, unknown>;
               const cotes = Array.isArray(a.cotes) ? (a.cotes as number[]).join(" + ") : null;
@@ -65,7 +74,7 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
                         <span className="shrink-0 rounded-full bg-sky-50 px-2 py-0.5 text-[11px] font-bold text-sky-700 ring-1 ring-inset ring-sky-200">Brouillon non envoyé</span>
                       ) : null}
                     </span>
-                    <span className="block text-xs text-neutral-400">
+                    <span className="block text-xs text-neutral-500">
                       {usage ? `${usage} · ` : ""}
                       {cotes ? `${cotes} m · ` : ""}
                       {a.hauteur ? `h${a.hauteur} · ` : ""}
@@ -78,11 +87,7 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
                   ) : (
                     <span className="rounded-full bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold text-amber-700">sans estimation</span>
                   )}
-                  <Link
-                    href={`/commercial/clients/${l.id}`}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-3.5 py-2 text-xs font-bold text-neutral-700 transition hover:border-pine-300 hover:text-pine-700"
-                  >
-                    <FileText className="h-3.5 w-3.5" />
+                  <Link href={`/commercial/clients/${l.id}`} className="inline-flex items-center gap-1 rounded-full px-3 py-2 text-xs font-semibold text-neutral-600 transition hover:bg-mist hover:text-pine-700">
                     Fiche
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
@@ -94,18 +99,5 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
         )}
       </section>
     </div>
-  );
-}
-
-function Chip({ href, active, label }: { href: string; active: boolean; label: string }) {
-  return (
-    <Link
-      href={href}
-      className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
-        active ? "bg-pine-700 text-white" : "border border-neutral-200 bg-white text-neutral-600 hover:border-pine-300 hover:text-pine-700"
-      }`}
-    >
-      {label}
-    </Link>
   );
 }
