@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, BellRing, Euro, FileText, Flame, Hand, PhoneCall, Trophy } from "lucide-react";
+import { AlertTriangle, ArrowRight, BellRing, FileText, Flame, Hand, PhoneCall, Trophy } from "lucide-react";
+import { BandeauPerformance } from "@/components/admin/BandeauPerformance";
 import { ClaimButton } from "@/components/admin/ClaimButton";
 import { SeedDemo } from "@/components/admin/SeedDemo";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
@@ -69,55 +70,7 @@ export default async function CommercialHome() {
       )}
 
       {/* ------------------- votre argent, en premier ------------------- */}
-      {perso && (
-        <section className="overflow-hidden rounded-2xl border border-neutral-200 bg-pine-900 p-5 text-white">
-          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
-            <div>
-              <p className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-200">
-                <Euro className="h-3.5 w-3.5 text-amber-400" />
-                CA HT signé ce mois-ci
-              </p>
-              <p className="mt-1 text-3xl font-extrabold tabular-nums">{eurFmt.format(perso.caMois)} €</p>
-              <p className="mt-0.5 text-xs text-pine-200">Marge brute : {eurFmt.format(perso.margeMois)} €</p>
-            </div>
-            <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-200">Votre prime du mois</p>
-              <p className="mt-1 text-3xl font-extrabold tabular-nums text-amber-400">{eurFmt.format(perso.primeMois)} €</p>
-              <p className="mt-0.5 text-xs text-pine-200">
-                {comp.tauxMarge} % de la marge : {eurFmt.format(perso.commissionMois)} €{perso.bonusMois > 0 ? ` + bonus ${eurFmt.format(perso.bonusMois)} €` : ""}
-              </p>
-            </div>
-            <div className="min-w-56 flex-1">
-              <p className="flex items-baseline justify-between font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-pine-200">
-                <span>Bonus +{eurFmt.format(comp.bonusParTranche)} € dès {eurFmt.format(comp.seuilCA)} € HT</span>
-                <span className="text-amber-400">{perso.pctObjectif} %</span>
-              </p>
-              <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white/15">
-                <div className="mgk-jauge h-full rounded-full bg-amber-500" style={{ width: `${perso.pctObjectif}%` }} />
-              </div>
-              <p className="mt-1.5 text-xs text-pine-200">
-                {perso.resteObjectif > 0
-                  ? `Encore ${eurFmt.format(perso.resteObjectif)} € HT pour déclencher le bonus, puis +${eurFmt.format(comp.bonusParTranche)} € tous les ${eurFmt.format(comp.tranche)} €.`
-                  : `Bonus débloqué : ${perso.tranchesBonus} × ${eurFmt.format(comp.bonusParTranche)} €. Encore ${eurFmt.format(perso.resteProchaineTranche)} € HT pour la tranche suivante.`}
-              </p>
-              {perso.margesManquantes > 0 && (
-                <p className="mt-1 text-xs font-semibold text-amber-400">
-                  {perso.margesManquantes} affaire{perso.margesManquantes > 1 ? "s" : ""} signée{perso.margesManquantes > 1 ? "s" : ""} sans marge enregistrée : non comptée{perso.margesManquantes > 1 ? "s" : ""} dans la commission pour l&rsquo;instant.
-              </p>
-              )}
-            </div>
-          </div>
-          <dl className="mt-4 flex flex-wrap gap-x-7 gap-y-2 border-t border-white/10 pt-3.5 text-xs text-pine-200">
-            <div>Taux de signature : <strong className="font-extrabold text-white">{perso.tauxSignature !== null ? `${perso.tauxSignature} %` : "—"}</strong></div>
-            <div>Signées : <strong className="font-extrabold text-white">{perso.signees}</strong> · Non signées : <strong className="font-extrabold text-white">{perso.perdues}</strong></div>
-            <div>En cours : <strong className="font-extrabold text-white">{perso.enCours}</strong> ({eurFmt.format(perso.enCoursTTC)} €)</div>
-            <div>Panier moyen : <strong className="font-extrabold text-white">{eurFmt.format(perso.panierMoyen)} €</strong></div>
-            <Link href="/commercial/stats" className="ml-auto inline-flex items-center gap-1 font-bold text-amber-400 hover:text-amber-300">
-              Mes stats détaillées <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </dl>
-        </section>
-      )}
+      {perso && <BandeauPerformance perso={perso} comp={comp} />}
 
       {/* ------------------- la pioche des entrants ------------------- */}
       <section id="pioche" className="rounded-2xl border border-amber-500/40 bg-white p-5">
