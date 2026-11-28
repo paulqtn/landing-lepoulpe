@@ -92,8 +92,6 @@ export default async function LeadsPage({
 
   const exportHref = `/api/admin/export?${new URLSearchParams({ ...(statut ? { statut } : {}), ...(q ? { q } : {}) })}`;
   const filtre = Boolean(statut || q);
-  // Seules les étapes où il y a des clients sont proposées (plus celle qui est choisie).
-  const etapes = STATUTS.filter((s) => (parStatut[s] ?? 0) > 0 || s === statut);
 
   return (
     <div className="space-y-5">
@@ -157,7 +155,8 @@ export default async function LeadsPage({
         <div className="flex flex-wrap items-center gap-1.5 px-4 pb-4 pt-3" role="group" aria-label="Filtrer par étape">
           <span className="mr-1 text-xs font-bold uppercase tracking-wide text-neutral-500">Étape</span>
           <Etape href={href({ statut: null, page: null })} on={!statut} label="Toutes" n={totalPortee} />
-          {etapes.map((s) => (
+          {/* Toutes les étapes restent visibles ; celles sans client sont seulement plus claires. */}
+          {STATUTS.map((s) => (
             <Etape key={s} href={href({ statut: s, page: null })} on={statut === s} label={STATUT_LABELS[s]} n={parStatut[s] ?? 0} pastille={PASTILLE[s]} />
           ))}
         </div>
@@ -215,17 +214,17 @@ export default async function LeadsPage({
   );
 }
 
-/** Étiquette d'étape : légère, avec une pastille de couleur (celle du statut dans le tableau) et le nombre de clients. */
+/** Étiquette d'étape : légère, avec une pastille de couleur (celle du statut dans le tableau) et le nombre de clients. Sans client, elle reste là, plus claire. */
 function Etape({ href, on, label, n, pastille }: { href: string; on: boolean; label: string; n: number; pastille?: string }) {
   return (
     <Link
       href={href}
       aria-current={on ? "true" : undefined}
-      className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition ${on ? "bg-pine-50 font-bold text-pine-900 ring-1 ring-inset ring-pine-600" : "font-medium text-neutral-700 hover:bg-mist"}`}
+      className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition ${on ? "bg-pine-50 font-bold text-pine-900 ring-1 ring-inset ring-pine-600" : n > 0 ? "font-medium text-neutral-700 hover:bg-mist" : "font-medium text-neutral-500 hover:bg-mist hover:text-neutral-700"}`}
     >
-      {pastille && <span className={`h-2 w-2 shrink-0 rounded-full ${pastille}`} aria-hidden />}
+      {pastille && <span className={`h-2 w-2 shrink-0 rounded-full ${pastille} ${n > 0 || on ? "" : "opacity-40"}`} aria-hidden />}
       {label}
-      <span className={`text-xs tabular-nums ${on ? "font-bold text-pine-800" : "text-neutral-500"}`}>{n}</span>
+      <span className={`text-xs tabular-nums ${on ? "font-bold text-pine-800" : n > 0 ? "font-semibold text-neutral-600" : "text-neutral-400"}`}>{n}</span>
     </Link>
   );
 }
