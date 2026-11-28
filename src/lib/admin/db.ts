@@ -368,6 +368,15 @@ export async function countLeads(opts: LeadFilter = {}): Promise<number> {
   return Number(rows[0]?.n ?? 0);
 }
 
+/** Nombre de demandes par statut pour un filtre (le statut du filtre est ignoré) : sert aux compteurs des filtres. */
+export async function countLeadsParStatut(opts: LeadFilter = {}): Promise<Record<string, number>> {
+  const sans = { ...opts, statut: undefined };
+  if (!dbConfigured) return demoFilter(sans).reduce<Record<string, number>>((acc, l) => ({ ...acc, [l.statut]: (acc[l.statut] ?? 0) + 1 }), {});
+  const { sql, vals } = leadWhere(sans);
+  const rows = await q<{ statut: string; n: string }>(`SELECT statut, count(*)::text AS n FROM leads ${sql} GROUP BY statut`, vals);
+  return Object.fromEntries(rows.map((r) => [r.statut, Number(r.n)]));
+}
+
 /**
  * Projection légère de toutes les demandes (sans le détail des réponses) :
  * sert aux statistiques, qui doivent porter sur la totalité de la base.
