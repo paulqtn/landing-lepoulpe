@@ -405,3 +405,15 @@ Autorisations demandées : Google `https://mail.google.com/` ; Microsoft `IMAP.A
 `npm test` couvre le chiffrement, les fournisseurs, les règles de tri et la neutralisation du
 contenu. `npm run test:messagerie` rejoue le parcours complet en local (voir
 `tests/messagerie/README.md`).
+
+## Enveloppe du back office et micro-interactions
+
+`BackOfficeShell.tsx` pose un menu fixe collé au bord gauche (toute la hauteur, à partir de
+768 px de large) et laisse le contenu occuper toute la largeur restante. Sur téléphone, le
+bandeau de menu horizontal est inchangé.
+
+Les micro-interactions sont dans `globals.css`, sous la classe `mgk-bo` (le site public n'est
+pas touché) : réponse des boutons à l'appui, glissement des entrées de menu, repère ambre sur la
+page en cours, élévation des cartes et des tuiles, entrée en douceur du contenu
+(`Transitions.tsx`), barre de progression pendant un changement de page, remplissage des
+jauges. Tout est coupé quand le système demande de réduire les animations.

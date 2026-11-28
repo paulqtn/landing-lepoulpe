@@ -132,7 +132,132 @@
 }
 .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
+/* ================================================================== */
+/*  Back office : micro-interactions                                   */
+/*  Tout est porté par la classe .mgk-bo (posée par BackOfficeShell) : */
+/*  le site public n'est pas touché.                                   */
+/* ================================================================== */
+
+/* Boutons et liens : réponse immédiate au survol et à l'appui. */
+.mgk-bo a,
+.mgk-bo button,
+.mgk-bo select,
+.mgk-bo input,
+.mgk-bo textarea {
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease, scale 120ms ease, translate 160ms ease, opacity 160ms ease;
+}
+.mgk-bo button:not(:disabled):active,
+.mgk-bo a[class*="rounded-full"]:active {
+  scale: 0.97;
+}
+.mgk-bo :is(a, button, select, input, textarea, summary):focus-visible {
+  outline: 2px solid var(--color-pine-500);
+  outline-offset: 2px;
+}
+
+/* Cartes : légère élévation au survol quand elles contiennent quelque chose à faire. */
+.mgk-bo section[class*="rounded-2xl"][class*="border"] {
+  transition: box-shadow 220ms ease, border-color 220ms ease;
+}
+.mgk-bo section[class*="rounded-2xl"][class*="border"]:hover {
+  box-shadow: var(--shadow-card);
+}
+
+/* Lignes de liste et de tableau : le survol suit le curseur sans à-coup. */
+.mgk-bo li > a,
+.mgk-bo tbody tr {
+  transition: background-color 140ms ease, padding-left 160ms ease;
+}
+
+/* Menu latéral : l'entrée glisse légèrement vers la droite au survol. */
+.mgk-bo .mgk-menu {
+  transition: background-color 180ms ease, color 180ms ease, translate 180ms ease, box-shadow 180ms ease;
+}
+.mgk-bo .mgk-menu:not([aria-current="page"]):hover {
+  translate: 3px 0;
+}
+.mgk-bo .mgk-menu[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 22%;
+  height: 56%;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--color-amber-500);
+  animation: mgk-pousse 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes mgk-pousse {
+  from { scale: 1 0; opacity: 0; }
+  to { scale: 1 1; opacity: 1; }
+}
+
+/* Barre de défilement discrète du menu. */
+.mgk-bo .mgk-defile { scrollbar-width: thin; scrollbar-color: #d4d4d4 transparent; }
+
+/* Arrivée d'une page : le contenu monte de quelques pixels en apparaissant. */
+.mgk-bo .mgk-entree {
+  animation: mgk-entree 280ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+/* À la fin, plus aucun décalage ne reste posé : les fenêtres et barres fixes d'une page gardent leur place. */
+@keyframes mgk-entree {
+  from { opacity: 0; translate: 0 8px; }
+  to { opacity: 1; translate: none; }
+}
+/* Les blocs d'une page arrivent l'un après l'autre, très légèrement décalés. */
+.mgk-bo .mgk-entree > div > :is(section, div, article, nav):nth-child(-n + 6) {
+  animation: mgk-entree 340ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.mgk-bo .mgk-entree > div > :nth-child(2) { animation-delay: 40ms; }
+.mgk-bo .mgk-entree > div > :nth-child(3) { animation-delay: 80ms; }
+.mgk-bo .mgk-entree > div > :nth-child(4) { animation-delay: 120ms; }
+.mgk-bo .mgk-entree > div > :nth-child(5) { animation-delay: 160ms; }
+.mgk-bo .mgk-entree > div > :nth-child(6) { animation-delay: 200ms; }
+
+/* Barre de progression pendant un changement de page. */
+.mgk-barre {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-pine-500), var(--color-amber-500));
+  transform-origin: left;
+  scale: 0 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 250ms ease 120ms, scale 200ms ease;
+}
+.mgk-barre-active {
+  opacity: 1;
+  scale: 0.85 1;
+  transition: scale 6s cubic-bezier(0.1, 0.7, 0.1, 1), opacity 80ms ease;
+}
+
+/* Jauges : elles se remplissent à l'arrivée sur la page. */
+.mgk-bo .mgk-jauge {
+  transform-origin: left;
+  animation: mgk-jauge 700ms cubic-bezier(0.16, 1, 0.3, 1) 150ms both;
+}
+@keyframes mgk-jauge {
+  from { scale: 0 1; }
+  to { scale: 1 1; }
+}
+
+/* Tuiles cliquables : elles se soulèvent au survol. */
+.mgk-bo .mgk-tuile {
+  transition: translate 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+.mgk-bo .mgk-tuile:hover {
+  translate: 0 -2px;
+  box-shadow: var(--shadow-card);
+  border-color: var(--color-pine-300);
+}
+.mgk-bo .mgk-tuile:hover .mgk-fleche { translate: 3px 0; opacity: 1; }
+.mgk-bo .mgk-fleche { transition: translate 180ms ease, opacity 180ms ease; opacity: 0.45; }
+
 @media (prefers-reduced-motion: reduce) {
+  .mgk-bo *, .mgk-barre { animation: none !important; transition: none !important; }
+
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }

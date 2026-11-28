@@ -76,11 +76,12 @@ export function CommercialNav({ menus, superadmin, compact = false }: { menus: M
       <Link
         key={n.href}
         href={n.href}
-        className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
-          on ? "bg-pine-700 text-white" : "text-neutral-700 hover:bg-amber-500/15 hover:text-pine-950"
+        aria-current={on ? "page" : undefined}
+        className={`mgk-menu group relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold ${
+          on ? "bg-pine-700 text-white shadow-sm" : "text-neutral-700 hover:bg-amber-500/15 hover:text-pine-950"
         }`}
       >
-        <n.icon className={`h-4 w-4 ${on ? "text-amber-400" : "text-pine-600"}`} />
+        <n.icon className={`h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110 ${on ? "text-amber-400" : "text-pine-600"}`} />
         {n.label}
       </Link>
     );

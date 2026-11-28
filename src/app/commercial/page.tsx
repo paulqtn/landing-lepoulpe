@@ -93,7 +93,7 @@ export default async function CommercialHome() {
                 <span className="text-amber-400">{perso.pctObjectif} %</span>
               </p>
               <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white/15">
-                <div className="h-full rounded-full bg-amber-500 transition-all" style={{ width: `${perso.pctObjectif}%` }} />
+                <div className="mgk-jauge h-full rounded-full bg-amber-500" style={{ width: `${perso.pctObjectif}%` }} />
               </div>
               <p className="mt-1.5 text-xs text-pine-200">
                 {perso.resteObjectif > 0
@@ -160,21 +160,21 @@ export default async function CommercialHome() {
       {/* ----------------------- vos priorités ----------------------- */}
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         <h2 className="text-base font-extrabold text-inkgreen">Vos priorités du jour</h2>
-        <ul className="mt-3 divide-y divide-neutral-100">
+        <ul className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {taches.map((t) => (
             <li key={t.label}>
-              <Link href={t.href} className="flex items-center gap-4 py-3 transition hover:bg-mist/60">
-                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${t.hot ? "bg-amber-500 text-pine-950" : "bg-pine-50 text-pine-700"}`}>
-                  <t.icon className="h-[18px] w-[18px]" />
+              <Link href={t.href} className={`mgk-tuile flex h-full items-center gap-3.5 rounded-xl border p-3.5 ${t.n > 0 && t.hot ? "border-amber-500/50 bg-amber-500/[0.07]" : "border-neutral-200 bg-white"}`}>
+                <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${t.n > 0 && t.hot ? "bg-amber-500 text-pine-950" : "bg-pine-50 text-pine-700"}`}>
+                  <t.icon className="h-5 w-5" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold text-inkgreen">{t.label}</span>
+                  <span className="block text-sm font-bold leading-snug text-inkgreen">{t.label}</span>
                   <span className="block text-xs text-neutral-400">{t.sub}</span>
                 </span>
                 <span className={`text-2xl font-extrabold tabular-nums ${t.n > 0 ? (t.hot ? "text-amber-600" : "text-inkgreen") : "text-neutral-300"}`}>
                   {t.n}
                 </span>
-                <ArrowRight className="h-4 w-4 shrink-0 text-neutral-300" />
+                <ArrowRight className="mgk-fleche h-4 w-4 shrink-0 text-neutral-400" />
               </Link>
             </li>
           ))}
@@ -182,20 +182,22 @@ export default async function CommercialHome() {
       </section>
 
       {/* --------------- vos clients à l'action maintenant --------------- */}
-      <FileSection
-        icon={<Flame className="h-4 w-4 text-orange-500" />}
-        titre={rep ? "Vos signaux chauds" : "Signaux chauds"}
-        vide="Pas d'activité récente sur vos devis."
-        leads={chauds}
-        detail={(l) => `${l.devis_views > 0 ? `${l.devis_views} vue${l.devis_views > 1 ? "s" : ""} du devis · ` : ""}${l.opens} ouv. · ${l.clicks} clic${l.clicks > 1 ? "s" : ""}`}
-      />
-      <FileSection
-        icon={<PhoneCall className="h-4 w-4 text-green-600" />}
-        titre={rep ? "Vos appels prioritaires (score A)" : "À appeler en priorité (score A)"}
-        vide="Aucun client A en attente — beau travail."
-        leads={aAppeler}
-        detail={(l) => `${l.score_points} pts · ${l.source ?? "site"}`}
-      />
+      <div className="grid gap-6 xl:grid-cols-2">
+        <FileSection
+          icon={<Flame className="h-4 w-4 text-orange-500" />}
+          titre={rep ? "Vos signaux chauds" : "Signaux chauds"}
+          vide="Pas d'activité récente sur vos devis."
+          leads={chauds}
+          detail={(l) => `${l.devis_views > 0 ? `${l.devis_views} vue${l.devis_views > 1 ? "s" : ""} du devis · ` : ""}${l.opens} ouv. · ${l.clicks} clic${l.clicks > 1 ? "s" : ""}`}
+        />
+        <FileSection
+          icon={<PhoneCall className="h-4 w-4 text-green-600" />}
+          titre={rep ? "Vos appels prioritaires (score A)" : "À appeler en priorité (score A)"}
+          vide="Aucun client A en attente — beau travail."
+          leads={aAppeler}
+          detail={(l) => `${l.score_points} pts · ${l.source ?? "site"}`}
+        />
+      </div>
 
       {!mailConfigured && (
         <p className="flex items-start gap-2.5 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-neutral-700">

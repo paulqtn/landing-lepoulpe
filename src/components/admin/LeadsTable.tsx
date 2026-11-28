@@ -62,7 +62,7 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
   return (
     <div className="space-y-3">
       {sel.size > 0 && (
-        <div className="sticky top-3 z-10 flex flex-wrap items-center gap-2.5 rounded-2xl border border-pine-200 bg-pine-50 px-4 py-3 shadow-card">
+        <div className="sticky top-[4.25rem] z-10 flex flex-wrap items-center gap-2.5 rounded-2xl border border-pine-200 bg-pine-50 px-4 py-3 shadow-card">
           <span className="text-sm font-bold text-inkgreen">{sel.size} sélectionné(s)</span>
           <select
             defaultValue=""
