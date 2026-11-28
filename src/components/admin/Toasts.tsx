@@ -35,7 +35,7 @@ export function Toasts() {
         <div key={t.id} role="status" className={`pointer-events-auto flex max-w-md items-start gap-2 rounded-2xl border px-4 py-2.5 text-sm font-semibold shadow-card ${t.erreur ? "border-red-200 bg-red-50 text-red-800" : "border-green-200 bg-white text-inkgreen"}`}>
           {t.erreur ? <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-red-600" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />}
           <span className="min-w-0 flex-1">{t.texte}</span>
-          <button type="button" aria-label="Fermer" onClick={() => setListe((l) => l.filter((x) => x.id !== t.id))} className="rounded p-0.5 text-neutral-400 hover:bg-neutral-100"><X className="h-3.5 w-3.5" /></button>
+          <button type="button" aria-label="Fermer" onClick={() => setListe((l) => l.filter((x) => x.id !== t.id))} className="rounded p-0.5 text-neutral-600 hover:bg-neutral-100"><X className="h-3.5 w-3.5" /></button>
         </div>
       ))}
     </div>

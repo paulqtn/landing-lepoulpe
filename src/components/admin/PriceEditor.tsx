@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { History, Loader2, RotateCcw } from "lucide-react";
+import { Calculator, History, Loader2, RotateCcw, SlidersHorizontal } from "lucide-react";
 
 /* Édition des tarifs : on modifie, on teste l'effet sur des chiffrages types,
    puis on publie une nouvelle version (avec motif). Rien n'est appliqué
@@ -104,14 +104,14 @@ export function PriceEditor({
       )}
 
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="text-base font-extrabold text-inkgreen">Chiffrages de référence — tarifs en vigueur</h2>
-        <p className="mt-1 text-xs text-neutral-400">{currentVersion ? `Version publiée n°${currentVersion}.` : "Valeurs d'origine (aucune version publiée)."}</p>
+        <h2 className="flex items-center gap-2.5 text-base font-extrabold text-inkgreen"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-pine-50 text-pine-700"><Calculator className="h-4 w-4" /></span>Chiffrages de référence — tarifs en vigueur</h2>
+        <p className="mt-1 text-xs text-neutral-600">{currentVersion ? `Version publiée n°${currentVersion}.` : "Valeurs d'origine (aucune version publiée)."}</p>
         <ScenarioTable before={scenarios} />
       </section>
 
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-base font-extrabold text-inkgreen">Valeurs</h2>
+          <h2 className="flex items-center gap-2.5 text-base font-extrabold text-inkgreen"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-pine-50 text-pine-700"><SlidersHorizontal className="h-4 w-4" /></span>Valeurs</h2>
           <input
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
@@ -126,13 +126,13 @@ export function PriceEditor({
               <details key={s.title} open={Boolean(needle) || i === 0} className="rounded-xl border border-neutral-200">
                 <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-2.5 text-sm font-bold text-inkgreen">
                   <span>{s.title}</span>
-                  <span className="text-xs font-semibold text-neutral-400">
+                  <span className="text-xs font-semibold text-neutral-600">
                     {touched > 0 && <span className="mr-2 rounded-full bg-amber-500 px-2 py-0.5 text-pine-950">{touched} modifié{touched > 1 ? "s" : ""}</span>}
                     {s.rows.length} valeur{s.rows.length > 1 ? "s" : ""}
                   </span>
                 </summary>
                 <div className="border-t border-neutral-100 px-4 py-3">
-                  {s.hint && <p className="mb-2 text-xs text-neutral-400">{s.hint}</p>}
+                  {s.hint && <p className="mb-2 text-xs text-neutral-600">{s.hint}</p>}
                   <ul className="grid gap-x-6 gap-y-2 lg:grid-cols-2">
                     {s.rows.map((r) => {
                       const raw = r.path in values ? values[r.path] : toStr(r.value);
@@ -142,7 +142,7 @@ export function PriceEditor({
                         <li key={r.path} className="flex items-center gap-3">
                           <label htmlFor={r.path} className="min-w-0 flex-1 text-sm text-neutral-700">
                             {r.label}
-                            {r.original !== r.value && <span className="ml-1.5 text-[10px] font-bold uppercase text-amber-600" title={`Valeur d'origine : ${fmt(r.original)}`}>modifié</span>}
+                            {r.original !== r.value && <span className="ml-1.5 text-[10px] font-bold uppercase text-amber-700" title={`Valeur d'origine : ${fmt(r.original)}`}>modifié</span>}
                           </label>
                           <input
                             id={r.path}
@@ -154,7 +154,7 @@ export function PriceEditor({
                               !p.ok ? "border-red-400 bg-red-50" : changed ? "border-amber-500 bg-amber-500/10" : "border-neutral-200 bg-white"
                             }`}
                           />
-                          <span className="w-14 shrink-0 text-xs text-neutral-400">{r.unit}</span>
+                          <span className="w-14 shrink-0 text-xs text-neutral-600">{r.unit}</span>
                         </li>
                       );
                     })}
@@ -163,7 +163,7 @@ export function PriceEditor({
               </details>
             );
           })}
-          {shown.length === 0 && <p className="py-4 text-center text-sm text-neutral-400">Aucune valeur ne correspond.</p>}
+          {shown.length === 0 && <p className="py-4 text-center text-sm text-neutral-600">Aucune valeur ne correspond.</p>}
         </div>
       </section>
 
@@ -174,7 +174,7 @@ export function PriceEditor({
           </p>
           <span className="flex-1" />
           {edits.length > 0 && (
-            <button type="button" onClick={() => { setValues({}); setPreview(null); }} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-neutral-500 transition hover:bg-amber-500/15 hover:text-pine-950">
+            <button type="button" onClick={() => { setValues({}); setPreview(null); }} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-neutral-600 transition hover:bg-amber-500/15 hover:text-pine-950">
               <RotateCcw className="h-3.5 w-3.5" />
               Annuler
             </button>
@@ -228,12 +228,12 @@ export function PriceEditor({
       </section>
 
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="mb-3 flex items-center gap-2 text-base font-extrabold text-inkgreen">
-          <History className="h-4 w-4 text-pine-600" />
+        <h2 className="mb-3 flex items-center gap-2.5 text-base font-extrabold text-inkgreen">
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-pine-50 text-pine-700"><History className="h-4 w-4" /></span>
           Historique des versions
         </h2>
         {versions.length === 0 ? (
-          <p className="text-sm text-neutral-400">Aucune version publiée : ce sont les valeurs d&rsquo;origine qui s&rsquo;appliquent.</p>
+          <p className="text-sm text-neutral-600">Aucune version publiée : ce sont les valeurs d&rsquo;origine qui s&rsquo;appliquent.</p>
         ) : (
           <ul className="divide-y divide-neutral-100">
             {versions.map((v, i) => (
@@ -241,7 +241,7 @@ export function PriceEditor({
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   <span className="text-sm font-bold text-inkgreen">Version n°{v.id}</span>
                   {i === 0 && <span className="rounded-full bg-pine-700 px-2 py-0.5 text-[10px] font-bold text-white">En vigueur</span>}
-                  <span className="text-xs text-neutral-400">{dateFmt.format(new Date(v.created_at))} · {v.created_by ?? "—"}</span>
+                  <span className="text-xs text-neutral-600">{dateFmt.format(new Date(v.created_at))} · {v.created_by ?? "—"}</span>
                   <span className="flex-1" />
                   {i > 0 && (
                     <button type="button" disabled={busy !== null} onClick={() => restore(v.id, `la version n°${v.id}`)} className="rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-bold text-inkgreen transition hover:border-amber-500 hover:bg-amber-500/15 disabled:opacity-40">
@@ -251,7 +251,7 @@ export function PriceEditor({
                 </div>
                 <p className="mt-1 text-sm text-neutral-700">{v.note}</p>
                 {v.changes && v.changes.length > 0 && (
-                  <details className="mt-1 text-xs text-neutral-500">
+                  <details className="mt-1 text-xs text-neutral-600">
                     <summary className="cursor-pointer font-semibold text-pine-700">{v.changes.length} valeur(s) modifiée(s)</summary>
                     <ul className="mt-1 space-y-0.5">
                       {v.changes.slice(0, 200).map((c) => <li key={c.path}>{c.label} : {fmt(c.before)} → {fmt(c.after)}</li>)}
@@ -263,7 +263,7 @@ export function PriceEditor({
           </ul>
         )}
         {versions.length > 0 && (
-          <button type="button" disabled={busy !== null} onClick={() => restore(0, "aux valeurs d'origine")} className="mt-3 text-xs font-bold text-neutral-500 underline-offset-2 hover:text-pine-700 hover:underline disabled:opacity-40">
+          <button type="button" disabled={busy !== null} onClick={() => restore(0, "aux valeurs d'origine")} className="mt-3 text-xs font-bold text-neutral-600 underline-offset-2 hover:text-pine-700 hover:underline disabled:opacity-40">
             Revenir aux valeurs d&rsquo;origine
           </button>
         )}
@@ -278,14 +278,14 @@ function ScenarioTable({ before, after }: { before: Scenario[]; after?: Scenario
       <span>{eur(b)}</span>
     ) : (
       <span>
-        <span className="text-neutral-400 line-through">{eur(b)}</span> <strong className="text-pine-700">{eur(a)}</strong>
+        <span className="text-neutral-600 line-through">{eur(b)}</span> <strong className="text-pine-700">{eur(a)}</strong>
       </span>
     );
   return (
     <div className="mt-3 overflow-x-auto">
       <table className="w-full min-w-[34rem] text-sm">
         <thead>
-          <tr className="border-b border-neutral-200 text-left font-mono text-[10px] uppercase tracking-wider text-neutral-500">
+          <tr className="border-b border-neutral-200 text-left font-mono text-[10px] uppercase tracking-wider text-neutral-600">
             <th className="py-2 pr-3">Cas type</th>
             <th className="px-2 text-right">Achat HT</th>
             <th className="px-2 text-right">Vente HT</th>

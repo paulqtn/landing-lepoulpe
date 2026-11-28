@@ -417,3 +417,7 @@ pas touché) : réponse des boutons à l'appui, glissement des entrées de menu,
 page en cours, élévation des cartes et des tuiles, entrée en douceur du contenu
 (`Transitions.tsx`), barre de progression pendant un changement de page, remplissage des
 jauges. Tout est coupé quand le système demande de réduire les animations.
+
+### Briques visuelles communes du back office
+
+Toutes les pages utilisent les mêmes éléments, définis dans `src/components/admin/ui.tsx` : `EnTete` (titre de page), `Carte` (section avec pictogramme et compteur), `Tuile` (chiffre clé animé), `Rien` (liste vide dans une carte), `EtatVide` (page vide), `Onglets`. Pour une nouvelle page, partir de ces briques plutôt que réécrire des classes.

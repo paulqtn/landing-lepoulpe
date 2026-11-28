@@ -55,8 +55,8 @@ export function LeadFiles({ leadId, files, lectureSeule }: { leadId: number; fil
 
   return (
     <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-      <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-        <Paperclip className="h-3.5 w-3.5" />
+      <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">
+        <Paperclip className="h-4 w-4 text-pine-600" />
         Fichiers {files.length > 0 && <span className="text-inkgreen">{files.length}</span>}
       </h2>
       {files.length > 0 && (
@@ -67,7 +67,7 @@ export function LeadFiles({ leadId, files, lectureSeule }: { leadId: number; fil
                 <Download className="h-3.5 w-3.5 shrink-0 text-pine-600" />
                 <span className="truncate">{f.name}</span>
               </a>
-              <span className="text-xs text-neutral-400">{tailleLisible(f.bytes)} · {dateFmt.format(new Date(f.created_at))}{f.created_by ? ` · ${f.created_by}` : ""}</span>
+              <span className="text-xs text-neutral-600">{tailleLisible(f.bytes)} · {dateFmt.format(new Date(f.created_at))}{f.created_by ? ` · ${f.created_by}` : ""}</span>
               {!lectureSeule &&
                 (aSupprimer === f.id ? (
                   <span className="flex gap-1.5">
@@ -75,13 +75,13 @@ export function LeadFiles({ leadId, files, lectureSeule }: { leadId: number; fil
                     <button type="button" onClick={() => setASupprimer(null)} className="rounded-lg border border-neutral-200 px-2 py-1 text-xs font-bold text-neutral-600">Annuler</button>
                   </span>
                 ) : (
-                  <button type="button" aria-label={`Supprimer ${f.name}`} onClick={() => setASupprimer(f.id)} className="rounded-lg p-1 text-neutral-400 hover:bg-red-50 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></button>
+                  <button type="button" aria-label={`Supprimer ${f.name}`} onClick={() => setASupprimer(f.id)} className="rounded-lg p-1 text-neutral-600 hover:bg-red-50 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></button>
                 ))}
             </li>
           ))}
         </ul>
       )}
-      {files.length === 0 && lectureSeule && <p className="mt-3 text-sm text-neutral-400">Aucun fichier.</p>}
+      {files.length === 0 && lectureSeule && <p className="mt-3 text-sm text-neutral-600">Aucun fichier.</p>}
       {!lectureSeule && (
         <>
           <button
@@ -95,7 +95,7 @@ export function LeadFiles({ leadId, files, lectureSeule }: { leadId: number; fil
           >
             {envoi ? <Loader2 className="h-5 w-5 animate-spin text-pine-600" /> : <FileUp className="h-5 w-5 text-pine-600" />}
             <span className="font-bold text-inkgreen">{envoi ? `Envoi de ${envoi.name}… ${envoi.pct} %` : "Déposer un plan ou une photo, ou cliquer pour choisir"}</span>
-            <span className="text-xs text-neutral-400">PDF, images, DWG, DXF, Word, Excel · 10 Mo maximum par fichier</span>
+            <span className="text-xs text-neutral-600">PDF, images, DWG, DXF, Word, Excel · 10 Mo maximum par fichier</span>
           </button>
           <input ref={input} type="file" multiple hidden accept={Object.keys(TYPES_FICHIER).map((e) => `.${e}`).join(",")} onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ""; if (l.length) envoyer(l); }} />
         </>

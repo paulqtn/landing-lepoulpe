@@ -77,7 +77,7 @@ export function AdminLogin({ mode = "login", detail }: { mode?: Mode; detail?: s
         {setup ? <ShieldCheck className="h-5 w-5" /> : <KeyRound className="h-5 w-5" />}
       </span>
       <h1 className="mt-4 text-xl font-extrabold text-inkgreen">{setup ? "Créer le super-administrateur" : "Espace commercial"}</h1>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p className="mt-1 text-sm text-neutral-600">
         {setup
           ? "Premier accès : ce compte pourra ensuite créer tous les autres. Cette étape ne s'affiche qu'une fois."
           : "Identifiez-vous pour retrouver vos clients et vos stats."}

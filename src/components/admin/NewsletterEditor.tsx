@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, Eye, Loader2, Megaphone, Send, X } from "lucide-react";
+import { AlertTriangle, Eye, History, Loader2, Megaphone, Send, X } from "lucide-react";
 import { RichText } from "./RichText";
 
 /* Newsletter : on coche les états, on rédige, on prévisualise, on s'envoie un
@@ -142,48 +142,48 @@ export function NewsletterEditor(props: {
       )}
 
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="text-base font-extrabold text-inkgreen">1. À qui ?</h2>
-        <p className="mt-1 text-xs text-neutral-400">Cochez les états des clients à qui écrire. Le chiffre est le nombre d&rsquo;adresses joignables dans chaque état.</p>
+        <h2 className="flex items-center gap-2.5 text-base font-extrabold text-inkgreen"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-pine-700 text-sm font-extrabold tabular-nums text-white">1</span>À qui ?</h2>
+        <p className="mt-1 text-xs text-neutral-600">Cochez les états des clients à qui écrire. Le chiffre est le nombre d&rsquo;adresses joignables dans chaque état.</p>
         <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {props.statuts.map((s) => (
             <label key={s.key} className={`flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2 text-sm transition ${sel.includes(s.key) ? "border-amber-500 bg-amber-500/10" : "border-neutral-200 hover:bg-amber-500/15"} ${s.n === 0 ? "opacity-50" : ""}`}>
               <input type="checkbox" className="h-4 w-4 accent-pine-700" checked={sel.includes(s.key)} onChange={() => toggle(s.key)} />
               <span className="flex-1 font-semibold text-inkgreen">{s.label}</span>
-              <span className="text-xs font-bold tabular-nums text-neutral-500">{s.n.toLocaleString("fr-FR")}</span>
+              <span className="text-xs font-bold tabular-nums text-neutral-600">{s.n.toLocaleString("fr-FR")}</span>
             </label>
           ))}
         </div>
         <p className="mt-3 text-sm font-bold text-inkgreen">
           {sel.length === 0 ? "Aucun état coché." : counting ? "Calcul…" : `${total.toLocaleString("fr-FR")} destinataire${total > 1 ? "s" : ""}.`}
         </p>
-        <p className="mt-1 text-xs text-neutral-400">
+        <p className="mt-1 text-xs text-neutral-600">
           Toujours exclus : {props.exclus.desinscrits.toLocaleString("fr-FR")} désinscrit{props.exclus.desinscrits > 1 ? "s" : ""}, {props.exclus.sansEmail.toLocaleString("fr-FR")} sans e-mail valide, et les clients anonymisés.
         </p>
       </section>
 
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="text-base font-extrabold text-inkgreen">2. Le message</h2>
+        <h2 className="flex items-center gap-2.5 text-base font-extrabold text-inkgreen"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-pine-700 text-sm font-extrabold tabular-nums text-white">2</span>Le message</h2>
         <div className="mt-3 grid gap-5 lg:grid-cols-2">
           <div className="space-y-3">
             <label className="block">
-              <span className="mb-1 block text-xs font-semibold text-neutral-500">Objet de l&rsquo;e-mail</span>
+              <span className="mb-1 block text-xs font-semibold text-neutral-600">Objet de l&rsquo;e-mail</span>
               <input className={`${inputCls} font-semibold`} value={c.sujet} maxLength={150} onChange={(e) => set({ sujet: e.target.value })} />
             </label>
             <div>
-              <span className="mb-1 block text-xs font-semibold text-neutral-500">Message</span>
+              <span className="mb-1 block text-xs font-semibold text-neutral-600">Message</span>
               <RichText initial={CORPS_DEPART} variables={props.variables} onChange={(corps) => set({ corps })} onError={(text) => setMsg({ ok: false, text })} />
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block">
-                <span className="mb-1 block text-xs font-semibold text-neutral-500">Texte du bouton (facultatif)</span>
+                <span className="mb-1 block text-xs font-semibold text-neutral-600">Texte du bouton (facultatif)</span>
                 <input className={inputCls} value={c.bouton} maxLength={40} placeholder="Ex. Découvrir l'offre" onChange={(e) => set({ bouton: e.target.value })} />
               </label>
               <label className="block">
-                <span className="mb-1 block text-xs font-semibold text-neutral-500">Lien du bouton</span>
+                <span className="mb-1 block text-xs font-semibold text-neutral-600">Lien du bouton</span>
                 <input className={inputCls} value={c.lien} maxLength={300} placeholder="https://…" onChange={(e) => set({ lien: e.target.value })} />
               </label>
             </div>
-            <p className="text-xs text-neutral-400">L&rsquo;en-tête, la signature et le lien de désinscription sont ajoutés automatiquement.</p>
+            <p className="text-xs text-neutral-600">L&rsquo;en-tête, la signature et le lien de désinscription sont ajoutés automatiquement.</p>
           </div>
           <div>
             <div className="flex flex-wrap gap-2">
@@ -198,18 +198,18 @@ export function NewsletterEditor(props: {
             </div>
             {preview ? (
               <div className="mt-3 overflow-hidden rounded-xl border border-neutral-200">
-                <p className="border-b border-neutral-200 bg-mist px-3 py-2 text-xs text-neutral-600"><span className="font-semibold text-neutral-400">Objet :</span> <strong className="text-inkgreen">{preview.sujet}</strong></p>
+                <p className="border-b border-neutral-200 bg-mist px-3 py-2 text-xs text-neutral-600"><span className="font-semibold text-neutral-600">Objet :</span> <strong className="text-inkgreen">{preview.sujet}</strong></p>
                 <iframe title="Aperçu de la newsletter" sandbox="" srcDoc={`<body style="margin:0;padding:16px;background:#ffffff;">${preview.html}</body>`} className="h-[28rem] w-full bg-white" />
               </div>
             ) : (
-              <p className="mt-3 rounded-xl border border-dashed border-neutral-200 p-6 text-center text-sm text-neutral-400">L&rsquo;aperçu montre l&rsquo;e-mail tel qu&rsquo;un client le recevra.</p>
+              <p className="mt-3 rounded-xl border border-dashed border-neutral-200 p-6 text-center text-sm text-neutral-600">L&rsquo;aperçu montre l&rsquo;e-mail tel qu&rsquo;un client le recevra.</p>
             )}
           </div>
         </div>
       </section>
 
       <section className="flex flex-wrap items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="text-base font-extrabold text-inkgreen">3. Envoyer</h2>
+        <h2 className="flex items-center gap-2.5 text-base font-extrabold text-inkgreen"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-pine-700 text-sm font-extrabold tabular-nums text-white">3</span>Envoyer</h2>
         <span className="flex-1" />
         <button type="button" disabled={busy !== null || !pret || !props.mailConfigured} onClick={() => { setChecked(false); setConfirm(true); }} className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-5 py-2.5 text-sm font-bold text-pine-950 transition hover:bg-amber-600 disabled:opacity-40">
           {enCours ? <Loader2 className="h-4 w-4 animate-spin" /> : <Megaphone className="h-4 w-4" />}
@@ -218,16 +218,16 @@ export function NewsletterEditor(props: {
       </section>
 
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="mb-3 text-base font-extrabold text-inkgreen">Newsletters envoyées</h2>
+        <h2 className="mb-3 flex items-center gap-2.5 text-base font-extrabold text-inkgreen"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-pine-50 text-pine-700"><History className="h-4 w-4" /></span>Newsletters envoyées</h2>
         {props.campagnes.length === 0 ? (
-          <p className="text-sm text-neutral-400">Aucune newsletter envoyée pour l&rsquo;instant.</p>
+          <p className="text-sm text-neutral-600">Aucune newsletter envoyée pour l&rsquo;instant.</p>
         ) : (
           <ul className="divide-y divide-neutral-100">
             {props.campagnes.map((k) => (
               <li key={k.id} className="flex flex-wrap items-center gap-x-4 gap-y-1.5 py-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-bold text-inkgreen">{k.sujet}</p>
-                  <p className="text-xs text-neutral-400">{dateFmt.format(new Date(k.created_at))} · {k.created_by ?? "—"} · {k.statuts.join(", ")}</p>
+                  <p className="text-xs text-neutral-600">{dateFmt.format(new Date(k.created_at))} · {k.created_by ?? "—"} · {k.statuts.join(", ")}</p>
                 </div>
                 <span className="text-xs font-bold tabular-nums text-neutral-600">
                   {k.envoyes} / {k.total} envoyés{k.echecs > 0 && <span className="text-red-600"> · {k.echecs} échec{k.echecs > 1 ? "s" : ""}</span>}
@@ -264,12 +264,12 @@ export function NewsletterEditor(props: {
           <div ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="nl-confirm" className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-card outline-none" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.key === "Escape" && busy === null && setConfirm(false)}>
             <div className="flex items-start justify-between gap-3">
               <h2 id="nl-confirm" className="text-lg font-extrabold text-inkgreen">Envoyer cette newsletter ?</h2>
-              <button type="button" aria-label="Fermer" onClick={() => setConfirm(false)} className="rounded-lg p-1 text-neutral-400 hover:bg-neutral-100"><X className="h-4 w-4" /></button>
+              <button type="button" aria-label="Fermer" onClick={() => setConfirm(false)} className="rounded-lg p-1 text-neutral-600 hover:bg-neutral-100"><X className="h-4 w-4" /></button>
             </div>
             <dl className="mt-4 space-y-2 text-sm">
-              <div className="flex justify-between gap-3"><dt className="text-neutral-500">Destinataires</dt><dd className="text-base font-extrabold tabular-nums text-pine-700">{total.toLocaleString("fr-FR")}</dd></div>
-              <div className="flex justify-between gap-3"><dt className="text-neutral-500">États</dt><dd className="text-right font-bold text-inkgreen">{props.statuts.filter((s) => sel.includes(s.key)).map((s) => s.label).join(", ")}</dd></div>
-              <div className="flex justify-between gap-3"><dt className="text-neutral-500">Objet</dt><dd className="text-right font-bold text-inkgreen">{c.sujet}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-neutral-600">Destinataires</dt><dd className="text-base font-extrabold tabular-nums text-pine-700">{total.toLocaleString("fr-FR")}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-neutral-600">États</dt><dd className="text-right font-bold text-inkgreen">{props.statuts.filter((s) => sel.includes(s.key)).map((s) => s.label).join(", ")}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-neutral-600">Objet</dt><dd className="text-right font-bold text-inkgreen">{c.sujet}</dd></div>
             </dl>
             <p className="mt-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />

@@ -28,16 +28,16 @@ export function MargeActions({ leadId, venteHt, coutAchat, marge, source, gagne 
 
   return (
     <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-      <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-        <Coins className="h-3.5 w-3.5" />
+      <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">
+        <Coins className="h-4 w-4 text-pine-600" />
         Marge de l&rsquo;affaire <span className="text-amber-600">interne</span>
       </h2>
       <dl className="mt-3 space-y-1.5 text-sm">
-        <div className="flex justify-between"><dt className="text-neutral-500">Vente HT</dt><dd className="font-bold tabular-nums text-inkgreen">{eur(venteHt)}</dd></div>
-        <div className="flex justify-between"><dt className="text-neutral-500">Coût d&rsquo;achat</dt><dd className="font-bold tabular-nums text-inkgreen">{eur(coutAchat)}</dd></div>
+        <div className="flex justify-between"><dt className="text-neutral-600">Vente HT</dt><dd className="font-bold tabular-nums text-inkgreen">{eur(venteHt)}</dd></div>
+        <div className="flex justify-between"><dt className="text-neutral-600">Coût d&rsquo;achat</dt><dd className="font-bold tabular-nums text-inkgreen">{eur(coutAchat)}</dd></div>
         <div className="flex justify-between border-t border-neutral-100 pt-1.5"><dt className="font-bold text-inkgreen">Marge brute</dt><dd className={`font-extrabold tabular-nums ${marge === null ? "text-amber-600" : "text-pine-700"}`}>{marge === null ? "à saisir" : eur(marge)}</dd></div>
       </dl>
-      <p className="mt-2 text-xs text-neutral-400">
+      <p className="mt-2 text-xs text-neutral-600">
         {source ?? (gagne ? "Pas encore calculée." : "Elle sera figée quand l'affaire passera à « Signé ».")} Elle sert de base à la prime du commercial.
       </p>
       <div className="mt-3 grid grid-cols-2 gap-2">

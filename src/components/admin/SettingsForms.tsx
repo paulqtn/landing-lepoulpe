@@ -52,12 +52,12 @@ export function CommissionsForm({ initial }: { initial: { tauxMarge: number; seu
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {fields.map(([k, label]) => (
           <label key={k} className="block">
-            <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-500">{label}</span>
+            <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-600">{label}</span>
             <input className={inputCls} inputMode="decimal" value={v[k]} onChange={(e) => setV({ ...v, [k]: e.target.value })} />
           </label>
         ))}
       </div>
-      <p className="mt-3 text-xs text-neutral-400">
+      <p className="mt-3 text-xs text-neutral-600">
         Exemple avec ces valeurs : {n(v.seuilCA).toLocaleString("fr-FR")} € de CA HT dans le mois → 1 bonus ; {(n(v.seuilCA) + n(v.tranche)).toLocaleString("fr-FR")} € → 2 bonus ; {(n(v.seuilCA) + 2 * n(v.tranche)).toLocaleString("fr-FR")} € → 3 bonus. La commission sur la marge s&rsquo;applique dès le premier euro.
       </p>
       <Footer busy={busy} msg={msg} />
@@ -80,16 +80,16 @@ export function NiveauxPrixForm({ initial, coefSite }: { initial: { plein: numbe
       <div className="grid gap-4 sm:grid-cols-3">
         {fields.map(([k, label, aide]) => (
           <label key={k} className="block">
-            <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-500">{label}</span>
+            <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-600">{label}</span>
             <span className="flex items-center gap-2">
-              <span className="text-sm font-bold text-neutral-400">×</span>
+              <span className="text-sm font-bold text-neutral-600">×</span>
               <input className={inputCls} inputMode="decimal" value={v[k]} onChange={(e) => setV({ ...v, [k]: e.target.value })} />
             </span>
-            <span className="mt-1 block text-xs text-neutral-400">{aide}</span>
+            <span className="mt-1 block text-xs text-neutral-600">{aide}</span>
           </label>
         ))}
       </div>
-      <p className="mt-3 text-xs text-neutral-500">
+      <p className="mt-3 text-xs text-neutral-600">
         Prix de vente = coût d&rsquo;achat × coefficient. Le site public affiche ses prix au coefficient <strong>×{String(coefSite).replace(".", ",")}</strong>
         {ecart !== 0 && <> ({ecart > 0 ? `${String(ecart).replace(".", ",")} % au-dessus` : `${String(-ecart).replace(".", ",")} % en dessous`} du plein tarif)</>} : il se règle dans l&rsquo;onglet « Générateur du site », ligne du coefficient.
       </p>
@@ -106,7 +106,7 @@ export function SocieteForm({ fields, initial }: { fields: { key: string; label:
       <div className="grid gap-4 sm:grid-cols-2">
         {fields.map((f) => (
           <label key={f.key} className={`block ${f.multiline ? "sm:col-span-2" : ""}`}>
-            <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-500">{f.label}</span>
+            <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-600">{f.label}</span>
             {f.multiline ? (
               <textarea className={inputCls} rows={3} value={v[f.key] ?? ""} onChange={(e) => setV({ ...v, [f.key]: e.target.value })} />
             ) : (
@@ -128,9 +128,9 @@ export function DelaisForm({ fields, initial }: { fields: { key: string; label: 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {fields.map((f) => (
           <label key={f.key} className="block">
-            <span className="mb-1.5 block text-xs font-semibold text-neutral-500">{f.label}</span>
+            <span className="mb-1.5 block text-xs font-semibold text-neutral-600">{f.label}</span>
             <span className="flex items-center gap-2">
-              <span className="text-sm font-bold text-neutral-400">J+</span>
+              <span className="text-sm font-bold text-neutral-600">J+</span>
               <input className={inputCls} inputMode="numeric" value={v[f.key] ?? ""} onChange={(e) => setV({ ...v, [f.key]: e.target.value })} />
             </span>
           </label>

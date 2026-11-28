@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BoutonAppeler } from "@/components/admin/Telephone";
-import { BellRing, CalendarClock, MailCheck, PhoneCall, Phone } from "lucide-react";
-import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
+import { BellRing, CalendarClock, CheckCircle2, MailCheck, PhoneCall, Phone } from "lucide-react";
+import { Carte, dateFmt, EnTete, eurFmt, Onglets, pastilleCls, Rien, ScoreBadge, StatutBadge } from "@/components/admin/ui";
 import { RelancesEditor } from "@/components/admin/RelancesEditor";
 import { canManageSettings, requireMenu, voitTout } from "@/lib/admin/auth";
 import { CRON_HEURE_UTC, CRON_HORAIRE } from "@/lib/admin/cron-frequence";
@@ -32,32 +32,44 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-extrabold text-inkgreen">Relances</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Séquence : devis envoyé (J0) → relance 1 à J+{jours[0]} → relance 2 à J+{jours[1]} → relance 3 à J+{jours[2]} ·{" "}
-          {!mailConfigured ? "e-mails non branchés : rien ne part pour l'instant" : !seq.active ? "envoi automatique désactivé" : CRON_HORAIRE ? "envoi automatique à l'heure choisie" : "envoi automatique une fois par jour"}
-        </p>
-        {rep && equipe && (
-          <div className="mt-2.5 flex gap-1.5">
-            <Chip href="/commercial/relances" active={mine === true} label="Les miennes" />
-            <Chip href="/commercial/relances?qui=tous" active={!mine} label="Toute l'équipe" />
-          </div>
-        )}
-      </div>
+      <EnTete
+        titre="Relances"
+        sous={<>{!mailConfigured ? "E-mails non branchés : rien ne part pour l'instant." : !seq.active ? "Envoi automatique désactivé." : CRON_HORAIRE ? "Envoi automatique à l'heure choisie." : "Envoi automatique une fois par jour."}</>}
+      />
+
+      <ol className="grid grid-cols-2 gap-2 lg:grid-cols-4" aria-label="Séquence de relances">
+        {[
+          { t: "Devis envoyé", j: "J0" },
+          { t: "Relance 1", j: `J+${jours[0]}` },
+          { t: "Relance 2", j: `J+${jours[1]}` },
+          { t: "Relance 3", j: `J+${jours[2]}` },
+        ].map((e, i) => (
+          <li key={e.t} className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white px-3.5 py-3">
+            <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-extrabold tabular-nums ${i === 0 ? "bg-pine-700 text-white" : "bg-pine-50 text-pine-700"}`}>{i + 1}</span>
+            <span className="min-w-0"><span className="block text-sm font-bold text-inkgreen">{e.t}</span><span className="block text-xs font-semibold tabular-nums text-neutral-600">{e.j}</span></span>
+          </li>
+        ))}
+      </ol>
 
       {canManageSettings(user) && <RelancesEditor initial={seq} variables={VARIABLES} mailConfigured={mailConfigured} testTo={user.email} horaire={CRON_HORAIRE} heureQuotidienne={heureQuotidienne} />}
 
-      <section className="rounded-2xl border border-pine-200 bg-white p-5">
-        <h2 className="flex items-center gap-2 text-base font-extrabold text-inkgreen">
-          <PhoneCall className="h-4 w-4 text-pine-600" />
-          À rappeler par téléphone
-          <span className="ml-1 rounded-full bg-pine-50 px-2 py-0.5 text-xs font-bold text-pine-700">{nbRappels}</span>
-        </h2>
+      {rep && equipe && (
+        <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+          <Onglets
+            label="Relances affichées"
+            items={[
+              { href: "/commercial/relances", label: "Les miennes", on: mine === true },
+              { href: "/commercial/relances?qui=tous", label: "Toute l'équipe", on: !mine },
+            ]}
+          />
+        </div>
+      )}
+
+      <Carte icon={PhoneCall} titre="À rappeler par téléphone" n={nbRappels} sous="Ces clients ne reçoivent plus d'e-mail automatique : c'est à vous de les rappeler.">
         {rappels.length === 0 ? (
-          <p className="mt-3 text-sm text-neutral-400">Aucun rappel téléphonique en attente.</p>
+          <Rien icon={CheckCircle2}>Aucun rappel téléphonique en attente.</Rien>
         ) : (
-          <ul className="mt-3 divide-y divide-neutral-100">
+          <ul className="-my-1 divide-y divide-neutral-100">
             {rappels.map((l) => {
               const retard = l.rappel_at ? new Date(l.rappel_at).getTime() < Date.now() : true;
               return (
@@ -65,9 +77,9 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
                   <ScoreBadge score={l.score} points={l.score_points} />
                   <Link href={`/commercial/clients/${l.id}`} className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-bold text-inkgreen hover:text-pine-700">{l.name}</span>
-                    <span className="block text-xs text-neutral-400">{l.phone}{mine ? "" : l.assigned_to ? ` · ${l.assigned_to}` : " · non attribué"}</span>
+                    <span className="block text-xs text-neutral-600">{l.phone}{mine ? "" : l.assigned_to ? ` · ${l.assigned_to}` : " · non attribué"}</span>
                   </Link>
-                  <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${retard ? "bg-amber-500/15 text-amber-700 ring-amber-500/30" : "bg-neutral-50 text-neutral-500 ring-neutral-200"}`}>
+                  <span className={`${pastilleCls} ${retard ? "bg-amber-500/15 text-amber-800 ring-amber-500/30" : "bg-neutral-50 text-neutral-600 ring-neutral-200"}`}>
                     {l.rappel_at ? `${retard ? "à rappeler depuis le" : "rappel le"} ${new Date(l.rappel_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}` : l.a_valide ? "a validé son devis en ligne" : "rappel demandé par le client"}
                   </span>
                   <StatutBadge statut={l.statut} />
@@ -82,48 +94,37 @@ export default async function RelancesPage({ searchParams }: { searchParams: Pro
           </ul>
         )}
         {nbRappels > rappels.length && (
-          <p className="mt-2 text-xs font-semibold text-neutral-500">
+          <p className="mt-3 text-xs font-semibold text-neutral-600">
             + {nbRappels - rappels.length} autre{nbRappels - rappels.length > 1 ? "s" : ""}, les plus anciens d&rsquo;abord : traitez ceux-ci pour faire apparaître la suite.
           </p>
         )}
-        <p className="mt-3 text-[11px] text-neutral-400">Ces clients ne reçoivent plus d&rsquo;e-mail automatique : c&rsquo;est à vous de les rappeler.</p>
-      </section>
+      </Carte>
 
-      <section className="rounded-2xl border border-amber-500/40 bg-white p-5">
-        <h2 className="flex items-center gap-2 text-base font-extrabold text-inkgreen">
-          <BellRing className="h-4 w-4 text-amber-600" />
-          Échues — à traiter
-          <span className="ml-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-amber-700">{dues.length}</span>
-        </h2>
+      <Carte icon={BellRing} titre="Échues — à traiter" n={dues.length} ton="ambre">
         <Liste leads={dues} vide="Aucune relance en retard — la séquence suit son cours." mode="due" />
-      </section>
+      </Carte>
 
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="flex items-center gap-2 text-base font-extrabold text-inkgreen">
-          <CalendarClock className="h-4 w-4 text-pine-600" />
-          Programmées
-          <span className="ml-1 rounded-full bg-mist px-2 py-0.5 text-xs font-bold text-neutral-500">{aVenir.length}</span>
-        </h2>
+      <Carte icon={CalendarClock} titre="Programmées" n={aVenir.length} ton="neutre">
         <Liste leads={aVenir} vide="Rien de programmé pour l'instant." mode="prevue" />
-        <p className="mt-3 flex items-center gap-1.5 text-[11px] text-neutral-400">
-          <MailCheck className="h-3.5 w-3.5" />
+        <p className="mt-4 flex items-start gap-1.5 text-xs text-neutral-600">
+          <MailCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           Les e-mails ne partent que tant que le client est en « Devis envoyé » ou « Relancé » : dès qu&rsquo;un appel abouti est enregistré sur sa fiche, la séquence s&rsquo;arrête.
         </p>
-      </section>
+      </Carte>
     </div>
   );
 }
 
 function Liste({ leads, vide, mode }: { leads: Lead[]; vide: string; mode: "due" | "prevue" }) {
-  if (leads.length === 0) return <p className="mt-3 text-sm text-neutral-400">{vide}</p>;
+  if (leads.length === 0) return <Rien icon={mode === "due" ? CheckCircle2 : CalendarClock}>{vide}</Rien>;
   return (
-    <ul className="mt-3 divide-y divide-neutral-100">
+    <ul className="-my-1 divide-y divide-neutral-100">
       {leads.map((l) => (
         <li key={l.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
           <ScoreBadge score={l.score} points={l.score_points} />
           <Link href={`/commercial/clients/${l.id}`} className="min-w-0 flex-1">
             <span className="block truncate text-sm font-bold text-inkgreen hover:text-pine-700">{l.name}</span>
-            <span className="block text-xs text-neutral-400">
+            <span className="block text-xs text-neutral-600">
               relance {Math.min(l.relances + 1, 3)}/3 · {mode === "due" ? "prévue le" : "partira le"}{" "}
               {l.next_relance_at ? dateFmt.format(new Date(l.next_relance_at)) : "—"}
               {l.opens > 0 && ` · ${l.opens} ouverture${l.opens > 1 ? "s" : ""}`}
@@ -137,13 +138,5 @@ function Liste({ leads, vide, mode }: { leads: Lead[]; vide: string; mode: "due"
         </li>
       ))}
     </ul>
-  );
-}
-
-function Chip({ href, active, label }: { href: string; active: boolean; label: string }) {
-  return (
-    <a href={href} className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${active ? "bg-pine-700 text-white" : "border border-neutral-200 bg-white text-neutral-600 hover:border-pine-300 hover:text-pine-700"}`}>
-      {label}
-    </a>
   );
 }

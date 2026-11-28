@@ -126,7 +126,7 @@ export function LeadActions({
       {/* appel client + séquence d'e-mails */}
       {!clos && (
         <section className="rounded-2xl border border-pine-200 bg-white p-5">
-          <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Suivi du client</h2>
+          <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">Suivi du client</h2>
           {rappelAt && <p className="mt-3 rounded-xl bg-amber-500/15 px-3 py-2 text-xs font-semibold text-neutral-800">Rappel téléphonique prévu le {quand(rappelAt)}.</p>}
           {!appel ? (
             <div className="mt-3 space-y-2">
@@ -144,7 +144,7 @@ export function LeadActions({
                     <input type="radio" name="issue-appel" className="mt-1 accent-pine-700" checked={issue === k} onChange={() => setIssue(k)} />
                     <span>
                       <span className="block font-bold text-inkgreen">{label}</span>
-                      <span className="block text-[11px] text-neutral-500">{effet}</span>
+                      <span className="block text-[11px] text-neutral-600">{effet}</span>
                     </span>
                   </label>
                 ))}
@@ -201,8 +201,8 @@ export function LeadActions({
       {/* score du prospect : une ligne de cinq pastilles */}
       {!clos && (
         <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-          <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-            <Gauge className="h-3.5 w-3.5" />
+          <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">
+            <Gauge className="h-4 w-4 text-pine-600" />
             Score du prospect
           </h2>
           <div className="mt-3 flex flex-wrap gap-1.5" role="radiogroup" aria-label="Score du prospect">
@@ -215,20 +215,20 @@ export function LeadActions({
                 title={x.description}
                 disabled={pending}
                 onClick={() => patch({ niveau: niveau === x.n ? null : x.n }, niveau === x.n ? "Score retiré." : `Score : ${x.label}.`)}
-                className={`rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset transition disabled:opacity-60 ${niveau === x.n ? `${x.cls} ring-2` : "bg-white text-neutral-500 ring-neutral-200 hover:bg-amber-500/15"}`}
+                className={`rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset transition disabled:opacity-60 ${niveau === x.n ? `${x.cls} ring-2` : "bg-white text-neutral-600 ring-neutral-200 hover:bg-amber-500/15"}`}
               >
                 {x.n} · {x.label}
               </button>
             ))}
           </div>
-          <p className="mt-2 text-xs text-neutral-400">{niveau ? `${NIVEAUX.find((x) => x.n === niveau)?.description} Cliquez de nouveau pour retirer le score.` : "Aucun score pour l'instant."}</p>
+          <p className="mt-2 text-xs text-neutral-600">{niveau ? `${NIVEAUX.find((x) => x.n === niveau)?.description} Cliquez de nouveau pour retirer le score.` : "Aucun score pour l'instant."}</p>
         </section>
       )}
 
       {/* note */}
       <section id="note" className="scroll-mt-4 rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-          <StickyNote className="h-3.5 w-3.5" />
+        <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">
+          <StickyNote className="h-4 w-4 text-pine-600" />
           Note commerciale
         </h2>
         <textarea
@@ -253,7 +253,7 @@ export function LeadActions({
 
       {/* statut */}
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Statut</h2>
+        <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">Statut</h2>
         <div className="mt-3 flex flex-wrap gap-1.5">
           {STATUTS.map((s) => {
             const auto = statutAutomatique(s);
@@ -272,7 +272,7 @@ export function LeadActions({
                   statut === s
                     ? "bg-pine-700 text-white"
                     : auto
-                      ? "border border-dashed border-neutral-200 bg-white text-neutral-300"
+                      ? "border border-dashed border-neutral-200 bg-white text-neutral-400"
                       : "border border-neutral-200 bg-white text-neutral-600 hover:border-pine-300 hover:text-pine-700"
                 }`}
               >
@@ -281,7 +281,7 @@ export function LeadActions({
             );
           })}
         </div>
-        <p className="mt-2 text-xs text-neutral-400">Les statuts « Relancé » se posent tout seuls à l&rsquo;envoi d&rsquo;une relance.</p>
+        <p className="mt-2 text-xs text-neutral-600">Les statuts « Relancé » se posent tout seuls à l&rsquo;envoi d&rsquo;une relance.</p>
 
         {cloture === "gagne" && (
           <div ref={zoneCloture} className="mt-3 rounded-xl border border-pine-200 bg-pine-50/60 p-3 text-sm">
@@ -333,8 +333,8 @@ export function LeadActions({
       {/* relances : état, pause, suppression, déclenchement, envoi immédiat — rien sur une affaire close */}
       {!clos && (
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-          <CalendarClock className="h-3.5 w-3.5" />
+        <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">
+          <CalendarClock className="h-4 w-4 text-pine-600" />
           Relances par e-mail
         </h2>
         <p className={`mt-3 rounded-xl px-3 py-2 text-xs font-semibold ${seqOn ? "bg-sky-50 text-sky-900" : enPause ? "bg-amber-500/15 text-neutral-800" : "bg-mist text-neutral-600"}`}>
@@ -375,7 +375,7 @@ export function LeadActions({
             </div>
             {devisEnvoye ? (
               <div className="mt-3 flex flex-wrap items-end gap-2 border-t border-neutral-100 pt-3">
-                <label className="min-w-0 flex-1 basis-40 text-xs font-semibold text-neutral-500">
+                <label className="min-w-0 flex-1 basis-40 text-xs font-semibold text-neutral-600">
                   {seqOn ? "Changer la date de la prochaine relance" : "Ou choisir la date de la prochaine relance"}
                   <input type="date" value={relanceDate} onChange={(e) => setRelanceDate(e.target.value)} className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm text-inkgreen outline-none focus:border-pine-500" />
                 </label>
@@ -389,7 +389,7 @@ export function LeadActions({
                 </button>
               </div>
             ) : (
-              <p className="mt-2 text-xs text-neutral-400">Les relances se déclenchent une fois un devis envoyé au client.</p>
+              <p className="mt-2 text-xs text-neutral-600">Les relances se déclenchent une fois un devis envoyé au client.</p>
             )}
           </>
         )}
@@ -411,15 +411,15 @@ export function LeadActions({
       {/* coordonnées */}
       {contact && (
         <details className="group rounded-2xl border border-neutral-200 bg-white p-5">
-          <summary className="flex cursor-pointer list-none items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 [&::-webkit-details-marker]:hidden">
-            <UserPen className="h-3.5 w-3.5" />
+          <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-extrabold text-inkgreen [&::-webkit-details-marker]:hidden">
+            <UserPen className="h-4 w-4 text-pine-600" />
             <span className="flex-1">Coordonnées{team.length > 0 ? " et commercial" : ""}</span>
             <span className="font-sans text-xs normal-case tracking-normal text-pine-700 group-open:hidden">Modifier</span>
             <span className="hidden font-sans text-xs normal-case tracking-normal text-pine-700 group-open:inline">Replier</span>
           </summary>
           <div className="mt-3 grid gap-2">
             {([["name", "Nom", "text"], ["email", "E-mail", "email"], ["phone", "Téléphone", "tel"]] as const).map(([k, label, type]) => (
-              <label key={k} className="block text-xs font-semibold text-neutral-500">
+              <label key={k} className="block text-xs font-semibold text-neutral-600">
                 {label}
                 <input type={type} value={coord[k]} onChange={(e) => setCoord({ ...coord, [k]: e.target.value })} className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm text-inkgreen outline-none focus:border-pine-500" />
               </label>
@@ -428,9 +428,9 @@ export function LeadActions({
           <button type="button" disabled={pending || !coordChange} onClick={() => patch({ contact: coord }, "Coordonnées enregistrées.")} className="mt-3 rounded-full bg-pine-700 px-5 py-2 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
             Enregistrer les coordonnées
           </button>
-          <p className="mt-2 text-xs text-neutral-400">Les relances et les devis partent à cette adresse.</p>
+          <p className="mt-2 text-xs text-neutral-600">Les relances et les devis partent à cette adresse.</p>
           {team.length > 0 && (
-            <label className="mt-4 block border-t border-neutral-100 pt-3 text-xs font-semibold text-neutral-500">
+            <label className="mt-4 block border-t border-neutral-100 pt-3 text-xs font-semibold text-neutral-600">
               Commercial qui suit ce client
             <select
               defaultValue={assignedTo ?? ""}

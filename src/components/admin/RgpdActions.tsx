@@ -11,8 +11,8 @@ export function RgpdActions({ leadId, anonymized }: { leadId: number; anonymized
   const [msg, setMsg] = useState<string | null>(null);
   return (
     <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-      <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-        <ShieldCheck className="h-3.5 w-3.5" />
+      <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">
+        <ShieldCheck className="h-4 w-4 text-pine-600" />
         Données personnelles (RGPD)
       </h2>
       <div className="mt-3 flex flex-wrap gap-2">
@@ -39,7 +39,7 @@ export function RgpdActions({ leadId, anonymized }: { leadId: number; anonymized
           </button>
         )}
       </div>
-      {anonymized && <p className="mt-2 text-xs text-neutral-500">Ce client a été anonymisé.</p>}
+      {anonymized && <p className="mt-2 text-xs text-neutral-600">Ce client a été anonymisé.</p>}
       {msg && <p className="mt-2 text-xs font-semibold text-red-600">{msg}</p>}
     </section>
   );

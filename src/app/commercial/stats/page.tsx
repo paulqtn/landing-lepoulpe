@@ -23,7 +23,7 @@ function Carte({ icon: Icon, titre, sous, children, className = "" }: { icon: ty
         <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-pine-50 text-pine-700"><Icon className="h-4 w-4" /></span>
         {titre}
       </h2>
-      {sous && <p className="mt-1 text-xs text-neutral-500">{sous}</p>}
+      {sous && <p className="mt-1 text-xs text-neutral-600">{sous}</p>}
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -36,7 +36,7 @@ function Barre({ label, valeur, max, total, detail, couleur = "bg-pine-600" }: {
     <div className="group">
       <div className="flex items-baseline justify-between gap-3 text-sm">
         <span className="min-w-0 truncate font-semibold text-neutral-700">{label}{detail && <span className="ml-2 text-xs font-bold text-pine-700">{detail}</span>}</span>
-        <span className="shrink-0 font-extrabold tabular-nums text-inkgreen">{valeur}{part !== null && <span className="ml-1.5 text-xs font-semibold text-neutral-500">{part} %</span>}</span>
+        <span className="shrink-0 font-extrabold tabular-nums text-inkgreen">{valeur}{part !== null && <span className="ml-1.5 text-xs font-semibold text-neutral-600">{part} %</span>}</span>
       </div>
       <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-mist">
         <div className={`mgk-jauge h-full rounded-full ${couleur} transition-opacity group-hover:opacity-80`} style={{ width: `${valeur > 0 ? Math.max(2, (valeur / Math.max(1, max)) * 100) : 0}%` }} />
@@ -53,9 +53,9 @@ function Volume({ data }: { data: { d: string; n: number }[] }) {
   return (
     <>
       <div className="flex flex-wrap items-end gap-x-8 gap-y-2">
-        <p><span className="block text-3xl font-extrabold tabular-nums leading-none text-inkgreen"><Compteur valeur={total} /></span><span className="text-xs font-semibold text-neutral-500">demandes sur 30 jours</span></p>
-        <p><span className="block text-lg font-extrabold tabular-nums leading-tight text-inkgreen">{String(Math.round((total / 30) * 10) / 10).replace(".", ",")}</span><span className="text-xs font-semibold text-neutral-500">par jour en moyenne</span></p>
-        {meilleur && meilleur.n > 0 && <p><span className="block text-lg font-extrabold tabular-nums leading-tight text-inkgreen">{meilleur.n}</span><span className="text-xs font-semibold text-neutral-500">le {jourFmt.format(new Date(meilleur.d))}, meilleur jour</span></p>}
+        <p><span className="block text-3xl font-extrabold tabular-nums leading-none text-inkgreen"><Compteur valeur={total} /></span><span className="text-xs font-semibold text-neutral-600">demandes sur 30 jours</span></p>
+        <p><span className="block text-lg font-extrabold tabular-nums leading-tight text-inkgreen">{String(Math.round((total / 30) * 10) / 10).replace(".", ",")}</span><span className="text-xs font-semibold text-neutral-600">par jour en moyenne</span></p>
+        {meilleur && meilleur.n > 0 && <p><span className="block text-lg font-extrabold tabular-nums leading-tight text-inkgreen">{meilleur.n}</span><span className="text-xs font-semibold text-neutral-600">le {jourFmt.format(new Date(meilleur.d))}, meilleur jour</span></p>}
       </div>
       <div className="mt-5 flex h-32 items-end gap-[3px]" role="img" aria-label={`Demandes par jour sur 30 jours : ${total} au total`}>
         {data.map((p, i) => (
@@ -64,7 +64,7 @@ function Volume({ data }: { data: { d: string; n: number }[] }) {
           </div>
         ))}
       </div>
-      <p className="mt-2 flex justify-between text-xs font-semibold text-neutral-500"><span>{jourFmt.format(new Date(data[0].d))}</span><span className="text-amber-700">aujourd&rsquo;hui</span></p>
+      <p className="mt-2 flex justify-between text-xs font-semibold text-neutral-600"><span>{jourFmt.format(new Date(data[0].d))}</span><span className="text-amber-700">aujourd&rsquo;hui</span></p>
     </>
   );
 }
@@ -112,7 +112,7 @@ export default async function StatsPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[52rem] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 text-xs font-bold uppercase tracking-wide text-neutral-500">
+                  <tr className="border-b border-neutral-200 text-xs font-bold uppercase tracking-wide text-neutral-600">
                     <th className="py-2.5 pr-3">Commercial</th>
                     <th className="py-2.5 pr-3 text-right">Signé ce mois</th>
                     <th className="py-2.5 pr-3 text-right">Prime</th>
@@ -141,7 +141,7 @@ export default async function StatsPage() {
                           <span className="w-10 text-xs font-bold tabular-nums text-neutral-600">{p.pctObjectif} %</span>
                         </span>
                       </td>
-                      <td className="py-3 pr-3 text-right tabular-nums"><strong className="font-extrabold text-inkgreen">{p.signees}</strong> <span className="text-xs text-neutral-500">/ {p.perdues} non signée{p.perdues > 1 ? "s" : ""}</span></td>
+                      <td className="py-3 pr-3 text-right tabular-nums"><strong className="font-extrabold text-inkgreen">{p.signees}</strong> <span className="text-xs text-neutral-600">/ {p.perdues} non signée{p.perdues > 1 ? "s" : ""}</span></td>
                       <td className="py-3 pr-3 text-right font-bold tabular-nums">{p.tauxSignature !== null ? `${p.tauxSignature} %` : "—"}</td>
                       <td className="py-3 pr-3 text-right tabular-nums text-neutral-700">{eurFmt.format(p.enCoursTTC)} €</td>
                       <td className="py-3 text-right tabular-nums text-neutral-700">{eurFmt.format(p.panierMoyen)} €</td>
@@ -149,7 +149,7 @@ export default async function StatsPage() {
                   ))}
                 </tbody>
               </table>
-              {perReps.some((p) => p.margesManquantes > 0) && <p className="mt-2 text-xs text-neutral-500">* des affaires signées n&rsquo;ont pas encore de marge enregistrée : elles ne sont pas comptées dans la prime.</p>}
+              {perReps.some((p) => p.margesManquantes > 0) && <p className="mt-2 text-xs text-neutral-600">* des affaires signées n&rsquo;ont pas encore de marge enregistrée : elles ne sont pas comptées dans la prime.</p>}
             </div>
           )}
         </Carte>
@@ -163,7 +163,7 @@ export default async function StatsPage() {
             <span className="min-w-0">
               <span className="block text-2xl font-extrabold leading-tight text-inkgreen"><Compteur valeur={k.valeur} suffixe={k.suffixe} /></span>
               <span className="block text-sm font-bold text-neutral-800">{k.label}</span>
-              <span className="block text-xs text-neutral-500">{k.aide}</span>
+              <span className="block text-xs text-neutral-600">{k.aide}</span>
             </span>
           </li>
         ))}
@@ -177,7 +177,7 @@ export default async function StatsPage() {
         {/* entonnoir : chaque étape avec ce qu'il reste de l'étape précédente */}
         <Carte icon={Filter} titre={perso ? "Mon entonnoir" : "Entonnoir de conversion"} sous="De la demande à la signature.">
           {recues === 0 ? (
-            <p className="text-sm text-neutral-500">Pas encore de demande.</p>
+            <p className="text-sm text-neutral-600">Pas encore de demande.</p>
           ) : (
             <ol className="space-y-2">
               {g.funnel.map((f, i) => {
@@ -185,7 +185,7 @@ export default async function StatsPage() {
                 const passage = i > 0 ? Math.round((f.n / Math.max(1, g.funnel[i - 1].n)) * 100) : null;
                 return (
                   <li key={f.label}>
-                    {passage !== null && <p className="mb-2 pl-3 text-xs font-bold text-neutral-500">↓ {passage} % passent à l&rsquo;étape suivante</p>}
+                    {passage !== null && <p className="mb-2 pl-3 text-xs font-bold text-neutral-600">↓ {passage} % passent à l&rsquo;étape suivante</p>}
                     <div className="mx-auto" style={{ width: `${Math.max(62, part)}%` }}>
                       <div className={`mgk-jauge flex items-center justify-between gap-3 rounded-xl px-3.5 py-3 ${i === g.funnel.length - 1 ? "bg-amber-500 text-pine-950" : i === 0 ? "bg-pine-800 text-white" : "bg-pine-700 text-white"}`}>
                         <span className="min-w-0 text-sm font-bold leading-tight">{f.label}</span>
@@ -202,7 +202,7 @@ export default async function StatsPage() {
 
       <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
         <Carte icon={Radar} titre={perso ? "Origine de mes clients" : "Meilleures sources"} sous="D'où viennent les demandes, et lesquelles signent.">
-          {g.sources.length === 0 ? <p className="text-sm text-neutral-500">Pas encore de données.</p> : (
+          {g.sources.length === 0 ? <p className="text-sm text-neutral-600">Pas encore de données.</p> : (
             <div className="space-y-3.5">
               {g.sources.map((x) => <Barre key={x.source} label={x.source} valeur={x.n} max={srcMax} total={srcTotal} detail={x.gagnes ? `${x.gagnes} signée${x.gagnes > 1 ? "s" : ""}` : undefined} />)}
             </div>
@@ -210,7 +210,7 @@ export default async function StatsPage() {
         </Carte>
 
         <Carte icon={MapPinned} titre={perso ? "Mes projets par usage" : "Projets par usage"} sous="Ce que les clients veulent équiper.">
-          {g.usages.length === 0 ? <p className="text-sm text-neutral-500">Pas encore de données.</p> : (
+          {g.usages.length === 0 ? <p className="text-sm text-neutral-600">Pas encore de données.</p> : (
             <div className="space-y-3.5">
               {g.usages.map((u) => <Barre key={u.usage} label={USAGE_LABELS[u.usage] ?? u.usage} valeur={u.n} max={usgMax} total={usgTotal} couleur="bg-teal-600" />)}
             </div>
@@ -219,7 +219,7 @@ export default async function StatsPage() {
 
         {/* scores : une seule barre partagée entre A, B et C */}
         <Carte icon={Gauge} titre={perso ? "Scores de mes demandes" : "Scores des demandes"} sous="A : à appeler en priorité · B : à relancer · C : à nourrir." className="lg:col-span-2 xl:col-span-1">
-          {scoreTotal === 0 ? <p className="text-sm text-neutral-500">Pas encore de données.</p> : (
+          {scoreTotal === 0 ? <p className="text-sm text-neutral-600">Pas encore de données.</p> : (
             <>
               <div className="flex h-4 overflow-hidden rounded-full bg-mist" role="img" aria-label={`Score A : ${g.scores.A}, score B : ${g.scores.B}, score C : ${g.scores.C}`}>
                 {([["A", "bg-green-600"], ["B", "bg-amber-500"], ["C", "bg-neutral-300"]] as const).map(([k, c]) => g.scores[k] > 0 && <div key={k} className={`mgk-jauge h-full ${c}`} style={{ width: `${(g.scores[k] / scoreTotal) * 100}%` }} />)}
@@ -247,8 +247,8 @@ export default async function StatsPage() {
             <ol className="grid gap-2 sm:grid-cols-3 xl:grid-cols-6">
               {g.ordersParStatut.map((o, i) => (
                 <li key={o.statut} className={`relative rounded-xl border px-3.5 py-3 ${o.n > 0 ? "border-pine-200 bg-pine-50/60" : "border-neutral-200 bg-white"}`}>
-                  <p className="text-xs font-bold text-neutral-600"><span className="mr-1.5 tabular-nums text-neutral-500">{i + 1}</span>{ORDER_LABELS[o.statut]}</p>
-                  <p className={`mt-1 text-2xl font-extrabold tabular-nums leading-tight ${o.n > 0 ? "text-inkgreen" : "text-neutral-500"}`}>{o.n}</p>
+                  <p className="text-xs font-bold text-neutral-600"><span className="mr-1.5 tabular-nums text-neutral-600">{i + 1}</span>{ORDER_LABELS[o.statut]}</p>
+                  <p className={`mt-1 text-2xl font-extrabold tabular-nums leading-tight ${o.n > 0 ? "text-inkgreen" : "text-neutral-600"}`}>{o.n}</p>
                   <p className="text-xs tabular-nums text-neutral-600">{o.montant ? `${eurFmt.format(o.montant)} €` : "—"}</p>
                 </li>
               ))}

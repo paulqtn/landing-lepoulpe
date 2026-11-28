@@ -1,4 +1,5 @@
-import { CheckCircle2, XCircle } from "lucide-react";
+import { Activity, CheckCircle2, Database, History, XCircle } from "lucide-react";
+import { Carte, EnTete } from "@/components/admin/ui";
 import { requireMenu } from "@/lib/admin/auth";
 import { dbHealth } from "@/lib/admin/db";
 import { mailConfigured } from "@/lib/admin/mail";
@@ -18,27 +19,23 @@ export default async function DiagnosticPage() {
   ];
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-extrabold text-inkgreen">Diagnostic</h1>
-        <p className="mt-1 text-sm text-neutral-500">Environnement : <strong className="text-inkgreen">{env}</strong>. Aucune valeur secrète n&rsquo;est affichée ici.</p>
-      </div>
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <ul className="divide-y divide-neutral-100">
+      <EnTete titre="Diagnostic" sous={<>Environnement : <strong className="text-inkgreen">{env}</strong>. Aucune valeur secrète n&rsquo;est affichée ici.</>} />
+      <Carte icon={Activity} titre="Services" sous={`${checks.filter((c) => c[1]).length} sur ${checks.length} en ordre.`} ton={checks.every((c) => c[1]) ? "vert" : "ambre"}>
+        <ul className="grid gap-3 md:grid-cols-2">
           {checks.map(([label, ok, detail]) => (
-            <li key={label} className="flex items-start gap-3 py-3">
-              {ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-600" /> : <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />}
-              <div>
+            <li key={label} className={`flex items-start gap-3 rounded-xl border px-4 py-3.5 ${ok ? "border-neutral-200" : "border-red-200 bg-red-50/40"}`}>
+              <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${ok ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}`}>{ok ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}</span>
+              <div className="min-w-0">
                 <p className="text-sm font-bold text-inkgreen">{label}</p>
-                <p className="text-xs text-neutral-500">{detail}</p>
+                <p className="text-xs text-neutral-600">{detail}</p>
               </div>
             </li>
           ))}
         </ul>
-      </section>
+      </Carte>
       {h.ok && (
         <div className="grid gap-6 lg:grid-cols-2">
-          <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-            <h2 className="mb-3 text-base font-extrabold text-inkgreen">Tables</h2>
+          <Carte icon={Database} titre="Tables" n={h.tables!.length} ton="neutre">
             <table className="w-full text-sm">
               <tbody className="divide-y divide-neutral-100">
                 {h.tables!.map((t) => (
@@ -49,18 +46,17 @@ export default async function DiagnosticPage() {
                 ))}
               </tbody>
             </table>
-          </section>
-          <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-            <h2 className="mb-3 text-base font-extrabold text-inkgreen">Migrations appliquées</h2>
+          </Carte>
+          <Carte icon={History} titre="Migrations appliquées" n={h.migrations!.length} ton="neutre">
             <ul className="space-y-1.5 text-sm">
               {h.migrations!.map((m) => (
                 <li key={m.id} className="flex justify-between gap-3">
                   <span className="font-mono text-xs text-neutral-700">{m.id}</span>
-                  <span className="text-xs text-neutral-400">{new Date(m.applied_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris" })}</span>
+                  <span className="text-xs tabular-nums text-neutral-600">{new Date(m.applied_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris" })}</span>
                 </li>
               ))}
             </ul>
-          </section>
+          </Carte>
         </div>
       )}
     </div>

@@ -51,9 +51,9 @@ const inputCls =
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-500">{label}</span>
+      <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-600">{label}</span>
       {children}
-      {hint && <span className="mt-1 block text-xs text-neutral-400">{hint}</span>}
+      {hint && <span className="mt-1 block text-xs text-neutral-600">{hint}</span>}
     </label>
   );
 }
@@ -75,7 +75,7 @@ const SEVERITY = {
 
 const STATUS = {
   READY: { label: "Chiffrage complet", cls: "bg-green-50 text-green-700 ring-green-200", Icon: CheckCircle2 },
-  WARNING: { label: "À valider", cls: "bg-amber-500/15 text-amber-700 ring-amber-500/30", Icon: AlertTriangle },
+  WARNING: { label: "À valider", cls: "bg-amber-500/15 text-amber-800 ring-amber-500/30", Icon: AlertTriangle },
   BLOCKED: { label: "Non chiffrable", cls: "bg-red-50 text-red-700 ring-red-200", Icon: Ban },
 } as const;
 
@@ -253,7 +253,7 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
                 <li>Rail à l&rsquo;anglaise, encastré ou Spider : 1 250 mm. Spider en escalier : 1 900 mm.</li>
                 <li>Piscine : 1 100 mm, verre 66.4 clair, pinces GS-07-A, portillon 700 mm à compter à part.</li>
               </ul>
-              <p className="mt-2 text-xs text-neutral-400">
+              <p className="mt-2 text-xs text-neutral-600">
                 Aides de saisie uniquement : elles n&rsquo;entrent dans aucun calcul et ne valent pas vérification de conformité.
               </p>
             </details>
@@ -277,7 +277,7 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
                 </select>
               </Field>
             </div>
-            <p className="mt-3 text-xs text-neutral-400">Référence n°{glass.id} — feuilleté trempé, tous bords polis.</p>
+            <p className="mt-3 text-xs text-neutral-600">Référence n°{glass.id} — feuilleté trempé, tous bords polis.</p>
           </Card>
 
           <Card title="Fixation et finition">
@@ -362,7 +362,7 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
                 <input className={inputCls} inputMode="decimal" value={form.gapEndsEachSideMm} onChange={(e) => set("gapEndsEachSideMm", e.target.value)} />
               </Field>
             </div>
-            <p className="mb-3 mt-5 text-xs text-neutral-500">
+            <p className="mb-3 mt-5 text-xs text-neutral-600">
               Forçages : laisser vide pour le calcul automatique. Une valeur forcée est à valider avec Yann.
             </p>
             <div className="grid gap-4 sm:grid-cols-4">
@@ -397,7 +397,7 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
                 <button
                   type="button"
                   onClick={() => setForm(initialForm(options))}
-                  className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-neutral-500 transition hover:bg-amber-500/15 hover:text-pine-950"
+                  className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-neutral-600 transition hover:bg-amber-500/15 hover:text-pine-950"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                   Réinitialiser
@@ -407,33 +407,33 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
 
             {error && <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
 
-            <p className="mt-4 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-500">Prix de vente HT</p>
+            <p className="mt-4 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-600">Prix de vente HT</p>
             <p className="text-3xl font-extrabold tabular-nums text-pine-700">{eur(s?.totalHt)}</p>
             <dl className="mt-3 space-y-2 text-sm">
               <div className="flex justify-between gap-3">
-                <dt className="text-neutral-500">Prix de vente TTC</dt>
+                <dt className="text-neutral-600">Prix de vente TTC</dt>
                 <dd className="font-bold tabular-nums text-inkgreen">{eur(s?.totalTtc)}</dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-neutral-500">Prix HT au ml</dt>
+                <dt className="text-neutral-600">Prix HT au ml</dt>
                 <dd className="font-bold tabular-nums text-inkgreen">{eur(s?.perMeterHt)}</dd>
               </div>
               <div className="flex justify-between gap-3 border-t border-neutral-100 pt-2">
-                <dt className="text-neutral-500">Achat total HT <span className="text-[10px] font-bold uppercase text-amber-600">interne</span></dt>
+                <dt className="text-neutral-600">Achat total HT <span className="text-[10px] font-bold uppercase text-amber-700">interne</span></dt>
                 <dd className="font-bold tabular-nums text-inkgreen">{eur(p?.totalHt)}</dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-neutral-500">Marge brute (hors options)</dt>
+                <dt className="text-neutral-600">Marge brute (hors options)</dt>
                 <dd className="font-bold tabular-nums text-inkgreen">{eur(r?.margins?.grossEuro)}</dd>
               </div>
             </dl>
             {g && q && (
-              <p className="mt-3 border-t border-neutral-100 pt-3 text-xs text-neutral-500">
+              <p className="mt-3 border-t border-neutral-100 pt-3 text-xs text-neutral-600">
                 {g.panels} vitrage{g.panels > 1 ? "s" : ""} de {nb(g.panelWidthMm, 1)} mm · {q.supports} {supportUnitLabel} · {q.crates} caisse
                 {q.crates > 1 ? "s" : ""} · {q.pallets} palette{q.pallets > 1 ? "s" : ""}
               </p>
             )}
-            <p className="mt-2 text-xs font-semibold text-neutral-500">Fourniture seule — pose non comprise.</p>
+            <p className="mt-2 text-xs font-semibold text-neutral-600">Fourniture seule — pose non comprise.</p>
           </div>
 
           {r && r.warnings.length > 0 && (
@@ -478,11 +478,11 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
         </div>
 
         {!g || !q || !p || !s ? (
-          <p className="text-sm text-neutral-400">Corrigez la saisie pour afficher le détail.</p>
+          <p className="text-sm text-neutral-600">Corrigez la saisie pour afficher le détail.</p>
         ) : tab === "detail" ? (
           <div className="grid gap-8 lg:grid-cols-2">
             <div>
-              <h3 className="mb-2 text-sm font-extrabold text-inkgreen">Coût d&rsquo;achat HT <span className="text-[10px] font-bold uppercase text-amber-600">interne</span></h3>
+              <h3 className="mb-2 text-sm font-extrabold text-inkgreen">Coût d&rsquo;achat HT <span className="text-[10px] font-bold uppercase text-amber-700">interne</span></h3>
               <table className="w-full text-sm">
                 <tbody className="divide-y divide-neutral-100">
                   {(
@@ -504,7 +504,7 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
                     <tr key={label}>
                       <td className="py-2 pr-3">
                         <span className="font-semibold text-inkgreen">{label}</span>
-                        {detail && <span className="block text-xs text-neutral-400">{detail}</span>}
+                        {detail && <span className="block text-xs text-neutral-600">{detail}</span>}
                       </td>
                       <td className="py-2 text-right font-bold tabular-nums text-inkgreen">{eur(amount)}</td>
                     </tr>
@@ -539,12 +539,12 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
                   ))}
                 </tbody>
               </table>
-              <h3 className="mb-2 mt-6 text-sm font-extrabold text-inkgreen">Contrôle de marge <span className="font-normal text-neutral-400">(garde-corps seul, hors options)</span></h3>
+              <h3 className="mb-2 mt-6 text-sm font-extrabold text-inkgreen">Contrôle de marge <span className="font-normal text-neutral-600">(garde-corps seul, hors options)</span></h3>
               <table className="w-full text-sm">
                 <tbody className="divide-y divide-neutral-100">
                   <tr><td className="py-2 text-neutral-600">Marge brute</td><td className="py-2 text-right font-bold tabular-nums text-inkgreen">{eur(r?.margins?.grossEuro)}</td></tr>
-                  <tr><td className="py-2 text-neutral-600" title="Marge ÷ prix de vente">Taux de marque <span className="text-xs text-neutral-400">(marge ÷ vente)</span></td><td className="py-2 text-right font-bold tabular-nums text-inkgreen">{pct(r?.margins?.brandRate)}</td></tr>
-                  <tr><td className="py-2 text-neutral-600" title="Marge ÷ coût d'achat">Taux de marge <span className="text-xs text-neutral-400">(marge ÷ coût)</span></td><td className="py-2 text-right font-bold tabular-nums text-inkgreen">{pct(r?.margins?.marginOnCostRate)}</td></tr>
+                  <tr><td className="py-2 text-neutral-600" title="Marge ÷ prix de vente">Taux de marque <span className="text-xs text-neutral-600">(marge ÷ vente)</span></td><td className="py-2 text-right font-bold tabular-nums text-inkgreen">{pct(r?.margins?.brandRate)}</td></tr>
+                  <tr><td className="py-2 text-neutral-600" title="Marge ÷ coût d'achat">Taux de marge <span className="text-xs text-neutral-600">(marge ÷ coût)</span></td><td className="py-2 text-right font-bold tabular-nums text-inkgreen">{pct(r?.margins?.marginOnCostRate)}</td></tr>
                 </tbody>
               </table>
             </div>
@@ -587,7 +587,7 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
             <div className="overflow-x-auto">
               <table className="w-full min-w-[104rem] whitespace-nowrap text-right text-xs tabular-nums">
                 <thead>
-                  <tr className="border-b border-neutral-200 font-mono text-[10px] uppercase tracking-wider text-neutral-500">
+                  <tr className="border-b border-neutral-200 font-mono text-[10px] uppercase tracking-wider text-neutral-600">
                     <th className="sticky left-0 bg-white py-2 pr-3 text-left">Modèle</th>
                     <th className="px-2">H. verre</th>
                     <th className="px-2">Surface</th>
@@ -619,7 +619,7 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
                       <tr key={c.supportLegacyId} className={c.selected ? "bg-pine-50" : undefined}>
                         <td className={`sticky left-0 ${bg} py-2 pr-3 text-left`}>
                           <span className="block font-bold text-inkgreen">{c.label}</span>
-                          <span className="text-[10px] text-neutral-400">
+                          <span className="text-[10px] text-neutral-600">
                             {c.category} · verre {c.compatibleGlassThickness.toLowerCase()} ·{" "}
                             <span className={c.auditStatus === "Oui" ? "text-green-700" : "font-bold text-amber-700"}>
                               {c.auditStatus === "Oui" ? "tarif validé" : c.auditStatus === "Hypothèse" ? "règle à confirmer" : c.auditStatus === "Non" ? "non audité" : c.auditStatus.toLowerCase()}
@@ -665,7 +665,7 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
                 </tbody>
               </table>
             </div>
-            <p className="mt-3 text-xs text-neutral-400">
+            <p className="mt-3 text-xs text-neutral-600">
               Chaque ligne est un recalcul complet du projet avec ce support, hors portillon et pions ; les découpes spéciales restent incluses.
             </p>
           </div>
@@ -699,14 +699,14 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
           {saveMsg && <span role="status" className={`text-sm font-semibold ${saveMsg.ok ? "text-green-700" : "text-red-600"}`}>{saveMsg.text}</span>}
         </form>
         {saved.length === 0 ? (
-          <p className="mt-3 text-sm text-neutral-400">Aucune simulation enregistrée pour l&rsquo;instant.</p>
+          <p className="mt-3 text-sm text-neutral-600">Aucune simulation enregistrée pour l&rsquo;instant.</p>
         ) : (
           <ul className="mt-3 divide-y divide-neutral-100">
             {saved.map((x) => (
               <li key={x.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5">
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-bold text-inkgreen">{x.label}</span>
-                  <span className="block text-xs text-neutral-400">{new Date(x.created_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris", dateStyle: "medium", timeStyle: "short" })} · {x.created_by ?? "—"}</span>
+                  <span className="block text-xs text-neutral-600">{new Date(x.created_at).toLocaleString("fr-FR", { timeZone: "Europe/Paris", dateStyle: "medium", timeStyle: "short" })} · {x.created_by ?? "—"}</span>
                 </span>
                 <span className="text-sm font-extrabold tabular-nums text-pine-700">{x.total_ht === null ? "À confirmer" : eur(Number(x.total_ht))} HT</span>
                 <button type="button" onClick={() => { setForm(formFromSaved(options, x.input)); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="rounded-lg border border-neutral-200 px-2.5 py-1.5 text-xs font-bold text-inkgreen transition hover:border-amber-500 hover:bg-amber-500/15">
@@ -716,10 +716,10 @@ export function Simulation({ options, saved = [] }: { options: SimulationOptions
             ))}
           </ul>
         )}
-        <p className="mt-3 text-xs text-neutral-400">« Recharger » recalcule avec les tarifs en vigueur aujourd&rsquo;hui ; le montant affiché dans la liste est celui du jour de l&rsquo;enregistrement.</p>
+        <p className="mt-3 text-xs text-neutral-600">« Recharger » recalcule avec les tarifs en vigueur aujourd&rsquo;hui ; le montant affiché dans la liste est celui du jour de l&rsquo;enregistrement.</p>
       </section>
 
-      <p className="text-xs text-neutral-400">Tarifs : {options.source}.</p>
+      <p className="text-xs text-neutral-600">Tarifs : {options.source}.</p>
     </div>
   );
 }
@@ -764,12 +764,12 @@ function Calepinage(props: {
           ] as const
         ).map(([label, value]) => (
           <div key={label}>
-            <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-500">{label}</dt>
+            <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-600">{label}</dt>
             <dd className="mt-0.5 font-bold text-inkgreen">{value}</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-4 text-xs text-neutral-400">Représentation indicative — tous les vitrages ont la même largeur. Ce n&rsquo;est pas un plan de fabrication.</p>
+      <p className="mt-4 text-xs text-neutral-600">Représentation indicative — tous les vitrages ont la même largeur. Ce n&rsquo;est pas un plan de fabrication.</p>
     </div>
   );
 }

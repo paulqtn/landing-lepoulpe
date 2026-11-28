@@ -47,7 +47,7 @@ export function RetourLien({ defaut, label = "Retour" }: { defaut: string; label
         } catch {}
         router.push(cible);
       }}
-      className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-500 transition hover:text-inkgreen"
+      className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-600 transition hover:text-inkgreen"
     >
       <ArrowLeft className="h-4 w-4" />
       {label}

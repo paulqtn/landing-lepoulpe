@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Eye, ExternalLink, FileText, Mail, MousePointerClick, Phone, StickyNote } from "lucide-react";
+import { ArrowLeft, ExternalLink, Eye, FileText, History, Mail, MousePointerClick, Phone, Ruler, StickyNote } from "lucide-react";
 import { LeadActions } from "@/components/admin/LeadActions";
 import { CreateOrderButton } from "@/components/admin/LogisticsActions";
 import { dateFmt, eurFmt, ScoreBadge, StatutBadge } from "@/components/admin/ui";
@@ -100,7 +100,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             <ScoreBadge score={lead.score} points={lead.score_points} />
             <h1 className="text-2xl font-extrabold text-inkgreen">{lead.name}</h1>
           </div>
-          <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-neutral-500">
+          <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-neutral-600">
 {lead.email && (
                           <a href={aBoite ? `/commercial/messagerie?a=${encodeURIComponent(lead.email)}` : `mailto:${lead.email}`} title={aBoite ? "Écrire à ce client depuis la messagerie" : undefined} className="flex items-center gap-1.5 font-semibold text-pine-700 hover:underline">
               <Mail className="h-3.5 w-3.5" /> {lead.email}
@@ -112,7 +112,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             <span>reçue le {dateFmt.format(new Date(lead.created_at))}</span>
             <span>source : {lead.source ?? "site"}</span>
           </p>
-          <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-neutral-400">
+          <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-neutral-600">
             <span className="flex items-center gap-1">
               <Eye className="h-3.5 w-3.5" /> {lead.devis_views} vue{lead.devis_views > 1 ? "s" : ""} du devis
             </span>
@@ -170,13 +170,13 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
         <div className="contents lg:block lg:space-y-5">
           {/* projet + estimation */}
           <section className="order-1 rounded-2xl border border-neutral-200 bg-white p-5">
-            <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Projet configuré</h2>
+            <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen"><Ruler className="h-4 w-4 text-pine-600" />Projet configuré</h2>
             <dl className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2">
               {champs
                 .filter(([, v]) => v !== undefined && v !== null && v !== "")
                 .map(([k, v]) => (
                   <div key={k} className="flex items-baseline justify-between gap-3 border-b border-neutral-100 pb-2">
-                    <dt className="text-xs font-semibold text-neutral-500">{k}</dt>
+                    <dt className="text-xs font-semibold text-neutral-600">{k}</dt>
                     <dd className="text-sm font-bold text-inkgreen">{String(v)}</dd>
                   </div>
                 ))}
@@ -192,18 +192,18 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           {/* devis détaillés */}
           <section className="order-3 rounded-2xl border border-neutral-200 bg-white p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Devis détaillés</h2>
+              <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen"><FileText className="h-4 w-4 text-pine-600" />Devis détaillés</h2>
               {!lectureSeule && <PrepareQuoteButton leadId={lead.id} label={quotes.some((x) => x.statut === "brouillon") ? "Ouvrir le brouillon" : quotes.some((x) => x.statut === "envoye") ? "Nouvelle version du devis" : "Préparer un devis"} />}
             </div>
             {quotes.length === 0 ? (
-              <p className="mt-3 text-sm text-neutral-400">Aucun devis pour l&rsquo;instant.</p>
+              <p className="mt-3 text-sm text-neutral-600">Aucun devis pour l&rsquo;instant.</p>
             ) : (
               <ul className="mt-3 divide-y divide-neutral-100">
                 {quotes.map((x) => (
                   <li key={x.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5">
                     <Link href={`/commercial/devis/${x.id}`} className="text-sm font-bold text-inkgreen hover:text-pine-700">{x.ref}</Link>
-                    <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${x.statut === "brouillon" ? "bg-amber-500/15 text-amber-700" : "bg-green-50 text-green-700"}`}>{QUOTE_STATUT_LABELS[x.statut]}</span>
-                    <span className="flex-1 text-xs text-neutral-400">
+                    <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${x.statut === "brouillon" ? "bg-amber-500/15 text-amber-800" : "bg-green-50 text-green-700"}`}>{QUOTE_STATUT_LABELS[x.statut]}</span>
+                    <span className="flex-1 text-xs text-neutral-600">
                       {x.sent_at ? `envoyé le ${dateFmt.format(new Date(x.sent_at))}` : `créé le ${dateFmt.format(new Date(x.created_at))}`}
                     </span>
                     <span className="text-sm font-extrabold tabular-nums text-pine-700">{eurFmt.format(Number(x.total_ttc))} € TTC</span>
@@ -215,14 +215,14 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
 
           {courriels.length > 0 && (
             <section className="order-4 rounded-2xl border border-neutral-200 bg-white p-5">
-              <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">E-mails échangés (ma boîte)</h2>
+              <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen"><Mail className="h-4 w-4 text-pine-600" />E-mails échangés (ma boîte)</h2>
               <ul className="mt-3 divide-y divide-neutral-100">
                 {courriels.map((c) => (
                   <li key={c.id}>
                     <Link href={`/commercial/messagerie?m=${c.id}`} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 py-2.5 text-sm transition hover:text-pine-700">
                       <span className="rounded-full bg-mist px-2 py-0.5 text-[11px] font-bold text-neutral-600">{c.dossier === "sent" ? "Envoyé" : "Reçu"}</span>
                       <span className="min-w-0 flex-1 truncate font-bold text-inkgreen">{(CATEGORIE_LABELS as Record<string, string>)[c.categorie ?? ""] ?? "E-mail"}</span>
-                      <span className="text-xs text-neutral-400">{dateFmt.format(new Date(c.date))}</span>
+                      <span className="text-xs text-neutral-600">{dateFmt.format(new Date(c.date))}</span>
                       <span className="text-xs font-bold text-pine-700">Lire dans la messagerie →</span>
                     </Link>
                   </li>
@@ -237,15 +237,15 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
 
           {/* timeline */}
           <section className="order-5 rounded-2xl border border-neutral-200 bg-white p-5">
-            <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Historique</h2>
+            <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen"><History className="h-4 w-4 text-pine-600" />Historique</h2>
             <ul className="mt-3 space-y-3">
               {events.map((e) => (
                 <li key={e.id} className="flex gap-3">
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-pine-400" />
                   <div>
                     <p className="text-sm font-bold text-inkgreen">{EVENT_LABELS[e.type] ?? e.type}</p>
-                    {e.message && <p className="whitespace-pre-line text-xs text-neutral-500">{lisible(e.message)}</p>}
-                    <p className="text-[11px] text-neutral-400">{dateFmt.format(new Date(e.created_at))}</p>
+                    {e.message && <p className="whitespace-pre-line text-xs text-neutral-600">{lisible(e.message)}</p>}
+                    <p className="text-[11px] text-neutral-600">{dateFmt.format(new Date(e.created_at))}</p>
                   </div>
                 </li>
               ))}
@@ -261,7 +261,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
                 <p className="mt-0.5 text-xs text-neutral-600">Commande atelier <strong>{commande.ref}</strong> créée. Son avancement se suit dans le menu Production.</p>
               ) : (
                 <>
-                  <p className="mb-3 mt-0.5 text-xs text-neutral-500">Envoyez le dossier à l&rsquo;atelier : la commande apparaît dans le pôle Gestion avec la matière réservée.</p>
+                  <p className="mb-3 mt-0.5 text-xs text-neutral-600">Envoyez le dossier à l&rsquo;atelier : la commande apparaît dans le pôle Gestion avec la matière réservée.</p>
                   <CreateOrderButton leadId={lead.id} />
                 </>
               )}

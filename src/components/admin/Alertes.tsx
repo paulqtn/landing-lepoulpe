@@ -154,7 +154,7 @@ export function Alertes({ depuis }: { depuis: string }) {
           } catch {}
           if (v) setTimeout(cloche, 50);
         }}
-        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition ${son ? "border-pine-200 bg-pine-50 text-pine-800" : "border-neutral-200 bg-white text-neutral-500"}`}
+        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition ${son ? "border-pine-200 bg-pine-50 text-pine-800" : "border-neutral-200 bg-white text-neutral-600"}`}
       >
         {son ? <Bell className="h-3.5 w-3.5" /> : <BellOff className="h-3.5 w-3.5" />}
         <span className="hidden sm:inline">{son ? "Cloche activée" : "Cloche coupée"}</span>
@@ -168,7 +168,7 @@ export function Alertes({ depuis }: { depuis: string }) {
                 <span className="block text-sm font-extrabold text-inkgreen">{a.titre}</span>
                 <span className="block truncate text-xs text-neutral-600">{a.texte}</span>
               </Link>
-              <button type="button" aria-label="Fermer" onClick={() => setListe((l) => l.filter((x) => x.cle !== a.cle))} className="rounded-lg p-1 text-neutral-400 hover:bg-neutral-100"><X className="h-4 w-4" /></button>
+              <button type="button" aria-label="Fermer" onClick={() => setListe((l) => l.filter((x) => x.cle !== a.cle))} className="rounded-lg p-1 text-neutral-600 hover:bg-neutral-100"><X className="h-4 w-4" /></button>
             </div>
           ))}
         </div>

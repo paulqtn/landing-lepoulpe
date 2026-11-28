@@ -101,7 +101,7 @@ export function Connexion({ etat, compte, onConnecte, onAnnule }: { etat: Etat; 
 
       {!f.oauthObligatoire && (
         <>
-          {oauth && <p className="mt-4 text-center text-xs font-semibold text-neutral-500">ou avec un mot de passe d&rsquo;application</p>}
+          {oauth && <p className="mt-4 text-center text-xs font-semibold text-neutral-600">ou avec un mot de passe d&rsquo;application</p>}
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <label className="block">
               <span className={etiquette}>Identifiant IMAP</span>
@@ -163,11 +163,11 @@ export function Connexion({ etat, compte, onConnecte, onAnnule }: { etat: Etat; 
               {occupe === "tester" && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Tester la connexion
             </button>
             {onAnnule && <button type="button" className={bouton} onClick={onAnnule}>Annuler</button>}
-            {occupe === "detecter" && <span className="text-xs text-neutral-500">Recherche du fournisseur…</span>}
+            {occupe === "detecter" && <span className="text-xs text-neutral-600">Recherche du fournisseur…</span>}
           </div>
         </>
       )}
-      <p className="mt-4 flex items-start gap-1.5 text-xs text-neutral-500">
+      <p className="mt-4 flex items-start gap-1.5 text-xs text-neutral-600">
         <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" /> Vos identifiants sont chiffrés sur le serveur et ne sont jamais affichés. Vous seul voyez votre boîte : ni vos collègues ni l&rsquo;administrateur n&rsquo;ont accès à vos e-mails.
       </p>
     </section>

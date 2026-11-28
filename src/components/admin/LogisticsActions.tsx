@@ -80,7 +80,7 @@ export function StockMoveForm({ itemId, unite }: { itemId: number; unite: string
         aria-label="Quantité"
         className="w-14 rounded-lg border border-neutral-200 bg-white px-2 py-1 text-center text-xs font-bold text-inkgreen outline-none focus:border-pine-500"
       />
-      <span className="text-[10px] font-semibold text-neutral-400">{unite}</span>
+      <span className="text-[10px] font-semibold text-neutral-600">{unite}</span>
       <button type="button" disabled={busy || !valid} onClick={() => { run({ action: "stock_move", itemId, delta: n, motif: "Réception" }); setQty(""); }} className={BTN} title="Entrée de stock">
         <Plus className="h-3.5 w-3.5" />
       </button>
@@ -100,7 +100,7 @@ export function ShipmentCreateForm() {
     <div className="flex flex-wrap items-center gap-2">
       <input value={f.transporteur} onChange={(e) => setF((s) => ({ ...s, transporteur: e.target.value }))} placeholder="Transporteur" className={`${input} w-32`} />
       <input value={f.departement} onChange={(e) => setF((s) => ({ ...s, departement: e.target.value }))} placeholder="Dép. (83)" className={`${input} w-20`} />
-      <input value={f.datePrevue} onChange={(e) => setF((s) => ({ ...s, datePrevue: e.target.value }))} type="date" className={input} />
+      <input value={f.datePrevue} onChange={(e) => setF((s) => ({ ...s, datePrevue: e.target.value }))} type="date" aria-label="Date prévue de la tournée" className={input} />
       <button
         type="button"
         disabled={busy || !valid}

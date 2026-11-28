@@ -107,7 +107,7 @@ export function Nouveau({ destinataire, envoiPossible, onFermer }: { destinatair
                 {occupe === "enregistrer" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Enregistrer le brouillon
               </button>
               <button type="button" className={`${bouton} hover:border-red-300 hover:text-red-700`} disabled={occupe !== null} onClick={() => supprimer(b.id)}><Trash2 className="h-3.5 w-3.5" /> {b.id ? "Supprimer" : "Abandonner"}</button>
-              <span className="text-xs text-neutral-500">Rien ne part sans votre validation.</span>
+              <span className="text-xs text-neutral-600">Rien ne part sans votre validation.</span>
             </div>
           )}
         </div>
@@ -123,7 +123,7 @@ export function Nouveau({ destinataire, envoiPossible, onFermer }: { destinatair
                   <span className="block truncate font-bold text-inkgreen">{x.sujet || "(sans objet)"}</span>
                   <span className="block truncate text-xs text-neutral-600">À {x.dest || "destinataire à préciser"} · modifié {ilYA(x.modifieLe)}</span>
                 </button>
-                <button type="button" aria-label={`Supprimer le brouillon ${x.sujet || "sans objet"}`} className="rounded-full p-1.5 text-neutral-500 hover:bg-red-50 hover:text-red-600" disabled={occupe !== null} onClick={() => supprimer(x.id)}><Trash2 className="h-4 w-4" /></button>
+                <button type="button" aria-label={`Supprimer le brouillon ${x.sujet || "sans objet"}`} className="rounded-full p-1.5 text-neutral-600 hover:bg-red-50 hover:text-red-600" disabled={occupe !== null} onClick={() => supprimer(x.id)}><Trash2 className="h-4 w-4" /></button>
               </li>
             ))}
           </ul>

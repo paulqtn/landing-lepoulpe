@@ -61,7 +61,7 @@ export function CommercialNav({ menus, superadmin, compact = false }: { menus: M
           </Link>
         ))}
         <AdminLogout>
-          <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-bold text-neutral-500">
+          <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-bold text-neutral-600">
             <LogOut className="h-3.5 w-3.5" />
             Déconnexion
           </span>
@@ -91,14 +91,14 @@ export function CommercialNav({ menus, superadmin, compact = false }: { menus: M
     <>
       {groups.map((g, i) => (
         <div key={g.key} className={i === 0 ? "" : "mt-2 border-t border-neutral-100 pt-2"}>
-          <p className="px-3 pb-1 pt-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">{g.label}</p>
+          <p className="px-3 pb-1 pt-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-600">{g.label}</p>
           <nav className="space-y-1">{g.items.map(item)}</nav>
         </div>
       ))}
       <div className="mt-2 border-t border-neutral-100 pt-2">
         {item(account)}
         <AdminLogout>
-          <span className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-500 transition hover:bg-red-50 hover:text-red-600">
+          <span className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-600 transition hover:bg-red-50 hover:text-red-600">
             <LogOut className="h-4 w-4" />
             Déconnexion
           </span>

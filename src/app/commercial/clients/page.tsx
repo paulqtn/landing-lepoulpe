@@ -122,7 +122,7 @@ export default async function LeadsPage({
             {mode !== "moi" || !rep ? <input type="hidden" name="qui" value={mode} /> : null}
             {statut && <input type="hidden" name="statut" value={statut} />}
             {tri !== "recent" && <input type="hidden" name="tri" value={tri} />}
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" aria-hidden />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" aria-hidden />
             <input
               id="recherche-clients"
               name="q"
@@ -139,7 +139,7 @@ export default async function LeadsPage({
 
         {/* ---------------- 2. à quelle étape : étiquettes avec pastille ---------------- */}
         <div className="flex flex-wrap items-center gap-1.5 px-4 pb-4 pt-3" role="group" aria-label="Filtrer par étape">
-          <span className="mr-1 text-xs font-bold uppercase tracking-wide text-neutral-500">Étape</span>
+          <span className="mr-1 text-xs font-bold uppercase tracking-wide text-neutral-600">Étape</span>
           <Etape href={href({ statut: null, page: null })} on={!statut} label="Toutes" n={totalPortee} />
           {/* Toutes les étapes restent visibles ; celles sans client sont seulement plus claires. */}
           {STATUTS.map((s) => (
@@ -203,11 +203,11 @@ function Etape({ href, on, label, n, pastille }: { href: string; on: boolean; la
     <Link
       href={href}
       aria-current={on ? "true" : undefined}
-      className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition ${on ? "bg-pine-50 font-bold text-pine-900 ring-1 ring-inset ring-pine-600" : n > 0 ? "font-medium text-neutral-700 hover:bg-mist" : "font-medium text-neutral-500 hover:bg-mist hover:text-neutral-700"}`}
+      className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition ${on ? "bg-pine-50 font-bold text-pine-900 ring-1 ring-inset ring-pine-600" : n > 0 ? "font-medium text-neutral-700 hover:bg-mist" : "font-medium text-neutral-600 hover:bg-mist hover:text-neutral-700"}`}
     >
       {pastille && <span className={`h-2 w-2 shrink-0 rounded-full ${pastille} ${n > 0 || on ? "" : "opacity-40"}`} aria-hidden />}
       {label}
-      <span className={`text-xs tabular-nums ${on ? "font-bold text-pine-800" : n > 0 ? "font-semibold text-neutral-600" : "text-neutral-400"}`}>{n}</span>
+      <span className={`text-xs tabular-nums ${on ? "font-bold text-pine-800" : n > 0 ? "font-semibold text-neutral-600" : "text-neutral-600"}`}>{n}</span>
     </Link>
   );
 }

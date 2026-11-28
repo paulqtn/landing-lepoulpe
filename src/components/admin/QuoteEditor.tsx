@@ -216,7 +216,7 @@ export function QuoteEditor(props: {
       {editable && (
         <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-neutral-200 bg-white px-4 py-2.5 lg:hidden">
           <p className="min-w-0 flex-1 leading-tight">
-            <span className="block text-[11px] font-semibold text-neutral-500">Total TTC{coefApplique !== null ? ` · ${coefTxt(coefApplique)}` : ""}</span>
+            <span className="block text-[11px] font-semibold text-neutral-600">Total TTC{coefApplique !== null ? ` · ${coefTxt(coefApplique)}` : ""}</span>
             <span className="block text-base font-extrabold tabular-nums text-pine-700">{all[0] ? eur(all[0].ttc) : "—"}</span>
           </p>
           <button type="button" onClick={askSend} disabled={busy !== null} className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-bold text-pine-950 disabled:opacity-40">
@@ -251,8 +251,8 @@ export function QuoteEditor(props: {
 
       <details open={!emailOk || undefined} className="group rounded-2xl border border-neutral-200 bg-white p-5 lg:[&:not([open])>summary]:mb-0">
         <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1 [&::-webkit-details-marker]:hidden">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Client</span>
-          <span className="min-w-0 flex-1 truncate text-sm font-bold text-inkgreen">{client.name} <span className="font-semibold text-neutral-500">· {client.email || "pas d'e-mail"}</span></span>
+          <span className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">Client</span>
+          <span className="min-w-0 flex-1 truncate text-sm font-bold text-inkgreen">{client.name} <span className="font-semibold text-neutral-600">· {client.email || "pas d'e-mail"}</span></span>
           <span className="text-xs font-bold text-pine-700 group-open:hidden">Modifier</span>
           <span className="hidden text-xs font-bold text-pine-700 group-open:inline">Replier</span>
         </summary>
@@ -268,7 +268,7 @@ export function QuoteEditor(props: {
             ] as const
           ).map(([k, label]) => (
             <label key={k} className="block">
-              <span className="mb-1 block text-xs font-semibold text-neutral-500">{label}</span>
+              <span className="mb-1 block text-xs font-semibold text-neutral-600">{label}</span>
               <input className={inputCls} disabled={!editable} value={client[k]} onChange={(e) => { setClient({ ...client, [k]: e.target.value }); touch(); }} />
             </label>
           ))}
@@ -279,8 +279,8 @@ export function QuoteEditor(props: {
       {editable && ch && (
         <section className="rounded-2xl border border-pine-200 bg-white p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-              <Calculator className="h-3.5 w-3.5" />
+            <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">
+              <Calculator className="h-4 w-4 text-pine-600" />
               Chiffrage du projet
             </h2>
             <button type="button" onClick={() => setEditProjet(!editProjet)} className="text-xs font-bold text-pine-700 hover:underline">
@@ -294,25 +294,25 @@ export function QuoteEditor(props: {
             </p>
           ) : (
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Fixation</span>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-600">Fixation</span>
                 <select className={inputCls} value={projet.systeme} onChange={(e) => setP({ systeme: e.target.value })}>{SYSTEMES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select>
               </label>
-              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Épaisseur du verre</span>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-600">Épaisseur du verre</span>
                 <select className={inputCls} value={projet.verre} onChange={(e) => setP({ verre: e.target.value })}>
                   <option value="">Automatique selon le projet</option>
                   {["66.4", "88.4", "1010.4"].map((v) => <option key={v} value={v}>{v}</option>)}
                 </select>
               </label>
-              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Teinte du verre</span>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-600">Teinte du verre</span>
                 <select className={inputCls} value={projet.teinte} onChange={(e) => setP({ teinte: e.target.value })}>{TEINTES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select>
               </label>
-              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Longueurs en mètres (un « + » entre deux tronçons)</span>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-600">Longueurs en mètres (un « + » entre deux tronçons)</span>
                 <input className={inputCls} value={projet.cotes} placeholder="5,2 + 3,1" onChange={(e) => setP({ cotes: e.target.value })} />
               </label>
-              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Hauteur finie</span>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-600">Hauteur finie</span>
                 <select className={inputCls} value={projet.hauteur} onChange={(e) => setP({ hauteur: e.target.value })}>{["90", "100", "110"].map((h) => <option key={h} value={h}>{h} cm</option>)}</select>
               </label>
-              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Code postal du projet</span>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-600">Code postal du projet</span>
                 <input className={inputCls} inputMode="numeric" maxLength={5} value={projet.codePostal} onChange={(e) => setP({ codePostal: e.target.value.replace(/\D/g, "") })} />
               </label>
             </div>
@@ -325,9 +325,9 @@ export function QuoteEditor(props: {
                 <label key={x.coef} className={`flex cursor-pointer items-start gap-2.5 rounded-xl border px-3 py-2.5 transition ${coef === x.coef ? "border-amber-500 bg-amber-500/10" : "border-neutral-200 hover:bg-amber-500/15"}`}>
                   <input type="radio" name="niveau-prix" className="mt-1 accent-pine-700" disabled={busy !== null} checked={coef === x.coef} onChange={() => (projetModifie ? setCoef(x.coef) : appliquerChiffrage(x.coef))} />
                   <span className="min-w-0">
-                    <span className="block text-sm font-bold text-inkgreen">{x.label} <span className="font-mono text-xs text-neutral-500">{coefTxt(x.coef)}</span></span>
+                    <span className="block text-sm font-bold text-inkgreen">{x.label} <span className="font-mono text-xs text-neutral-600">{coefTxt(x.coef)}</span></span>
                     <span className="block text-sm font-extrabold tabular-nums text-pine-700">{niveaux && !projetModifie ? `${eur(x.ht)} HT` : "à recalculer"}</span>
-                    {niveaux && !projetModifie && <span className="block text-[11px] tabular-nums text-neutral-500">{eur(x.ttc)} TTC{x.aide ? ` · ${x.aide}` : ""}</span>}
+                    {niveaux && !projetModifie && <span className="block text-[11px] tabular-nums text-neutral-600">{eur(x.ttc)} TTC{x.aide ? ` · ${x.aide}` : ""}</span>}
                   </span>
                 </label>
               ))}
@@ -339,7 +339,7 @@ export function QuoteEditor(props: {
               Recalculer le devis
             </button>
           )}
-          <p className="mt-3 text-xs text-neutral-500">
+          <p className="mt-3 text-xs text-neutral-600">
             {busy === "chiffrage" ? "Calcul en cours… " : coefApplique !== null ? `Devis au niveau ${coefTxt(coefApplique)}. ` : `Aucun niveau choisi : brouillon au prix affiché sur le site (${coefTxt(ch.coefSite)}). `}
             Un clic sur un prix l&rsquo;applique à la première ligne du devis ; les autres lignes sont conservées. Rien ne part en dessous de la remise exceptionnelle.
           </p>
@@ -347,7 +347,7 @@ export function QuoteEditor(props: {
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-500">
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-600">
           Propositions de devis <span className="ml-1 text-inkgreen">{options.length}</span>
         </p>
         <div className="flex flex-wrap gap-2">
@@ -400,11 +400,11 @@ export function QuoteEditor(props: {
             </header>
 
             <div className="space-y-3 p-4">
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Lignes du devis</p>
+              <p className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">Lignes du devis</p>
               {o.lines.map((l, j) => (
                 <div key={j} className="rounded-xl bg-mist p-3">
                   <textarea aria-label={`Désignation de la ligne ${j + 1}`} className={inputCls} disabled={!editable} rows={Math.min(9, Math.max(3, l.description.split("\n").length + 1))} value={l.description} onChange={(e) => setLine(i, j, { description: e.target.value })} />
-                  {editable && <p className="mt-1 text-[11px] text-neutral-400">Première ligne = titre ; chaque retour à la ligne ajoute un détail en dessous dans le PDF.</p>}
+                  {editable && <p className="mt-1 text-[11px] text-neutral-600">Première ligne = titre ; chaque retour à la ligne ajoute un détail en dessous dans le PDF.</p>}
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     {l.image && (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -420,9 +420,9 @@ export function QuoteEditor(props: {
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <input aria-label="Quantité" inputMode="decimal" className={`${inputCls} !w-16 text-right tabular-nums`} disabled={!editable} value={l.qty} onChange={(e) => setLine(i, j, { qty: e.target.value, totalHt: undefined, normalHt: undefined })} />
                     <input aria-label="Unité" placeholder="unité" className={`${inputCls} !w-14`} disabled={!editable} value={l.unit ?? ""} onChange={(e) => setLine(i, j, { unit: e.target.value })} />
-                    <span className="text-xs text-neutral-400">×</span>
+                    <span className="text-xs text-neutral-600">×</span>
                     <input aria-label="Prix unitaire HT" inputMode="decimal" className={`${inputCls} !w-24 text-right tabular-nums`} disabled={!editable} value={l.unitPriceHt} onChange={(e) => setLine(i, j, { unitPriceHt: e.target.value, totalHt: undefined, normalHt: undefined })} />
-                    <span className="text-xs font-semibold text-neutral-400">€ HT</span>
+                    <span className="text-xs font-semibold text-neutral-600">€ HT</span>
                     <select aria-label="TVA" className={`${inputCls} !w-[7.25rem]`} disabled={!editable} value={l.vatRate} onChange={(e) => setLine(i, j, { vatRate: Number(e.target.value) })}>
                       {VAT.map((v) => <option key={v} value={v}>TVA {String(v * 100).replace(".", ",")} %</option>)}
                     </select>
@@ -446,12 +446,12 @@ export function QuoteEditor(props: {
             <footer className="space-y-1 border-t border-neutral-100 p-4 text-sm">
               {all[i].remise > 0 && (
                 <>
-                  <div className="flex justify-between text-neutral-500"><span>Prix normal HT</span><span className="tabular-nums">{eur(all[i].ht + all[i].remise)}</span></div>
+                  <div className="flex justify-between text-neutral-600"><span>Prix normal HT</span><span className="tabular-nums">{eur(all[i].ht + all[i].remise)}</span></div>
                   <div className="flex justify-between font-bold text-pine-700"><span>Remise commerciale (affichée au client)</span><span className="tabular-nums">− {eur(all[i].remise)}</span></div>
                 </>
               )}
-              <div className="flex justify-between text-neutral-500"><span>Total HT</span><span className="tabular-nums">{eur(all[i].ht)}</span></div>
-              <div className="flex justify-between text-neutral-500"><span>TVA</span><span className="tabular-nums">{eur(all[i].tva)}</span></div>
+              <div className="flex justify-between text-neutral-600"><span>Total HT</span><span className="tabular-nums">{eur(all[i].ht)}</span></div>
+              <div className="flex justify-between text-neutral-600"><span>TVA</span><span className="tabular-nums">{eur(all[i].tva)}</span></div>
               <div className="flex justify-between text-base font-extrabold text-inkgreen"><span>Total TTC</span><span className="tabular-nums text-pine-700">{eur(all[i].ttc)}</span></div>
             </footer>
           </section>
@@ -463,14 +463,14 @@ export function QuoteEditor(props: {
           <div ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="confirm-title" className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-card outline-none" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.key === "Escape" && busy === null && setConfirm(false)}>
             <div className="flex items-start justify-between gap-3">
               <h2 id="confirm-title" className="text-lg font-extrabold text-inkgreen">Envoyer le devis {props.quoteRef} ?</h2>
-              <button type="button" aria-label="Fermer" onClick={() => setConfirm(false)} className="rounded-lg p-1 text-neutral-400 hover:bg-neutral-100"><X className="h-4 w-4" /></button>
+              <button type="button" aria-label="Fermer" onClick={() => setConfirm(false)} className="rounded-lg p-1 text-neutral-600 hover:bg-neutral-100"><X className="h-4 w-4" /></button>
             </div>
             <dl className="mt-4 space-y-2 text-sm">
-              <div className="flex justify-between gap-3"><dt className="text-neutral-500">Destinataire</dt><dd className="font-bold text-inkgreen">{client.name}</dd></div>
-              <div className="flex justify-between gap-3"><dt className="text-neutral-500">Adresse e-mail</dt><dd className="break-all font-bold text-inkgreen">{client.email || "—"}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-neutral-600">Destinataire</dt><dd className="font-bold text-inkgreen">{client.name}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-neutral-600">Adresse e-mail</dt><dd className="break-all font-bold text-inkgreen">{client.email || "—"}</dd></div>
               {options.map((o, i) => (
                 <div key={i} className="flex justify-between gap-3 border-t border-neutral-100 pt-2">
-                  <dt className="text-neutral-500">{o.label || `Proposition ${i + 1}`} — {o.lines.length} ligne{o.lines.length > 1 ? "s" : ""}</dt>
+                  <dt className="text-neutral-600">{o.label || `Proposition ${i + 1}`} — {o.lines.length} ligne{o.lines.length > 1 ? "s" : ""}</dt>
                   <dd className="font-bold tabular-nums text-pine-700">{eur(all[i].ttc)} TTC</dd>
                 </div>
               ))}

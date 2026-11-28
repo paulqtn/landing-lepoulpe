@@ -105,7 +105,7 @@ export function Reglages({ etat, admin, onCompte, onDeconnecte }: { etat: Etat; 
           <label className="block sm:col-span-2"><span className={etiquette}>Signature professionnelle (ajoutée sous chaque réponse préparée)</span><textarea id="r-signature" rows={4} className={champ} value={r.signature} onChange={(e) => set({ signature: e.target.value })} placeholder={"Prénom Nom\nFonction\nTéléphone"} /></label>
           <label className="block sm:col-span-2"><span className={etiquette}>Mes consignes pour l&rsquo;IA</span><textarea id="r-instructions" rows={3} className={champ} value={r.instructions} onChange={(e) => set({ instructions: e.target.value })} placeholder="Exemples : je vouvoie toujours ; je propose un appel plutôt qu'un long e-mail ; je signe de mon prénom." /></label>
         </div>
-        <p className="mt-2 text-xs text-neutral-500">La synchronisation tourne tant que le back office est ouvert dans votre navigateur. Fermé, elle reprend à la prochaine ouverture ou au passage quotidien du serveur.</p>
+        <p className="mt-2 text-xs text-neutral-600">La synchronisation tourne tant que le back office est ouvert dans votre navigateur. Fermé, elle reprend à la prochaine ouverture ou au passage quotidien du serveur.</p>
       </section>
 
       <section className={carte}>
@@ -115,7 +115,7 @@ export function Reglages({ etat, admin, onCompte, onDeconnecte }: { etat: Etat; 
           <Bascule id="r-n-urgent" label="Me prévenir quand un e-mail urgent arrive" valeur={r.notifUrgent} onChange={(v) => set({ notifUrgent: v })} />
           <Bascule id="r-n-brouillon" label="Me prévenir quand une réponse est prête à valider" valeur={r.notifBrouillon} onChange={(v) => set({ notifBrouillon: v })} />
         </div>
-        <p className="mt-1 text-xs text-neutral-500">Les notifications passent par la cloche du back office, en haut de l&rsquo;écran. Elles ne sonnent que lorsque le back office est ouvert dans votre navigateur, au moment où la synchronisation découvre le message.</p>
+        <p className="mt-1 text-xs text-neutral-600">Les notifications passent par la cloche du back office, en haut de l&rsquo;écran. Elles ne sonnent que lorsque le back office est ouvert dans votre navigateur, au moment où la synchronisation découvre le message.</p>
       </section>
 
       <section className={carte}>
@@ -126,7 +126,7 @@ export function Reglages({ etat, admin, onCompte, onDeconnecte }: { etat: Etat; 
           <input id="r-exclusion" className={champ} value={exclusion} onChange={(e) => setExclusion(e.target.value)} placeholder="banque.fr ou comptable@cabinet.fr" />
           <button type="submit" className={bouton}><Plus className="h-3.5 w-3.5" /> Ajouter</button>
         </form>
-        {r.exclusions.length > 0 && <ul className="mt-3 flex flex-wrap gap-1.5">{r.exclusions.map((x) => <li key={x} className="inline-flex items-center gap-1.5 rounded-full bg-mist px-3 py-1.5 text-xs font-bold text-neutral-700">{x}<button type="button" aria-label={`Retirer ${x}`} onClick={() => set({ exclusions: r.exclusions.filter((y) => y !== x) })}><Trash2 className="h-3.5 w-3.5 text-neutral-500 hover:text-red-600" /></button></li>)}</ul>}
+        {r.exclusions.length > 0 && <ul className="mt-3 flex flex-wrap gap-1.5">{r.exclusions.map((x) => <li key={x} className="inline-flex items-center gap-1.5 rounded-full bg-mist px-3 py-1.5 text-xs font-bold text-neutral-700">{x}<button type="button" aria-label={`Retirer ${x}`} onClick={() => set({ exclusions: r.exclusions.filter((y) => y !== x) })}><Trash2 className="h-3.5 w-3.5 text-neutral-600 hover:text-red-600" /></button></li>)}</ul>}
       </section>
 
       <section className={carte}>
@@ -148,7 +148,7 @@ export function Reglages({ etat, admin, onCompte, onDeconnecte }: { etat: Etat; 
                 <span className="text-neutral-600">{x.type === "mot" ? "Si le message contient" : x.type === "domaine" ? "Si l'expéditeur est du domaine" : "Si l'expéditeur est"}</span>
                 <strong className="text-inkgreen">{x.valeur}</strong>
                 <span className="text-neutral-600">→ priorité</span><strong>{PRIORITES.find(([k]) => k === x.priorite)?.[1]}</strong>
-                <button type="button" className="ml-auto" aria-label="Supprimer la règle" onClick={() => set({ regles: r.regles.filter((_, j) => j !== i) })}><Trash2 className="h-4 w-4 text-neutral-500 hover:text-red-600" /></button>
+                <button type="button" className="ml-auto" aria-label="Supprimer la règle" onClick={() => set({ regles: r.regles.filter((_, j) => j !== i) })}><Trash2 className="h-4 w-4 text-neutral-600 hover:text-red-600" /></button>
               </li>
             ))}
           </ul>
@@ -199,11 +199,11 @@ export function Globaux() {
 
       <h3 className="mt-6 text-sm font-extrabold text-inkgreen">État du serveur</h3>
       <ul className="mt-2 grid gap-1.5 text-sm sm:grid-cols-2">
-        {etatServeur.map(([l, ok, v]) => <li key={l} className="flex items-start gap-2"><span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${ok ? "bg-green-600" : "bg-neutral-300"}`} /><span><strong className="font-bold text-inkgreen">{l}</strong> : {ok ? "prêt" : <>à configurer <span className="text-xs text-neutral-500">({v})</span></>}</span></li>)}
+        {etatServeur.map(([l, ok, v]) => <li key={l} className="flex items-start gap-2"><span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${ok ? "bg-green-600" : "bg-neutral-300"}`} /><span><strong className="font-bold text-inkgreen">{l}</strong> : {ok ? "prêt" : <>à configurer <span className="text-xs text-neutral-600">({v})</span></>}</span></li>)}
       </ul>
 
       <h3 className="mt-6 text-sm font-extrabold text-inkgreen">Boîtes connectées ({d.boites.length})</h3>
-      <p className="text-xs text-neutral-500">Vous voyez l&rsquo;état des connexions, jamais le contenu des boîtes. Aucun e-mail n&rsquo;est enregistré dans la base : seules les étiquettes de tri le sont.</p>
+      <p className="text-xs text-neutral-600">Vous voyez l&rsquo;état des connexions, jamais le contenu des boîtes. Aucun e-mail n&rsquo;est enregistré dans la base : seules les étiquettes de tri le sont.</p>
       {d.boites.length === 0 ? <p className="mt-2 text-sm text-neutral-600">Aucune boîte connectée pour l&rsquo;instant.</p> : (
         <ul className="mt-2 divide-y divide-neutral-100 text-sm">
           {d.boites.map((b) => <li key={b.email} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2"><strong className="text-inkgreen">{b.utilisateur}</strong><span className="text-neutral-600">{b.email}</span><span className={`ml-auto text-xs font-bold ${b.statut === "ok" ? "text-green-700" : "text-red-700"}`}>{b.statut === "ok" ? `synchronisée ${ilYA(b.last_sync_at)}` : `en erreur : ${b.erreur ?? ""}`}</span></li>)}

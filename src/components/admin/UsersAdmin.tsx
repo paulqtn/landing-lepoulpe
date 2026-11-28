@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, UserPlus } from "lucide-react";
+import { Loader2, UserPlus, Users } from "lucide-react";
 import { MENUS, ROLE_MENUS, type MenuKey } from "@/lib/admin/menus";
 
 type Role = "superadmin" | "admin" | "commercial" | "logisticien";
@@ -49,8 +49,8 @@ export function UsersAdmin({ users, me }: { users: Row[]; me: number }) {
       )}
 
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="mb-4 flex items-center gap-2 text-base font-extrabold text-inkgreen">
-          <UserPlus className="h-4 w-4 text-pine-600" />
+        <h2 className="mb-4 flex items-center gap-2.5 text-base font-extrabold text-inkgreen">
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-pine-50 text-pine-700"><UserPlus className="h-4 w-4" /></span>
           Créer un compte
         </h2>
         <form
@@ -75,22 +75,22 @@ export function UsersAdmin({ users, me }: { users: Row[]; me: number }) {
             {busy === "create" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Créer"}
           </button>
         </form>
-        <p className="mt-3 text-xs text-neutral-400">
+        <p className="mt-3 text-xs text-neutral-600">
           Le rôle donne une sélection de menus de départ, que vous ajustez ensuite compte par compte ci-dessous. Seul le super-administrateur voit tout et gère les comptes.
         </p>
       </section>
 
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="mb-3 text-base font-extrabold text-inkgreen">Comptes ({users.length})</h2>
+        <h2 className="mb-3 flex items-center gap-2.5 text-base font-extrabold text-inkgreen"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-pine-50 text-pine-700"><Users className="h-4 w-4" /></span>Comptes <span className="rounded-full bg-pine-50 px-2 py-0.5 text-xs font-bold tabular-nums text-pine-700">{users.length}</span></h2>
         <ul className="divide-y divide-neutral-100">
           {users.map((u) => (
             <li key={u.id} className="py-3">
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <div className="min-w-0 flex-1">
-                <span className={`block truncate text-sm font-bold ${u.active ? "text-inkgreen" : "text-neutral-400 line-through"}`}>
+                <span className={`block truncate text-sm font-bold ${u.active ? "text-inkgreen" : "text-neutral-600 line-through"}`}>
                   {u.name} {u.id === me && <span className="text-xs font-semibold text-pine-600 no-underline">(vous)</span>}
                 </span>
-                <span className="block truncate text-xs text-neutral-400">
+                <span className="block truncate text-xs text-neutral-600">
                   {u.email} · {u.last_login_at ? `dernière connexion ${dateFmt.format(new Date(u.last_login_at))}` : "jamais connecté"}
                 </span>
               </div>
@@ -173,7 +173,7 @@ export function UsersAdmin({ users, me }: { users: Row[]; me: number }) {
 function MenuPicker({ user, disabled, onSave }: { user: Row; disabled: boolean; onSave: (menus: MenuKey[] | null) => void }) {
   const [sel, setSel] = useState<MenuKey[]>(user.menus);
   if (user.role === "superadmin") {
-    return <p className="mt-2 text-xs text-neutral-400">Accès complet à tous les menus (super-administrateur).</p>;
+    return <p className="mt-2 text-xs text-neutral-600">Accès complet à tous les menus (super-administrateur).</p>;
   }
   const changed = sel.length !== user.menus.length || sel.some((k) => !user.menus.includes(k));
   const toggle = (k: MenuKey) => setSel((cur) => (cur.includes(k) ? cur.filter((x) => x !== k) : [...cur, k]));
@@ -181,7 +181,7 @@ function MenuPicker({ user, disabled, onSave }: { user: Row; disabled: boolean; 
     <details className="mt-2 rounded-xl border border-neutral-200">
       <summary className="cursor-pointer px-3 py-2 text-xs font-bold text-pine-700">
         Menus accessibles : {user.menus.length} sur {MENUS.length}
-        <span className="ml-2 font-semibold text-neutral-400">{user.custom ? "sélection personnalisée" : "sélection du rôle"}</span>
+        <span className="ml-2 font-semibold text-neutral-600">{user.custom ? "sélection personnalisée" : "sélection du rôle"}</span>
       </summary>
       <div className="border-t border-neutral-100 px-3 py-3">
         <div className="grid gap-x-6 gap-y-1.5 sm:grid-cols-2 lg:grid-cols-3">
@@ -189,11 +189,11 @@ function MenuPicker({ user, disabled, onSave }: { user: Row; disabled: boolean; 
             <label key={m.key} className="flex items-center gap-2 text-sm text-neutral-700">
               <input type="checkbox" className="h-4 w-4 accent-pine-700" checked={sel.includes(m.key)} disabled={disabled} onChange={() => toggle(m.key)} />
               {m.label}
-              {m.group !== "commercial" && <span className="text-[10px] font-bold uppercase text-amber-600">{m.group === "administration" ? "admin" : "logistique"}</span>}
+              {m.group !== "commercial" && <span className="text-[10px] font-bold uppercase text-amber-700">{m.group === "administration" ? "admin" : "logistique"}</span>}
             </label>
           ))}
         </div>
-        <p className="mt-2 text-xs text-neutral-400">« Mon compte » reste toujours accessible. « Utilisateurs » est réservé au super-administrateur. La modification s&rsquo;applique dès la page suivante de l&rsquo;utilisateur.</p>
+        <p className="mt-2 text-xs text-neutral-600">« Mon compte » reste toujours accessible. « Utilisateurs » est réservé au super-administrateur. La modification s&rsquo;applique dès la page suivante de l&rsquo;utilisateur.</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button type="button" disabled={disabled || !changed} onClick={() => onSave(MENUS.map((m) => m.key).filter((k) => sel.includes(k)))} className="rounded-full bg-pine-700 px-4 py-1.5 text-xs font-bold text-white transition hover:bg-pine-600 disabled:opacity-40">
             Enregistrer les menus

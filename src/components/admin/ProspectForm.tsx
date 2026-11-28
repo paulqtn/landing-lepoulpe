@@ -24,7 +24,7 @@ export function ProspectForm({ depart }: { depart?: { name?: string; email?: str
   const set = (patch: Partial<typeof f>) => { setF({ ...f, ...patch }); setErr(null); setDoublon(null); };
   const select = (k: keyof typeof f, label: string, opts: string[][]) => (
     <label className="block">
-      <span className="mb-1 block text-xs font-semibold text-neutral-500">{label}</span>
+      <span className="mb-1 block text-xs font-semibold text-neutral-600">{label}</span>
       <select className={inputCls} value={f[k]} onChange={(e) => set({ [k]: e.target.value })}>{opts.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
     </label>
   );
@@ -51,28 +51,28 @@ export function ProspectForm({ depart }: { depart?: { name?: string; email?: str
   return (
     <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); creer(); }}>
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Le prospect</h2>
+        <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">Le prospect</h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Nom ou société</span><input required autoFocus className={inputCls} value={f.name} onChange={(e) => set({ name: e.target.value })} /></label>
+          <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-600">Nom ou société</span><input required autoFocus className={inputCls} value={f.name} onChange={(e) => set({ name: e.target.value })} /></label>
           {select("origine", "Origine du contact", ORIGINES)}
-          <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Téléphone</span><input type="tel" className={inputCls} value={f.phone} onChange={(e) => set({ phone: e.target.value })} /></label>
-          <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">E-mail</span><input type="email" className={inputCls} value={f.email} onChange={(e) => set({ email: e.target.value })} /></label>
+          <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-600">Téléphone</span><input type="tel" className={inputCls} value={f.phone} onChange={(e) => set({ phone: e.target.value })} /></label>
+          <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-600">E-mail</span><input type="email" className={inputCls} value={f.email} onChange={(e) => set({ email: e.target.value })} /></label>
         </div>
-        <p className="mt-2 text-xs text-neutral-400">Un téléphone ou un e-mail suffit. Sans e-mail, aucun devis ne pourra lui être envoyé tant qu&rsquo;il n&rsquo;est pas ajouté.</p>
+        <p className="mt-2 text-xs text-neutral-600">Un téléphone ou un e-mail suffit. Sans e-mail, aucun devis ne pourra lui être envoyé tant qu&rsquo;il n&rsquo;est pas ajouté.</p>
       </section>
 
       <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Son projet (facultatif)</h2>
+        <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">Son projet (facultatif)</h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {select("lieu", "Type de projet", LIEUX)}
           {select("systeme", "Fixation", SYSTEMES)}
           {select("teinte", "Teinte du verre", TEINTES)}
-          <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Longueurs en mètres (un « + » entre deux tronçons)</span><input className={inputCls} placeholder="5,2 + 3,1" value={f.cotes} onChange={(e) => set({ cotes: e.target.value })} /></label>
+          <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-600">Longueurs en mètres (un « + » entre deux tronçons)</span><input className={inputCls} placeholder="5,2 + 3,1" value={f.cotes} onChange={(e) => set({ cotes: e.target.value })} /></label>
           {select("hauteur", "Hauteur finie", [["", "À préciser"], ["90", "90 cm"], ["100", "100 cm"], ["110", "110 cm"]])}
-          <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Code postal du projet</span><input className={inputCls} inputMode="numeric" maxLength={5} value={f.codePostal} onChange={(e) => set({ codePostal: e.target.value.replace(/\D/g, "") })} /></label>
+          <label className="block"><span className="mb-1 block text-xs font-semibold text-neutral-600">Code postal du projet</span><input className={inputCls} inputMode="numeric" maxLength={5} value={f.codePostal} onChange={(e) => set({ codePostal: e.target.value.replace(/\D/g, "") })} /></label>
         </div>
-        <p className="mt-2 text-xs text-neutral-400">Avec la fixation, les longueurs et la hauteur, le projet est chiffré et son brouillon de devis est prêt à l&rsquo;ouverture de la fiche.</p>
-        <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-neutral-500">Note de l&rsquo;appel</span><textarea rows={3} className={inputCls} placeholder="Contexte, besoin, échéance, prochain rappel…" value={f.note} onChange={(e) => set({ note: e.target.value })} /></label>
+        <p className="mt-2 text-xs text-neutral-600">Avec la fixation, les longueurs et la hauteur, le projet est chiffré et son brouillon de devis est prêt à l&rsquo;ouverture de la fiche.</p>
+        <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-neutral-600">Note de l&rsquo;appel</span><textarea rows={3} className={inputCls} placeholder="Contexte, besoin, échéance, prochain rappel…" value={f.note} onChange={(e) => set({ note: e.target.value })} /></label>
       </section>
 
       {err && (

@@ -77,7 +77,7 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
   }, [c?.message.enCours, charger, images]);
 
   if (erreur) return <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-800">{erreur} <button type="button" className="ml-2 font-bold underline" onClick={() => charger()}>Réessayer</button></div>;
-  if (!c) return <div className="grid h-64 place-items-center rounded-2xl border border-neutral-200 bg-white text-sm text-neutral-500"><Loader2 className="h-5 w-5 animate-spin" aria-label="Chargement du message" /></div>;
+  if (!c) return <div className="grid h-64 place-items-center rounded-2xl border border-neutral-200 bg-white text-sm text-neutral-600"><Loader2 className="h-5 w-5 animate-spin" aria-label="Chargement du message" /></div>;
   const m = c.message;
   const recu = m.dossier === "inbox";
 
@@ -159,9 +159,9 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
         <button type="button" onClick={onRetour} className="mb-3 inline-flex items-center gap-1.5 text-sm font-bold text-pine-700 lg:hidden"><ArrowLeft className="h-4 w-4" /> Retour à la liste</button>
         <h2 className="text-lg font-extrabold leading-snug text-inkgreen">{m.sujet || "(sans objet)"}</h2>
         <p className="mt-1 text-sm text-neutral-700">
-          {recu ? <><strong className="font-bold text-inkgreen">{m.de.nom || m.de.email}</strong> <span className="text-neutral-500">&lt;{m.de.email}&gt;</span></> : <>À <strong className="font-bold text-inkgreen">{m.a.join(", ")}</strong></>}
+          {recu ? <><strong className="font-bold text-inkgreen">{m.de.nom || m.de.email}</strong> <span className="text-neutral-600">&lt;{m.de.email}&gt;</span></> : <>À <strong className="font-bold text-inkgreen">{m.a.join(", ")}</strong></>}
         </p>
-        <p className="text-xs text-neutral-500">{dateComplete(m.date)}{m.reponduLe ? ` · répondu ${quand(m.reponduLe)}` : ""}</p>
+        <p className="text-xs text-neutral-600">{dateComplete(m.date)}{m.reponduLe ? ` · répondu ${quand(m.reponduLe)}` : ""}</p>
 
         {recu && (
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -178,7 +178,7 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
             <button type="button" className={bouton} onClick={() => action({ besoinReponse: !m.besoinReponse })} aria-pressed={Boolean(m.besoinReponse)}>
               {m.besoinReponse ? "Réponse attendue" : "Pas de réponse attendue"}
             </button>
-            {m.iaManuel && <span className="text-xs text-neutral-500">tri corrigé par vous</span>}
+            {m.iaManuel && <span className="text-xs text-neutral-600">tri corrigé par vous</span>}
             <span className="ml-auto flex flex-wrap gap-2">
               {m.statut !== "en_attente" ? <button type="button" className={bouton} onClick={() => action({ statut: "en_attente" }, "Message mis en attente.")}><Clock className="h-3.5 w-3.5" /> En attente</button> : <button type="button" className={bouton} onClick={() => action({ statut: "a_traiter" }, "Message remis à traiter.")}><RefreshCw className="h-3.5 w-3.5" /> À traiter</button>}
               {m.statut !== "traite" && <button type="button" className={bouton} onClick={() => action({ statut: "traite" }, "Message marqué comme traité.")}><CheckCircle2 className="h-3.5 w-3.5" /> Traité</button>}
@@ -223,7 +223,7 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
             <ol className="divide-y divide-neutral-100 border-t border-neutral-100">
               {c.fil.map((x) => (
                 <li key={x.id} className={`px-4 py-3 sm:px-5 ${x.envoye ? "bg-pine-50/50" : ""}`}>
-                  <p className="text-xs font-bold text-neutral-700">{x.envoye ? "Vous" : x.de} <span className="font-normal text-neutral-500">· {dateComplete(x.date)}</span></p>
+                  <p className="text-xs font-bold text-neutral-700">{x.envoye ? "Vous" : x.de} <span className="font-normal text-neutral-600">· {dateComplete(x.date)}</span></p>
                   <p className="mt-1 whitespace-pre-wrap break-words text-sm text-neutral-800">{x.texte}</p>
                 </li>
               ))}
@@ -248,7 +248,7 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
               </li>
             ) : (
               <li key={p.n}>
-                <a href={`/api/admin/messagerie/messages/${id}/pieces/${p.n}`} className={bouton}><Paperclip className="h-3.5 w-3.5" /> {p.nom} <span className="font-normal text-neutral-500">{poids(p.taille)}</span> <FileDown className="h-3.5 w-3.5" /></a>
+                <a href={`/api/admin/messagerie/messages/${id}/pieces/${p.n}`} className={bouton}><Paperclip className="h-3.5 w-3.5" /> {p.nom} <span className="font-normal text-neutral-600">{poids(p.taille)}</span> <FileDown className="h-3.5 w-3.5" /></a>
               </li>
             ))}
           </ul>
@@ -266,7 +266,7 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
             {recu && <button type="button" className={bouton} disabled={!iaPrete || occupe !== null} onClick={() => ia(b ? "regenerer" : "generer")}>{occupe === "generer" || occupe === "regenerer" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />} {b ? "Régénérer la réponse" : "Générer une réponse"}</button>}
           </span>
         </div>
-        {!iaPrete && <p className="mt-2 text-xs text-neutral-500">L&rsquo;IA n&rsquo;est pas disponible (clé non configurée ou IA désactivée par l&rsquo;administrateur). Vous pouvez écrire votre réponse vous-même.</p>}
+        {!iaPrete && <p className="mt-2 text-xs text-neutral-600">L&rsquo;IA n&rsquo;est pas disponible (clé non configurée ou IA désactivée par l&rsquo;administrateur). Vous pouvez écrire votre réponse vous-même.</p>}
 
         {resume && (
           <div className="mt-3 rounded-xl bg-mist px-3.5 py-3 text-sm text-neutral-800">
@@ -339,7 +339,7 @@ export function Conversation({ id, iaPrete, envoiPossible, onRetour, onChange }:
                   {occupe === "enregistrer" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Enregistrer le brouillon
                 </button>
                 <button type="button" className={`${bouton} hover:border-red-300 hover:text-red-700`} disabled={occupe !== null} onClick={supprimer}><Trash2 className="h-3.5 w-3.5" /> Supprimer</button>
-                <span className="text-xs text-neutral-500">Rien ne part sans votre validation.</span>
+                <span className="text-xs text-neutral-600">Rien ne part sans votre validation.</span>
               </div>
             )}
           </div>

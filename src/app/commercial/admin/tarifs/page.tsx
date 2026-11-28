@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Building2, CalendarClock, Layers, Wallet } from "lucide-react";
+import { Carte, EnTete, Onglets } from "@/components/admin/ui";
 import { PriceEditor } from "@/components/admin/PriceEditor";
 import { CommissionsForm, DelaisForm, NiveauxPrixForm, SocieteForm } from "@/components/admin/SettingsForms";
 import { getCoefsPrix } from "@/lib/admin/niveaux-prix-serveur";
@@ -26,26 +27,10 @@ export default async function TarifsPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-extrabold text-inkgreen">Tarifs et paramètres</h1>
-        <p className="mt-1 max-w-3xl text-sm text-neutral-500">
-          Les modifications publiées ici s&rsquo;appliquent aux générateurs sans redéploiement, sous une minute.
-          Les règles de calcul ne changent pas : seuls les chiffres sont modifiables. Chaque publication est historisée.
-        </p>
+      <EnTete titre="Tarifs et paramètres" sous="Les modifications publiées ici s'appliquent aux générateurs sans redéploiement, sous une minute. Les règles de calcul ne changent pas : seuls les chiffres sont modifiables. Chaque publication est historisée." />
+      <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+        <Onglets label="Onglets" items={TABS.map((t) => ({ href: `/commercial/admin/tarifs?onglet=${t.key}`, label: t.label, on: tab === t.key }))} />
       </div>
-      <nav className="flex flex-wrap gap-1.5" aria-label="Onglets">
-        {TABS.map((t) => (
-          <Link
-            key={t.key}
-            href={`/commercial/admin/tarifs?onglet=${t.key}`}
-            className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
-              tab === t.key ? "bg-pine-700 text-white" : "border border-neutral-200 bg-white text-neutral-600 hover:border-pine-300 hover:text-pine-700"
-            }`}
-          >
-            {t.label}
-          </Link>
-        ))}
-      </nav>
       {tab === "parametres" ? <Parametres /> : <Tarifs engine={tab} />}
     </div>
   );
@@ -73,25 +58,18 @@ async function Parametres() {
   const coefSite = tarifsSite.coefDefaut;
   return (
     <>
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="text-base font-extrabold text-inkgreen">Niveaux de prix des devis</h2>
-        <p className="mb-4 mt-1 text-xs text-neutral-400">Les trois prix qu&rsquo;un commercial peut choisir dans un devis. Un devis déjà envoyé ne change pas.</p>
+      <Carte icon={Layers} titre="Niveaux de prix des devis" sous="Les trois prix qu'un commercial peut choisir dans un devis. Un devis déjà envoyé ne change pas.">
         <NiveauxPrixForm initial={coefs} coefSite={coefSite} />
-      </section>
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="mb-4 text-base font-extrabold text-inkgreen">Rémunération des commerciaux</h2>
+      </Carte>
+      <Carte icon={Wallet} titre="Rémunération des commerciaux">
         <CommissionsForm initial={comp} />
-      </section>
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="text-base font-extrabold text-inkgreen">Délais logistiques</h2>
-        <p className="mb-4 mt-1 text-xs text-neutral-400">Nombre de jours après la validation de l&rsquo;affaire par le commercial. Ils fixent les échéances des tâches du logisticien.</p>
+      </Carte>
+      <Carte icon={CalendarClock} titre="Délais logistiques" sous="Nombre de jours après la validation de l'affaire par le commercial. Ils fixent les échéances des tâches du logisticien.">
         <DelaisForm fields={Object.entries(DELAIS_LABELS).map(([key, label]) => ({ key, label }))} initial={delais} />
-      </section>
-      <section className="rounded-2xl border border-neutral-200 bg-white p-5">
-        <h2 className="text-base font-extrabold text-inkgreen">Société — mentions des devis</h2>
-        <p className="mb-4 mt-1 text-xs text-neutral-400">Ces informations figurent sur les devis envoyés aux clients. Adresse, SIRET, TVA et conditions sont obligatoires pour pouvoir envoyer un devis.</p>
+      </Carte>
+      <Carte icon={Building2} titre="Société — mentions des devis" sous="Ces informations figurent sur les devis envoyés aux clients. Adresse, SIRET, TVA et conditions sont obligatoires pour pouvoir envoyer un devis.">
         <SocieteForm fields={SOCIETE_FIELDS.map((f) => ({ ...f }))} initial={societe} />
-      </section>
+      </Carte>
     </>
   );
 }

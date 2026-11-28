@@ -8,7 +8,7 @@ export function TriClients({ valeur, options }: { valeur: string; options: { cle
   const router = useRouter();
   return (
     <label className="inline-flex shrink-0 items-center gap-2 text-sm text-neutral-600">
-      <ArrowDownUp className="h-4 w-4 text-neutral-500" aria-hidden />
+      <ArrowDownUp className="h-4 w-4 text-neutral-600" aria-hidden />
       <span className="hidden sm:inline">Trier par</span>
       <select
         id="tri-clients"

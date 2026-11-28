@@ -1,6 +1,6 @@
 import { requireMenu, voitTout } from "@/lib/admin/auth";
 import Link from "next/link";
-import { dateFmt, eurFmt, ScoreBadge } from "@/components/admin/ui";
+import { dateFmt, EnTete, eurFmt, ScoreBadge } from "@/components/admin/ui";
 import { niveauInfo } from "@/lib/admin/niveaux";
 import { STATUT_LABELS, STATUTS, type Statut, pipeline, pipelineApercu } from "@/lib/admin/db";
 
@@ -37,30 +37,30 @@ export default async function PipelinePage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-extrabold text-inkgreen">Vue Kanban</h1>
+      <EnTete titre="Vue Kanban" sous={`${cols.reduce((s, c) => s + c.n, 0)} affaires, étape par étape. Cliquez sur une carte pour ouvrir la fiche.`} />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cols.map((c) => (
           <section key={c.statut} className={`rounded-2xl border border-neutral-200 border-t-4 bg-white ${COL_COLORS[c.statut]}`}>
             <header className="flex items-baseline justify-between gap-2 px-4 pb-2 pt-3.5">
-              <h2 className="text-sm font-extrabold text-inkgreen">{STATUT_LABELS[c.statut]}</h2>
-              <p className="text-right">
-                <span className="block text-sm font-extrabold tabular-nums text-inkgreen">{c.n}</span>
-                {c.total > 0 && <span className="block text-[11px] tabular-nums text-neutral-400">{eurFmt.format(c.total)} €</span>}
-              </p>
+              <h2 className="flex items-center gap-2 text-sm font-extrabold text-inkgreen">
+                {STATUT_LABELS[c.statut]}
+                <span className={`rounded-full px-2 py-0.5 text-xs font-bold tabular-nums ${c.n > 0 ? "bg-pine-50 text-pine-700" : "bg-mist text-neutral-600"}`}>{c.n}</span>
+              </h2>
+              {c.total > 0 && <p className="text-xs font-bold tabular-nums text-neutral-600">{eurFmt.format(c.total)} €</p>}
             </header>
             <ul className="space-y-2 px-3 pb-3">
               {c.list.slice(0, 8).map((l) => (
                 <li key={l.id}>
                   <Link
                     href={`/commercial/clients/${l.id}`}
-                    className="block rounded-xl border border-neutral-200 bg-white p-3 transition hover:-translate-y-0.5 hover:border-amber-500 hover:shadow-card"
+                    className="mgk-tuile block rounded-xl border border-neutral-200 bg-white p-3"
                   >
                     <span className="flex items-center gap-2">
                       <ScoreBadge score={l.score} />
                       <span className="min-w-0 flex-1 truncate text-sm font-bold text-inkgreen">{l.name}</span>
                     </span>
                     {niveauInfo(l.niveau) && <span className={`mt-1.5 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset ${niveauInfo(l.niveau)!.cls}`}>{l.niveau} · {niveauInfo(l.niveau)!.label}</span>}
-                    <span className="mt-1.5 flex items-center justify-between text-[11px] text-neutral-400">
+                    <span className="mt-1.5 flex items-center justify-between text-[11px] text-neutral-600">
                       <span title={`Demande du ${dateFmt.format(new Date(l.created_at))}`}>{sansAction(l) === 0 ? "actif aujourd'hui" : `${sansAction(l)} j sans action`}</span>
                       {l.estimation_ttc && (
                         <span className="font-extrabold tabular-nums text-pine-700">{eurFmt.format(Number(l.estimation_ttc))} €</span>
@@ -69,7 +69,7 @@ export default async function PipelinePage() {
                   </Link>
                 </li>
               ))}
-              {c.list.length === 0 && <li className="px-1 pb-2 text-xs text-neutral-300">—</li>}
+              {c.list.length === 0 && <li className="rounded-xl border border-dashed border-neutral-200 px-3 py-4 text-center text-xs text-neutral-600">Aucune affaire à cette étape</li>}
               {c.n > c.list.length && (
                 <li>
                   <Link href={`/commercial/clients?statut=${c.statut}`} className="block px-1 text-xs font-bold text-pine-700 hover:underline">

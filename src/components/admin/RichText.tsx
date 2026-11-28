@@ -214,7 +214,7 @@ export function RichText(props: {
 
       {link !== null && (
         <form className="flex flex-wrap items-center gap-2 border-b border-neutral-200 bg-white px-2 py-1.5" onSubmit={(e) => { e.preventDefault(); poserLien(); }}>
-          <label className="flex min-w-0 flex-1 items-center gap-2 text-xs font-semibold text-neutral-500">
+          <label className="flex min-w-0 flex-1 items-center gap-2 text-xs font-semibold text-neutral-600">
             Adresse du lien
             <input autoFocus className="h-8 min-w-0 flex-1 rounded-lg border border-neutral-200 px-2 text-sm text-inkgreen outline-none focus:border-pine-500" placeholder="https://… ou une adresse e-mail" value={link} onChange={(e) => setLink(e.target.value)} onKeyDown={(e) => e.key === "Escape" && setLink(null)} />
           </label>
@@ -291,7 +291,7 @@ export function RichText(props: {
         }}
       />
 
-      <p className="border-t border-neutral-200 bg-mist px-3 py-2 text-xs text-neutral-500">
+      <p className="border-t border-neutral-200 bg-mist px-3 py-2 text-xs text-neutral-600">
         {uploading > 0 ? "Envoi de l'image…" : "Glissez-déposez une image dans le texte, ou collez-la. Cliquez sur une image pour régler sa largeur."}{" "}
         Variables :{" "}
         {props.variables.map((x) => (

@@ -46,7 +46,7 @@ export async function BackOfficeShell({ children }: { children: React.ReactNode 
           <span className="grid h-7 w-7 place-items-center rounded-lg bg-pine-700 text-xs font-extrabold text-amber-400">{site.name.charAt(0)}</span>
           <p className="min-w-0 truncate text-sm font-extrabold leading-tight text-inkgreen">
             {site.name}
-            <span className="block text-[11px] font-semibold text-neutral-500">Back office</span>
+            <span className="block text-[11px] font-semibold text-neutral-600">Back office</span>
           </p>
         </div>
         <div className="mgk-defile min-h-0 flex-1 overflow-y-auto px-3 py-3">
@@ -59,7 +59,7 @@ export async function BackOfficeShell({ children }: { children: React.ReactNode 
           </span>
           <span className="min-w-0">
             <span className="block truncate">{user.name}</span>
-            <span className="block truncate text-[11px] font-semibold text-neutral-500">{ROLE_LABELS[user.role]}</span>
+            <span className="block truncate text-[11px] font-semibold text-neutral-600">{ROLE_LABELS[user.role]}</span>
           </span>
         </p>
       </aside>
@@ -69,7 +69,7 @@ export async function BackOfficeShell({ children }: { children: React.ReactNode 
         <div className="sticky top-0 z-30 border-b border-neutral-200 bg-white/85 backdrop-blur">
           <div className="flex h-14 w-full items-center gap-3 px-4 sm:px-6 xl:px-8">
             <p className="min-w-0 flex-1 truncate text-sm font-extrabold text-inkgreen md:invisible">
-              {site.name} <span className="font-semibold text-neutral-400">· back office</span>
+              {site.name} <span className="font-semibold text-neutral-600">· back office</span>
             </p>
             <span id="mgk-tel-barre" className="contents" />
             <Alertes depuis={new Date().toISOString()} />

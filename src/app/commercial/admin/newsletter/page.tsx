@@ -5,6 +5,7 @@ import { mailConfigured } from "@/lib/admin/mail";
 import { NEWSLETTER_VARIABLES, audienceParStatut, listCampagnes } from "@/lib/admin/newsletter";
 import { STATUT_LABELS, STATUTS } from "@/lib/admin/statuts";
 import { site } from "@/lib/site";
+import { EnTete } from "@/components/admin/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -15,12 +16,7 @@ export default async function NewsletterPage() {
   const [audience, campagnes] = await Promise.all([audienceParStatut(), listCampagnes()]);
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-extrabold text-inkgreen">Newsletter</h1>
-        <p className="mt-1 max-w-3xl text-sm text-neutral-500">
-          Un e-mail envoyé aux clients des états que vous cochez. Chaque adresse ne reçoit l&rsquo;e-mail qu&rsquo;une fois ; les clients désinscrits ou anonymisés sont toujours exclus.
-        </p>
-      </div>
+      <EnTete titre="Newsletter" sous="Un e-mail envoyé aux clients des états que vous cochez. Chaque adresse ne reçoit l'e-mail qu'une fois ; les clients désinscrits ou anonymisés sont toujours exclus." />
       <NewsletterEditor
         statuts={STATUTS.map((s) => ({ key: s, label: STATUT_LABELS[s], n: audience.parStatut[s] ?? 0 }))}
         exclus={audience.exclus}

@@ -97,14 +97,14 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
             {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <BellPlus className="h-3.5 w-3.5" />}
             Relancer maintenant
           </button>
-          {msg && <span className="text-xs font-semibold text-neutral-500">{msg}</span>}
+          {msg && <span className="text-xs font-semibold text-neutral-600">{msg}</span>}
         </div>
       )}
 
       <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-neutral-100 font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-400">
+            <tr className="border-b border-neutral-100 font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-600">
               <th className="w-10 px-3 py-3">
                 <input
                   type="checkbox"
@@ -134,11 +134,11 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
                   <Link href={`/commercial/clients/${l.id}`} className="font-bold text-inkgreen hover:text-pine-700">
                     {l.name}
                   </Link>
-                  <p className="text-xs text-neutral-400">
+                  <p className="text-xs text-neutral-600">
                     {l.email} · {l.phone} · {dateFmt.format(new Date(l.created_at))}
                   </p>
                 </td>
-                <td className="hidden px-4 py-3 text-xs text-neutral-500 md:table-cell">{l.source ?? "site"}</td>
+                <td className="hidden px-4 py-3 text-xs text-neutral-600 md:table-cell">{l.source ?? "site"}</td>
                 <td className="hidden px-4 py-3 font-bold tabular-nums text-pine-700 sm:table-cell">
                   {l.estimation_ttc ? `${eurFmt.format(Number(l.estimation_ttc))} €` : "—"}
                 </td>
@@ -146,7 +146,7 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
                   <StatutBadge statut={l.statut} />
                   {niveauInfo(l.niveau) && <span title={niveauInfo(l.niveau)!.description} className={`mt-1 block w-fit rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset ${niveauInfo(l.niveau)!.cls}`}>{l.niveau} · {niveauInfo(l.niveau)!.label}</span>}
                 </td>
-                <td className="hidden px-4 py-3 text-xs text-neutral-500 lg:table-cell">
+                <td className="hidden px-4 py-3 text-xs text-neutral-600 lg:table-cell">
                   {l.assigned_to && (
                     <span className="mr-2 inline-flex items-center gap-1 font-semibold text-inkgreen">
                       <UserRound className="h-3 w-3" />
@@ -159,7 +159,7 @@ export function LeadsTable({ leads, team }: { leads: LeadRow[]; team: string[] }
             ))}
             {leads.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-sm text-neutral-400">
+                <td colSpan={7} className="px-4 py-10 text-center text-sm text-neutral-600">
                   Aucune demande ne correspond.
                 </td>
               </tr>

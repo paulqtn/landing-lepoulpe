@@ -188,10 +188,10 @@ export function Messagerie({ initial, admin, ouvrir, ecrireA, message }: { initi
           <section aria-label="Liste des messages" className={`min-w-0 ${selection ? "hidden lg:block" : ""}`}>
             <form className="flex gap-2" role="search" onSubmit={(e) => { e.preventDefault(); setFiltres({ ...filtres, q: recherche.trim() }); setPage(1); }}>
               <div className="relative min-w-0 flex-1">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
                 <label className="sr-only" htmlFor="msg-recherche">Rechercher dans mes e-mails</label>
                 <input id="msg-recherche" className={`${champ} rounded-full pl-9 pr-9`} value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Rechercher dans ma boîte…" />
-                {(recherche || filtres.q) && <button type="button" aria-label="Effacer la recherche" className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-neutral-500 hover:bg-mist" onClick={() => { setRecherche(""); setFiltres({ ...filtres, q: "" }); setPage(1); }}><X className="h-4 w-4" /></button>}
+                {(recherche || filtres.q) && <button type="button" aria-label="Effacer la recherche" className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-neutral-600 hover:bg-mist" onClick={() => { setRecherche(""); setFiltres({ ...filtres, q: "" }); setPage(1); }}><X className="h-4 w-4" /></button>}
               </div>
               <button type="button" aria-expanded={filtresOuverts} className={`${bouton} shrink-0 ${nbFiltres > 0 ? "border-pine-600 text-pine-800" : ""}`} onClick={() => setFiltresOuverts(!filtresOuverts)}>
                 <SlidersHorizontal className="h-3.5 w-3.5" /> Filtres{nbFiltres > 0 ? ` (${nbFiltres})` : ""}
@@ -219,7 +219,7 @@ export function Messagerie({ initial, admin, ouvrir, ecrireA, message }: { initi
                 <ul aria-busy="true" aria-label="Chargement des messages">{[0, 1, 2, 3, 4, 5].map((i) => <li key={i} className="border-b border-neutral-100 p-4"><div className="h-3 w-1/3 animate-pulse rounded bg-neutral-200" /><div className="mt-2 h-3 w-2/3 animate-pulse rounded bg-neutral-100" /><div className="mt-2 h-3 w-full animate-pulse rounded bg-neutral-100" /></li>)}</ul>
               ) : liste.messages.length === 0 ? (
                 <div className="px-5 py-10 text-center">
-                  <MailOpen className="mx-auto h-7 w-7 text-neutral-400" />
+                  <MailOpen className="mx-auto h-7 w-7 text-neutral-600" />
                   <p className="mt-2 text-sm font-bold text-inkgreen">{filtres.q || nbFiltres > 0 ? "Aucun message ne correspond." : compte.lastSyncAt ? "Rien ici pour l'instant." : "Première synchronisation en cours…"}</p>
                   <p className="mt-1 text-xs text-neutral-600">{filtres.q || nbFiltres > 0 ? "Modifiez la recherche ou effacez les filtres." : compte.lastSyncAt ? "Les nouveaux messages apparaîtront ici, triés." : "Vos derniers messages arrivent dans quelques instants."}</p>
                 </div>
@@ -244,7 +244,7 @@ export function Messagerie({ initial, admin, ouvrir, ecrireA, message }: { initi
                             {m.statut === "en_attente" && <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-bold text-indigo-700">En attente</span>}
                             {m.repondu_at && <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-bold text-green-700">Répondu</span>}
                             {m.lead_id && <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-amber-800">Client</span>}
-                            {m.nb_pieces > 0 && <Paperclip className="h-3.5 w-3.5 text-neutral-500" aria-label="Pièce jointe" />}
+                            {m.nb_pieces > 0 && <Paperclip className="h-3.5 w-3.5 text-neutral-600" aria-label="Pièce jointe" />}
                           </span>
                         </button>
                       </li>
@@ -273,7 +273,7 @@ export function Messagerie({ initial, admin, ouvrir, ecrireA, message }: { initi
             ) : (
               <div className="grid h-full min-h-64 place-items-center rounded-2xl border border-dashed border-neutral-300 bg-white/60 p-8 text-center">
                 <div>
-                  <FileText className="mx-auto h-8 w-8 text-neutral-400" />
+                  <FileText className="mx-auto h-8 w-8 text-neutral-600" />
                   <p className="mt-2 text-sm font-bold text-inkgreen">Choisissez un message</p>
                   <p className="mt-1 max-w-xs text-xs text-neutral-600">Le message, la fiche du client et la réponse préparée s&rsquo;affichent ici, lus directement dans votre boîte. Les réponses prêtes sont dans « Brouillons préparés ».</p>
                   {(compteurs?.brouillons ?? 0) > 0 && <button type="button" className={`${boutonPrincipal} mt-4`} onClick={() => choisirVue("brouillons")}><Sparkles className="h-4 w-4" /> {compteurs?.brouillons} réponse{(compteurs?.brouillons ?? 0) > 1 ? "s" : ""} à valider</button>}

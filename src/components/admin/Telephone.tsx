@@ -267,20 +267,20 @@ export function TelephoneProvider({ children, visible }: { children: React.React
               <header className="flex items-center gap-2 border-b border-neutral-200 bg-mist px-3 py-2">
                 <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${pastille}`} />
                 <p className="min-w-0 flex-1 truncate text-xs font-bold text-inkgreen">
-                  Téléphone <span className="font-semibold text-neutral-500">· {enAppel ? (appel.etape === "en_ligne" ? "En ligne" : appel.direction === "in" ? "Appel entrant" : "Appel en cours") : ETAT_TEXTE[etat]}</span>
+                  Téléphone <span className="font-semibold text-neutral-600">· {enAppel ? (appel.etape === "en_ligne" ? "En ligne" : appel.direction === "in" ? "Appel entrant" : "Appel en cours") : ETAT_TEXTE[etat]}</span>
                 </p>
-                <button type="button" onClick={testerMicro} title="Vérifier le micro" className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-bold ${micro === "autorise" ? "bg-green-50 text-green-700" : micro === "bloque" || micro === "indisponible" ? "bg-red-50 text-red-700" : "bg-amber-500/15 text-amber-700"}`}>
+                <button type="button" onClick={testerMicro} title="Vérifier le micro" className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-bold ${micro === "autorise" ? "bg-green-50 text-green-700" : micro === "bloque" || micro === "indisponible" ? "bg-red-50 text-red-700" : "bg-amber-500/15 text-amber-800"}`}>
                   {micro === "bloque" || micro === "indisponible" ? <MicOff className="h-3 w-3" /> : <Mic className="h-3 w-3" />}
                   <span className="hidden sm:inline">{MICRO_TEXTE[micro]}</span>
                 </button>
-                <button type="button" onClick={() => { if (!enAppel && window.confirm("Désactiver le téléphone sur ce navigateur ? Vous pourrez le réactiver avec le bouton téléphone.")) desactiver(); }} disabled={enAppel} title="Désactiver le téléphone sur ce navigateur" aria-label="Désactiver le téléphone" className="rounded-lg p-1 text-neutral-400 hover:bg-neutral-200 hover:text-red-600 disabled:opacity-30"><Power className="h-4 w-4" /></button>
-                <button type="button" onClick={() => setOuvert(false)} title="Réduire" aria-label="Réduire le téléphone" className="rounded-lg p-1 text-neutral-500 hover:bg-neutral-200"><ChevronDown className="h-4 w-4" /></button>
+                <button type="button" onClick={() => { if (!enAppel && window.confirm("Désactiver le téléphone sur ce navigateur ? Vous pourrez le réactiver avec le bouton téléphone.")) desactiver(); }} disabled={enAppel} title="Désactiver le téléphone sur ce navigateur" aria-label="Désactiver le téléphone" className="rounded-lg p-1 text-neutral-600 hover:bg-neutral-200 hover:text-red-600 disabled:opacity-30"><Power className="h-4 w-4" /></button>
+                <button type="button" onClick={() => setOuvert(false)} title="Réduire" aria-label="Réduire le téléphone" className="rounded-lg p-1 text-neutral-600 hover:bg-neutral-200"><ChevronDown className="h-4 w-4" /></button>
               </header>
 
               {enAppel && (
                 <div className="flex items-center gap-2 border-b border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs">
                   {appel.direction === "in" ? <PhoneIncoming className="h-4 w-4 shrink-0 text-amber-700" /> : <PhoneOutgoing className="h-4 w-4 shrink-0 text-amber-700" />}
-                  <span className="min-w-0 flex-1 truncate font-bold text-inkgreen">{appel.nom ?? "Numéro inconnu du back office"} <span className="font-semibold text-neutral-500">· {numeroLisible(appel.numero)}</span></span>
+                  <span className="min-w-0 flex-1 truncate font-bold text-inkgreen">{appel.nom ?? "Numéro inconnu du back office"} <span className="font-semibold text-neutral-600">· {numeroLisible(appel.numero)}</span></span>
                   {appel.leadId && <Link href={`/commercial/clients/${appel.leadId}`} className="shrink-0 rounded-full bg-white px-2.5 py-1 font-bold text-pine-700 ring-1 ring-neutral-200">Fiche</Link>}
                 </div>
               )}

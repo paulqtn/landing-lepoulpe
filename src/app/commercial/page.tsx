@@ -56,7 +56,7 @@ export default async function CommercialHome() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold text-inkgreen">{rep ? `Bonjour ${rep} 👋` : "État des lieux"}</h1>
-          <p className="text-sm capitalize text-neutral-400">{dayFmt.format(new Date())}</p>
+          <p className="text-sm capitalize text-neutral-600">{dayFmt.format(new Date())}</p>
         </div>
         {s.total === 0 && process.env.VERCEL_ENV !== "production" && <SeedDemo />}
       </div>
@@ -79,20 +79,20 @@ export default async function CommercialHome() {
           Leads entrants — à piocher
           <span className="ml-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-amber-700">{pool.length}</span>
         </h2>
-        <p className="mt-1 text-xs text-neutral-400">Par ordre d&rsquo;arrivée, le plus ancien en premier. Seule la première demande peut être prise : les suivantes se débloquent une à une.</p>
+        <p className="mt-1 text-xs text-neutral-600">Par ordre d&rsquo;arrivée, le plus ancien en premier. Seule la première demande peut être prise : les suivantes se débloquent une à une.</p>
         {pool.length === 0 ? (
-          <p className="mt-3 text-sm text-neutral-400">File vide — tous les entrants sont attribués.</p>
+          <p className="mt-3 text-sm text-neutral-600">File vide — tous les entrants sont attribués.</p>
         ) : (
           <ul className="mt-3 divide-y divide-neutral-100">
             {pool.slice(0, 8).map((l, rang) => (
               <li key={l.id} className={`flex flex-wrap items-center gap-x-4 gap-y-2 py-3 ${rang === 0 ? "" : "opacity-60"}`}>
-                <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-extrabold tabular-nums ${rang === 0 ? "bg-amber-500 text-pine-950" : "bg-neutral-100 text-neutral-500"}`} title={`Rang ${rang + 1} dans la file`}>
+                <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-extrabold tabular-nums ${rang === 0 ? "bg-amber-500 text-pine-950" : "bg-neutral-100 text-neutral-600"}`} title={`Rang ${rang + 1} dans la file`}>
                   {rang + 1}
                 </span>
                 <ScoreBadge score={l.score} points={l.score_points} />
                 <Link href={`/commercial/clients/${l.id}`} className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-bold text-inkgreen hover:text-pine-700">{l.name}</span>
-                  <span className="block text-xs text-neutral-400">
+                  <span className="block text-xs text-neutral-600">
                     arrivé le {dateFmt.format(new Date(l.created_at))} · {l.source ?? "site"}
                   </span>
                 </Link>
@@ -102,7 +102,7 @@ export default async function CommercialHome() {
                 {rang === 0 ? (
                   <ClaimButton leadId={l.id} />
                 ) : (
-                  <span className="rounded-full border border-neutral-200 px-3 py-1.5 text-[11px] font-bold text-neutral-400">En attente du n°{rang}</span>
+                  <span className="rounded-full border border-neutral-200 px-3 py-1.5 text-[11px] font-bold text-neutral-600">En attente du n°{rang}</span>
                 )}
               </li>
             ))}
@@ -122,12 +122,12 @@ export default async function CommercialHome() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-bold leading-snug text-inkgreen">{t.label}</span>
-                  <span className="block text-xs text-neutral-400">{t.sub}</span>
+                  <span className="block text-xs text-neutral-600">{t.sub}</span>
                 </span>
-                <span className={`text-2xl font-extrabold tabular-nums ${t.n > 0 ? (t.hot ? "text-amber-600" : "text-inkgreen") : "text-neutral-300"}`}>
+                <span className={`text-2xl font-extrabold tabular-nums ${t.n > 0 ? (t.hot ? "text-amber-600" : "text-inkgreen") : "text-neutral-400"}`}>
                   {t.n}
                 </span>
-                <ArrowRight className="mgk-fleche h-4 w-4 shrink-0 text-neutral-400" />
+                <ArrowRight className="mgk-fleche h-4 w-4 shrink-0 text-neutral-600" />
               </Link>
             </li>
           ))}
@@ -180,10 +180,10 @@ function FileSection({
       <h2 className="flex items-center gap-2 text-base font-extrabold text-inkgreen">
         {icon}
         {titre}
-        <span className="ml-1 rounded-full bg-mist px-2 py-0.5 text-xs font-bold text-neutral-500">{leads.length}</span>
+        <span className="ml-1 rounded-full bg-mist px-2 py-0.5 text-xs font-bold text-neutral-600">{leads.length}</span>
       </h2>
       {leads.length === 0 ? (
-        <p className="mt-3 text-sm text-neutral-400">{vide}</p>
+        <p className="mt-3 text-sm text-neutral-600">{vide}</p>
       ) : (
         <ul className="mt-3 divide-y divide-neutral-100">
           {leads.map((l) => (
@@ -191,7 +191,7 @@ function FileSection({
               <ScoreBadge score={l.score} points={l.score_points} />
               <Link href={`/commercial/clients/${l.id}`} className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-bold text-inkgreen hover:text-pine-700">{l.name}</span>
-                <span className="block text-xs text-neutral-400">{detail(l)}</span>
+                <span className="block text-xs text-neutral-600">{detail(l)}</span>
               </Link>
               {l.estimation_ttc && (
                 <span className="text-sm font-extrabold tabular-nums text-pine-700">{eurFmt.format(Number(l.estimation_ttc))} €</span>

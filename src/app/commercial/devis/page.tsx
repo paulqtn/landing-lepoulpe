@@ -74,7 +74,7 @@ export default async function DevisPage({ searchParams }: { searchParams: Promis
                         <span className="shrink-0 rounded-full bg-sky-50 px-2 py-0.5 text-[11px] font-bold text-sky-700 ring-1 ring-inset ring-sky-200">Brouillon non envoyé</span>
                       ) : null}
                     </span>
-                    <span className="block text-xs text-neutral-500">
+                    <span className="block text-xs text-neutral-600">
                       {usage ? `${usage} · ` : ""}
                       {cotes ? `${cotes} m · ` : ""}
                       {a.hauteur ? `h${a.hauteur} · ` : ""}
