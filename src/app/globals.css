@@ -283,6 +283,15 @@
 /* La carte du bandeau garde son ombre propre (pas l'élévation générique des cartes). */
 .mgk-bo section.mgk-perf:hover { box-shadow: var(--shadow-elevated); }
 
+/* Graphique en colonnes : chaque colonne pousse depuis le bas, l'une après l'autre. */
+.mgk-bo .mgk-colonne {
+  transform-origin: bottom;
+  animation: mgk-colonne 520ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+@keyframes mgk-colonne {
+  from { scale: 1 0; }
+}
+
 /* Tuiles cliquables : elles se soulèvent au survol. */
 .mgk-bo .mgk-tuile {
   transition: translate 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease;

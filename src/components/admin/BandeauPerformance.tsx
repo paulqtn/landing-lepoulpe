@@ -10,7 +10,7 @@ const eur = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 const RAYON = 30;
 const TOUR = 2 * Math.PI * RAYON;
 
-export function BandeauPerformance({ perso, comp }: { perso: ReturnType<typeof repStats>; comp: Awaited<ReturnType<typeof getCompSettings>> }) {
+export function BandeauPerformance({ perso, comp, lien = true }: { perso: ReturnType<typeof repStats>; comp: Awaited<ReturnType<typeof getCompSettings>>; /** Bouton vers les statistiques (inutile sur la page des statistiques elle-même). */ lien?: boolean }) {
   const pct = Math.max(0, Math.min(100, perso.pctObjectif));
   const debloque = perso.resteObjectif <= 0;
   const reperes: { icon: typeof Percent; label: string; valeur: React.ReactNode; detail?: string }[] = [
@@ -122,10 +122,10 @@ export function BandeauPerformance({ perso, comp }: { perso: ReturnType<typeof r
             </li>
           ))}
         </ul>
-        <Link href="/commercial/stats" className="mgk-cta group inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 px-5 py-3 text-sm font-extrabold text-pine-950 shadow-sm hover:bg-amber-400">
+        {lien && <Link href="/commercial/stats" className="mgk-cta group inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 px-5 py-3 text-sm font-extrabold text-pine-950 shadow-sm hover:bg-amber-400">
           Mes stats détaillées
           <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
-        </Link>
+        </Link>}
       </div>
     </section>
   );
